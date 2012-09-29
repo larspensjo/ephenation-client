@@ -1,0 +1,45 @@
+# data file for the Fltk User Interface Designer (fluid)
+version 1.0110 
+header_name {.h} 
+code_name {.cpp}
+class CreditScreen {open
+} {
+  Function {CreditScreen()} {open
+  } {
+    Fl_Window fWindow {
+      label {Ephenation credits} open
+      xywh {650 328 475 510} type Single modal visible
+    } {
+      Fl_Output fOutput {selected
+        xywh {5 25 460 415} type Multiline
+      }
+      Fl_Return_Button {} {
+        label Close
+        callback {fWindow->hide();
+Fl::delete_widget(fWindow);}
+        xywh {35 470 72 20}
+      }
+    }
+  }
+  Function {Show()} {open
+  } {
+    code {const char *msg = "Lead programmers:\\n"
+"\\tLars Pensjö\\n"
+"\\tMikael Grah\\n"
+"\\nLevel design and testing: Andreas Andersson\\n"
+"\\nMusic: Kevin MacLeod, http://incompetech.com\\n"
+"\\nSund effects: http://www.mediacollege.com/\\n"
+"\\nGraphics support: Jonas Pensjö, David Condon\\n"
+"\\nSource code inspiration:\\n"
+"\\thttp://www.videotutorialsrock.com\\n"
+"\\thttp://www.lighthouse3d.com\\n"
+"\\tSimplex noise by Stefan Gustavson\\n"
+"\\nLibraries:\\n"
+"  glm:     G-Truc Creation (www.g-truc.net)\\n"
+"  glfw:    http://www.glfw.org/\\n"
+"  tinyxml: Lee Thomason, www.sourceforge.net/projects/tinyxml\\n"
+;
+fOutput->value(msg);
+fWindow->show();} {}
+  }
+} 

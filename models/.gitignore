@@ -1,0 +1,2 @@
+# Allow Wavefront object files to be saved in git.
+!*.obj

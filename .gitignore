@@ -21,3 +21,4 @@ assimp
 /*.layout
 .directory
 nohup.out
+/.gdbinit

@@ -1,0 +1,42 @@
+# data file for the Fltk User Interface Designer (fluid)
+version 1.0110
+header_name {.h}
+code_name {.cpp}
+class ErrorDialog {open
+} {
+  Function {ErrorDialog(const char *fmt, ...)} {open
+  } {
+    code {va_list vl;
+va_start(vl, fmt);
+char buff[1000];
+\#ifdef WIN32
+_vsnprintf(buff, sizeof buff, fmt, vl);
+\#else
+vsnprintf(buff, sizeof buff, fmt, vl);
+\#endif} {}
+    Fl_Window fWindow {
+      label {Ephenation error} open
+      xywh {1150 195 625 255} type Single
+      code0 {\#include <stdarg.h>}
+      code1 {\#include <stdio.h>}
+      code2 {\#include <GL/glfw.h>}
+      code3 {\#include "../modes.h"} modal visible
+    } {
+      Fl_Output {} {
+        private xywh {10 15 595 125} type Multiline labeltype NO_LABEL align 132
+        code0 {o->value(buff);}
+      }
+      Fl_Return_Button {} {
+        label Exit
+        callback {fWindow->hide();
+exit(0);}
+        xywh {10 215 80 20}
+        code0 {\#include <stdlib.h>}
+      }
+    }
+    code {if (gMode.Get() == GameMode::GAME)
+	glfwTerminate();
+fWindow->show();Fl::run();Fl::flush();} {selected
+    }
+  }
+}

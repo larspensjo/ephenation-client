@@ -13,6 +13,5 @@ explanation.*
 
 * * *
 
-Lars Pensjö <lars.pensjo@gmail.com>  
-Mikael Grah <mikael.grah@gmail.com>  
-
+Lars Pensjö <lars.pensjo@gmail.com>
+Mikael Grah <mikael.grah@gmail.com>

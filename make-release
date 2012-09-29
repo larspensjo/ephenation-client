@@ -1,0 +1,3 @@
+# This is a script taht will produce the production executable
+make -f Makefile.mingw clean
+make -j8 -f Makefile.mingw CXXFLAGS=-O3

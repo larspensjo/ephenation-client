@@ -1,0 +1,173 @@
+{
+   opengl addr8 (1)
+   Memcheck:Addr8
+   fun:memcpy@GLIBC_2.2.5
+   obj:/usr/lib/fglrx/dri/fglrx_dri.so
+}
+{
+   opengl addr1 (2)
+   Memcheck:Addr1
+   fun:memcpy@GLIBC_2.2.5
+   obj:/usr/lib/fglrx/dri/fglrx_dri.so
+}
+{
+   opengl Param (3)
+   Memcheck:Param
+   ioctl(generic)
+   fun:ioctl
+   fun:ukiCreateContext
+   obj:/usr/lib/fglrx/dri/fglrx_dri.so
+   obj:*
+   obj:*
+   obj:*
+   obj:/usr/lib/fglrx/dri/fglrx_dri.so
+   obj:*
+}
+{
+   opengl Cond (4)
+   Memcheck:Cond
+   obj:/usr/lib/fglrx/dri/fglrx_dri.so
+   obj:/usr/lib/fglrx/dri/fglrx_dri.so
+   obj:/usr/lib/fglrx/dri/fglrx_dri.so
+   obj:/usr/lib/fglrx/dri/fglrx_dri.so
+}
+{
+   libfontconfig Addr4 (5)
+   Memcheck:Addr4
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.4.4
+   fun:FcConfigFilename
+   fun:FcConfigParseAndLoad
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.4.4
+   obj:/lib/x86_64-linux-gnu/libexpat.so.1.5.2
+   obj:/lib/x86_64-linux-gnu/libexpat.so.1.5.2
+   obj:/lib/x86_64-linux-gnu/libexpat.so.1.5.2
+   obj:/lib/x86_64-linux-gnu/libexpat.so.1.5.2
+   fun:XML_ParseBuffer
+   fun:FcConfigParseAndLoad
+   fun:FcConfigParseAndLoad
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.4.4
+}
+{
+   libfontconfig Addr4 (6)
+   Memcheck:Addr4
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.4.4
+   fun:FcConfigParseAndLoad
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.4.4
+   obj:/lib/x86_64-linux-gnu/libexpat.so.1.5.2
+   obj:/lib/x86_64-linux-gnu/libexpat.so.1.5.2
+   obj:/lib/x86_64-linux-gnu/libexpat.so.1.5.2
+   obj:/lib/x86_64-linux-gnu/libexpat.so.1.5.2
+   fun:XML_ParseBuffer
+   fun:FcConfigParseAndLoad
+   fun:FcConfigParseAndLoad
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.4.4
+   obj:/lib/x86_64-linux-gnu/libexpat.so.1.5.2
+}
+{
+   libfontconfig Addr4 (7)
+   Memcheck:Addr4
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.4.4
+   fun:FcConfigParseAndLoad
+   fun:FcConfigParseAndLoad
+   obj:/usr/lib/x86_64-linux-gnu/libfontconfig.so.1.4.4
+   obj:/lib/x86_64-linux-gnu/libexpat.so.1.5.2
+   obj:/lib/x86_64-linux-gnu/libexpat.so.1.5.2
+   obj:/lib/x86_64-linux-gnu/libexpat.so.1.5.2
+   obj:/lib/x86_64-linux-gnu/libexpat.so.1.5.2
+   fun:XML_ParseBuffer
+   fun:FcConfigParseAndLoad
+   fun:FcInitLoadConfig
+   fun:FcInitLoadConfigAndFonts
+}
+{
+   opengl Add4 (8)
+   Memcheck:Addr4
+   obj:/usr/lib/fglrx/dri/fglrx_dri.so
+}
+{
+   opengl Overlap (9)
+   Memcheck:Overlap
+   fun:strcpy
+   obj:/usr/lib/fglrx/dri/fglrx_dri.so
+}
+{
+   opengl Cond (10)
+   Memcheck:Cond
+   obj:/usr/lib/fglrx/dri/fglrx_dri.so
+}
+{
+   opengl Cond (11)
+   Memcheck:Cond
+   obj:/usr/lib/fglrx/dri/fglrx_dri.so
+   obj:*
+   obj:*
+   obj:*
+}
+{
+   opengl Addr8 (12)
+   Memcheck:Addr8
+   obj:/usr/lib/fglrx/dri/fglrx_dri.so
+   obj:*
+   obj:*
+}
+{
+   opengl Param (13)
+   Memcheck:Param
+   ioctl(generic)
+   fun:ioctl
+   obj:/usr/lib/fglrx/dri/fglrx_dri.so
+   obj:*
+   obj:*
+}
+{
+   opengl Addr1 (13)
+   Memcheck:Addr1
+   obj:/usr/lib/fglrx/dri/fglrx_dri.so
+}
+{
+   opengl Addr8 (14)
+   Memcheck:Addr8
+   obj:/usr/lib/fglrx/dri/fglrx_dri.so
+}
+{
+   opengl Addr2 (15)
+   Memcheck:Addr2
+   fun:memcpy@GLIBC_2.2.5
+   obj:/usr/lib/fglrx/dri/fglrx_dri.so
+   obj:*
+   obj:*
+}
+{
+   opengl Addr4 (16)
+   Memcheck:Addr4
+   fun:memset
+   obj:/usr/lib/fglrx/dri/fglrx_dri.so
+   obj:*
+   obj:*
+   obj:*
+}
+{
+   opengl Addr4 (17)
+   Memcheck:Addr4
+   fun:memset
+   obj:/usr/lib/fglrx/dri/fglrx_dri.so
+   obj:*
+   obj:/usr/lib/valgrind/memcheck-amd64-linux
+   obj:*
+}
+{
+   opengl Addr4 (18)
+   Memcheck:Addr4
+   fun:memset
+   obj:/usr/lib/fglrx/dri/fglrx_dri.so
+   obj:*
+   obj:*
+}
+{
+   opengl Addr4 (19)
+   Memcheck:Addr4
+   fun:memset
+   obj:/usr/lib/fglrx/dri/fglrx_dri.so
+   obj:*
+}
+
