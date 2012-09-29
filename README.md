@@ -10,3 +10,5 @@ The server is designed to run on a Linux platform, and the client is design to r
 
 See [Ephenation server wiki](https://github.com/larspensjo/ephenation-server/wiki) for server documentation.
 See [Ephenation client wiki](https://github.com/larspensjo/ephenation-client/wiki) for client documentation.
+
+![Pict](https://lh5.googleusercontent.com/-osMriYp7jLg/UGcrFi1suUI/AAAAAAAAAUY/deSaaYmIsco/s650/Valley_2012-09-30.jpeg)
