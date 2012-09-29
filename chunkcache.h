@@ -24,15 +24,15 @@
 
 #include <memory>
 
+#include "chunk.h"
+
 class ChunkBlocks;
 class ChunkCoord;
 
 class ChunkCache {
 public:
 	struct cachunk {
-		signed long long x;
-		signed long long y;
-		signed long long z;
+		ChunkCoord cc;
 
 		unsigned long flag;
 		unsigned int fCheckSum;

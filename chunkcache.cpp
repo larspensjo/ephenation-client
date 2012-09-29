@@ -154,12 +154,6 @@ bool ChunkCache::IsChunkInCache(const ChunkCoord *cc) {
 void ChunkCache::SaveChunkInCache(const cachunk *chunkdata) {
 	static WorstTime tm("SaveChnkCache");
 	tm.Start();
-	signed long long x = chunkdata->x;
-	signed long long y = chunkdata->y;
-	signed long long z = chunkdata->z;
-	//unsigned long flag = chunkdata->flag;
-	//unsigned int fChecksum = chunkdata->fCheckSum;
-	//unsigned long fOwner = chunkdata->fOwner;
 
 	unsigned char *buffer = chunkdata->compressedChunk;
 	int len = chunkdata->compressSize;
@@ -168,7 +162,7 @@ void ChunkCache::SaveChunkInCache(const cachunk *chunkdata) {
 
 	// TODO: remove magic number
 	fileName = new char[strlen(fCacheDir)+100];
-	sprintf( fileName, "%scf%lli,%lli,%lli", fCacheDir, x, y, z);
+	sprintf( fileName, "%scf%d,%d,%d", fCacheDir, chunkdata->cc.x, chunkdata->cc.y, chunkdata->cc.z);
 
 	ofstream WriteChunk(fileName, ios::binary);
 

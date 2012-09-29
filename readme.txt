@@ -24,7 +24,7 @@ Ephenation Readme
 * Look at the high scores of popular areas, to find places to go adventure
 * To kill a monster, use TAB to select it and initiate attack with '1'.
 
-Release 4.2 2012-09-
+Release 4.2 2012-09-29
 ======================
 This is a maintenance release, to improve functionality but no new features.
 * Improved FPS from drawing trees.

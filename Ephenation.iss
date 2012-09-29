@@ -7,7 +7,7 @@
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
 AppId={{C788FC6C-60BF-4D59-B6C5-EAB408F761F8}
 AppName=Ephenation
-AppVersion=4.1
+AppVersion=4.2
 AppPublisher=Ephenation
 AppPublisherURL=www.ephenation.net
 AppSupportURL=www.ephenation.net
@@ -18,6 +18,7 @@ AllowNoIcons=yes
 OutputBaseFilename=setup
 Compression=lzma
 SolidCompression=yes
+InfoBeforeFile=Disclaimer.rtf
 InfoAfterFile=readme.txt 
 
 [Languages]
@@ -27,7 +28,7 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "bin/Release/EphenationClient.exe"; DestDir: "{app}"; DestName: "ephenation.exe"; Flags: ignoreversion
+Source: "ephenation.exe"; DestDir: "{app}"; DestName: "ephenation.exe"; Flags: ignoreversion
 Source: "ephenation.ico"; DestDir: "{app}"; Flags: ignoreversion
 Source: "alut.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "readme.txt"; DestDir: "{app}"; Flags: ignoreversion
@@ -40,7 +41,7 @@ Source: "\MinGW\bin\pthreadGC2.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "\MinGW\bin\libgcc_s_dw2-1.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "\MinGW\bin\libstdc++-6.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "vcredist_x86.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "Disclaimer.html"; DestDir: "{app}"; Flags: ignoreversion
+Source: "Disclaimer.rtf"; DestDir: "{app}"; Flags: ignoreversion
 Source: "sounds\*"; DestDir: "{app}\sounds"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "textures\*"; DestDir: "{app}\textures"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "models\*.dae"; DestDir: "{app}\models"; Flags: ignoreversion recursesubdirs createallsubdirs

@@ -163,7 +163,7 @@ void ChunkProcess::Task(void) {
 		if (!fNewChunks.empty()) {
 			auto nc = getNextChunkBlock(fNewChunks);
 			chunk *pc = nc->fChunk;
-			// It may be that this chunk was also scheduled for recompuation. If so, the Uncompress() below that calls SetDirty() will not
+			// It may be that this chunk was also scheduled for recomputation. If so, the Uncompress() below that calls SetDirty() will not
 			// schedule a new recomputation again.
 			ASSERT(pc->fScheduledForLoading);
 			fMutex.unlock(); // Unlock the mutex while doing some work
@@ -172,9 +172,7 @@ void ChunkProcess::Task(void) {
 
 			// Save chunk in cache
 			ChunkCache::cachunk chunkdata;
-			chunkdata.x = pc->cc.x;
-			chunkdata.y = pc->cc.y;
-			chunkdata.z = pc->cc.z;
+			chunkdata.cc = pc->cc;
 			chunkdata.flag = nc->flag;
 			chunkdata.fCheckSum = nc->fChecksum;
 			chunkdata.fOwner = nc->fOwner;
