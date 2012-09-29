@@ -29,7 +29,7 @@ OptionsDialog2::OptionsDialog2() : fActiveElement(ActiveElement::NONE) {
 	const int xalign = 120;
 	int h = fBodyFont->vsfl.height();
 	fTitle.Init(fTitleFont, "Options", 100, 0);
-	fPing.Init(fBodyFont, "Ping", xalign, 100); fPingMark.Init(fBodyFont, "x", xalign-20, 100);
+	fPing.Init(fBodyFont, "Ping (can slow down FPS)", xalign, 100); fPingMark.Init(fBodyFont, "x", xalign-20, 100);
 	fMusic.Init(fBodyFont, "Music", xalign, 100+h); fMusicMark.Init(fBodyFont, "x", xalign-20, 100+h);
 
 	fPerformance.Init(fBodyFont, "System performance (requires restart)", xalign, 100+2*h);
