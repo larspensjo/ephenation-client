@@ -45,6 +45,7 @@ static const GLchar *fragmentShaderSource[] = {
 	"#version 330\n", // This corresponds to OpenGL 3.3
 	UNIFORMBUFFER
 	DOUBLERESOLUTIONFUNCTION
+	RANDOMVEC2POISSON
 	"uniform sampler2D posTex;\n",     // World position
 	"uniform sampler2D normalTex;\n",  // Normals
 	"in vec2 screen;\n",               // The screen position
@@ -55,19 +56,14 @@ static const GLchar *fragmentShaderSource[] = {
 
 // Declarations used for sun and shadow
 	"uniform mat4 shadowmat;\n"       // combination of projection * view matrices of the light source
-	"uniform sampler2D shadowmapTex;\n"
+	"uniform sampler2D shadowmapTex;\n" // TODO: Use shadow sampler instead
 	"const float shadowMapSize1 = " STR(DYNAMIC_SHADOW_MAP_SIZE) ";\n" // The size of the dynamic shadowmap bitmap
 	"const float shadowMapSize2 = " STR(STATIC_SHADOW_MAP_SIZE) ";\n" // The size of the dynamic shadowmap bitmap
 	"const vec3 sundir = vec3(-0.577350269, 0.577350269, 0.577350269);\n",
-	"const int shadowMultiSample = 10;"
+	"const int shadowMultiSample = 5;"
 
-	"vec2 seed;"
-
-	"vec2 rand(vec2 a, vec2 b) {"
-	"	seed = fract(a*10.23 + b*123.1232+screen*3.123 + seed*82.12354);" // A value from 0 to 1
-	"	return seed;"
-	"}"
-
+	// This function computes lighting from a low resolution shadow map. The purpose is to use it for
+	// low performance systems
 	"float ShadowMapLinear(vec3 pos, vec3 normal) {\n"
 	"   vec4 shadowmapcoord = shadowmat * vec4(pos.xyz, 1);\n"
 	"	shadowmapcoord.xy = DoubleResolution(shadowmapcoord.xy);"
@@ -82,7 +78,7 @@ static const GLchar *fragmentShaderSource[] = {
 	"       float d = clamp(0.002/sqrt(cosTheta), 0.0, 0.01);\n"
 	// "		int start = int(fract(dot(pos, vec3(23.534, 65.91281, 31.231)))*32)%32;"
 	"		for (int i=0;i<shadowMultiSample;i++) {"
-	"			vec2 ind = shadowmapcoord.xy + (2.0*rand(normal.xy+pos.z, pos.xy)-1.0)*p;"
+	"			vec2 ind = shadowmapcoord.xy + rand2(screen.xy)*p;"
 	"			float depth = texture(shadowmapTex, ind).x;\n"
 	"			if (shadowmapcoord.z > depth + d) sun -= 1.0/shadowMultiSample;\n"
 	"		}"
@@ -90,6 +86,8 @@ static const GLchar *fragmentShaderSource[] = {
 	"   return sun;\n"
 	"}\n"
 
+	// This function computes lighting from a high resolution shadow map. The purpose is to use it for
+	// high performance systems
 	"float ShadowMap(vec3 pos, vec3 normal) {\n"
 	"   vec4 shadowmapcoord = shadowmat * vec4(pos.xyz, 1);\n"
 	"	shadowmapcoord.xy = DoubleResolution(shadowmapcoord.xy);"
@@ -103,7 +101,7 @@ static const GLchar *fragmentShaderSource[] = {
 	"		float cosTheta = clamp(dot(normal, sundir), 0.1, 1);"
 	"       float d = clamp(0.002/sqrt(cosTheta), 0.0, 0.01);\n"
 	"		for (int i=0;i<shadowMultiSample;i++) {"
-	"			vec2 ind = shadowmapcoord.xy + (2.0*rand(normal.xy+pos.z, pos.xy)-1.0)*p*2;"
+	"			vec2 ind = shadowmapcoord.xy + rand2(screen.xy)*p*4;"
 	"			float depth = texture(shadowmapTex, ind).x;\n"
 	"			if (shadowmapcoord.z > depth + d) sun -= 1.0/shadowMultiSample;\n"
 	"		}"
@@ -124,7 +122,8 @@ static const GLchar *fragmentShaderSource[] = {
 	"	if (inSun > 0 && UBODynamicshadows == 2) inSun = ShadowMapLinear(worldPos.xyz, normal.xyz);\n" // Override with dynamic shadows
 	// As the last step, combine all the diffuse color with the lighting and blending effects
 	"   light = inSun*sun*1.5;\n",
-	// "   light = worldPos.a;\n",
+	// "	light = rand2(screen.xy).r;" // Test the random number generator
+	// "	light = worldPos.a;\n",
 	"}\n",
 };
 
@@ -146,6 +145,7 @@ void AddDynamicShadow::GetLocations(void) {
 	glUniform1i(this->GetUniformLocation("shadowmapTex"), 4); // The shadow map has to use GL_TEXTURE4
 	glUniform1i(this->GetUniformLocation("normalTex"), 2);
 	glUniform1i(this->GetUniformLocation("posTex"), 1);
+	glUniform1i(this->GetUniformLocation(RANDOMVEC2POISSON_SAMPLERNAME), 0);
 
 	checkError("AddDynamicShadow::GetLocations");
 }

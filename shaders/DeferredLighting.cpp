@@ -45,11 +45,13 @@ static const GLchar *fragmentShaderSource[] = {
 	"#version 330\n", // This corresponds to OpenGL 3.3
 	UNIFORMBUFFER
 	DOUBLERESOLUTIONFUNCTION
+	RANDOMVEC2POISSON
 	"uniform sampler2D diffuseTex;\n", // The color information
 	"uniform sampler2D posTex;\n",     // World position
 	"uniform sampler2D normalTex;\n",  // Normals
 	"uniform sampler2D blendTex;\n",   // A bitmap with colors to blend with, afterwars.
 	"uniform sampler2D lightTex;\n",   // A bitmap with colors to blend with, afterwars.
+	"uniform sampler1D poissondisk;"
 	"uniform bool Udead;\n",            // True if the player is dead
 	"uniform bool Uwater;\n",           // True when head is in water
 	"uniform bool Uteleport;\n",        // Special mode when inside a teleport
@@ -90,16 +92,21 @@ static const GLchar *fragmentShaderSource[] = {
 	"   vec3 vHalfVector = normalize(sundir.xyz+eyeDir);\n",
 	"   float inSun = worldPos.a;\n", // Is 1 if this position is reached by the sun
 	"	float fact = texture(lightTex, screen).r;"
-	"	int num = 1;"
-	// Do some multi sampling to blur the lighting
-	"	for (int i=0; i < 6; i++) {"
-	"		vec2 ind = screen + (2*rand(diffuse.xy, normal.xy + diffuse.z)-1)/UBOWindowHeight*2;"
-	"		vec3 pos = texture(posTex, ind).xyz;"
-	//		Ignore blurring if points are not near each other.
-	"		if (abs(distance(UBOCamera.xyz, pos) - length(cameraToWorld)) < 0.3) {"
-	"			fact += texture(lightTex, ind).r;"
-	"			num++;"
-	"		}"
+	"	float num = 1;"
+	// Do some multi sampling to blur the lighting. It is kind of a box filter, but with enhanced weights
+	// dynamically controlled by the geometry.
+	"	for (int i=0; i < 4; i++) {"
+	"		const float filterpixels = 4;" // The size of the area to include in the filter.
+	"		vec2 ind = screen + rand2(screen)/UBOWindowHeight*filterpixels;"
+	"		vec3 pos2 = texture(posTex, ind).xyz;"
+	"		vec3 normal2 = texture(normalTex, ind).xyz;"
+	"		const float maxdist = 1;" // Ignore contributions when distance difference exceeds this value
+	"		float dist = min(abs(distance(UBOCamera.xyz, pos2) - length(cameraToWorld)), maxdist);" // A value between 0 and maxdist.
+	//		Use a weight that depends on the distance difference. Also, if there is a sharp corner, we don't want
+	//		shadows to bleed around the corner. This this is prevented by using a test for normals.
+	"		float weight = (maxdist-dist)*dot(normal.xyz, normal2);" // A value from 0 to 1
+	"		fact += weight * texture(lightTex, ind).r;"
+	"		num += weight;"
 	"	}"
 	"	fact = fact/num + (ambient+UBOambientLight)*0.03;"
 	"	if (UBODynamicshadows == 0) fact += inSun;"         // Add pre computed light instead of using shadow map
@@ -147,6 +154,7 @@ static const GLchar *fragmentShaderSource[] = {
 	//"	fragColor = inSun * vec3(1,1,1);\n",
 	//"	fragColor = (sun*inSun+ambient)*vec4(1,1,1,1);\n",
 	//"	fragColor = vec3(1,1,1)*texture(lightTex, screen).r;"
+	//"	fragColor = vec3(rand2(screen), 0);" // Test the random
 	"}\n",
 };
 
@@ -168,7 +176,8 @@ void DeferredLighting::GetLocations(void) {
 	fDeadIndex = this->GetUniformLocation("Udead");
 	fAverageLuminanceIdx = this->GetUniformLocation("UwhitePoint");
 
-	// The followig uniforms only need to be initialized once
+	// The following uniforms only need to be initialized once
+	glUniform1i(this->GetUniformLocation(RANDOMVEC2POISSON_SAMPLERNAME), 6);
 	glUniform1i(this->GetUniformLocation("lightTex"), 5);
 	glUniform1i(this->GetUniformLocation("blendTex"), 3);
 	glUniform1i(this->GetUniformLocation("normalTex"), 2);

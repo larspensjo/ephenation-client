@@ -15,6 +15,10 @@
 // along with Ephenation.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+//
+// Provide data and functionality common to shaders.
+//
+
 #pragma once
 
 #include <GL/glew.h>
@@ -62,3 +66,16 @@ extern UniformBuffer gUniformBuffer;
 	"    float UBOexposure;"\
 	"    float UBOambientLight;"\
 	"};\n"
+
+// Return a vec2 of random numbers from -1 to +1.
+// The function can be called repeatedly with new numbers every time.
+// The 1D sampler has to be setup for this to work.
+#define RANDOMVEC2POISSON_SAMPLERNAME "Upoissondisk"
+#define RANDOMVEC2POISSON\
+	"float seedpoisson;"\
+	"uniform sampler1D Upoissondisk;"\
+	"vec2 rand2(vec2 n)"\
+	"{"\
+	"	seedpoisson = fract(seedpoisson + sin(dot(n.xy, vec2(12.9898, 78.233)))* 43758.5453);"\
+	"	return 2.0*texture(Upoissondisk, seedpoisson).rg-1.0;"\
+	"}"

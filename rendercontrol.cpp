@@ -332,6 +332,7 @@ void RenderControl::drawDynamicShadows() {
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, fPositionTexture);
 		glActiveTexture(GL_TEXTURE0); // Need to restore it or everything will break.
+		glBindTexture(GL_TEXTURE_1D, GameTexture::PoissonDisk);
 		glDisable(GL_DEPTH_TEST);
 		glDisable(GL_CULL_FACE);
 		fAddDynamicShadow->Draw(fShadowRender->GetProViewMatrix());
@@ -345,6 +346,8 @@ void RenderControl::drawDeferredLighting(bool underWater, float whitepoint) {
 	static TimeMeasure tm("Deferred");
 	tm.Start();
 	// Prepare the input images needed
+	glActiveTexture(GL_TEXTURE6);
+	glBindTexture(GL_TEXTURE_1D, GameTexture::PoissonDisk);
 	glActiveTexture(GL_TEXTURE5);
 	glBindTexture(GL_TEXTURE_2D, fLightsTexture);
 	glActiveTexture(GL_TEXTURE3);
@@ -579,27 +582,23 @@ void RenderControl::drawMap(int mapWidth) {
 	map->Draw(0.6f);
 }
 
-glm::vec2 PoissonDisk[] = {
-	glm::vec2(0.0f,0.0f),
-};
-
 float RenderControl::ComputeAverageLuminance(void) {
-	const int NUM = NELEM(PoissonDisk);
+	const int NUM = NELEM(gPoissonDisk);
 	float lightSamples[NUM];
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, fboName);
 	glReadBuffer(GL_COLOR_ATTACHMENT4); // The light map
-	for (unsigned i=0; i<NELEM(PoissonDisk); i++) {
-		GLint x = fWidth * (1.0f + PoissonDisk[i].x) / 2.0f;
-		GLint y = fHeight * (1.0f + PoissonDisk[i].y) / 2.0f;
+	for (unsigned i=0; i<NELEM(gPoissonDisk); i++) {
+		GLint x = fWidth * (1.0f + gPoissonDisk[i].x) / 2.0f;
+		GLint y = fHeight * (1.0f + gPoissonDisk[i].y) / 2.0f;
 		glReadPixels(x, y, 1, 1, GL_RED, GL_FLOAT, &lightSamples[i]);
 	}
 
 	glReadBuffer(GL_COLOR_ATTACHMENT0); // The diffuse map
 	float sum = 0.0f;
 	float weight = 0.0f;
-	for (unsigned i=0; i<NELEM(PoissonDisk); i++) {
-		GLint x = fWidth * (1.0f + PoissonDisk[i].x) / 2.0f;
-		GLint y = fHeight * (1.0f + PoissonDisk[i].y) / 2.0f;
+	for (unsigned i=0; i<NELEM(gPoissonDisk); i++) {
+		GLint x = fWidth * (1.0f + gPoissonDisk[i].x) / 2.0f;
+		GLint y = fHeight * (1.0f + gPoissonDisk[i].y) / 2.0f;
 		glm::vec3 diffuse;
 		glReadPixels(x, y, 1, 1, GL_RGB, GL_FLOAT, &diffuse);
 		float luminance = 0.2126f*diffuse.r + 0.7152f*diffuse.g + 0.0722*diffuse.b;
