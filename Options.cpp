@@ -252,24 +252,29 @@ void Options::UpdatePerformance(int perf) {
 
 // Maximum number of modes that we want to list
 #define MAX_NUM_MODES 40
+static GLFWvidmode sgViewModes[MAX_NUM_MODES];
 
 void Options::ListGraphicModes(OptionsDialog *diag) const {
 	diag->fFullScreenMode->value(this->fFullScreen);
 	Fl_Choice *choice = diag->fGraphicMode;
 	choice->clear();
-	GLFWvidmode modes[MAX_NUM_MODES];
-	int modecount, i, currentMode = -1;
+	int modecount; // Total numb er of modes found
+	int currentMode = -1; // The mode that currently match the window size
+	int modeIndex = 0; // Counter for number of modes that will be displayed to toe user.
 
-	// List available video modes
-	modecount = glfwGetVideoModes( modes, MAX_NUM_MODES );
-	for( i = 0; i < modecount; i ++ ) {
-		stringstream ss;
-		int bits = modes[i].RedBits + modes[i].GreenBits + modes[i].BlueBits;
-		ss << i << ": " << modes[i].Width << "x" << modes[i].Height << " " << bits << " bits";
-		// Only allow 24 bit modes as I don't know how to handle 16 bit modes.
-		choice->add(ss.str().c_str(), 0, 0, 0, bits == 16 ? FL_MENU_INACTIVE : 0);
-		if (modes[i].Width == this->fWindowWidth && modes[i].Height == this->fWindowHeight && bits == 24)
-			currentMode = i;
+	// List available video modes. Only allow those that are good for Ephenation.
+	modecount = glfwGetVideoModes( sgViewModes, MAX_NUM_MODES );
+	for( int i = 0; i < modecount; i ++ ) {
+		// Only allow 24 bit modes and a window no smaller than 800x600.
+		int bits = sgViewModes[i].RedBits + sgViewModes[i].GreenBits + sgViewModes[i].BlueBits;
+		if (bits == 24 && sgViewModes[i].Width >= 800 && sgViewModes[i].Height >= 600) {
+			stringstream ss;
+			ss << i << ": " << sgViewModes[i].Width << "x" << sgViewModes[i].Height << " " << bits << " bits";
+			choice->add(ss.str().c_str(), 0, 0, (void *)(uintptr_t)i, 0);
+			if (sgViewModes[i].Width == this->fWindowWidth && sgViewModes[i].Height == this->fWindowHeight && bits == 24)
+				currentMode = modeIndex;
+			modeIndex++;
+		}
 	}
 	choice->value(currentMode);
 }
@@ -290,12 +295,11 @@ void Options::UpdateSettings(OptionsDialog *diag) {
 
 	// Find what mode it is that is selected, and use the settings from that mode. The only thing that is known
 	// is the mode number.
-	int graphicMode = diag->fGraphicMode->value();
-	GLFWvidmode modes[MAX_NUM_MODES];
-	int modecount = glfwGetVideoModes( modes, MAX_NUM_MODES );
-	if (graphicMode < modecount && graphicMode >= 0) {
+	const Fl_Menu_Item *mi = diag->fGraphicMode->mvalue();
+	if (mi != 0) {
 		// There is a valid graphic mode
-		this->fWindowWidth = modes[graphicMode].Width;
-		this->fWindowHeight = modes[graphicMode].Height;
+		int graphicMode = (uintptr_t)mi->user_data();
+		this->fWindowWidth = sgViewModes[graphicMode].Width;
+		this->fWindowHeight = sgViewModes[graphicMode].Height;
 	}
 }
