@@ -90,7 +90,7 @@ static const GLchar *fragmentShaderSource[] = {
 	"   vec3 cameraToWorld = UBOCamera.xyz-worldPos.xyz;\n",
 	"   vec3 eyeDir = normalize(cameraToWorld);\n",
 	"   vec3 vHalfVector = normalize(sundir.xyz+eyeDir);\n",
-	"   float inSun = worldPos.a;\n", // Is 1 if this position is reached by the sun
+	"   float inSun = worldPos.a;\n", // Is greater than 0 if this position is reached by the sun
 	"	float fact = texture(lightTex, screen).r;"
 	"	float num = 1;"
 	// Do some multi sampling to blur the lighting. It is kind of a box filter, but with enhanced weights

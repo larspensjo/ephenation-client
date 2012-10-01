@@ -67,8 +67,9 @@ public:
 
 	// Compute all graphical objects in a chunk. The result has to be polled from GetRecomputedObjects.
 	void AddTaskComputeChunk(chunk *);
-	// Get all new recomputed objects
-	void GetRecomputedObjects(void);
+
+	// Get all new finished objects
+	void Poll(void);
 
 	// Load new chunk data into a chunk, but do not recompute it. It will replace the previous one
 	void AddTaskNewChunk(unique_ptr<ChunkBlocks>);
@@ -85,14 +86,15 @@ private:
 	void Task(void);
 
 	// ==============================================================================================================
-	// The following variables must always be guarded by mutex 'fMutex' when they are updated. That is because they will be used by
-	// both the main process as well as the local Task() process.
+	// The following variables must always be guarded by 'fMutex' when they are updated. That is because they will be used by
+	// the main thread as well as the local Task() threads.
 	//
 	bool fTerminate;               // The processes has been requested to terminate
-	std::deque<chunk*> fChunkFifo; // The list of chunk recomputation jobs
-	std::deque<shared_ptr<ChunkBlocks>> fNewChunks; // List of "new chunk" jobs.
+	std::deque<chunk*> fComputeObjectsInput; // The list of chunk recomputation jobs
+	std::deque<shared_ptr<ChunkBlocks>> fNewChunksInput; // List of "new chunk" jobs.
 	// This is where the computed objects are saved. Use a set, to make sure every element is only ever once in it.
-	std::set<shared_ptr<ChunkObject>> fComputedObjects;
+	std::set<shared_ptr<ChunkObject>> fComputedObjectsOutput;
+	std::set<shared_ptr<ChunkBlocks>> fNewChunksOutput;
 	//
 	// End of list of mutex protected variables.
 	// ==============================================================================================================

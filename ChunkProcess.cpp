@@ -26,7 +26,6 @@
 #include "player.h"
 #include "render.h"
 
-
 ChunkProcess gChunkProcess;
 
 ChunkProcess::ChunkProcess() {
@@ -45,6 +44,7 @@ void ChunkProcess::Init(int numThreads) {
 }
 
 // Get a chunk from the queue, but chose the one that is nearest to the player. This function is thread safe.
+// Sorting can not help, as the player moves around so that the definition of "nearest" change by time.
 static chunk *getNextChunk(std::deque<chunk*> &queue) {
 	ChunkCoord cc;
 	double nearestDist2 = 1e10; // Anything very big
@@ -140,9 +140,9 @@ void ChunkProcess::Task(void) {
 			break;
 		}
 
-		if (!fChunkFifo.empty()) {
+		if (!fComputeObjectsInput.empty()) {
 			// Take out the chunk from the fifo
-			chunk *ch = getNextChunk(fChunkFifo);
+			chunk *ch = getNextChunk(fComputeObjectsInput);
 			if (ch == 0)
 				continue;
 			if (ch->fScheduledForLoading) {
@@ -150,24 +150,24 @@ void ChunkProcess::Task(void) {
 				continue; // Ignore a recomputation, as the chunk will be loaded by new data anyway, later followed by a new computation
 			}
 			fMutex.unlock(); // Unlock the mutex while doing some heavy work
-			// printf("ChunkProcess phase 1, size %d, chunk %d,%d,%d\n", fChunkFifo.size()+1, ch->cc.x, ch->cc.y, ch->cc.z);
+			// printf("ChunkProcess phase 1, size %d, chunk %d,%d,%d\n", fComputeObjectsInput.size()+1, ch->cc.x, ch->cc.y, ch->cc.z);
 			auto co = ChunkObject::Make(ch, false, 0, 0, 0);
 			co->FindSpecialObjects(ch); // This will find light sources, and should be done before FindTriangles().
 			fMutex.lock();
 			ASSERT(ch->fScheduledForComputation);
 			co->fChunk = ch;
-			fComputedObjects.insert(std::move(co)); // Add it to the list of recomputed chunks
+			fComputedObjectsOutput.insert(std::move(co)); // Add it to the list of recomputed chunks
 			waitForCondition = false; // Try another iteration
 		}
 
-		if (!fNewChunks.empty()) {
-			auto nc = getNextChunkBlock(fNewChunks);
+		if (!fNewChunksInput.empty()) {
+			auto nc = getNextChunkBlock(fNewChunksInput);
 			chunk *pc = nc->fChunk;
 			// It may be that this chunk was also scheduled for recomputation. If so, the Uncompress() below that calls SetDirty() will not
 			// schedule a new recomputation again.
 			ASSERT(pc->fScheduledForLoading);
 			fMutex.unlock(); // Unlock the mutex while doing some work
-			// printf("ChunkProcess phase 2, size %d\n", fNewChunks.size()+1);
+			// printf("ChunkProcess phase 2, size %d\n", fNewChunksInput.size()+1);
 			nc->Uncompress();
 
 			// Save chunk in cache
@@ -181,10 +181,7 @@ void ChunkProcess::Task(void) {
 			ChunkCache::fgChunkCache.SaveChunkInCache(&chunkdata); // TODO: Use a ChunkProcess::ChunkBlocks as argument instead
 			fMutex.lock();
 			ASSERT(nc->fChunk == pc);
-			pc->fChunkBlocks = nc;
-			pc->fScheduledForLoading = false;
-			pc->SetDirty(true); // Need to be done after clearing loading flag
-			pc->UpdateNeighborChunks(); // This will now use the new ChunkBlocks
+			fNewChunksOutput.insert(nc); // Add it to the list of loaded chunks
 			waitForCondition = false; // Try another iteration
 		}
 	}
@@ -204,7 +201,6 @@ void ChunkProcess::RequestTerminate(void) {
 	}
 }
 
-
 void ChunkProcess::AddTaskComputeChunk(chunk *ch) {
 	// printf("ChunkProcess::AddTaskComputeChunk chunk %d,%d,%d\n", ch->cc.x, ch->cc.y, ch->cc.z);
 	// Try to lock the mutex. If it fails, try another time instead. We don't want to delay the main thread.
@@ -212,7 +208,7 @@ void ChunkProcess::AddTaskComputeChunk(chunk *ch) {
 		return;
 	// If the chunk is already being recomputed, wait until another time
 	if (!ch->fScheduledForLoading && !ch->fScheduledForComputation) {
-		this->fChunkFifo.push_back(ch);
+		this->fComputeObjectsInput.push_back(ch);
 		ch->fScheduledForComputation = true;
 		ch->SetDirty(false);
 	}
@@ -220,13 +216,14 @@ void ChunkProcess::AddTaskComputeChunk(chunk *ch) {
 	fMutex.unlock();				// Unlock the mutex; this will wakeup the child thread
 }
 
-// This is polled from the main process, as we can't replace Chunk object pointers asynchronously. That way,
+// This is polled from the main thread, as we can't replace Chunk object pointers asynchronously. That way,
 // the actual update with the result will be done only from the main process.
-void ChunkProcess::GetRecomputedObjects(void) {
+void ChunkProcess::Poll(void) {
 	// Lock the mutex, to get access to the message variable
 	if (!fMutex.try_lock())
 		return; // Failed, skip it for this time.
-	for (auto it=fComputedObjects.begin() ; it != fComputedObjects.end(); it++ ) {
+
+	for (auto it=fComputedObjectsOutput.begin() ; it != fComputedObjectsOutput.end(); it++ ) {
 		auto co = *it;
 		chunk *cp = co->fChunk;
 		co->fChunk = 0;
@@ -234,9 +231,21 @@ void ChunkProcess::GetRecomputedObjects(void) {
 		cp->fChunkObject = co;
 		cp->ReleaseOpenGLBuffers();
 		cp->fScheduledForComputation = false;
-		// if (gVerbose) printf("ChunkProcess::GetRecomputedObjects %d,%d,%d\n", cp->cc.x, cp->cc.y, cp->cc.z);
+		// if (gVerbose) printf("ChunkProcess::Poll %d,%d,%d\n", cp->cc.x, cp->cc.y, cp->cc.z);
 	}
-	fComputedObjects.clear();
+	fComputedObjectsOutput.clear();
+
+	for (auto it=fNewChunksOutput.begin() ; it != fNewChunksOutput.end(); it++ ) {
+		auto cb = *it;
+		chunk *cp = cb->fChunk;
+		cp->fChunkBlocks = cb;
+		cp->fScheduledForLoading = false;
+		cp->SetDirty(true); // Need to be done after clearing loading flag
+		cp->UpdateNeighborChunks(); // This will now use the new ChunkBlocks
+		// if (gVerbose) printf("ChunkProcess::Poll %d,%d,%d\n", cp->cc.x, cp->cc.y, cp->cc.z);
+	}
+	fNewChunksOutput.clear();
+
 	fMutex.unlock();				// Unlock the mutex; this will wakeup the child thread
 }
 
@@ -247,7 +256,7 @@ void ChunkProcess::AddTaskNewChunk(unique_ptr<ChunkBlocks> cb) {
 	// if (gVerbose) printf("ChunkProcess::AddTaskNewChunk chunk %d,%d,%d\n", cp->cc.x, cp->cc.y, cp->cc.z);
 	if (!cp->fScheduledForLoading) {
 		ASSERT(cb->fCompressedChunk != nullptr);       // There must be something to unpack.
-		this->fNewChunks.push_back(std::move(cb));
+		this->fNewChunksInput.push_back(std::move(cb));
 		cp->fScheduledForLoading = true;
 		fCondLock.notify_one();			// Signal the child thread that there is something
 	}

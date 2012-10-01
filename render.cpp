@@ -264,7 +264,7 @@ void DrawChunkBorders(StageOneShader *shader) {
 }
 
 void DrawLandscape(StageOneShader *shader, DL_Type dlType) {
-	gChunkProcess.GetRecomputedObjects(); // Update all results
+	gChunkProcess.Poll(); // Update all results
 	// printf("DrawLandscape FindAllNearChunks: %f\n", delta);
 	if (!gPlayer.fKnownPosition)
 		return;

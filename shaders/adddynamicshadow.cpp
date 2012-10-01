@@ -117,7 +117,7 @@ static const GLchar *fragmentShaderSource[] = {
 	// "   if (normal.xyz == vec3(0,0,0)) skyPixel = true;\n", // No normal, which means sky. Not needed because of stencil mask
 	// Temporary helper data
 	"   float sun = max(dot(normal.xyz,sundir),0);\n",
-	"   float inSun = worldPos.a;\n", // Is 1 if this position is reached by the sun
+	"   float inSun = worldPos.a;\n", // Is greater than 0 if this position is reached by the sun
 	"	if (inSun > 0 && UBODynamicshadows == 1) inSun = ShadowMap(worldPos.xyz, normal.xyz);\n" // Override with dynamic shadows
 	"	if (inSun > 0 && UBODynamicshadows == 2) inSun = ShadowMapLinear(worldPos.xyz, normal.xyz);\n" // Override with dynamic shadows
 	// As the last step, combine all the diffuse color with the lighting and blending effects
