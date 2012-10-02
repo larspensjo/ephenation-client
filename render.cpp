@@ -29,6 +29,7 @@
 #include <string.h>
 #include <GL/glew.h>
 #include <GL/glfw.h>
+#include <set>
 
 #include "glm/glm.hpp"
 #include "primitives.h"
@@ -49,6 +50,37 @@
 #include "Options.h"
 #include "SuperChunkManager.h"
 #include "SoundControl.h"
+
+#define NELEM(x) (sizeof(x)/sizeof(x[0]))
+
+// This is the list of chunks to be used for computing dynamic shadows.
+// A set is used, as there shall not be duplicate entries.
+static std::set<chunk *> sShadowChunks;
+
+// Add the specified chunk, as well as all other chunks that are allowed to make
+// shadows. The algorithm knows the direction of the sun, and finds all chunks in
+// that direction. But only to a limited height.
+static void AddChunkToShadowList(chunk *cp) {
+	ChunkCoord cc = cp->cc;
+	// For every level, 4 chunks have to be considered.
+	const ChunkCoord delta[] = {
+		{ 0, 0, 0},
+		{ -1, 0, 0 },
+		{ -1, -1, 0},
+		{ 0, -1, 0},
+	};
+	for (int h=0; h < 3; h++) {
+		for (size_t i=0; i<NELEM(delta); i++) {
+			ChunkCoord cc2 = cc;
+			// FOr every level, move one step south and west (x and y).
+			cc2.x += delta[i].x * h;
+			cc2.y += delta[i].y * h;
+			cc2.z += h;
+			chunk *cp2 = ChunkFind(&cc2, true);
+			sShadowChunks.insert(cp2);
+		}
+	}
+}
 
 int gDrawnQuads;
 int gNumDraw;
@@ -264,10 +296,11 @@ void DrawChunkBorders(StageOneShader *shader) {
 }
 
 void DrawLandscape(StageOneShader *shader, DL_Type dlType) {
-	gChunkProcess.Poll(); // Update all results
-	// printf("DrawLandscape FindAllNearChunks: %f\n", delta);
 	if (!gPlayer.fKnownPosition)
 		return;
+	if (dlType == DL_NoTransparent) {
+		sShadowChunks.clear();
+	}
 	FindAllNearChunks(sChunkDistances);
 	ChunkCoord player_cc;
 	gPlayer.GetChunkCoord(&player_cc);
@@ -368,6 +401,9 @@ void DrawLandscape(StageOneShader *shader, DL_Type dlType) {
 			cp->fChunkBlocks->TestJellyBlockTimeout(false);
 			shader->Model(modelMatrix);
 		}
+
+		if (dlType == DL_NoTransparent)
+			AddChunkToShadowList(cp);
 
 		// Draw the chunk
 		cp->Draw(shader, pickShader, dlType);
@@ -481,6 +517,33 @@ void DrawLandscapeTopDown(StageOneShader *shader, int width, int height, bool fo
 				cp->Draw(shader, 0, dlType);
 				cp->DrawObjects(shader, dx, dy, dz, true);
 			}
+}
+
+void DrawLandscapeForShadows(StageOneShader *shader) {
+	if (!gPlayer.fKnownPosition)
+		return;
+	ChunkCoord player_cc;
+	gPlayer.GetChunkCoord(&player_cc);
+
+	// Draw all visible chunks. Chunks that are not loaded will trigger a reload from the server. The top chunks
+	// should be loaded first, as they affect the lighting on the chunks below.
+	for (auto it=sShadowChunks.begin() ; it != sShadowChunks.end(); it++ ) {
+		chunk *cp = *it;
+
+		if (!cp->IsDirty() && cp->fChunkObject && cp->fChunkObject->Empty()) {
+			// This chunk exists, is updated, but contains nothing.
+			continue;
+		}
+
+		int dx = cp->cc.x - player_cc.x;
+		int dy = cp->cc.y - player_cc.y;
+		int dz = cp->cc.z - player_cc.z;
+		glm::mat4 modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(dx*CHUNK_SIZE, dz*CHUNK_SIZE, -dy*CHUNK_SIZE));
+
+		shader->Model(modelMatrix);
+		cp->Draw(shader, 0, DL_NoTransparent);
+		cp->DrawObjects(shader, dx, dy, dz, true);
+	}
 }
 
 Shadows gShadows;

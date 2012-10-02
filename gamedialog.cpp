@@ -65,6 +65,7 @@
 #include "rendercontrol.h"
 #include "timemeasure.h"
 #include "worsttime.h"
+#include "ChunkProcess.h"
 
 gameDialog *gameDialog::sfCurrentGameDialog = 0;
 
@@ -1134,6 +1135,7 @@ void gameDialog::Update() {
 	}
 
 	this->UpdateEffect();
+	gChunkProcess.Poll(); // Update all results
 }
 
 void gameDialog::SetMessage(const char *str) {

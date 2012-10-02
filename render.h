@@ -43,6 +43,9 @@ void DrawLandscape(StageOneShader *shader, DL_Type);
 // If 'forceload' is true, then missing chunks will be requested to be loaded.
 void DrawLandscapeTopDown(StageOneShader *shader, int width, int height, bool forceload = true, DL_Type dlType = DL_NoTransparent);
 
+// Special version of the chunk drawing that draws the chunks that may cast a shadow.
+void DrawLandscapeForShadows(StageOneShader *shader);
+
 void ComputeRelativeChunksSortedDistances();
 
 extern float _angleHor;

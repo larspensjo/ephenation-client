@@ -104,7 +104,7 @@ void ShadowRender::Render(int width, int height) {
 	glDepthFunc(GL_LESS);
 	glDepthMask(GL_TRUE);
 
-	DrawLandscapeTopDown(fShader.get(), maxRenderDistance*2 < width ? maxRenderDistance*2 : width, height);
+	DrawLandscapeForShadows(fShader.get());
 
 	if (Options::fgOptions.fDynamicShadows) {
 		// Don't render dynamic objects in static shadow mode
