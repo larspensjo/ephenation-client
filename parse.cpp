@@ -213,33 +213,6 @@ void Parse(const unsigned char *b, int n) {
 	printf("\n");
 #endif
 	switch (b[0]) {
-	case CMD_RESP_CHUNK_CS: {
-		// This command is coded very tight, with only the LSB of the chunk coordinate. Start from the current user coordinate, and compute the
-		// full chunk coordinate.
-		gPlayer.GetChunkCoord(&cc);
-		ChunkCoord *ret;
-		chunk *pc = ChunkFind(ret = UpdateLSB(&cc, b[1], b[2], b[3]), false);
-		// printf("CMD_RESP_CHUNK_CS: delta (%d,%d,%d), user (%d,%d,%d), new (%d,%d,%d)\n", b[1], b[2], b[3], cc.x, cc.y, cc.z, ret->x, ret->y, ret->z);
-		if (pc == 0)
-			break;
-
-		auto cb = pc->fChunkBlocks;
-		unsigned int oldCheckSum = cb->fChecksum;
-		cb->fChecksum = ParseUint32(b+4);
-		if (oldCheckSum != cb->fChecksum) {
-			// printf("CMD_RESP_CHUNK_CS: Request chunk (%d,%d,%d)\n", cc.x, cc.y, cc.z);
-			unsigned char b[15];
-			b[0] = sizeof b;
-			b[1] = 0;
-			b[2] = CMD_READ_CHUNK;
-			EncodeUint32(b+3, (unsigned int)pc->cc.x);
-			EncodeUint32(b+7, (unsigned int)pc->cc.y);
-			EncodeUint32(b+11, (unsigned int)pc->cc.z);
-			SendMsg(b, sizeof b);
-			// printf("Parse CMD_RESP_CHUNK_CS new checksum for (%d,%d,%d): %ud\n", pc->cc.x, pc->cc.y, pc->cc.z, pc->fCheckSum);
-		}
-		break;
-	}
 	case CMD_PLAYER_STATS: { // This message is generated on demand
 		float hp = b[1] / 255.0f;
 		unsigned long prevLevel = gPlayer.fLevel;

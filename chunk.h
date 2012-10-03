@@ -89,16 +89,24 @@
 #define LAMP1_DIST 8 // Lamp 1 will go linearly from light to dark in this number of blocks.
 #define LAMP2_DIST 14 // Lamp 2 will go linearly from light to dark in this number of blocks.
 
+// This is a coordinate in the Ephenation system, not in the OpenGL system. The chunk
+// coordinates are numbered 0, 1, 2, etc.
+// This means that real coordinate is chunk coordinate * CHUNK_SIZE.
 struct ChunkCoord {
 	int x, y, z;
+
+	// This operator is used for sorting. Most significant criteria is 'z', to ensure the
+	// chunks are sorted with high 'z' first.
+	// TODO: The current sorting criteria is optimized order for drawing chunks for shadows.
+	//       But the shadow drawing should use it's own sorting criteria.
 	bool operator<(const ChunkCoord &other) const {
-		if (x < other.x) return true;
-		else if (x > other.x) return false;
+		if (z > other.z) return true;
+		else if (z < other.z) return false;
 
 		if (y < other.y) return true;
 		else if (y > other.y) return false;
 
-		if (z < other.z) return true;
+		if (x < other.x) return true;
 		return false;
 	}
 };

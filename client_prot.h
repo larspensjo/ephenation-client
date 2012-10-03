@@ -45,8 +45,8 @@
 #define CMD_REQ_PASSWORD      24 // Request the password from the client, encrypt it with RC4 using argument.
 #define CMD_RESP_PASSWORD     25 // An encrypted password from the client to the server
 #define CMD_PROT_VERSION	  26 // The version of the communication protocol
-#define CMD_REQ_CHUNK_CS      27 // Request the checksum for a chunk
-#define CMD_RESP_CHUNK_CS     28 // The reported checksum
+// #define CMD_REQ_CHUNK_CS      27 // Request the checksum for a chunk
+// #define CMD_RESP_CHUNK_CS     28 // The reported checksum
 #define CMD_VRFY_SUPERCHUNCK_CS 29 // Request server to verify one or more super chunk checksums. If wrong, an update will be sent.
 #define CMD_SUPERCHUNK_ANSWER 29 // (Same number) The full requested super chunk sent back to the client
 #define CMD_PLAYER_STATS      30 // Information about the player that doesn't change very often.

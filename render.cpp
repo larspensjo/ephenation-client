@@ -55,7 +55,7 @@
 
 // This is the list of chunks to be used for computing dynamic shadows.
 // A set is used, as there shall not be duplicate entries.
-static std::set<chunk *> sShadowChunks;
+static std::set<ChunkCoord> sShadowChunks;
 
 // Add the specified chunk, as well as all other chunks that are allowed to make
 // shadows. The algorithm knows the direction of the sun, and finds all chunks in
@@ -76,8 +76,7 @@ static void AddChunkToShadowList(chunk *cp) {
 			cc2.x += delta[i].x * h;
 			cc2.y += delta[i].y * h;
 			cc2.z += h;
-			chunk *cp2 = ChunkFind(&cc2, true);
-			sShadowChunks.insert(cp2);
+			sShadowChunks.insert(cc2);
 		}
 	}
 }
@@ -528,7 +527,7 @@ void DrawLandscapeForShadows(StageOneShader *shader) {
 	// Draw all visible chunks. Chunks that are not loaded will trigger a reload from the server. The top chunks
 	// should be loaded first, as they affect the lighting on the chunks below.
 	for (auto it=sShadowChunks.begin() ; it != sShadowChunks.end(); it++ ) {
-		chunk *cp = *it;
+		chunk *cp = ChunkFind(&(*it), true);
 
 		if (!cp->IsDirty() && cp->fChunkObject && cp->fChunkObject->Empty()) {
 			// This chunk exists, is updated, but contains nothing.
