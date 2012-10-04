@@ -169,16 +169,18 @@ chunk* ChunkFind(const ChunkCoord *cc, bool force) {
 	if (it != sWorldCache.end())
 		return it->second;
 
-	if (!force)
+	if (!force) {
+		// It wasn't found, and it will be ignored if it isn't available
 		return 0;
+	}
 
 	// Didn't find the chunk, create one.
 	// printf("Created a new chunk at (%d,%d,%d)\n", cc->x, cc->y, cc->z);
 	chunk *pc = new(chunk);
+	// Chunk coordinate has to be defined before the chunk is added to the sWorldCache map.
 	pc->cc.x = cc->x; pc->cc.y = cc->y; pc->cc.z = cc->z;
 
 	// Check for chunk in cache
-	bool foundCachedChunk = false;
 	auto cb = ChunkCache::fgChunkCache.LoadChunkFromCache(cc);
 	if (cb != nullptr) {
 		// printf("ChunkFind: Load chunk from cache (%d,%d,%d)\n", cc->x, cc->y, cc->z);
@@ -188,13 +190,8 @@ chunk* ChunkFind(const ChunkCoord *cc, bool force) {
 		pc->fChunkBlocks = cb;
 
 		sWorldCache[pc->cc] = pc;
-		pc->UpdateNeighborChunks(); // This will now use the new ChunkBlocks
-
-
-		foundCachedChunk = true;
-	}
-
-	if (!foundCachedChunk) {
+		pc->UpdateNeighborChunks(); // This will now use the new ChunkBlocks. 'cp' must be in sWorldCache map before this call.
+	} else {
 		// A dummy ChunkBlocks is needed. That way, every chunk always havea a ChunkBlocks.
 		auto nc = std::make_shared<ChunkBlocks>();
 		// Even though the chunk coordinates are not unsigned, they can be parsed as such.
@@ -211,19 +208,16 @@ chunk* ChunkFind(const ChunkCoord *cc, bool force) {
 			nc->fChunkData[i] = BT_Air; // Not perfect, but something to start with
 
 		sWorldCache[pc->cc] = pc;
-
 		// Initiate the action to get the chunk from the server. It will arrive a little later on.
-		{
-			//printf("ChunkFind: Request chunk (%d,%d,%d)\n", cc->x, cc->y, cc->z);
-			unsigned char b[15];
-			b[0] = sizeof b;
-			b[1] = 0;
-			b[2] = CMD_READ_CHUNK;
-			EncodeUint32(b+3, (unsigned int)cc->x);
-			EncodeUint32(b+7, (unsigned int)cc->y);
-			EncodeUint32(b+11, (unsigned int)cc->z);
-			SendMsg(b, sizeof b);
-		}
+		//printf("ChunkFind: Request chunk (%d,%d,%d)\n", cc->x, cc->y, cc->z);
+		unsigned char b[15];
+		b[0] = sizeof b;
+		b[1] = 0;
+		b[2] = CMD_READ_CHUNK;
+		EncodeUint32(b+3, (unsigned int)cc->x);
+		EncodeUint32(b+7, (unsigned int)cc->y);
+		EncodeUint32(b+11, (unsigned int)cc->z);
+		SendMsg(b, sizeof b);
 	}
 
 	return pc;

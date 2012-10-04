@@ -37,6 +37,7 @@ Cube::~Cube() {
 }
 
 // The following logic is copied from Cylinder, which explains some algorithms.
+// TODO: Should be redesigned using a predefined table.
 void Cube::Init(ChunkShader *shader) {
 	const int numSegments = 4;
 	float deltaAngle = 2*PI/numSegments;

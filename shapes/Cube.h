@@ -23,7 +23,7 @@
 
 class ChunkShader;
 
-// Class for creating a cube. The result is a list of triangles.
+// Class for drawing a cube. The result is a list of triangles.
 class Cube {
 public:
 	Cube();

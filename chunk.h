@@ -193,5 +193,6 @@ private:
 };
 
 // Find an old chunk. If it doesn't exist yet and force is true, data will be requested from
-// the server. The content will be empty for a little while.
+// the server. The content will be empty for a little while. If 'force' is false, a null pointer
+// will be returned if the chunk isn't found.
 extern chunk* ChunkFind(const ChunkCoord *coord, bool force);

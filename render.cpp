@@ -114,15 +114,11 @@ static std::vector<chunk*> sListOfNearChunks;
 // be up to NUMQUERIES*2 queries active at the same time.
 static GLuint sQueryId[NUMQUERIES*2];
 
-// At 80m viewing distance, there are 895 chunks. Using various filters, the actual chunks that can be seen are
-// much fewer. Save the filtered list, to speed up the drawing.
-static std::vector<int> listOfVisibleChunks;
-
 // This is the number of chunks that can be seen by the player at max viewing distance. It is usually 895 for 80m
 // distance, but a more safe way is to actually test and see. It should probably be calculated theoretically.
 static int sMaxVolume = 0;
 
-// Create a sorted list of chunks.
+// Create a sorted list of chunks. This is only done once.
 void ComputeRelativeChunksSortedDistances() {
 	int chunkHor = (int)(MAXRENDERDISTANCE / 32 + 1); // Maximum number of chunks radius
 	// Lazy way to compute the possible volume
@@ -147,11 +143,10 @@ void ComputeRelativeChunksSortedDistances() {
 	qsort(&sChunkDistances[0], sMaxVolume, sizeof(ChunkDist), compare); // This will sort on distance
 	glGenQueries(NUMQUERIES*2, sQueryId);
 	checkError("ComputeRelativeChunksSortedDistances");
-	listOfVisibleChunks.resize(sMaxVolume);
 	sListOfNearChunks.resize(sMaxVolume);
 }
 
-void FindAllNearChunks(const std::vector<ChunkDist> &chunkDistances) {
+static void FindAllNearChunks(const std::vector<ChunkDist> &chunkDistances) {
 	ChunkCoord player_cc;
 	if (!gPlayer.fKnownPosition)
 		return;
@@ -168,7 +163,8 @@ void FindAllNearChunks(const std::vector<ChunkDist> &chunkDistances) {
 		cc.x = player_cc.x + dx;
 		cc.y = player_cc.y + dy;
 		cc.z = player_cc.z + dz;
-		sListOfNearChunks[i] = ChunkFind(&cc, true);
+		// Don't force loading yet if it doesn't exist. That can wait until we know better what chunks are visible.
+		sListOfNearChunks[i] = ChunkFind(&cc, false);
 	}
 }
 
@@ -199,9 +195,9 @@ bool AllVerticesOutsideFrustum(const glm::vec3 *v, int numVertices, const glm::m
 	return false;
 }
 
+// Can the user see this chunk? Test if any of the 8 corners are inside the display (view frustum).
+// TODO: If the chunk is completely empty (only air), the following test could be skipped.
 static bool Outside(int dx, int dy, int dz, const glm::mat4 &modelMatrix) {
-	// Can the user see this chunk? Test if any of the 8 corners are inside the display.
-	// TODO: If the chunk is completely empty (only air), the following test could be skipped.
 	static const glm::vec3 v[] = {
 		// All 8 corners
 		glm::vec3( 0,			0,			0),
@@ -224,12 +220,11 @@ static bool Outside(int dx, int dy, int dz, const glm::mat4 &modelMatrix) {
 }
 
 // Investigate chunks in the specified interval, and test if they are visible.
-// This is done in a pipe line, which means enough cubes should be tested every time
+// This is done in a pipeline, which means enough cubes should be tested every time
 // to make sure the wait for the pipe line isn't too long.
 // Instead of drawing the complete chunk, a bounding box in the form of a cube is drawn.
 // This may lead to false positives, but probably not that many.
-static void QuerySetup(StageOneShader *shader, int from, int to) {
-	glDisable(GL_CULL_FACE);
+static void QuerySetup(StageOneShader *shader, int from, int to, int *listOfVisibleChunks) {
 	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
 	glDepthMask(GL_FALSE);
 	for (int i=from; i<to; i++) {
@@ -237,18 +232,21 @@ static void QuerySetup(StageOneShader *shader, int from, int to) {
 		int dx = sChunkDistances[ind].dx;
 		int dy = sChunkDistances[ind].dy;
 		int dz = sChunkDistances[ind].dz;
-		chunk *cp = sListOfNearChunks[ind];
-		shared_ptr<const ChunkObject> co = cp->fChunkObject;
 
 		char bxmin = -LAMP2_DIST, bymin = -LAMP2_DIST, bzmin = -LAMP2_DIST;
 		char bxmax = CHUNK_SIZE+LAMP2_DIST, bymax = CHUNK_SIZE+LAMP2_DIST, bzmax = CHUNK_SIZE+LAMP2_DIST;
-		if (!cp->IsDirty() && co && bxmin <= bxmax) {
-			// There are real boundaries available
-			bxmin = co->fBoundXMin; bxmax = co->fBoundXMax; bymin = co->fBoundYMin; bymax = co->fBoundYMax; bzmin = co->fBoundZMin; bzmax = co->fBoundZMax;
+		chunk *cp = sListOfNearChunks[ind];
+		if (cp && !cp->IsDirty()) {
+			shared_ptr<const ChunkObject> co = cp->fChunkObject;
+			if (co != nullptr) {
+				// There are real boundaries available
+				bxmin = co->fBoundXMin; bxmax = co->fBoundXMax; bymin = co->fBoundYMin; bymax = co->fBoundYMax; bzmin = co->fBoundZMin; bzmax = co->fBoundZMax;
+			}
 		}
+
 		glm::mat4 modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(dx*CHUNK_SIZE+16.0f-bxmin, dz*CHUNK_SIZE-bzmin, -dy*CHUNK_SIZE-16.0f+-bymin));
 		modelMatrix = glm::rotate(modelMatrix, 45.0f, glm::vec3(0.0f, 1.0f, 0.0f));
-		float scale = 32.0f * 1.414f; // Side was originally 1/sqrt(2) blocks, but height was 1.
+		const float scale = 32.0f * 1.414f; // Side was originally 1/sqrt(2) blocks, but height was 1.
 		float xFact = float(bxmax-bxmin)/CHUNK_SIZE;
 		float yFact = float(bymax-bymin)/CHUNK_SIZE;
 		float zFact = float(bzmax-bzmin)/CHUNK_SIZE;
@@ -256,15 +254,16 @@ static void QuerySetup(StageOneShader *shader, int from, int to) {
 		glBindTexture(GL_TEXTURE_2D, GameTexture::BlueChunkBorder); // Any texture will do
 		shader->Model(modelMatrix);
 		glBeginQuery(GL_SAMPLES_PASSED, sQueryId[i%(NUMQUERIES*2)]);
-		gLantern.Draw();
+		gLantern.Draw(); // TODO: This shape (gLantern) is rotated, a more proper cube should be used, avoiding complicated matrices.
 		glEndQuery(GL_SAMPLES_PASSED);
 	}
 	glDepthMask(GL_TRUE);
 	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
-	glEnable(GL_CULL_FACE);
 }
 
-void DrawChunkBorders(StageOneShader *shader) {
+// In construction mode, the borders of the near chunks are drawn to make it easier to see
+// where the chunk ends.
+static void DrawChunkBorders(StageOneShader *shader) {
 	ChunkCoord player_cc;
 	gPlayer.GetChunkCoord(&player_cc);
 	for (int dz=-1; dz<2; dz++) for (int dx=-1; dx<2; dx++) for (int dy=-1; dy<2; dy++) {
@@ -294,12 +293,16 @@ void DrawChunkBorders(StageOneShader *shader) {
 			}
 }
 
+// TODO: This function should be split into a separate function for picking mode.
 void DrawLandscape(StageOneShader *shader, DL_Type dlType) {
 	if (!gPlayer.fKnownPosition)
 		return;
 	if (dlType == DL_NoTransparent) {
+		// The lits of chunks used for shadowing is computed below, when in non-transparent mode.
+		// Start the list empty.
 		sShadowChunks.clear();
 	}
+
 	FindAllNearChunks(sChunkDistances);
 	ChunkCoord player_cc;
 	gPlayer.GetChunkCoord(&player_cc);
@@ -314,6 +317,10 @@ void DrawLandscape(StageOneShader *shader, DL_Type dlType) {
 	if (dlType == DL_Picking) {
 		pickShader = ChunkShaderPicking::Make();
 	}
+
+	// At 80m viewing distance, there are 895 chunks. Using various filters, the actual chunks that can be seen are
+	// much fewer. Save the filtered list, to speed up the drawing.
+	int listOfVisibleChunks[sMaxVolume];
 	int num = 0;
 	int src, dst;
 	// Create list of visible chunks. This check is faster than using queries, so it is a good filter to
@@ -322,13 +329,15 @@ void DrawLandscape(StageOneShader *shader, DL_Type dlType) {
 		if (src > sMaxVolume)
 			break; // Just a safety precaution, should never happen
 		chunk *cp = sListOfNearChunks[src];
-		if (cp == 0 || cp->fScheduledForLoading)
-			continue; // Chunk doesn't exist yet
-		// Do not ignore the chunk just because it doesn't have any data yet, as the data update is triggered
-		// by the drawing function.
-		if (!cp->IsDirty() && cp->fChunkObject && cp->fChunkObject->Empty()) {
-			// This chunk exists, is updated, but contains nothing.
-			continue;
+		if (cp) {
+			if (cp->fScheduledForLoading)
+				continue; // Chunk doesn't exist yet
+			// Do not ignore the chunk just because it doesn't have any data yet, as the data update is triggered
+			// by the drawing function.
+			if (!cp->IsDirty() && cp->fChunkObject && cp->fChunkObject->Empty()) {
+				// This chunk exists, is updated, but contains nothing.
+				continue;
+			}
 		}
 		int dx = sChunkDistances[src].dx;
 		int dy = sChunkDistances[src].dy;
@@ -340,10 +349,11 @@ void DrawLandscape(StageOneShader *shader, DL_Type dlType) {
 		listOfVisibleChunks[dst++] = src;
 	}
 	int visibleChunklistLength = dst;
+	// printf("DrawLandscape: listOfVisibleChunks %d\n", visibleChunklistLength);
 	bool insideAnyTeleport = false;
 
 	// We need to know which TP is the nearest.
-	float distanceToNearTP2 = 1000.0f*1000.0f; // Distance^2 to the nearest TP
+	float distanceToNearTP2 = 1000.0f*1000.0f; // Distance^2 to the nearest TP, initialized to something big.
 	glm::vec3 TPPosition;
 	for (int i=0; i<visibleChunklistLength; i++) {
 		if (i%NUMQUERIES == 0 && dlType == DL_NoTransparent) {
@@ -358,7 +368,7 @@ void DrawLandscape(StageOneShader *shader, DL_Type dlType) {
 			if (to > visibleChunklistLength)
 				to = visibleChunklistLength;
 			if (to > from)
-				QuerySetup(shader, from, to); // Initiate the query for a group of chunks
+				QuerySetup(shader, from, to, listOfVisibleChunks); // Initiate the query for a group of chunks
 		}
 		int ind = listOfVisibleChunks[i];
 		if (dlType == DL_OnlyTransparent)
@@ -383,14 +393,11 @@ void DrawLandscape(StageOneShader *shader, DL_Type dlType) {
 		cc.x = player_cc.x + dx;
 		cc.y = player_cc.y + dy;
 		cc.z = player_cc.z + dz;
+		// If we have come this far, a null pointer is no longer accepted. The chunk is needed. Either we get
+		// the real chunk, or an empty one.
 		chunk *cp = ChunkFind(&cc, true);
 
 		if (dlType == DL_Picking) {
-			if (cp->fChunkObject == 0) {
-				// Contains no data yet, skip it from picking mode. It can't be skipped from normal drawing mode as the Draw() function will
-				// trigger an update when empty.
-				continue;
-			}
 			// Picking mode. Throw away the previous triangles, and replace it with special triangles used
 			// for the picking mode. These contain colour information to allow identification of cubes.
 			cp->fChunkBlocks->TestJellyBlockTimeout(true);
