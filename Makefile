@@ -65,6 +65,9 @@ MY_LIBS   = -lGL\
 	-logg\
 	-lvorbis\
 	-lvorbisfile\
+	-lRocketCore\
+	-lRocketDebugger\
+	-lRocketControls\
 	$(PROFILING)
 
 # The pre-processor options used by the cpp (man cpp for more).

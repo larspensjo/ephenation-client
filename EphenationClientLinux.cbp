@@ -29,6 +29,9 @@
 					<Add library="ogg" />
 					<Add library="vorbis" />
 					<Add library="vorbisfile" />
+					<Add library="RocketCore" />
+					<Add library="RocketDebugger" />
+					<Add library="RocketControls" />
 				</Linker>
 			</Target>
 			<Target title="Release">
@@ -192,6 +195,10 @@
 		<Unit filename="ui/LoginDialog.h" />
 		<Unit filename="ui/OptionsDialog.cpp" />
 		<Unit filename="ui/OptionsDialog.h" />
+		<Unit filename="ui/RocketGui.cpp" />
+		<Unit filename="ui/RocketGui.h" />
+		<Unit filename="ui/RocketSystemInterface.cpp" />
+		<Unit filename="ui/RocketSystemInterface.h" />
 		<Unit filename="ui/advancedoptions.cpp" />
 		<Unit filename="ui/advancedoptions.h" />
 		<Unit filename="ui/dialog.cpp" />
