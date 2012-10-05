@@ -24,30 +24,36 @@
 
 // Minimum program for drawing text
 static const GLchar *vertexShaderSource[] = {
-	"#version 130\n", // This corresponds to OpenGL 3.0
+	"#version 330\n",
 	"precision mediump float;\n",
-	"uniform mat4 projectionMatrix;\n",
-	"uniform mat4 modelViewMatrix;\n",
-	"in vec3 vertex;\n",
+	"uniform mat4 UprojectionMatrix;\n",
+	"uniform mat4 UmodelViewMatrix;\n",
+	"layout (location=0) in vec3 Avertex;\n", // Location must match VERTEX_INDEX
+	"layout (location=1) in vec4 Acolor;"     // Location must match COLOR_INDEX
+	"out vec4 color;"
 	"void main(void)\n",
 	"{\n",
-	"	gl_Position = projectionMatrix * modelViewMatrix * vec4(vertex,1.0);\n",
+	"	gl_Position = UprojectionMatrix * UmodelViewMatrix * vec4(Avertex,1.0);\n",
+	"	color = Acolor;"
 	"}\n",
 };
 
 static const GLchar *fragmentShaderSource[] = {
-	"#version 130\n", // This corresponds to OpenGL 3.0
+	"#version 330\n",
 	"precision mediump float;\n",
-	"uniform sampler2D firstTexture;\n",
-	"uniform vec4 color;\n",
+	"uniform vec4 Ucolor;\n",
+	"in vec4 color;"
 	"void main(void)\n",
 	"{\n",
-	"	gl_FragColor = color;\n",
+	"	if (Ucolor.a != 0)"
+	"		gl_FragColor = Ucolor;\n",
+	"	else"
+	"		gl_FragColor = color;\n",
 	"}\n",
 };
 
 ColorShader *ColorShader::Make(void) {
-	if (fgSingleton.fVertexIndex == -1) {
+	if (fgSingleton.fProjectionMatrixIndex == -1) {
 		const GLsizei vertexShaderLines = sizeof(vertexShaderSource) / sizeof(GLchar*);
 		const GLsizei fragmentShaderLines = sizeof(fragmentShaderSource) / sizeof(GLchar*);
 		fgSingleton.Init("ColorShader", vertexShaderLines, vertexShaderSource, fragmentShaderLines, fragmentShaderSource);
@@ -56,18 +62,9 @@ ColorShader *ColorShader::Make(void) {
 }
 
 void ColorShader::GetLocations(void) {
-	fProjectionMatrixIndex = this->GetUniformLocation("projectionMatrix");
-	fModelViewMatrixIndex = this->GetUniformLocation("modelViewMatrix");
-	fFirstTextureIndex = this->GetUniformLocation("firstTexture");
-	fColorIndex = this->GetUniformLocation("color");
-	fVertexIndex = this->GetAttribLocation("vertex");
-	checkError("DrawText::DrawTextInit");
-}
-
-void Projection(glm::mat4 &);
-
-void ColorShader::EnableVertexAttribArray(void) {
-	glEnableVertexAttribArray(fVertexIndex);
+	fProjectionMatrixIndex = this->GetUniformLocation("UprojectionMatrix");
+	fModelViewMatrixIndex = this->GetUniformLocation("UmodelViewMatrix");
+	fColorIndex = this->GetUniformLocation("Ucolor");
 }
 
 void ColorShader::EnableProgram(void) {
@@ -79,40 +76,21 @@ void ColorShader::DisableProgram(void) {
 }
 
 void ColorShader::Color(const glm::vec4 &color) {
-	if (fColorIndex != -1) {
-		glUniform4fv(fColorIndex, 1, &color[0]); // Send our modelView matrix to the shader
-	}
-	checkError("ColorShader::Color");
+	glUniform4fv(fColorIndex, 1, &color[0]);
 }
 
 void ColorShader::Projection(const glm::mat4 &mat) {
-	if (fProjectionMatrixIndex != -1) {
-		glUniformMatrix4fv(fProjectionMatrixIndex, 1, GL_FALSE, &mat[0][0]); // Send our modelView matrix to the shader
-	}
-	checkError("ColorShader::Projection");
+	glUniformMatrix4fv(fProjectionMatrixIndex, 1, GL_FALSE, &mat[0][0]); // Send our projection matrix to the shader
 }
 
 void ColorShader::ModelView(const glm::mat4 &mat) {
-	if (fModelViewMatrixIndex != -1) {
-		glUniformMatrix4fv(fModelViewMatrixIndex, 1, GL_FALSE, &mat[0][0]); // Send our modelView matrix to the shader
-	}
-	checkError("ColorShader::ModelView");
-}
-
-void ColorShader::VertexAttribPointer(GLenum type, GLsizei stride, const GLvoid * pointer) {
-	glVertexAttribPointer(fVertexIndex, 3, type, GL_FALSE, stride, pointer);
+	glUniformMatrix4fv(fModelViewMatrixIndex, 1, GL_FALSE, &mat[0][0]); // Send our modelView matrix to the shader
 }
 
 ColorShader::ColorShader() {
 	fProjectionMatrixIndex = -1;
-	fFirstTextureIndex = -1;
-	fVertexIndex = -1;
 	fColorIndex = -1;
 	fModelViewMatrixIndex = -1;
-}
-
-ColorShader::~ColorShader() {
-	// TODO Auto-generated destructor stub
 }
 
 ColorShader ColorShader::fgSingleton;

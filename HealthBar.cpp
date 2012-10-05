@@ -67,12 +67,12 @@ void HealthBar::Init(void) {
 	fShader = ColorShader::Make();
 	glGenVertexArrays(1, &fVao);
 	glBindVertexArray(fVao);
-	fShader->EnableVertexAttribArray();
+	glEnableVertexAttribArray(fShader->VERTEX_INDEX);
 	glGenBuffers(1, &fBufferId);
 	glBindBuffer(GL_ARRAY_BUFFER, fBufferId);
 	glBufferData(GL_ARRAY_BUFFER, sizeof vertexData, vertexData, GL_STATIC_DRAW);
 	vertex *p = 0;
-	fShader->VertexAttribPointer(GL_FLOAT, sizeof (vertex), &p->v);
+	glVertexAttribPointer(fShader->VERTEX_INDEX, 3, GL_FLOAT, GL_FALSE, sizeof (vertex), &p->v);
 	// check data size in VBO is same as input array, if not return 0 and delete VBO
 	int bufferSize = 0;
 	glGetBufferParameteriv(GL_ARRAY_BUFFER, GL_BUFFER_SIZE, &bufferSize);
