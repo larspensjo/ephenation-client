@@ -30,7 +30,7 @@ public:
 protected:
 	GLuint Program(void) const { return this->fProgram; }
 	// Define all uniform and attribute indices. This function must be overridden.
-	virtual void GetLocations(void) = 0; // Every suprt class must override this
+	virtual void GetLocations(void) = 0; // Every support class must override this
 	virtual void PreLinkCallback(GLuint prg) {};  // A callback called before linkage, that can optionally be overrided
 	GLint GetUniformLocation(const char *) const;
 	GLint GetAttribLocation(const char *) const;
