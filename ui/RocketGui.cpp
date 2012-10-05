@@ -3,7 +3,6 @@
 #include <Rocket/Debugger.h>
 
 #include "RocketGui.h"
-#include "RocketSystemInterface.h"
 
 #if 0
 #include "GUI/ScriptInterface.h"
@@ -14,7 +13,7 @@
 
 void RocketGui::Init()
 {
-   Rocket::Core::SetSystemInterface(new RocketSystemInterface());
+   Rocket::Core::SetSystemInterface(&fRocketSystemInterface);
 
    Rocket::Core::Initialise();
    Rocket::Controls::Initialise();
@@ -29,6 +28,11 @@ void RocketGui::Init()
 
    */
 }
+
+RocketGui::~RocketGui() {
+	Rocket::Core::SetSystemInterface(0);
+}
+
 
 void RocketGui::LoadFonts(const std::string& dir)
 {
