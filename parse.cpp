@@ -29,6 +29,7 @@
 #include <stdlib.h>
 #include <string>
 #include <sstream>
+#include <math.h>
 
 using std::string;
 
@@ -328,8 +329,8 @@ void Parse(const unsigned char *b, int n) {
 		gPlayer.fUid = ParseUint32(b+1);
 		unsigned short angleHorRad = Parseuint16(b+5);
 		signed short angleVertRad = Parseuint16(b+7);
-		gPlayer.fAngleHor = _angleHor = angleHorRad * (360.0f / 2 / PI / 100);
-		gPlayer.fAngleVert = _angleVert = angleVertRad * (360.0f / 2 / PI / 100);
+		gPlayer.fAngleHor = _angleHor = angleHorRad * (360.0f / 2 / M_PI / 100);
+		gPlayer.fAngleVert = _angleVert = angleVertRad * (360.0f / 2 / M_PI / 100);
 		if (n >= 10)
 			gPlayer.fAdmin = b[9];
 		else

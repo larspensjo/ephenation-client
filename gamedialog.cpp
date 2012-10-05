@@ -22,6 +22,7 @@
 #include <memory>
 #include <GL/glew.h>
 #include <GL/glfw.h>
+#include <math.h>
 
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
@@ -336,8 +337,8 @@ void handleMouseActiveMotion(int x, int y) {
 		if (_angleVert > 90.0f) _angleVert = 90.0f;
 		if (_angleVert < -90.0f) _angleVert = -90.0f;
 		unsigned char b[7];
-		unsigned short angleHorRad = (unsigned short)(_angleHor / 360.0f * 2.0f * PI * 100);
-		signed short angleVertRad = (unsigned short)(_angleVert / 360.0f * 2.0f * PI * 100);
+		unsigned short angleHorRad = (unsigned short)(_angleHor / 360.0f * 2.0f * M_PI * 100);
+		signed short angleVertRad = (unsigned short)(_angleVert / 360.0f * 2.0f * M_PI * 100);
 		// printf("Dir (%f, %f), (%d, %d)\n", _angleHor, _angleVert, angleHorRad, angleVertRad);
 		b[0] = sizeof b;
 		b[1] = 0;
