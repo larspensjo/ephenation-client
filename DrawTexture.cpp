@@ -43,18 +43,18 @@ DrawTexture DrawTexture::fgSingleton;
 
 // Every coordinate is 3 dimensions and two dimension texture
 struct vertex {
-	float v[3];
+	float v[2];
 	float t[2];
 };
 
 // A square defined as two triangles.
 static const vertex vertexData[] = {
-	{{ 1, 1, 0, }, {1,1}},
-	{{ 0, 0, 0, }, {0,0}},
-	{{ 0, 1, 0, }, {0,1}},
-	{{ 1, 1, 0, }, {1,1}},
-	{{ 1, 0, 0, }, {1,0}},
-	{{ 0, 0, 0, }, {0,0}},
+	{{ 1, 1, }, {1,1}},
+	{{ 0, 0, }, {0,0}},
+	{{ 0, 1, }, {0,1}},
+	{{ 1, 1, }, {1,1}},
+	{{ 1, 0, }, {1,0}},
+	{{ 0, 0, }, {0,0}},
 };
 
 DrawTexture *DrawTexture::Make(void) {
@@ -73,7 +73,7 @@ void DrawTexture::Init(void) {
 	glBindBuffer(GL_ARRAY_BUFFER, fBufferId);
 	glBufferData(GL_ARRAY_BUFFER, sizeof vertexData, vertexData, GL_STATIC_DRAW);
 	vertex *p = 0;
-	fShader->VertexAttribPointer(GL_FLOAT, sizeof (vertex), &p->v);
+	fShader->VertexAttribPointer(GL_FLOAT, 2, sizeof (vertex), &p->v);
 	fShader->TextureAttribPointer(GL_FLOAT, sizeof (vertex), &p->t);
 	// check data size in VBO is same as input array, if not return 0 and delete VBO
 	int bufferSize = 0;

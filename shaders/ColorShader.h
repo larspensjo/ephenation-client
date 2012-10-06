@@ -23,6 +23,7 @@
 #pragma once
 
 #include "shader.h"
+#include "../glm/glm.hpp"
 
 class ColorShader : ShaderBase {
 public:

@@ -119,8 +119,8 @@ void SimpleTextureShader::SetColorOffset(const glm::vec3 &offs) {
 	glUniform3fv(fColorOffsetIdx, 1, &offs[0]);
 }
 
-void SimpleTextureShader::VertexAttribPointer(GLenum type, GLsizei stride, const GLvoid * pointer) {
-	glVertexAttribPointer(fgVertexIndex, 3, type, GL_FALSE, stride, pointer);
+void SimpleTextureShader::VertexAttribPointer(GLenum type, GLint size, GLsizei stride, const GLvoid * pointer) {
+	glVertexAttribPointer(fgVertexIndex, size, type, GL_FALSE, stride, pointer);
 }
 
 void SimpleTextureShader::TextureAttribPointer(GLenum type, GLsizei stride, const GLvoid * pointer) {
