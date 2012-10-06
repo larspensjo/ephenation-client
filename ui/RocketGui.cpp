@@ -37,7 +37,7 @@ void RocketGui::Init()
 	Rocket::Core::Initialise();
 	Rocket::Controls::Initialise();
 
-	LoadFonts("TBD/");
+	LoadFonts("fonts/");
 
    /*
     * Register custom instancers
@@ -55,18 +55,7 @@ RocketGui::~RocketGui() {
 
 void RocketGui::LoadFonts(const std::string& dir)
 {
-#if 0
-   StringVector fonts;
-   fonts.push_back("Delicious-Bold.otf");
-   fonts.push_back("Delicious-Roman.otf");
-   fonts.push_back("Delicious-Italic.otf");
-   fonts.push_back("LindenHill.ttf");
-   fonts.push_back("Anonymous.ttf");
-
-   std::for_each(fonts.begin(), fonts.end(), [&](const std::string& font) {
-      Rocket::Core::FontDatabase::LoadFontFace((dir + font).c_str());
-   });
-#endif
+	Rocket::Core::FontDatabase::LoadFontFace((dir + "Gabriola.ttf").c_str());
 }
 
 void RocketGui::RegisterScripting(ScriptManager& scriptmgr)
