@@ -1,3 +1,20 @@
+// Copyright 2012 The Ephenation Authors
+//
+// This file is part of Ephenation.
+//
+// Ephenation is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, version 3.
+//
+// Ephenation is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Ephenation.  If not, see <http://www.gnu.org/licenses/>.
+//
+
 #include <Rocket/Core.h>
 #include <Rocket/Controls.h>
 #include <Rocket/Debugger.h>
@@ -13,12 +30,14 @@
 
 void RocketGui::Init()
 {
-   Rocket::Core::SetSystemInterface(&fRocketSystemInterface);
+	fRocketRenderInterface.Init();
+	Rocket::Core::SetRenderInterface(&fRocketRenderInterface);
+	Rocket::Core::SetSystemInterface(&fRocketSystemInterface);
 
-   Rocket::Core::Initialise();
-   Rocket::Controls::Initialise();
+	Rocket::Core::Initialise();
+	Rocket::Controls::Initialise();
 
-   LoadFonts("../../assets/fonts");
+	LoadFonts("TBD/");
 
    /*
     * Register custom instancers
@@ -31,8 +50,8 @@ void RocketGui::Init()
 
 RocketGui::~RocketGui() {
 	Rocket::Core::SetSystemInterface(0);
+	Rocket::Core::SetRenderInterface(0);
 }
-
 
 void RocketGui::LoadFonts(const std::string& dir)
 {

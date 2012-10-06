@@ -62,3 +62,6 @@ struct GameTexture {
 class Image;
 
 extern const glm::vec2 gPoissonDisk[64];
+
+// Load bitmaps to be used for the GUI.
+extern GLuint LoadBitmapForGui(shared_ptr<Image>);
