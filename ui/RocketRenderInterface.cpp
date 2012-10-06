@@ -45,6 +45,10 @@ Rocket::Core::CompiledGeometryHandle RocketRenderInterface::CompileGeometry(Rock
 
 	geometry->texture = (GLuint)texturehandle;
 
+	// Set up the vertex array object
+	glGenVertexArrays(1, &geometry->vao);
+	glBindVertexArray(geometry->vao);
+
 	// Allocate the vertex data object
 	glGenBuffers(1, &geometry->vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, geometry->vbo);
@@ -56,9 +60,6 @@ Rocket::Core::CompiledGeometryHandle RocketRenderInterface::CompileGeometry(Rock
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, num_indices * sizeof indices[0], indices, GL_STATIC_DRAW);
 	geometry->numIndices = num_indices;
 
-	// Set up the vertex array object
-	glGenVertexArrays(1, &geometry->vao);
-	glBindVertexArray(geometry->vao);
 	Rocket::Core::Vertex *vp = 0;
 	if (texturehandle == 0) {
 		// Use the ColorShader
@@ -72,7 +73,6 @@ Rocket::Core::CompiledGeometryHandle RocketRenderInterface::CompileGeometry(Rock
 		fSimpleTextureShader->TextureAttribPointer(GL_FLOAT, sizeof (Rocket::Core::Vertex), &vp->tex_coord.x);
 		// Use the SimpleTextureShader
 	}
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, geometry->vbi); // Will be remembered in the VAO state
 	glBindVertexArray(0);
 	checkError("RocketRenderInterface::CompileGeometry");
 
@@ -81,23 +81,31 @@ Rocket::Core::CompiledGeometryHandle RocketRenderInterface::CompileGeometry(Rock
 
 void RocketRenderInterface::RenderCompiledGeometry(Rocket::Core::CompiledGeometryHandle geometry_ptr, const Rocket::Core::Vector2f& translation)
 {
-	glm::mat4 model = glm::translate(glm::mat4(1.0), glm::vec3(translation.x, translation.y, 1.0f));
+	// DrawPlayerStats(); return;
+	glm::mat4 proj = glm::ortho(0.0f, gViewport[2], gViewport[3], 0.0f, -1.0f, 1.0f);
+	glm::mat4 model = glm::translate(glm::mat4(1.0), glm::vec3(translation.x, translation.y, 0.0f));
 	Geometry* geometry = reinterpret_cast<Geometry*>(geometry_ptr);
+	glDisable(GL_DEPTH_TEST);
+	glDisable(GL_CULL_FACE);
+	glBindVertexArray(geometry->vao);
 	if (geometry->texture == 0) {
 		fColorShader->EnableProgram();
 		fColorShader->ModelView(model);
-		fColorShader->Color(glm::vec4(0)); // Will make the color vertex attribute be used instead
-		fColorShader->Projection(glm::mat4(1));
+		fColorShader->Color(glm::vec4(0,0,0,0)); // Will make the color vertex attribute be used instead
+		fColorShader->Projection(proj);
 		glDrawElements(GL_TRIANGLES, geometry->numIndices, GL_UNSIGNED_INT, 0);
 		fColorShader->DisableProgram();
 	} else {
 		fSimpleTextureShader->EnableProgram();
 		fSimpleTextureShader->ModelView(model);
-		fSimpleTextureShader->Projection(glm::mat4(1));
+		fSimpleTextureShader->Projection(proj);
 		glBindTexture(GL_TEXTURE_2D, geometry->texture);
 		glDrawElements(GL_TRIANGLES, geometry->numIndices, GL_UNSIGNED_INT, 0);
 		fSimpleTextureShader->DisableProgram();
 	}
+	glBindVertexArray(0);
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_CULL_FACE);
 }
 
 void RocketRenderInterface::ReleaseCompiledGeometry(Rocket::Core::CompiledGeometryHandle geometry_ptr)
@@ -119,13 +127,13 @@ void RocketRenderInterface::EnableScissorRegion(bool enable)
 
 void RocketRenderInterface::SetScissorRegion(int x, int y, int width, int height)
 {
-	glScissor(x, y, width, height);
+	glScissor(x, gViewport[3]-(y+height), width, height);
 }
 
 bool RocketRenderInterface::LoadTexture(Rocket::Core::TextureHandle& texture_handle, Rocket::Core::Vector2i& texture_dimensions, const Rocket::Core::String& source)
 {
-	std::string path = "textures/" + std::string(source.CString()) + ".bmp";
-	auto bmp = loadBMP(path.c_str());
+	// std::string path = "dialogs/" + std::string(source.CString());
+	auto bmp = loadBMP(source.CString());
 	GLuint texture = LoadBitmapForGui(bmp);
 
 	if (texture != 0) {
@@ -140,6 +148,7 @@ bool RocketRenderInterface::GenerateTexture(Rocket::Core::TextureHandle& texture
 {
 	GLuint texture;
 	glGenTextures(1, &texture);
+	glBindTexture(GL_TEXTURE_2D, texture);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);

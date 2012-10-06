@@ -229,7 +229,6 @@ GLuint loadTexture(shared_ptr<Image> image, unsigned fl = 0) {
 	} else if (mipmap) {
 		glGenerateMipmap(GL_TEXTURE_2D);
 	}
-	checkError("loadTexture");
 	return textureId;
 }
 

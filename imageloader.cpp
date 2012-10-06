@@ -68,7 +68,7 @@ shared_ptr<Image> loadBMP(const char* filename, bool booleanAlpha) {
 
 	input.open(filename, ifstream::binary);
 	if (input.fail())
-		ErrorDialog("Failed to load texture file", filename);
+		ErrorDialog("Failed to load texture file %s", filename);
 	char buffer[2];
 	input.read(buffer, 2);
 	ASSERT((buffer[0] == 'B' && buffer[1] == 'M') || !"Not a bitmap file");
