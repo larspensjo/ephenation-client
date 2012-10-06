@@ -512,6 +512,9 @@ int main(int argc, char** argv) {
 			glDebugMessageCallbackAMD(DebugFuncAMD, (void*)15);
 	}
 
+	RocketGui rocket;
+	rocket.Init();
+
 	glfwSwapInterval(Options::fgOptions.fVSYNC); // 0 means do not wait for VSYNC, which would delay the FPS sometimes.
 
 	ComputeRelativeChunksSortedDistances();
@@ -534,8 +537,6 @@ int main(int argc, char** argv) {
 	gSoundControl.RequestMusicMode(SoundControl::SMusicModeTourist);
 	glEnable(GL_DEPTH_TEST); // Always enabled by default
 
-	RocketGui rocket;
-	rocket.Init();
 	// Immediately clear screen, to minimize chance that something undefined is shown.
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f );
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
@@ -565,6 +566,7 @@ int main(int argc, char** argv) {
 		gGameDialog.render();
 
 		glfwSwapBuffers();
+
 		if (gMode.Get() == GameMode::OPTIONS && glfwGetWindowParam(GLFW_ICONIFIED) == GL_TRUE) {
 			// Stop player footsteps since player stops
 			gGameDialog.UpdateRunningStatus(true);

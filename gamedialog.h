@@ -18,6 +18,7 @@
 #pragma once
 
 #include <memory>
+#include <Rocket/Core.h>
 
 using std::string;
 
@@ -47,10 +48,11 @@ public:
 	virtual void init();
 	virtual ~gameDialog();
 	virtual void handleMouse(int button, int action);
+	bool HandleMouseMotion(int x, int y);
 	virtual void Update();
 	virtual void SetMessage(const char *);
-	virtual void HandleKeyRelease(int key, int action); // Keyboard event
-	virtual void HandleKeyPress(int key, int action);	// Keyboard event
+	virtual void HandleKeyRelease(int key); // Keyboard event
+	virtual void HandleKeyPress(int key);	// Keyboard event
 	virtual void HandleCharacter(int key, int action);	// Character event
 	virtual void handleResize(int w, int h);
 
@@ -123,6 +125,7 @@ private:
 	DrawTexture *fDrawTexture;
 	std::unique_ptr<RenderControl> fRenderControl;
 
+	Rocket::Core::Context *fRocketContext;
 };
 
 extern gameDialog gGameDialog;

@@ -32,6 +32,9 @@ public:
 	void LoadFonts(const std::string& dir);
 
 	~RocketGui();
+
+	// Translate a GLFW key to a Rocket key.
+	static Rocket::Core::Input::KeyIdentifier KeyMap(int key);
 private:
 	RocketSystemInterface fRocketSystemInterface;
 	RocketRenderInterface fRocketRenderInterface;

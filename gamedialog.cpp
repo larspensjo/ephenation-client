@@ -23,6 +23,7 @@
 #include <GL/glew.h>
 #include <GL/glfw.h>
 #include <math.h>
+#include <Rocket/Debugger.h>
 
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
@@ -67,6 +68,7 @@
 #include "timemeasure.h"
 #include "worsttime.h"
 #include "ChunkProcess.h"
+#include "ui/RocketGui.h"
 
 gameDialog *gameDialog::sfCurrentGameDialog = 0;
 
@@ -78,6 +80,8 @@ static double sStartZoom;
 
 static std::vector<unsigned>::iterator sTextureIterator;
 static bool sShowAlternateBitmap = false;
+
+static bool sRocketControl = false;
 
 static float mouseSens = -5.0f;
 gameDialog gGameDialog; // For now, there will only be one
@@ -115,6 +119,7 @@ gameDialog::gameDialog() {
 	fDrawTexture = 0;
 	fCurrentEffect = EFFECT_NONE;
 	fCalibrationMode = CALIB_NONE;
+	fRocketContext = 0;
 }
 
 gameDialog::~gameDialog() {
@@ -324,6 +329,8 @@ int xStartTurn = 0, yStartTurn = 0;
 float angleHorStartTurn = 0.0f, angleVertStartTurn;
 
 void handleMouseActiveMotion(int x, int y) {
+	if (gGameDialog.HandleMouseMotion(x, y))
+		return;
 	if (gGameDialog.fShowInventory) {
 		sTurning = false;
 	} else if (sTurning) {
@@ -352,7 +359,34 @@ void handleMouseActiveMotion(int x, int y) {
 	}
 }
 
+bool gameDialog::HandleMouseMotion(int x, int y) {
+	if (sRocketControl) {
+		fRocketContext->ProcessMouseMove(x, y, 0);
+		return true;
+	}
+	return false;
+}
+
 void gameDialog::handleMouse(int button, int action) {
+	if (sRocketControl) {
+		int idx = 2;
+		switch (button) {
+		case GLFW_MOUSE_BUTTON_RIGHT:
+			idx = 1;
+			break;
+		case GLFW_MOUSE_BUTTON_LEFT:
+			idx = 0;
+			break;
+		case GLFW_MOUSE_BUTTON_MIDDLE:
+			idx = 2;
+			break;
+		}
+		if (action == GLFW_PRESS)
+			fRocketContext->ProcessMouseButtonDown(idx, 0);
+		else
+			fRocketContext->ProcessMouseButtonUp(idx, 0);
+		return;
+	}
 	int x, y;
 	glfwGetMousePos(&x, &y);
 	if (fShowInventory) {
@@ -431,12 +465,17 @@ static void handleCharacter(int character, int action) {
 
 static void handleKeypress(int key, int action) {
 	if (action == GLFW_PRESS)
-		gGameDialog.HandleKeyPress(key, action);
+		gGameDialog.HandleKeyPress(key);
 	else
-		gGameDialog.HandleKeyRelease(key, action);
+		gGameDialog.HandleKeyRelease(key);
 }
 
 void gameDialog::HandleCharacter(int key, int action) {
+	if (sRocketControl) {
+		if (key != 0 && action == GLFW_PRESS)
+			fRocketContext->ProcessTextInput(key);
+		return;
+	}
 	if (fShowMainDialog && !fHideDialog) {
 		dialog::DispatchChar(key);
 		return;
@@ -460,14 +499,17 @@ void gameDialog::HandleCharacter(int key, int action) {
 
 string prevCommand("/");
 
-void gameDialog::HandleKeyPress(int key, int action) {
-	if (fShowMainDialog && !fHideDialog && key != GLFW_KEY_ESC) {
-		if (action == GLFW_PRESS) {
-			dialog::DispatchKey(key);
-		}
+void gameDialog::HandleKeyPress(int key) {
+	if (sRocketControl) {
+		if (key != 0)
+			fRocketContext->ProcessKeyDown(RocketGui::KeyMap(key), 0);
 		return;
 	}
-	if (key >= GLFW_KEY_F1 && key <= GLFW_KEY_F25) {
+	if (fShowMainDialog && !fHideDialog && key != GLFW_KEY_ESC) {
+		dialog::DispatchKey(key);
+		return;
+	}
+	if (key >= GLFW_KEY_F1 && key <= GLFW_KEY_F11) {
 		gInventory.UseObjectFunctionKey(key);
 		return;
 	}
@@ -513,9 +555,14 @@ void gameDialog::HandleKeyPress(int key, int action) {
 	int x, y;
 	glfwGetMousePos(&x, &y);
 	switch (key) {
+	case GLFW_KEY_F12:
+		sRocketControl = !sRocketControl;
+		break;
 	case GLFW_KEY_KP_0:
 		// if (gPlayer.fAdmin > 0)
 		gToggleTesting = !gToggleTesting;
+		Rocket::Debugger::SetVisible(gToggleTesting);
+		sRocketControl = gToggleTesting; // Automatic
 		break;
 	case GLFW_KEY_ESC:
 		if (fDrawMap)
@@ -741,11 +788,14 @@ void gameDialog::HandleKeyPress(int key, int action) {
 	gGameDialog.UpdateRunningStatus(false);
 }
 
-void gameDialog::HandleKeyRelease(int key, int action) {
+void gameDialog::HandleKeyRelease(int key) {
+	if (sRocketControl) {
+		if (key != 0)
+			fRocketContext->ProcessKeyUp(RocketGui::KeyMap(key), 0);
+		return;
+	}
 	if (fShowMainDialog && !fHideDialog) {
-		if (action == GLFW_PRESS) {
-			dialog::DispatchKey(key);
-		}
+		dialog::DispatchKey(key);
 		return;
 	}
 	switch (key) {
@@ -975,12 +1025,19 @@ void gameDialog::render() {
 	}
 
 	if (!fDrawMap && !fShowInventory && (!fShowMainDialog || fHideDialog)) {
-		if (gShowMsgWindow)
+		if (gShowMsgWindow) {
 			gMsgWindow.Render();
+		}
 
 		if (gMode.Get() == GameMode::CONSTRUCT)
 			fBuildingBlocks->Draw(gProjectionMatrix);
 	}
+
+	static TimeMeasure tmr("Rocket");
+	tmr.Start();
+	fRocketContext->Update();
+	fRocketContext->Render();
+	tmr.Stop();
 
 	if (gDebugOpenGL) {
 		checkError("gameDialog::render debug", false);
@@ -1039,6 +1096,27 @@ void gameDialog::init(void) {
 	glfwSetMousePosCallback(handleMouseActiveMotion);
 	glfwSetKeyCallback(handleKeypress);
 	glfwSetCharCallback(handleCharacter);
+
+	// Create the main Rocket context and set it on the shell's input layer.
+	fRocketContext = Rocket::Core::CreateContext("main", Rocket::Core::Vector2i(1024, 768));
+	if (fRocketContext == NULL)
+	{
+		printf("Rocket::Core::CreateContext failed\n");
+		exit(1);
+	}
+
+	Rocket::Debugger::Initialise(fRocketContext);
+
+	// Load and show the demo document.
+	Rocket::Core::ElementDocument* document = fRocketContext->LoadDocument("dialogs/chat.rml");
+	if (document != NULL)
+	{
+		Rocket::Core::Element *e = document->GetElementById("content");
+		Rocket::Core::String s = e->GetInnerRML();
+		e->SetInnerRML("apa");
+		document->Show();
+		document->RemoveReference();
+	}
 
 	checkError("gameDialog::init");
 }

@@ -30,14 +30,18 @@ body.windowtransp
 {
 	background: #0000003F;
 
-	padding-top: 43px;
-	padding-bottom: 20px;
+	padding-top: 10px;
+	padding-bottom: 10px;
+
+	padding-left: 4px;
+	padding-right: 4px;
 
 	min-width: 250px;
 	max-width: 800px;
 
 	min-height: 135px;
 	max-height: 700px;
+	font-size: 22;
 }
 
 div#title-bar span
@@ -56,5 +60,7 @@ div#title-bar
 div#content
 {
 	z-index: 1;
+	height: 100%;
+	overflow: hidden;
 }
 
