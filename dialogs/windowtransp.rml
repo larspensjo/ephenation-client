@@ -1,9 +1,9 @@
-<template name="window" content="content">
+<template name="windowtransp" content="content">
 <head>
 	<link type="text/rcss" href="rkt.rcss"/>
 	<link type="text/rcss" href="ephenation.rcss"/>
 </head>
-<body class="window">
+<body class="windowtransp">
 	<div id="title-bar">
 		<handle move_target="#document">
 			<span id="title">Dummy title</span>

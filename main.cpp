@@ -514,9 +514,6 @@ int main(int argc, char** argv) {
 
 	glfwSwapInterval(Options::fgOptions.fVSYNC); // 0 means do not wait for VSYNC, which would delay the FPS sometimes.
 
-	RocketGui rocket;
-	rocket.Init();
-
 	ComputeRelativeChunksSortedDistances();
 
 	BlenderModel::InitModels();
@@ -537,6 +534,8 @@ int main(int argc, char** argv) {
 	gSoundControl.RequestMusicMode(SoundControl::SMusicModeTourist);
 	glEnable(GL_DEPTH_TEST); // Always enabled by default
 
+	RocketGui rocket;
+	rocket.Init();
 	// Immediately clear screen, to minimize chance that something undefined is shown.
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f );
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
@@ -561,15 +560,6 @@ int main(int argc, char** argv) {
 			while (gCurrentPing == 0.0 && glfwGetTime() - gLastPing < 0.5)
 				ListenForServerMessages();
 		}
-#if 0
-		// Put a limit on max FPS.
-		double delta = gCurrentFrameTime - prevTime;
-		prevTime = gCurrentFrameTime;
-		double sleepTime = 1.0/60 - delta;
-		if (sleepTime > 0.0) {
-			glfwSleep(sleepTime);
-		}
-#endif
 
 		gGameDialog.Update();
 		gGameDialog.render();

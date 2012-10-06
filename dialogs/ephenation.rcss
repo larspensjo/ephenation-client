@@ -1,0 +1,60 @@
+body
+{
+	font-family: Gabriola;
+	font-weight: normal;
+	font-style: normal;
+	font-size: 18;
+/*
+	background: #0000003F;
+	background-decorator: image;
+	background-image: ../textures/DialogBackground.bmp;
+*/
+}
+
+body.window
+{
+	background-decorator: image;
+	background-image: ../textures/DialogBackground.bmp;
+
+	padding-top: 43px;
+	padding-bottom: 20px;
+
+	min-width: 250px;
+	max-width: 800px;
+
+	min-height: 135px;
+	max-height: 700px;
+}
+
+body.windowtransp
+{
+	background: #0000003F;
+
+	padding-top: 43px;
+	padding-bottom: 20px;
+
+	min-width: 250px;
+	max-width: 800px;
+
+	min-height: 135px;
+	max-height: 700px;
+}
+
+div#title-bar span
+{
+	font-size: 48;
+	font-weight: normal;
+	text-shadow: 2px 2px black;
+}
+
+div#title-bar
+{
+	position: absolute;
+	top: 0px;
+}
+
+div#content
+{
+	z-index: 1;
+}
+

@@ -66,7 +66,7 @@ Rocket::Core::CompiledGeometryHandle RocketRenderInterface::CompileGeometry(Rock
 		glEnableVertexAttribArray(fColorShader->VERTEX_INDEX);
 		glEnableVertexAttribArray(fColorShader->COLOR_INDEX);
 		glVertexAttribPointer(fColorShader->VERTEX_INDEX, 2, GL_FLOAT, GL_FALSE, sizeof (Rocket::Core::Vertex), &vp->position.x);
-		glVertexAttribPointer(fColorShader->COLOR_INDEX, 4, GL_UNSIGNED_BYTE, GL_FALSE, sizeof (Rocket::Core::Vertex), &vp->colour.red);
+		glVertexAttribPointer(fColorShader->COLOR_INDEX, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof (Rocket::Core::Vertex), &vp->colour.red);
 	} else {
 		fSimpleTextureShader->EnableVertexAttribArray();
 		fSimpleTextureShader->VertexAttribPointer(GL_FLOAT, 2, sizeof (Rocket::Core::Vertex), &vp->position.x);
@@ -93,7 +93,10 @@ void RocketRenderInterface::RenderCompiledGeometry(Rocket::Core::CompiledGeometr
 		fColorShader->ModelView(model);
 		fColorShader->Color(glm::vec4(0,0,0,0)); // Will make the color vertex attribute be used instead
 		fColorShader->Projection(proj);
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // Not using premultiplied alpha
 		glDrawElements(GL_TRIANGLES, geometry->numIndices, GL_UNSIGNED_INT, 0);
+		glDisable(GL_BLEND);
 		fColorShader->DisableProgram();
 	} else {
 		fSimpleTextureShader->EnableProgram();
