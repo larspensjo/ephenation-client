@@ -5,10 +5,14 @@
 	<style>
 		body
 		{
-			width: 600px;
+			width: 5500px;
 			height: 200px;
 			
 			margin: auto;
+
+			position:absolute;
+			bottom: 300px;
+			right: 565px;
 		}
 
 		div#title-bar

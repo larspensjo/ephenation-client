@@ -157,17 +157,3 @@ void RocketGui::LoadFonts(const std::string& dir)
 {
 	Rocket::Core::FontDatabase::LoadFontFace((dir + "Gabriola.ttf").c_str());
 }
-
-void RocketGui::RegisterScripting(ScriptManager& scriptmgr)
-{
-#if 0
-   asIScriptEngine* engine = scriptmgr.GetEngine();
-
-   Rocket::Angelscript::RegisterTypes(engine);
-   Rocket::Angelscript::RegisterVariantType(engine);
-   Rocket::Angelscript::RegisterContextInterface(engine);
-   Rocket::Angelscript::RegisterElementInterface(engine);
-   Rocket::Angelscript::RegisterElementDocumentInterface(engine);
-   Rocket::Angelscript::RegisterEventInterface(engine);
-#endif
-}

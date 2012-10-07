@@ -1107,13 +1107,13 @@ void gameDialog::init(void) {
 
 	Rocket::Debugger::Initialise(fRocketContext);
 
-	// Load and show the demo document.
+	// Load and show the chat window.
 	Rocket::Core::ElementDocument* document = fRocketContext->LoadDocument("dialogs/chat.rml");
 	if (document != NULL)
 	{
 		Rocket::Core::Element *e = document->GetElementById("content");
 		Rocket::Core::String s = e->GetInnerRML();
-		e->SetInnerRML("apa");
+		e->SetInnerRML("Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.");
 		document->Show();
 		document->RemoveReference();
 	}

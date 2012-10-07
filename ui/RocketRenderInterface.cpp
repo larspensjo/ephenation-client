@@ -85,9 +85,13 @@ Rocket::Core::CompiledGeometryHandle RocketRenderInterface::CompileGeometry(Rock
 
 void RocketRenderInterface::RenderCompiledGeometry(Rocket::Core::CompiledGeometryHandle geometry_ptr, const Rocket::Core::Vector2f& translation)
 {
-	// DrawPlayerStats(); return;
+	glm::vec3 offset(translation.x, translation.y, 0.0f);
+	if (offset.x < 0)
+		offset.x += gViewport[2];
+	if (offset.y < 0)
+		offset.y += gViewport[3];
 	glm::mat4 proj = glm::ortho(0.0f, gViewport[2], gViewport[3], 0.0f, -1.0f, 1.0f);
-	glm::mat4 model = glm::translate(glm::mat4(1.0), glm::vec3(translation.x, translation.y, 0.0f));
+	glm::mat4 model = glm::translate(glm::mat4(1.0), offset);
 	Geometry* geometry = reinterpret_cast<Geometry*>(geometry_ptr);
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_CULL_FACE);

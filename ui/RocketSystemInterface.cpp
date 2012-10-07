@@ -18,7 +18,6 @@
 #include <GL/glfw.h>
 
 #include "RocketSystemInterface.h"
-#include "Error.h"
 
 bool RocketSystemInterface::LogMessage(Rocket::Core::Log::Type error_type, const Rocket::Core::String& message)
 {
@@ -53,7 +52,7 @@ bool RocketSystemInterface::LogMessage(Rocket::Core::Log::Type error_type, const
 		break;
 	};
 
-	ErrorDialog("%s - %s\n", type.c_str(), message.CString());
+	printf("%s - %s\n", type.c_str(), message.CString());
 
 	return true;
 }
