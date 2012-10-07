@@ -71,6 +71,10 @@ Rocket::Core::CompiledGeometryHandle RocketRenderInterface::CompileGeometry(Rock
 		fSimpleTextureShader->EnableVertexAttribArray();
 		fSimpleTextureShader->VertexAttribPointer(GL_FLOAT, 2, sizeof (Rocket::Core::Vertex), &vp->position.x);
 		fSimpleTextureShader->TextureAttribPointer(GL_FLOAT, sizeof (Rocket::Core::Vertex), &vp->tex_coord.x);
+		// Color override. They are all the same, so first one is saved.
+		geometry->color.r = vertices->colour.red/255.0f;
+		geometry->color.g = vertices->colour.green/255.0f;
+		geometry->color.b = vertices->colour.blue/255.0f;
 		// Use the SimpleTextureShader
 	}
 	glBindVertexArray(0);
@@ -99,11 +103,14 @@ void RocketRenderInterface::RenderCompiledGeometry(Rocket::Core::CompiledGeometr
 		glDisable(GL_BLEND);
 		fColorShader->DisableProgram();
 	} else {
+		glm::vec3 offset = geometry->color - glm::vec3(1,1,1);
 		fSimpleTextureShader->EnableProgram();
+		fSimpleTextureShader->SetColorOffset(offset);
 		fSimpleTextureShader->ModelView(model);
 		fSimpleTextureShader->Projection(proj);
 		glBindTexture(GL_TEXTURE_2D, geometry->texture);
 		glDrawElements(GL_TRIANGLES, geometry->numIndices, GL_UNSIGNED_INT, 0);
+		fSimpleTextureShader->SetColorOffset(glm::vec3(0,0,0)); // Restore default
 		fSimpleTextureShader->DisableProgram();
 	}
 	glBindVertexArray(0);

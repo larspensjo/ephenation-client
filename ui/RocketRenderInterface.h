@@ -57,6 +57,7 @@ private:
 		GLuint vao;
 		GLuint vbo;
 		GLuint vbi;
+		glm::vec3 color;
 	};
 
 	ColorShader *fColorShader; // Pointer to singleton, do not delete

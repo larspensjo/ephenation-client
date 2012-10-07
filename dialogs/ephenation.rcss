@@ -4,6 +4,7 @@ body
 	font-weight: normal;
 	font-style: normal;
 	font-size: 18;
+	color: black;
 /*
 	background: #0000003F;
 	background-decorator: image;
@@ -29,6 +30,7 @@ body.window
 body.windowtransp
 {
 	background: #0000003F;
+	color: white;
 
 	padding-top: 10px;
 	padding-bottom: 10px;
