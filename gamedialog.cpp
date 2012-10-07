@@ -456,6 +456,8 @@ void gameDialog::handleResize(int w, int h) {
 	gViewport = glm::vec4(0.0f, 0.0f, (float)w, (float)h );
 	gDrawFont.UpdateProjection();
 	fRenderControl->Resize(w, h);
+	if (fRocketContext)
+		fRocketContext->SetDimensions(Rocket::Core::Vector2i(gViewport[2], gViewport[3]));
 }
 
 static void handleCharacter(int character, int action) {
@@ -1098,7 +1100,7 @@ void gameDialog::init(void) {
 	glfwSetCharCallback(handleCharacter);
 
 	// Create the main Rocket context and set it on the shell's input layer.
-	fRocketContext = Rocket::Core::CreateContext("main", Rocket::Core::Vector2i(1024, 768));
+	fRocketContext = Rocket::Core::CreateContext("main", Rocket::Core::Vector2i(gViewport[2], gViewport[3]));
 	if (fRocketContext == NULL)
 	{
 		printf("Rocket::Core::CreateContext failed\n");
@@ -1108,12 +1110,14 @@ void gameDialog::init(void) {
 	Rocket::Debugger::Initialise(fRocketContext);
 
 	// Load and show the chat window.
-	Rocket::Core::ElementDocument* document = fRocketContext->LoadDocument("dialogs/chat.rml");
+	Rocket::Core::ElementDocument* document = fRocketContext->LoadDocument("dialogs/userinterface.rml");
 	if (document != NULL)
 	{
-		Rocket::Core::Element *e = document->GetElementById("content");
+#if 1
+		Rocket::Core::Element *e = document->GetElementById("chat");
 		Rocket::Core::String s = e->GetInnerRML();
 		e->SetInnerRML("Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.");
+#endif
 		document->Show();
 		document->RemoveReference();
 	}
