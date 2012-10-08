@@ -4,8 +4,8 @@
 	<style>
 		body
 		{
-			font-family: Gabriola;
-			font-size: 20px;
+			font-family: georgia;
+			font-size: 30px;
 			width: 100%;
 			height: 100%;
 		}
@@ -35,7 +35,8 @@
 			right: 5;
 			bottom: 50;
 			background-color: #0000003F; /* Semi transparent black background */
-			font-family: Gabriola;
+			font-family: georgia;
+			font-size: 12px;
 		}
 
 	</style>

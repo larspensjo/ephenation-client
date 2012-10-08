@@ -17,8 +17,6 @@
 
 #pragma once
 
-#include <memory>
-
 //
 // A class to manage buffers and shaders for the various render passes.
 // The class is used for several stages:
@@ -26,6 +24,10 @@
 // 2. Call the functions that update the images in the FBO
 // 3. Project the final result to the screen.
 //
+
+#include <memory>
+
+#include "ui/mainuserinterface.h"
 
 class ChunkShader;
 class AddDynamicShadow;
@@ -52,6 +54,8 @@ public:
 
 	GLuint Debug(void);
 	void Draw(Object *selectedObject, bool underWater, bool thirdPersonView, Object *fSelectedObject, bool showMap, int mapWidth);
+
+	Rocket::Core::Context *GetRocketContext(void);
 private:
 
 	// Free the buffers. Also needed to reinitialize for a new size.
@@ -60,6 +64,8 @@ private:
 	GLuint fDepthBuffer; // Render target buffers
 	GLuint fDiffuseTexture, fPositionTexture, fNormalsTexture, fBlendTexture, fLightsTexture;
 	GLsizei fWidth, fHeight;
+
+	MainUserInterface fMainUserInterface;
 
 	std::unique_ptr<AddDynamicShadow> fAddDynamicShadow;
 	std::unique_ptr<ShadowRender> fShadowRender;

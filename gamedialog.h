@@ -18,7 +18,6 @@
 #pragma once
 
 #include <memory>
-#include <Rocket/Core.h>
 
 using std::string;
 
@@ -31,6 +30,11 @@ class BuildingBlocks;
 class HealthBar;
 class DrawTexture;
 class RenderControl;
+namespace Rocket {
+	namespace Core {
+		class Context; // Lots of work to forward declare this
+	}
+};
 
 // Put it all together. Manage, on a high level:
 // * keyboard input
@@ -48,13 +52,13 @@ public:
 	virtual void init();
 	virtual ~gameDialog();
 	virtual void handleMouse(int button, int action);
-	bool HandleMouseMotion(int x, int y);
 	virtual void Update();
 	virtual void SetMessage(const char *);
 	virtual void HandleKeyRelease(int key); // Keyboard event
 	virtual void HandleKeyPress(int key);	// Keyboard event
 	virtual void HandleCharacter(int key, int action);	// Character event
 	virtual void handleResize(int w, int h);
+	void handleMouseActiveMotion(int x, int y);
 
 	void ClickOnBlock(int x, int y);
 	void ClickOnObject(int x, int y);
@@ -125,7 +129,8 @@ private:
 	DrawTexture *fDrawTexture;
 	std::unique_ptr<RenderControl> fRenderControl;
 
-	Rocket::Core::Context *fRocketContext;
+	// All keyboard and mouse events are redirected to this one if it is non-null
+	Rocket::Core::Context *fCurrentRocketContextInput;
 };
 
 extern gameDialog gGameDialog;

@@ -49,6 +49,8 @@
 #include "textures.h"
 #include "Map.h"
 #include "DrawTexture.h"
+#include "worsttime.h"
+
 #define NELEM(x) (sizeof x / sizeof x[0])
 
 RenderControl::RenderControl() {
@@ -96,6 +98,8 @@ void RenderControl::Init() {
 	fAddSSAO.reset(new AddSSAO);
 	fAddSSAO->Init();
 
+	fMainUserInterface.Init();
+
 	if (Options::fgOptions.fDynamicShadows) {
 		fShadowRender.reset(new ShadowRender(DYNAMIC_SHADOW_MAP_SIZE,DYNAMIC_SHADOW_MAP_SIZE));
 		fShadowRender->Init();
@@ -106,6 +110,7 @@ void RenderControl::Init() {
 }
 
 void RenderControl::Resize(GLsizei width, GLsizei height) {
+	fMainUserInterface.Resize(width, height);
 	fWidth = width; fHeight = height;
 	// This function can be called repeatedly, when window size changes.
 	this->FreeFBO();
@@ -184,7 +189,7 @@ void RenderControl::Resize(GLsizei width, GLsizei height) {
 	checkError("RenderControl::Init");
 }
 
-enum { STENCIL_UI = 1, STENCIL_NOSKY = 2 };
+enum { STENCIL_NOSKY = 1 };
 
 void RenderControl::Draw(Object *selectedObject, bool underWater, bool thirdPersonView, Object *fSelectedObject, bool showMap, int mapWidth) {
 	if (!gPlayer.BelowGround())
@@ -208,14 +213,8 @@ void RenderControl::Draw(Object *selectedObject, bool underWater, bool thirdPers
 	glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP); // Make stencil read-only
 	drawSkyBox();
 
-	glStencilFunc(GL_ALWAYS, STENCIL_UI, STENCIL_UI); // Set bit for UI
-	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE); // Replace bits when something is drawn
-	glDrawBuffer(GL_NONE);
-	drawUI(); // Don't draw anything, just set the stencil bit.
-	glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP); // Make stencil read-only
-
 	// Apply deferred shader filters.
-	glStencilFunc(GL_EQUAL, STENCIL_NOSKY, STENCIL_UI|STENCIL_NOSKY); // Only execute when no sky and no UI
+	glStencilFunc(GL_EQUAL, STENCIL_NOSKY, STENCIL_NOSKY); // Only execute when no sky and no UI
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_ONE, GL_ONE);
 	if ((Options::fgOptions.fDynamicShadows || Options::fgOptions.fStaticShadows) && !gPlayer.BelowGround())
@@ -225,17 +224,13 @@ void RenderControl::Draw(Object *selectedObject, bool underWater, bool thirdPers
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // Restore default
 	glDisable(GL_BLEND);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0); // Frame buffer has done its job now, results are in the diffuse image.
+	glDisable(GL_STENCIL_TEST);
 
 	// At this point, there is no depth buffer representing the geometry and no stencil. They are only valid inside the FBO.
 	// However, there is the global stencil buffer. Use it to set the bit for the UI, but it is not possible to reconstruct the
 	// bit for the sky.
 	drawClear();
-	glStencilFunc(GL_ALWAYS, STENCIL_UI, STENCIL_UI); // Set bit for UI
-	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE); // Replace bits when something is drawn
-	drawUI(); // This time, it will stay on the screen.
-	glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP); // Make stencil read-only
 
-	glStencilFunc(GL_EQUAL, 0, STENCIL_UI); // Only execute when no UI
 	// Draw the main result to the screen. TODO: It would be possible to have the deferred rendering update the depth buffer!
 	if (gShowFramework)
 		glPolygonMode(GL_FRONT, GL_FILL);
@@ -248,7 +243,7 @@ void RenderControl::Draw(Object *selectedObject, bool underWater, bool thirdPers
 		drawSelection(fSelectedObject->GetPosition());
 	if (!underWater)
 		drawLocalFog();
-	glDisable(GL_STENCIL_TEST);
+	drawUI(); // This time, it will stay on the screen.
 	if (showMap)
 		drawMap(mapWidth);
 }
@@ -553,17 +548,10 @@ void RenderControl::drawSkyBox(void) {
 }
 
 void RenderControl::drawUI(void) {
-	glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(-1.0f, -1.0f, 1.0f));
-	model = glm::scale(model, glm::vec3(2.0f, 0.5f, 1.0f));
-	glBindTexture(GL_TEXTURE_2D, GameTexture::InGameUiId);
-	glDisable(GL_CULL_FACE);
-	glDepthMask(GL_FALSE);
-	glDisable(GL_DEPTH_TEST);
-	auto texture = DrawTexture::Make();
-	texture->Draw(glm::mat4(1), model, 1.0f);
-	glEnable(GL_DEPTH_TEST);
-	glDepthMask(GL_TRUE);
-	glEnable(GL_CULL_FACE);
+	static WorstTime tm("MainUI");
+	tm.Start();
+	fMainUserInterface.Draw();
+	tm.Stop();
 }
 
 void RenderControl::drawMap(int mapWidth) {
@@ -607,4 +595,8 @@ float RenderControl::ComputeAverageLuminance(void) {
 	}
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 	return sum / weight;
+}
+
+Rocket::Core::Context *RenderControl::GetRocketContext(void) {
+	return fMainUserInterface.GetRocketContext();
 }

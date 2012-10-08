@@ -156,4 +156,5 @@ RocketGui::~RocketGui() {
 void RocketGui::LoadFonts(const std::string& dir)
 {
 	Rocket::Core::FontDatabase::LoadFontFace((dir + "Gabriola.ttf").c_str());
+	Rocket::Core::FontDatabase::LoadFontFace((dir + "georgia.ttf").c_str());
 }

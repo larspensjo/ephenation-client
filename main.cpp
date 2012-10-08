@@ -363,10 +363,6 @@ static struct option long_options[] = {
 	{0, 0, 0, 0}
 };
 
-static void dialogHandleMouse(int button, int action) {
-	gGameDialog.handleMouse(button, action);
-}
-
 int main(int argc, char** argv) {
 	if (!glfwInit()) {
 		ErrorDialog("Failed to initialize GLFW\n");
@@ -531,7 +527,6 @@ int main(int argc, char** argv) {
 	Tree::InitStatic();
 	gLantern.Init(shader);
 	gQuadStage1.Init();
-	glfwSetMouseButtonCallback(dialogHandleMouse);
 	gBillboard.Init();
 
 	gSoundControl.RequestMusicMode(SoundControl::SMusicModeTourist);
