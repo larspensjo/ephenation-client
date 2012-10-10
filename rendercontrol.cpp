@@ -550,7 +550,10 @@ void RenderControl::drawSkyBox(void) {
 void RenderControl::drawUI(void) {
 	static WorstTime tm("MainUI");
 	tm.Start();
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	fMainUserInterface.Draw();
+	glDisable(GL_BLEND);
 	tm.Stop();
 }
 

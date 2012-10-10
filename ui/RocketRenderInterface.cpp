@@ -56,8 +56,8 @@ Rocket::Core::CompiledGeometryHandle RocketRenderInterface::CompileGeometry(Rock
 	// Allocate the vertex data object
 	glGenBuffers(1, &geometry->vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, geometry->vbo);
-	glBufferData(GL_ARRAY_BUFFER, num_vertices * sizeof (Rocket::Core::Vertex), vertices, GL_STATIC_DRAW);
 
+	glBufferData(GL_ARRAY_BUFFER, num_vertices * sizeof (Rocket::Core::Vertex), vertices, GL_STATIC_DRAW);
 	// Allocate the index data in OpenGL
 	glGenBuffers(1, &geometry->vbi);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, geometry->vbi);
@@ -79,7 +79,6 @@ Rocket::Core::CompiledGeometryHandle RocketRenderInterface::CompileGeometry(Rock
 		geometry->color.r = vertices->colour.red/255.0f;
 		geometry->color.g = vertices->colour.green/255.0f;
 		geometry->color.b = vertices->colour.blue/255.0f;
-		// Use the SimpleTextureShader
 	}
 	glBindVertexArray(0);
 	checkError("RocketRenderInterface::CompileGeometry");
