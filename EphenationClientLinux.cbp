@@ -158,6 +158,8 @@
 		<Unit filename="shaders/addpointshadow.h" />
 		<Unit filename="shaders/addssao.cpp" />
 		<Unit filename="shaders/addssao.h" />
+		<Unit filename="shaders/modulatedtextureshader.cpp" />
+		<Unit filename="shaders/modulatedtextureshader.h" />
 		<Unit filename="shaders/shader.cpp" />
 		<Unit filename="shaders/shader.h" />
 		<Unit filename="shaders/shadowmapshader.cpp" />

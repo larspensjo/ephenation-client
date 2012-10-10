@@ -57,7 +57,7 @@ static const GLchar *fragmentShaderSource[] = {
 };
 
 SimpleTextureShader *SimpleTextureShader::Make(void) {
-	if (fgSingleton.fgFirstTextureIndex == -1) {
+	if (fgSingleton.fgProjectionMatrixIndex == -1) {
 		const GLsizei vertexShaderLines = sizeof(vertexShaderSource) / sizeof(GLchar*);
 		const GLsizei fragmentShaderLines = sizeof(fragmentShaderSource) / sizeof(GLchar*);
 		fgSingleton.Init("SimpleTextureShader", vertexShaderLines, vertexShaderSource, fragmentShaderLines, fragmentShaderSource);
@@ -68,17 +68,14 @@ SimpleTextureShader *SimpleTextureShader::Make(void) {
 void SimpleTextureShader::GetLocations(void) {
 	fgProjectionMatrixIndex = this->GetUniformLocation("projectionMatrix");
 	fModelViewMatrixIndex = this->GetUniformLocation("modelViewMatrix");
-	fgFirstTextureIndex = this->GetUniformLocation("firstTexture");
+	glUniform1i(this->GetUniformLocation("firstTexture"), 0); // Always at texture 0
 	fgForceTranspInd = this->GetUniformLocation("forceTransparent");
 	fgVertexIndex = this->GetAttribLocation("vertex");
 	fgTexCoordIndex = this->GetAttribLocation("texCoord");
 	fTextOffsMultiInd = this->GetUniformLocation("textOffsMulti");
 	fColorOffsetIdx = this->GetUniformLocation("colorOffset");
 	this->TextureOffsetMulti(0.0f, 0.0f, 1.0f);
-	checkError("DrawText::DrawTextInit");
 }
-
-void Projection(glm::mat4 &);
 
 void SimpleTextureShader::EnableVertexAttribArray(void) {
 	glEnableVertexAttribArray(fgVertexIndex);
@@ -94,17 +91,11 @@ void SimpleTextureShader::DisableProgram(void) {
 }
 
 void SimpleTextureShader::Projection(const glm::mat4 &mat) {
-	if (fgProjectionMatrixIndex != -1) {
-		glUniformMatrix4fv(fgProjectionMatrixIndex, 1, GL_FALSE, &mat[0][0]); // Send our modelView matrix to the shader
-	}
-	checkError("SimpleTextureShader::Projection");
+	glUniformMatrix4fv(fgProjectionMatrixIndex, 1, GL_FALSE, &mat[0][0]); // Send our modelView matrix to the shader
 }
 
 void SimpleTextureShader::ModelView(const glm::mat4 &mat) {
-	if (fModelViewMatrixIndex != -1) {
-		glUniformMatrix4fv(fModelViewMatrixIndex, 1, GL_FALSE, &mat[0][0]); // Send our modelView matrix to the shader
-	}
-	checkError("SimpleTextureShader::ModelView");
+	glUniformMatrix4fv(fModelViewMatrixIndex, 1, GL_FALSE, &mat[0][0]); // Send our modelView matrix to the shader
 }
 
 void SimpleTextureShader::ForceTransparent(float alpha) {
@@ -129,17 +120,12 @@ void SimpleTextureShader::TextureAttribPointer(GLenum type, GLsizei stride, cons
 
 SimpleTextureShader::SimpleTextureShader() {
 	fgProjectionMatrixIndex = -1;
-	fgFirstTextureIndex = -1;
 	fgVertexIndex = -1;
 	fgTexCoordIndex = -1;
 	fModelViewMatrixIndex = -1;
 	fgForceTranspInd = -1;
 	fTextOffsMultiInd = -1;
 	fColorOffsetIdx = -1;
-}
-
-SimpleTextureShader::~SimpleTextureShader() {
-	// TODO Auto-generated destructor stub
 }
 
 SimpleTextureShader SimpleTextureShader::fgSingleton;

@@ -21,7 +21,7 @@
 #include <Rocket/Core.h>
 
 #include "../shaders/ColorShader.h"
-#include "../shaders/SimpleTextureShader.h"
+#include "../shaders/modulatedtextureshader.h"
 
 class RocketRenderInterface: public Rocket::Core::RenderInterface
 {
@@ -57,9 +57,8 @@ private:
 		GLuint vao;
 		GLuint vbo;
 		GLuint vbi;
-		glm::vec3 color;
 	};
 
 	ColorShader *fColorShader; // Pointer to singleton, do not delete
-	SimpleTextureShader *fSimpleTextureShader; // Pointer to singleton, do not delete
+	ModulatedTextureShader fModulatedTextureShader;
 };

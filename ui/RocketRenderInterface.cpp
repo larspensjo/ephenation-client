@@ -25,13 +25,13 @@
 #include "../imageloader.h"
 #include "RocketRenderInterface.h"
 
-RocketRenderInterface::RocketRenderInterface() : fColorShader(0), fSimpleTextureShader(0)
+RocketRenderInterface::RocketRenderInterface() : fColorShader(0)
 {
 }
 
 void RocketRenderInterface::Init() {
 	fColorShader = ColorShader::Make();
-	fSimpleTextureShader = SimpleTextureShader::Make();
+	fModulatedTextureShader.Init();
 }
 
 void RocketRenderInterface::RenderGeometry(Rocket::Core::Vertex* vertices,  int num_vertices, int* indices, int num_indices, const Rocket::Core::TextureHandle texture, const Rocket::Core::Vector2f& translation)
@@ -56,8 +56,8 @@ Rocket::Core::CompiledGeometryHandle RocketRenderInterface::CompileGeometry(Rock
 	// Allocate the vertex data object
 	glGenBuffers(1, &geometry->vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, geometry->vbo);
-
 	glBufferData(GL_ARRAY_BUFFER, num_vertices * sizeof (Rocket::Core::Vertex), vertices, GL_STATIC_DRAW);
+
 	// Allocate the index data in OpenGL
 	glGenBuffers(1, &geometry->vbi);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, geometry->vbi);
@@ -68,17 +68,17 @@ Rocket::Core::CompiledGeometryHandle RocketRenderInterface::CompileGeometry(Rock
 	if (texturehandle == 0) {
 		// Use the ColorShader
 		glEnableVertexAttribArray(fColorShader->VERTEX_INDEX);
-		glEnableVertexAttribArray(fColorShader->COLOR_INDEX);
 		glVertexAttribPointer(fColorShader->VERTEX_INDEX, 2, GL_FLOAT, GL_FALSE, sizeof (Rocket::Core::Vertex), &vp->position.x);
+		glEnableVertexAttribArray(fColorShader->COLOR_INDEX);
 		glVertexAttribPointer(fColorShader->COLOR_INDEX, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof (Rocket::Core::Vertex), &vp->colour.red);
 	} else {
-		fSimpleTextureShader->EnableVertexAttribArray();
-		fSimpleTextureShader->VertexAttribPointer(GL_FLOAT, 2, sizeof (Rocket::Core::Vertex), &vp->position.x);
-		fSimpleTextureShader->TextureAttribPointer(GL_FLOAT, sizeof (Rocket::Core::Vertex), &vp->tex_coord.x);
-		// Color override. They are all the same, so first one is saved.
-		geometry->color.r = vertices->colour.red/255.0f;
-		geometry->color.g = vertices->colour.green/255.0f;
-		geometry->color.b = vertices->colour.blue/255.0f;
+		// Use the ModulatedTextureShader
+		glEnableVertexAttribArray(ModulatedTextureShader::VERTEX_INDEX);
+		glVertexAttribPointer(ModulatedTextureShader::VERTEX_INDEX, 2, GL_FLOAT, GL_FALSE, sizeof (Rocket::Core::Vertex), &vp->position.x);
+		glEnableVertexAttribArray(ModulatedTextureShader::TEXTURE_INDEX);
+		glVertexAttribPointer(ModulatedTextureShader::TEXTURE_INDEX, 2, GL_FLOAT, GL_FALSE, sizeof (Rocket::Core::Vertex), &vp->tex_coord.x);
+		glEnableVertexAttribArray(ModulatedTextureShader::COLOR_INDEX);
+		glVertexAttribPointer(ModulatedTextureShader::COLOR_INDEX, 3, GL_UNSIGNED_BYTE, GL_TRUE, sizeof (Rocket::Core::Vertex), &vp->colour.red);
 	}
 	glBindVertexArray(0);
 	checkError("RocketRenderInterface::CompileGeometry");
@@ -88,12 +88,8 @@ Rocket::Core::CompiledGeometryHandle RocketRenderInterface::CompileGeometry(Rock
 
 void RocketRenderInterface::RenderCompiledGeometry(Rocket::Core::CompiledGeometryHandle geometry_ptr, const Rocket::Core::Vector2f& translation)
 {
-	glm::vec3 offset(translation.x, translation.y, 0.0f);
-	if (offset.x < 0)
-		offset.x += gViewport[2];
-	if (offset.y < 0)
-		offset.y += gViewport[3];
 	glm::mat4 proj = glm::ortho(0.0f, gViewport[2], gViewport[3], 0.0f, -1.0f, 1.0f);
+	glm::vec3 offset(translation.x, translation.y, 0.0f);
 	glm::mat4 model = glm::translate(glm::mat4(1.0), offset);
 	Geometry* geometry = reinterpret_cast<Geometry*>(geometry_ptr);
 	glDisable(GL_DEPTH_TEST);
@@ -104,21 +100,15 @@ void RocketRenderInterface::RenderCompiledGeometry(Rocket::Core::CompiledGeometr
 		fColorShader->ModelView(model);
 		fColorShader->Color(glm::vec4(0,0,0,0)); // Will make the color vertex attribute be used instead
 		fColorShader->Projection(proj);
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // Not using premultiplied alpha
 		glDrawElements(GL_TRIANGLES, geometry->numIndices, GL_UNSIGNED_INT, 0);
-		glDisable(GL_BLEND);
 		fColorShader->DisableProgram();
 	} else {
-		glm::vec3 offset = geometry->color - glm::vec3(1,1,1);
-		fSimpleTextureShader->EnableProgram();
-		fSimpleTextureShader->SetColorOffset(offset);
-		fSimpleTextureShader->ModelView(model);
-		fSimpleTextureShader->Projection(proj);
+		fModulatedTextureShader.EnableProgram();
+		fModulatedTextureShader.ModelView(model);
+		fModulatedTextureShader.Projection(proj);
 		glBindTexture(GL_TEXTURE_2D, geometry->texture);
 		glDrawElements(GL_TRIANGLES, geometry->numIndices, GL_UNSIGNED_INT, 0);
-		fSimpleTextureShader->SetColorOffset(glm::vec3(0,0,0)); // Restore default
-		fSimpleTextureShader->DisableProgram();
+		fModulatedTextureShader.DisableProgram();
 	}
 	glBindVertexArray(0);
 	glEnable(GL_DEPTH_TEST);
@@ -168,7 +158,7 @@ bool RocketRenderInterface::GenerateTexture(Rocket::Core::TextureHandle& texture
 	for (int x=0; x<source_dimensions.x; x++) {
 		for (int y=0; y<source_dimensions.y; y++) {
 			for (int c=0; c<4; c++) {
-				bitmap[y*source_dimensions.x*4 + x*4 + c] = source[(source_dimensions.y-y)*source_dimensions.x*4 + x*4 + c];
+				bitmap[y*source_dimensions.x*4 + x*4 + c] = source[(source_dimensions.y-y-1)*source_dimensions.x*4 + x*4 + c];
 			}
 		}
 	}

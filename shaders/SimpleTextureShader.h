@@ -41,10 +41,9 @@ private:
 	// Define all uniform and attribute indices.
 	virtual void GetLocations(void);
 	SimpleTextureShader(); // Only allow access through the maker.
-	virtual ~SimpleTextureShader();
 	static SimpleTextureShader fgSingleton; // This is the singleton instance
 	static const GLchar *fVertexShaderSource[];
 	static const GLchar *fFragmentShaderSource[];
-	GLint fgProjectionMatrixIndex, fgFirstTextureIndex, fgVertexIndex, fgTexCoordIndex, fModelViewMatrixIndex, fColorOffsetIdx;
+	GLint fgProjectionMatrixIndex, fgVertexIndex, fgTexCoordIndex, fModelViewMatrixIndex, fColorOffsetIdx;
 	GLint fgForceTranspInd, fTextOffsMultiInd;
 };

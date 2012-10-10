@@ -25,7 +25,6 @@
 // Minimum program for drawing text
 static const GLchar *vertexShaderSource[] = {
 	"#version 330\n",
-	"precision mediump float;\n",
 	"uniform mat4 UprojectionMatrix;\n",
 	"uniform mat4 UmodelViewMatrix;\n",
 	"layout (location=0) in vec3 Avertex;\n", // Location must match VERTEX_INDEX
@@ -65,6 +64,8 @@ void ColorShader::GetLocations(void) {
 	fProjectionMatrixIndex = this->GetUniformLocation("UprojectionMatrix");
 	fModelViewMatrixIndex = this->GetUniformLocation("UmodelViewMatrix");
 	fColorIndex = this->GetUniformLocation("Ucolor");
+	ASSERT(this->GetAttribLocation("Avertex") == VERTEX_INDEX);
+	ASSERT(this->GetAttribLocation("Acolor") == COLOR_INDEX);
 }
 
 void ColorShader::EnableProgram(void) {
