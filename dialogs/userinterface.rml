@@ -29,20 +29,23 @@
 		
 		.chatwindow
 		{
-			width: 500px;
-			height: 300px;
+			width: 35%;
+			height: 30%;
 			position: absolute;
 			right: 5;
-			bottom: 50;
-			background-color: #0000003F; /* Semi transparent black background */
-			font-family: georgia;
-			font-size: 12px;
+			bottom: 10%;
+			background-color: rgba(0,0,0,30%); /* Semi transparent black background */
+			font-family: Georgia;
+			font-size: 15px;
+			color: white;
 		}
 
 	</style>
 </head>
 <body id="body">
-	<div id="chat" class="chatwindow"></div>
+	<handle move_target="chat">
+		<div id="chat" class="chatwindow"></div>
+	</handle>
 	<div class="playerstats"></div>
 </body>
 </rml>
