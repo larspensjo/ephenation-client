@@ -22,7 +22,7 @@
 #include "../primitives.h"
 #include "../timemeasure.h"
 
-MainUserInterface::MainUserInterface() : fRocketContext(0) {
+MainUserInterface::MainUserInterface() : fRocketContext(0), fDocument(0) {
 }
 
 void MainUserInterface::Init() {
@@ -37,16 +37,11 @@ void MainUserInterface::Init() {
 	Rocket::Debugger::Initialise(fRocketContext);
 
 	// Load and show the UI.
-	Rocket::Core::ElementDocument* document = fRocketContext->LoadDocument("dialogs/userinterface.rml");
-	if (document != NULL)
+	fDocument = fRocketContext->LoadDocument("dialogs/userinterface.rml");
+	if (fDocument != NULL)
 	{
-#if 1
-		Rocket::Core::Element *e = document->GetElementById("chat");
-		Rocket::Core::String s = e->GetInnerRML();
-		e->SetInnerRML("Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.");
-#endif
-		document->Show();
-		document->RemoveReference();
+		fDocument->Show();
+		fDocument->RemoveReference();
 	}
 }
 
@@ -65,4 +60,8 @@ void MainUserInterface::Draw(void) {
 
 Rocket::Core::Context *MainUserInterface::GetRocketContext(void) {
 	return fRocketContext;
+}
+
+Rocket::Core::Element *MainUserInterface::GetElement(string elem) {
+	return fDocument->GetElementById(elem.c_str());
 }

@@ -1,6 +1,6 @@
 <rml>
 <head>
-	<title>Debug</title>
+	<link type="text/rcss" href="ephenation.rcss"/>
 	<style>
 		body
 		{
@@ -15,7 +15,7 @@
 			width: 500px;
 			height: 300px;
 		}
-		
+
 		.playerstats
 		{
 			width: 100%;
@@ -24,7 +24,7 @@
 			bottom: 0;
 			font-family: Gabriola;
 			background-decorator: image;
-			background-image: ../textures/InGameUI.bmp;
+			background-image: InGameUI.bmp;
 		}
 		
 		.chatwindow
@@ -38,6 +38,8 @@
 			font-family: Georgia;
 			font-size: 15px;
 			color: white;
+			white-space: pre-wrap; /* Preserve newlines, but wrap also when needed */
+			overflow: scroll; /* Text flowing outside the area is not shown */
 		}
 
 	</style>

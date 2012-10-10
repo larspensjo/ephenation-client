@@ -20,24 +20,20 @@
 // This is a class that will manage a window with scrolling messages on the screen.
 //
 
-class DrawFont;
-class HealthBar;
+#include <string>
+#include <Rocket/Core.h>
+
+using std::string;
 
 class MsgWindow {
 public:
-	MsgWindow(int lines, int width, int x, int y); // Draw the window at x,y.
+	MsgWindow(); // Draw the window at x,y.
 	void Add(const char *fmt, ...);
-	~MsgWindow();
-	void Render(void) const;
-	void Init(void);
+	void Init(Rocket::Core::Element *rocketElement);
 	void SetAlternatePosition(int x, int y, bool enable=true);
 private:
-	unsigned int *fLines; // Pointer to sentences from VSFLFont
-	int fNumLines;
-	int fX, fY; // Coordinate on screen
-	float fWidth; // Number of pixels
-	float fMsgWinTransparency;
-	HealthBar *fBackground; // The HealthBar class provides a mechanism for drawing filled rectangles.
+	string fCompleteMessage;
+	Rocket::Core::Element *fRocketElement;
 
 	// Some special messages shall be directed if inventory screen is shown
 	bool fActivateDropMessage;
@@ -45,4 +41,3 @@ private:
 };
 
 extern MsgWindow gMsgWindow;
-extern bool gShowMsgWindow;

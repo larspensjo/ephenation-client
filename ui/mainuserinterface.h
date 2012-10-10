@@ -25,7 +25,10 @@ Manage the main user interface when gaming. That includes:
 
 #pragma once
 
+#include <string>
 #include <Rocket/Core.h>
+
+using std::string;
 
 class MainUserInterface {
 public:
@@ -34,6 +37,9 @@ public:
 	void Init(void);
 	void Draw(void);
 	Rocket::Core::Context *GetRocketContext(void);
+
+	Rocket::Core::Element *GetElement(string);
 private:
 	Rocket::Core::Context *fRocketContext;
+	Rocket::Core::ElementDocument *fDocument;
 };

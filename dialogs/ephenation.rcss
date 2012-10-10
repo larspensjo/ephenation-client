@@ -1,68 +1,73 @@
-body
+
+scrollbarvertical
 {
-	font-family: Gabriola;
-	font-weight: normal;
-	font-style: normal;
-	font-size: 18;
-	color: black;
-/*
-	background: #0000003F;
-	background-decorator: image;
-	background-image: ../textures/DialogBackground.bmp;
-*/
+	margin-top: -6px;
+	margin-bottom: -6px;
+	margin-right: -11px;
+	width: 27px;
 }
 
-body.window
+scrollbarvertical slidertrack
 {
-	background-decorator: image;
-	background-image: ../textures/DialogBackground.bmp;
-
-	padding-top: 43px;
-	padding-bottom: 20px;
-
-	min-width: 250px;
-	max-width: 800px;
-
-	min-height: 135px;
-	max-height: 700px;
+	background-decorator: tiled-vertical;
+	background-top-image: decorators.bmp 70px 199px 97px 201px;
+	background-center-image: decorators.bmp stretch 70px 201px 97px 202px;
+	background-bottom-image: decorators.bmp 70px 203px 97px 204px;
 }
 
-body.windowtransp
+scrollbarvertical sliderbar
 {
-	background: #0000003F;
-	color: white;
+	margin-left: 4px;
+	width: 23px;
+	min-height: 46px;
 
-	padding-top: 10px;
-	padding-bottom: 10px;
-
-	padding-left: 4px;
-	padding-right: 4px;
-
-	min-width: 250px;
-	max-width: 800px;
-
-	min-height: 135px;
-	max-height: 700px;
-	font-size: 22;
+	background-decorator: tiled-vertical;
+	background-top-image: decorators.bmp 56px 152px 79px 175px;
+	background-center-image: decorators.bmp stretch 56px 175px 79px 175px;
+	background-bottom-image: decorators.bmp 56px 176px 79px 198px;
 }
 
-div#title-bar span
+scrollbarvertical sliderbar:hover
 {
-	font-size: 48;
-	font-weight: normal;
-	text-shadow: 2px 2px black;
+	background-top-image-s: 80px 103px;
+	background-center-image-s: 80px 103px;
+	background-bottom-image-s: 80px 103px;
 }
 
-div#title-bar
+scrollbarvertical sliderbar:active
 {
-	position: absolute;
-	top: 0px;
+	background-top-image-s: 104px 127px;
+	background-center-image-s: 104px 127px;
+	background-bottom-image-s: 104px 127px;
 }
 
-div#content
+scrollbarvertical sliderarrowdec
 {
-	z-index: 1;
-	height: 100%;
-	overflow: hidden;
+	width: 27px;
+	height: 24px;
+
+	icon-decorator: image;
+	icon-image: decorators.bmp 0px 152px 27px 176px;
+}
+
+scrollbarvertical sliderarrowdec:hover,
+scrollbarvertical sliderarrowinc:hover
+{
+	icon-image-t: 177px 201px;
+}
+
+scrollbarvertical sliderarrowdec:active,
+scrollbarvertical sliderarrowinc:active
+{
+	icon-image-t: 202px 226px;
+}
+
+scrollbarvertical sliderarrowinc
+{
+	width: 27px;
+	height: 24px;
+
+	icon-decorator: image;
+	icon-image: decorators.bmp 28px 152px 55px 176px;
 }
 

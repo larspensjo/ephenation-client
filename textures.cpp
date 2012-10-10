@@ -97,7 +97,7 @@ GLuint GameTexture::TreeBarkId, GameTexture::Hedge, GameTexture::Window, GameTex
 GLuint GameTexture::Sky1Id, GameTexture::Sky2Id, GameTexture::Sky3Id, GameTexture::Sky4Id, GameTexture::SkyupId;
 GLuint GameTexture::RedScalesId, GameTexture::Fur1Id, GameTexture::MonsterFace1, GameTexture::PlayerFace[5], GameTexture::Morran;
 GLuint GameTexture::LanternSideId, GameTexture::Teleport;
-GLuint GameTexture::InGameUiId, GameTexture::LightBallsHeal, GameTexture::InventoryId, GameTexture::EquipmentId;
+GLuint GameTexture::LightBallsHeal, GameTexture::InventoryId, GameTexture::EquipmentId;
 GLuint GameTexture::RedColor, GameTexture::GreenColor, GameTexture::BlueColor, GameTexture::DarkGray;
 GLuint GameTexture::RedChunkBorder, GameTexture::BlueChunkBorder, GameTexture::GreenChunkBorder;
 GLuint GameTexture::CompassRose, GameTexture::DamageIndication;
@@ -348,10 +348,6 @@ void GameTexture::Init(void) {
 	DamageIndication = loadTexture(loadBMP("textures/DamageIndication.bmp"), TF_NOMIPMAP);
 
 	LanternSideId = loadTexture(loadBMP("textures/LanternSide.bmp"), TF_SRGB);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-	InGameUiId = loadTexture(loadBMP("textures/InGameUI.bmp"), TF_NOMIPMAP);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 

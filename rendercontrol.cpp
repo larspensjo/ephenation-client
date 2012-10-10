@@ -50,6 +50,7 @@
 #include "Map.h"
 #include "DrawTexture.h"
 #include "worsttime.h"
+#include "msgwindow.h"
 
 #define NELEM(x) (sizeof x / sizeof x[0])
 
@@ -99,6 +100,7 @@ void RenderControl::Init() {
 	fAddSSAO->Init();
 
 	fMainUserInterface.Init();
+	gMsgWindow.Init(fMainUserInterface.GetElement("chat"));
 
 	if (Options::fgOptions.fDynamicShadows) {
 		fShadowRender.reset(new ShadowRender(DYNAMIC_SHADOW_MAP_SIZE,DYNAMIC_SHADOW_MAP_SIZE));

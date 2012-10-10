@@ -659,7 +659,6 @@ void gameDialog::HandleKeyPress(int key) {
 	}
 	case 'T':
 		dumpGraphicsMemoryStats();
-		gShowMsgWindow = !gShowMsgWindow;
 		break;
 	case GLFW_KEY_KP_ENTER:
 	case GLFW_KEY_ENTER: // ENTER key
@@ -1069,7 +1068,6 @@ void gameDialog::init(void) {
 	}
 	if (maxRenderDistance < 5.0f)
 		maxRenderDistance = 5.0f;
-	gMsgWindow.Init();
 	gTranspShader.Init();
 	fBuildingBlocks = BuildingBlocks::Make(7); // TODO: Need something more adaptive than a constant.
 	fFPSsentence = gDrawFont.vsfl.genSentence();
