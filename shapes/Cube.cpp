@@ -18,6 +18,10 @@
 #include <math.h>
 #include <GL/glew.h>
 
+#ifndef M_PI
+#define M_PI		3.14159265358979323846
+#endif
+
 #include "Cube.h"
 #include "../primitives.h"
 #include "../shaders/ChunkShader.h"

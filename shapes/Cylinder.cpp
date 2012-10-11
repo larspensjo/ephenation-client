@@ -19,6 +19,10 @@
 #include <GL/glew.h>
 #include <stdio.h>
 
+#ifndef M_PI
+#define M_PI		3.14159265358979323846
+#endif
+
 #include "Cylinder.h"
 #include "../primitives.h"
 #include "../shaders/ChunkShader.h"

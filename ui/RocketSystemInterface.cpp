@@ -16,6 +16,7 @@
 //
 
 #include <GL/glfw.h>
+#include <stdio.h>
 
 #include "RocketSystemInterface.h"
 
