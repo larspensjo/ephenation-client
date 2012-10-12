@@ -50,28 +50,28 @@
 
 # The pre-processor and compiler options.
 MY_CFLAGS = -L/usr/lib -L/usr/local/lib -I/usr/local/include -I/usr/include\
-	-Iwin32/glfw-2.7.bin.WIN32/include\
-	-Iwin32/OpenAL/include\
-	-Iwin32/freealut-1.1.0-bin/include\
-	-Iwin32/lloyd-yajl-17b1790/src/include\
-	-Iwin32/tinyxml\
+	-Icontrib/win32/glfw-2.7.bin.WIN32/include\
+	-Icontrib/win32/OpenAL/include\
+	-Icontrib/win32/freealut-1.1.0-bin/include\
+	-Icontrib/win32/lloyd-yajl-17b1790/src/include\
+	-Icontrib/win32/tinyxml\
 	-Icontrib/win32/libRocket/include\
+	-Icontrib/glm\
 	-I/usr/bin/assimp/include\
 	-DOV_EXCLUDE_STATIC_CALLBACKS\
 	-DWIN32\
-	-DSTATIC_LIB\
-	-L/usr/bin/assimp/lib
+	-DSTATIC_LIB
 
 # The linker options.
 # MY_LIBS   = /usr/lib/libprofiler.so.0
 MY_LIBS   =\
-	win32/glfw-2.7.bin.WIN32/lib-mingw/libglfw.a\
+	contrib/win32/glfw-2.7.bin.WIN32/lib-mingw/libglfw.a\
 	-lglew32\
 	-lassimp\
 	 -lopengl32\
 	-lfltk\
-	win32/freealut-1.1.0-bin/lib/alut.lib\
-	win32/OpenAL/libs/Win32/OpenAL32.lib\
+	contrib/win32/freealut-1.1.0-bin/lib/alut.lib\
+	contrib/win32/OpenAL/libs/Win32/OpenAL32.lib\
 	-lpthread\
 	-logg -lvorbis -llibvorbisfile\
 	contrib/win32/libRocket/libRocketDebugger.a\
@@ -88,8 +88,8 @@ LDFLAGS   =
 
 # The directories in which source files reside.
 # If not specified, only the current directory will be serached.
-SRCDIRS   = . vsfl shaders ui shapes win32/boost_1_47/boost/program_options/src win32/tinyxml\
-	win32/lloyd-yajl-17b1790/src
+SRCDIRS   = . vsfl shaders ui shapes contrib/win32/tinyxml\
+	contrib/win32/lloyd-yajl-17b1790/src
 
 # The executable file name.
 # If not specified, current directory name or `a.out' will be used.
