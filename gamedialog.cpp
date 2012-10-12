@@ -509,6 +509,12 @@ void gameDialog::HandleKeyPress(int key) {
 		return;
 	}
 
+	if (key == GLFW_KEY_KP_0 && gDebugOpenGL) {
+		gToggleTesting = !gToggleTesting;
+		Rocket::Debugger::SetVisible(gToggleTesting);
+		return;
+	}
+
 	if (fCurrentRocketContextInput) {
 		fCurrentRocketContextInput->ProcessKeyDown(RocketGui::KeyMap(key), 0);
 		return;
@@ -564,12 +570,6 @@ void gameDialog::HandleKeyPress(int key) {
 	int x, y;
 	glfwGetMousePos(&x, &y);
 	switch (key) {
-	case GLFW_KEY_KP_0:
-		// if (gPlayer.fAdmin > 0)
-		gToggleTesting = !gToggleTesting;
-		Rocket::Debugger::SetVisible(gToggleTesting);
-		fCurrentRocketContextInput = fMainUserInterface.GetRocketContext();
-		break;
 	case GLFW_KEY_ESC:
 		if (fDrawMap)
 			fDrawMap = false;
