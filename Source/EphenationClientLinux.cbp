@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="EphenationClient" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/Debug/EphenationClient" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+					<Add option="-Dunix" />
+					<Add directory="contrib/glm" />
+				</Compiler>
+				<Linker>
+					<Add library="GLEW" />
+					<Add library="yajl" />
+					<Add library="assimp" />
+					<Add library="glfw" />
+					<Add library="tinyxml" />
+					<Add library="fltk" />
+					<Add library="alut" />
+					<Add library="openal" />
+					<Add library="pthread" />
+					<Add library="ogg" />
+					<Add library="vorbis" />
+					<Add library="vorbisfile" />
+					<Add library="RocketCore" />
+					<Add library="RocketDebugger" />
+					<Add library="RocketControls" />
+				</Linker>
+			</Target>
+			<Target title="Release">
+				<Option output="bin/Release/EphenationClient" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+		</Compiler>
+		<Linker>
+			<Add library="GL" />
+			<Add library="X11" />
+		</Linker>
+		<Unit filename="BlenderModel.cpp" />
+		<Unit filename="BlenderModel.h" />
+		<Unit filename="BuildingBlocks.cpp" />
+		<Unit filename="BuildingBlocks.h" />
+		<Unit filename="ChunkBlocks.cpp" />
+		<Unit filename="ChunkBlocks.h" />
+		<Unit filename="ChunkObject.cpp" />
+		<Unit filename="ChunkObject.h" />
+		<Unit filename="ChunkProcess.cpp" />
+		<Unit filename="ChunkProcess.h" />
+		<Unit filename="DrawText.cpp" />
+		<Unit filename="DrawText.h" />
+		<Unit filename="DrawTexture.cpp" />
+		<Unit filename="DrawTexture.h" />
+		<Unit filename="HealthBar.cpp" />
+		<Unit filename="HealthBar.h" />
+		<Unit filename="Inventory.cpp" />
+		<Unit filename="Inventory.h" />
+		<Unit filename="Makefile" />
+		<Unit filename="Makefile.mingw" />
+		<Unit filename="Map.cpp" />
+		<Unit filename="Map.h" />
+		<Unit filename="MonsterDef.cpp" />
+		<Unit filename="MonsterDef.h" />
+		<Unit filename="Options.cpp" />
+		<Unit filename="Options.h" />
+		<Unit filename="RandomMonster.cpp" />
+		<Unit filename="RandomMonster.h" />
+		<Unit filename="ScrollingMessages.cpp" />
+		<Unit filename="ScrollingMessages.h" />
+		<Unit filename="SoundControl.cpp" />
+		<Unit filename="SoundControl.h" />
+		<Unit filename="SuperChunkManager.cpp" />
+		<Unit filename="SuperChunkManager.h" />
+		<Unit filename="TSExec.cpp" />
+		<Unit filename="TSExec.h" />
+		<Unit filename="Teleport.cpp" />
+		<Unit filename="Teleport.h" />
+		<Unit filename="assert.cpp" />
+		<Unit filename="assert.h" />
+		<Unit filename="billboard.cpp" />
+		<Unit filename="billboard.h" />
+		<Unit filename="chunk.cpp" />
+		<Unit filename="chunk.h" />
+		<Unit filename="chunkcache.cpp" />
+		<Unit filename="chunkcache.h" />
+		<Unit filename="client_prot.h" />
+		<Unit filename="connection.cpp" />
+		<Unit filename="connection.h" />
+		<Unit filename="crypt.cpp" />
+		<Unit filename="crypt.h" />
+		<Unit filename="dialogs/ephenation.rcss" />
+		<Unit filename="dialogs/userinterface.rml" />
+		<Unit filename="gamedialog.cpp" />
+		<Unit filename="gamedialog.h" />
+		<Unit filename="imageloader.cpp" />
+		<Unit filename="imageloader.h" />
+		<Unit filename="main.cpp" />
+		<Unit filename="modes.cpp" />
+		<Unit filename="modes.h" />
+		<Unit filename="monsters.cpp" />
+		<Unit filename="monsters.h" />
+		<Unit filename="msgwindow.cpp" />
+		<Unit filename="msgwindow.h" />
+		<Unit filename="object.h" />
+		<Unit filename="otherplayers.cpp" />
+		<Unit filename="otherplayers.h" />
+		<Unit filename="parse.cpp" />
+		<Unit filename="parse.h" />
+		<Unit filename="player.cpp" />
+		<Unit filename="player.h" />
+		<Unit filename="primitives.cpp" />
+		<Unit filename="primitives.h" />
+		<Unit filename="readme.txt" />
+		<Unit filename="render.cpp" />
+		<Unit filename="render.h" />
+		<Unit filename="rendercontrol.cpp" />
+		<Unit filename="rendercontrol.h" />
+		<Unit filename="shaders/AnimationShader.cpp" />
+		<Unit filename="shaders/AnimationShader.h" />
+		<Unit filename="shaders/ChunkShader.cpp" />
+		<Unit filename="shaders/ChunkShader.h" />
+		<Unit filename="shaders/ChunkShaderPicking.cpp" />
+		<Unit filename="shaders/ChunkShaderPicking.h" />
+		<Unit filename="shaders/ColorShader.cpp" />
+		<Unit filename="shaders/ColorShader.h" />
+		<Unit filename="shaders/DeferredLighting.cpp" />
+		<Unit filename="shaders/DeferredLighting.h" />
+		<Unit filename="shaders/MonsterShader.cpp" />
+		<Unit filename="shaders/MonsterShader.h" />
+		<Unit filename="shaders/SimpleTextureShader.cpp" />
+		<Unit filename="shaders/SimpleTextureShader.h" />
+		<Unit filename="shaders/StageOneShader.cpp" />
+		<Unit filename="shaders/StageOneShader.h" />
+		<Unit filename="shaders/TranspShader.cpp" />
+		<Unit filename="shaders/TranspShader.h" />
+		<Unit filename="shaders/adddynamicshadow.cpp" />
+		<Unit filename="shaders/adddynamicshadow.h" />
+		<Unit filename="shaders/addlocalfog.cpp" />
+		<Unit filename="shaders/addlocalfog.h" />
+		<Unit filename="shaders/addpointlight.cpp" />
+		<Unit filename="shaders/addpointlight.h" />
+		<Unit filename="shaders/addpointshadow.cpp" />
+		<Unit filename="shaders/addpointshadow.h" />
+		<Unit filename="shaders/addssao.cpp" />
+		<Unit filename="shaders/addssao.h" />
+		<Unit filename="shaders/modulatedtextureshader.cpp" />
+		<Unit filename="shaders/modulatedtextureshader.h" />
+		<Unit filename="shaders/shader.cpp" />
+		<Unit filename="shaders/shader.h" />
+		<Unit filename="shaders/shadowmapshader.cpp" />
+		<Unit filename="shaders/shadowmapshader.h" />
+		<Unit filename="shaders/skybox.cpp" />
+		<Unit filename="shaders/skybox.h" />
+		<Unit filename="shadowconfig.h" />
+		<Unit filename="shadowrender.cpp" />
+		<Unit filename="shadowrender.h" />
+		<Unit filename="shapes/Cube.cpp" />
+		<Unit filename="shapes/Cube.h" />
+		<Unit filename="shapes/Cylinder.cpp" />
+		<Unit filename="shapes/Cylinder.h" />
+		<Unit filename="shapes/Tree.cpp" />
+		<Unit filename="shapes/Tree.h" />
+		<Unit filename="shapes/quad.cpp" />
+		<Unit filename="shapes/quad.h" />
+		<Unit filename="shapes/quadstage1.cpp" />
+		<Unit filename="shapes/quadstage1.h" />
+		<Unit filename="simplexnoise1234.cpp" />
+		<Unit filename="simplexnoise1234.h" />
+		<Unit filename="textures.cpp" />
+		<Unit filename="textures.h" />
+		<Unit filename="timemeasure.cpp" />
+		<Unit filename="timemeasure.h" />
+		<Unit filename="ui/Activator.cpp" />
+		<Unit filename="ui/Activator.h" />
+		<Unit filename="ui/Credits.cpp" />
+		<Unit filename="ui/Credits.h" />
+		<Unit filename="ui/Error.cpp" />
+		<Unit filename="ui/Error.h" />
+		<Unit filename="ui/HelpDialog.cpp" />
+		<Unit filename="ui/HelpDialog.h" />
+		<Unit filename="ui/LoginDialog.cpp" />
+		<Unit filename="ui/LoginDialog.h" />
+		<Unit filename="ui/OptionsDialog.cpp" />
+		<Unit filename="ui/OptionsDialog.h" />
+		<Unit filename="ui/RocketGui.cpp" />
+		<Unit filename="ui/RocketGui.h" />
+		<Unit filename="ui/RocketRenderInterface.cpp" />
+		<Unit filename="ui/RocketRenderInterface.h" />
+		<Unit filename="ui/RocketSystemInterface.cpp" />
+		<Unit filename="ui/RocketSystemInterface.h" />
+		<Unit filename="ui/advancedoptions.cpp" />
+		<Unit filename="ui/advancedoptions.h" />
+		<Unit filename="ui/dialog.cpp" />
+		<Unit filename="ui/dialog.h" />
+		<Unit filename="ui/dialoginput.cpp" />
+		<Unit filename="ui/dialoginput.h" />
+		<Unit filename="ui/help2.cpp" />
+		<Unit filename="ui/help2.h" />
+		<Unit filename="ui/lighting.cpp" />
+		<Unit filename="ui/lighting.h" />
+		<Unit filename="ui/maindialog.cpp" />
+		<Unit filename="ui/maindialog.h" />
+		<Unit filename="ui/mainuserinterface.cpp" />
+		<Unit filename="ui/mainuserinterface.h" />
+		<Unit filename="ui/messagedialog.cpp" />
+		<Unit filename="ui/messagedialog.h" />
+		<Unit filename="ui/optionsdialog2.cpp" />
+		<Unit filename="ui/optionsdialog2.h" />
+		<Unit filename="uniformbuffer.cpp" />
+		<Unit filename="uniformbuffer.h" />
+		<Unit filename="vsfl/vsfl.cpp" />
+		<Unit filename="vsfl/vsfl.h" />
+		<Unit filename="worsttime.cpp" />
+		<Unit filename="worsttime.h" />
+		<Extensions>
+			<code_completion />
+			<debugger>
+				<remote_debugging target="Debug">
+					<options conn_type="0" serial_baud="115200" additional_cmds_before="set args --debug  --singlethread --testuser localhost" />
+				</remote_debugging>
+				<remote_debugging target="Release">
+					<options conn_type="0" serial_baud="115200" additional_cmds_before="set args --debug" />
+				</remote_debugging>
+			</debugger>
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

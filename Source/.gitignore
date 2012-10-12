@@ -1,0 +1,17 @@
+*.d
+*.o
+*.obj
+*.orig
+/ephenation
+/Debug
+/Release
+/Output
+/ephenation.exe
+.gdb_history
+/bin
+/obj
+/*.depend
+/core
+/*.layout
+.directory
+/.gdbinit
