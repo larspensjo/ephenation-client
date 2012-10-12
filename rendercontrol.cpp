@@ -51,6 +51,7 @@
 #include "DrawTexture.h"
 #include "worsttime.h"
 #include "msgwindow.h"
+#include "ui/mainuserinterface.h"
 
 #define NELEM(x) (sizeof x / sizeof x[0])
 
@@ -99,9 +100,6 @@ void RenderControl::Init() {
 	fAddSSAO.reset(new AddSSAO);
 	fAddSSAO->Init();
 
-	fMainUserInterface.Init();
-	gMsgWindow.Init(fMainUserInterface.GetElement("chat"));
-
 	if (Options::fgOptions.fDynamicShadows) {
 		fShadowRender.reset(new ShadowRender(DYNAMIC_SHADOW_MAP_SIZE,DYNAMIC_SHADOW_MAP_SIZE));
 		fShadowRender->Init();
@@ -112,7 +110,6 @@ void RenderControl::Init() {
 }
 
 void RenderControl::Resize(GLsizei width, GLsizei height) {
-	fMainUserInterface.Resize(width, height);
 	fWidth = width; fHeight = height;
 	// This function can be called repeatedly, when window size changes.
 	this->FreeFBO();
@@ -193,7 +190,7 @@ void RenderControl::Resize(GLsizei width, GLsizei height) {
 
 enum { STENCIL_NOSKY = 1 };
 
-void RenderControl::Draw(Object *selectedObject, bool underWater, bool thirdPersonView, Object *fSelectedObject, bool showMap, int mapWidth) {
+void RenderControl::Draw(Object *selectedObject, bool underWater, bool thirdPersonView, Object *fSelectedObject, bool showMap, int mapWidth, MainUserInterface *ui) {
 	if (!gPlayer.BelowGround())
 		this->ComputeShadowMap();
 
@@ -245,7 +242,7 @@ void RenderControl::Draw(Object *selectedObject, bool underWater, bool thirdPers
 		drawSelection(fSelectedObject->GetPosition());
 	if (!underWater)
 		drawLocalFog();
-	drawUI(); // This time, it will stay on the screen.
+	drawUI(ui);
 	if (showMap)
 		drawMap(mapWidth);
 }
@@ -549,12 +546,12 @@ void RenderControl::drawSkyBox(void) {
 	}
 }
 
-void RenderControl::drawUI(void) {
+void RenderControl::drawUI(MainUserInterface *ui) {
 	static WorstTime tm("MainUI");
 	tm.Start();
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	fMainUserInterface.Draw();
+	ui->Draw();
 	glDisable(GL_BLEND);
 	tm.Stop();
 }
@@ -600,8 +597,4 @@ float RenderControl::ComputeAverageLuminance(void) {
 	}
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 	return sum / weight;
-}
-
-Rocket::Core::Context *RenderControl::GetRocketContext(void) {
-	return fMainUserInterface.GetRocketContext();
 }

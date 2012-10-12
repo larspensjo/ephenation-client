@@ -21,6 +21,7 @@
 #include "mainuserinterface.h"
 #include "../primitives.h"
 #include "../timemeasure.h"
+#include "Error.h"
 
 MainUserInterface::MainUserInterface() : fRocketContext(0), fDocument(0) {
 }
@@ -38,11 +39,10 @@ void MainUserInterface::Init() {
 
 	// Load and show the UI.
 	fDocument = fRocketContext->LoadDocument("dialogs/userinterface.rml");
-	if (fDocument != NULL)
-	{
-		fDocument->Show();
-		fDocument->RemoveReference();
-	}
+	if (fDocument == 0)
+		ErrorDialog("MainUserInterface::MainUserInterface: Failed to load user interface");
+	fDocument->Show();
+	fDocument->RemoveReference();
 }
 
 void MainUserInterface::Resize(int w, int h) {

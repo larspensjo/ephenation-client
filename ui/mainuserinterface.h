@@ -18,9 +18,10 @@
 /*
 Manage the main user interface when gaming. That includes:
 * The chat window
-* The player health and other bars
+* The player health bar and other bars
 * The player level and other stats
 * The input field for /-commands
+* FPS statistics
 */
 
 #pragma once

@@ -27,8 +27,6 @@
 
 #include <memory>
 
-#include "ui/mainuserinterface.h"
-
 class ChunkShader;
 class AddDynamicShadow;
 class ShadowRender;
@@ -40,6 +38,7 @@ class AddPointShadow;
 class SkyBox;
 class AddLocalFog;
 class AddSSAO;
+class MainUserInterface;
 
 class RenderControl {
 public:
@@ -53,9 +52,7 @@ public:
 	void ShadowMapMatrix(const glm::mat4 &) const;
 
 	GLuint Debug(void);
-	void Draw(Object *selectedObject, bool underWater, bool thirdPersonView, Object *fSelectedObject, bool showMap, int mapWidth);
-
-	Rocket::Core::Context *GetRocketContext(void);
+	void Draw(Object *selectedObject, bool underWater, bool thirdPersonView, Object *fSelectedObject, bool showMap, int mapWidth, MainUserInterface *ui);
 private:
 
 	// Free the buffers. Also needed to reinitialize for a new size.
@@ -64,8 +61,6 @@ private:
 	GLuint fDepthBuffer; // Render target buffers
 	GLuint fDiffuseTexture, fPositionTexture, fNormalsTexture, fBlendTexture, fLightsTexture;
 	GLsizei fWidth, fHeight;
-
-	MainUserInterface fMainUserInterface;
 
 	std::unique_ptr<AddDynamicShadow> fAddDynamicShadow;
 	std::unique_ptr<ShadowRender> fShadowRender;
@@ -95,7 +90,7 @@ private:
 	void drawSkyBox(void);
 	void drawLocalFog(void);
 	void drawSelection(const glm::vec3 &);
-	void drawUI(void);
+	void drawUI(MainUserInterface *ui);
 	void drawMap(int mapWidth);
 	void drawSSAO(void);
 };
