@@ -19,6 +19,10 @@
 #include <GL/glew.h>
 #include <stdio.h>
 
+#ifndef M_PI
+#define M_PI		3.14159265358979323846
+#endif
+
 #include "Cylinder.h"
 #include "../primitives.h"
 #include "../shaders/ChunkShader.h"
@@ -36,7 +40,7 @@ Cylinder::~Cylinder() {
 }
 
 void Cylinder::Init(StageOneShader *shader, int numSegments) {
-	float deltaAngle = 2*PI/numSegments;
+	float deltaAngle = 2*M_PI/numSegments;
 	float radius = 0.5f;
 
 	glm::vec3 v1(radius, 0.0f, 0.0f);

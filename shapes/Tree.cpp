@@ -17,6 +17,11 @@
 
 #include <GL/glew.h>
 #include <stdio.h>
+#include <math.h>
+
+#ifndef M_PI
+#define M_PI		3.14159265358979323846
+#endif
 
 #include "../glm/glm.hpp"
 #include "../glm/gtc/matrix_transform.hpp"
@@ -165,7 +170,7 @@ void Tree::AddCylinder(int numSegments, const glm::mat4 &transf) {
 	// Using 'transf' as normal transformation only works as long as scaling in 'x' and 'z' is the same. Otherwise,
 	// the more correct matrix would be something like the inverse transpose of 'transf'.
 	glm::mat3 transfNormal = glm::mat3(transf);
-	float deltaAngle = 2*PI/numSegments;
+	float deltaAngle = 2*M_PI/numSegments;
 	float radius = 0.5f;
 
 	vec4 v1(radius, 0.0f, 0.0f, 1);

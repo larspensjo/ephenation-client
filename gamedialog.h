@@ -19,6 +19,9 @@
 
 #include <memory>
 
+#include "ui/mainuserinterface.h"
+#include "rendercontrol.h"
+
 using std::string;
 
 struct chunk;
@@ -29,7 +32,12 @@ class ChunkShader;
 class BuildingBlocks;
 class HealthBar;
 class DrawTexture;
-class RenderControl;
+
+namespace Rocket {
+	namespace Core {
+		class Context; // Lots of work to forward declare this
+	}
+};
 
 // Put it all together. Manage, on a high level:
 // * keyboard input
@@ -49,10 +57,11 @@ public:
 	virtual void handleMouse(int button, int action);
 	virtual void Update();
 	virtual void SetMessage(const char *);
-	virtual void HandleKeyRelease(int key, int action); // Keyboard event
-	virtual void HandleKeyPress(int key, int action);	// Keyboard event
+	virtual void HandleKeyRelease(int key); // Keyboard event
+	virtual void HandleKeyPress(int key);	// Keyboard event
 	virtual void HandleCharacter(int key, int action);	// Character event
 	virtual void handleResize(int w, int h);
+	void handleMouseActiveMotion(int x, int y);
 
 	void ClickOnBlock(int x, int y);
 	void ClickOnObject(int x, int y);
@@ -121,8 +130,13 @@ private:
 	BuildingBlocks *fBuildingBlocks;
 	HealthBar *fHealthBar;
 	DrawTexture *fDrawTexture;
-	std::unique_ptr<RenderControl> fRenderControl;
+	RenderControl fRenderControl;
 
+	// All keyboard and mouse events are redirected to this one if it is non-null
+	Rocket::Core::Context *fCurrentRocketContextInput;
+
+	MainUserInterface fMainUserInterface;
+	Rocket::Core::Element *fFPS_Element, *fPlayerStatsOneLiner_Element;
 };
 
 extern gameDialog gGameDialog;

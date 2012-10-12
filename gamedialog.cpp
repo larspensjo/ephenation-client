@@ -22,6 +22,12 @@
 #include <memory>
 #include <GL/glew.h>
 #include <GL/glfw.h>
+#include <math.h>
+#include <Rocket/Debugger.h>
+
+#ifndef M_PI
+#define M_PI		3.14159265358979323846
+#endif
 
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
@@ -58,6 +64,8 @@
 #include "Teleport.h"
 #include "ui/dialog.h"
 #include "ui/messagedialog.h"
+#include "ui/RocketGui.h"
+#include "ui/Error.h"
 #include "shadowrender.h"
 #include "uniformbuffer.h"
 #include "shadowconfig.h"
@@ -107,25 +115,18 @@ gameDialog::gameDialog() {
 	fSelectedObject = 0;
 	fShader = 0;
 	fInputPromptSentence = 0xFFFFFFFF;
-	fFPSsentence = 0xFFFFFFFF;
-	fPlayerStatusSentence = 0xFFFFFFFF;
 	fBuildingBlocks = 0;
 	fHealthBar = 0;
 	fDrawTexture = 0;
 	fCurrentEffect = EFFECT_NONE;
 	fCalibrationMode = CALIB_NONE;
+	fCurrentRocketContextInput = 0;
+	fFPS_Element = 0;
+	fPlayerStatsOneLiner_Element = 0;
 }
 
 gameDialog::~gameDialog() {
-	if (fFPSsentence != 0xFFFFFFFF) {
-		// Should normally be the case, unless the startup is aborted.
-		gDrawFont.vsfl.deleteSentence(fFPSsentence);
-		gDrawFont.vsfl.deleteSentence(fInputPromptSentence);
-		gDrawFont.vsfl.deleteSentence(fPlayerStatusSentence);
-	}
-	fFPSsentence = 0xFFFFFFFF;
 	fInputPromptSentence = 0xFFFFFFFF;
-	fPlayerStatusSentence = 0xFFFFFFFF;
 	fShader = 0; // Don't delete this singleton
 	fBuildingBlocks = 0; // Singleton
 	fHealthBar = 0; // Singleton
@@ -322,8 +323,16 @@ static bool sTurning = false;
 int xStartTurn = 0, yStartTurn = 0;
 float angleHorStartTurn = 0.0f, angleVertStartTurn;
 
-void handleMouseActiveMotion(int x, int y) {
-	if (gGameDialog.fShowInventory) {
+static void handleMouseActiveMotion(int x, int y) {
+	gGameDialog.handleMouseActiveMotion(x, y);
+}
+
+void gameDialog::handleMouseActiveMotion(int x, int y) {
+	if (fCurrentRocketContextInput) {
+		fCurrentRocketContextInput->ProcessMouseMove(x, y, 0);
+		return;
+	}
+	if (fShowInventory) {
 		sTurning = false;
 	} else if (sTurning) {
 		int deltax = xStartTurn - x;
@@ -336,8 +345,8 @@ void handleMouseActiveMotion(int x, int y) {
 		if (_angleVert > 90.0f) _angleVert = 90.0f;
 		if (_angleVert < -90.0f) _angleVert = -90.0f;
 		unsigned char b[7];
-		unsigned short angleHorRad = (unsigned short)(_angleHor / 360.0f * 2.0f * PI * 100);
-		signed short angleVertRad = (unsigned short)(_angleVert / 360.0f * 2.0f * PI * 100);
+		unsigned short angleHorRad = (unsigned short)(_angleHor / 360.0f * 2.0f * M_PI * 100);
+		signed short angleVertRad = (unsigned short)(_angleVert / 360.0f * 2.0f * M_PI * 100);
 		// printf("Dir (%f, %f), (%d, %d)\n", _angleHor, _angleVert, angleHorRad, angleVertRad);
 		b[0] = sizeof b;
 		b[1] = 0;
@@ -351,7 +360,30 @@ void handleMouseActiveMotion(int x, int y) {
 	}
 }
 
+static void dialogHandleMouse(int button, int action) {
+	gGameDialog.handleMouse(button, action);
+}
+
 void gameDialog::handleMouse(int button, int action) {
+	if (fCurrentRocketContextInput) {
+		int idx = 2;
+		switch (button) {
+		case GLFW_MOUSE_BUTTON_RIGHT:
+			idx = 1;
+			break;
+		case GLFW_MOUSE_BUTTON_LEFT:
+			idx = 0;
+			break;
+		case GLFW_MOUSE_BUTTON_MIDDLE:
+			idx = 2;
+			break;
+		}
+		if (action == GLFW_PRESS)
+			fCurrentRocketContextInput->ProcessMouseButtonDown(idx, 0);
+		else
+			fCurrentRocketContextInput->ProcessMouseButtonUp(idx, 0);
+		return;
+	}
 	int x, y;
 	glfwGetMousePos(&x, &y);
 	if (fShowInventory) {
@@ -420,7 +452,8 @@ void gameDialog::handleResize(int w, int h) {
 	glViewport(0, 0, w, h);
 	gViewport = glm::vec4(0.0f, 0.0f, (float)w, (float)h );
 	gDrawFont.UpdateProjection();
-	fRenderControl->Resize(w, h);
+	fRenderControl.Resize(w, h);
+	fMainUserInterface.Resize(w, h);
 }
 
 static void handleCharacter(int character, int action) {
@@ -428,14 +461,13 @@ static void handleCharacter(int character, int action) {
 	gGameDialog.HandleCharacter(character, action);
 }
 
-static void handleKeypress(int key, int action) {
-	if (action == GLFW_PRESS)
-		gGameDialog.HandleKeyPress(key, action);
-	else
-		gGameDialog.HandleKeyRelease(key, action);
-}
-
 void gameDialog::HandleCharacter(int key, int action) {
+	if (fCurrentRocketContextInput) {
+		if (action == GLFW_PRESS)
+			fCurrentRocketContextInput->ProcessTextInput(key);
+		return;
+	}
+
 	if (fShowMainDialog && !fHideDialog) {
 		dialog::DispatchChar(key);
 		return;
@@ -457,16 +489,42 @@ void gameDialog::HandleCharacter(int key, int action) {
 	// gDebugWindow.Add((char *)fDebugText+3);
 }
 
+static void handleKeypress(int key, int action) {
+	if (action == GLFW_PRESS) {
+		gGameDialog.HandleKeyPress(key);
+	} else {
+		gGameDialog.HandleKeyRelease(key);
+	}
+}
+
 string prevCommand("/");
 
-void gameDialog::HandleKeyPress(int key, int action) {
-	if (fShowMainDialog && !fHideDialog && key != GLFW_KEY_ESC) {
-		if (action == GLFW_PRESS) {
-			dialog::DispatchKey(key);
-		}
+void gameDialog::HandleKeyPress(int key) {
+	if (key == GLFW_KEY_F12) {
+		// Special override, whether activating input to a Rocket context or not.
+		if (fCurrentRocketContextInput)
+			fCurrentRocketContextInput = 0;
+		else
+			fCurrentRocketContextInput = fMainUserInterface.GetRocketContext();
 		return;
 	}
-	if (key >= GLFW_KEY_F1 && key <= GLFW_KEY_F25) {
+
+	if (key == GLFW_KEY_KP_0 && gDebugOpenGL) {
+		gToggleTesting = !gToggleTesting;
+		Rocket::Debugger::SetVisible(gToggleTesting);
+		return;
+	}
+
+	if (fCurrentRocketContextInput) {
+		fCurrentRocketContextInput->ProcessKeyDown(RocketGui::KeyMap(key), 0);
+		return;
+	}
+
+	if (fShowMainDialog && !fHideDialog && key != GLFW_KEY_ESC) {
+		dialog::DispatchKey(key);
+		return;
+	}
+	if (key >= GLFW_KEY_F1 && key <= GLFW_KEY_F11) {
 		gInventory.UseObjectFunctionKey(key);
 		return;
 	}
@@ -512,10 +570,6 @@ void gameDialog::HandleKeyPress(int key, int action) {
 	int x, y;
 	glfwGetMousePos(&x, &y);
 	switch (key) {
-	case GLFW_KEY_KP_0:
-		// if (gPlayer.fAdmin > 0)
-		gToggleTesting = !gToggleTesting;
-		break;
 	case GLFW_KEY_ESC:
 		if (fDrawMap)
 			fDrawMap = false;
@@ -603,7 +657,6 @@ void gameDialog::HandleKeyPress(int key, int action) {
 	}
 	case 'T':
 		dumpGraphicsMemoryStats();
-		gShowMsgWindow = !gShowMsgWindow;
 		break;
 	case GLFW_KEY_KP_ENTER:
 	case GLFW_KEY_ENTER: // ENTER key
@@ -740,11 +793,14 @@ void gameDialog::HandleKeyPress(int key, int action) {
 	gGameDialog.UpdateRunningStatus(false);
 }
 
-void gameDialog::HandleKeyRelease(int key, int action) {
+void gameDialog::HandleKeyRelease(int key) {
+	if (fCurrentRocketContextInput) {
+		if (key != 0)
+			fCurrentRocketContextInput->ProcessKeyUp(RocketGui::KeyMap(key), 0);
+		return;
+	}
 	if (fShowMainDialog && !fHideDialog) {
-		if (action == GLFW_PRESS) {
-			dialog::DispatchKey(key);
-		}
+		dialog::DispatchKey(key);
 		return;
 	}
 	switch (key) {
@@ -851,7 +907,7 @@ void gameDialog::render() {
 		gBillboard.InitializeTextures(fShader);
 	}
 
-	fRenderControl->Draw(fSelectedObject, fUnderWater, this->ThirdPersonView(), fSelectedObject, fDrawMap && !gDebugOpenGL, fMapWidth);
+	fRenderControl.Draw(fSelectedObject, fUnderWater, this->ThirdPersonView(), fSelectedObject, fDrawMap && !gDebugOpenGL, fMapWidth, &fMainUserInterface);
 
 	//=========================================================================
 	// Various effects drawn after the deferred shader
@@ -931,23 +987,26 @@ void gameDialog::render() {
 		glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(-1.0f, 1.0f - yOffset*2/totalWinHeight, 0.0f));
 		float yScale = yOffset*2/totalWinHeight;
 		model = glm::scale(model, glm::vec3(2.0f, yScale, 1.0f));
-		this->fHealthBar->DrawSquare(model, 0.0f, 0.0f, 0.0f, 0.3f); // Draw a black square, almost transparent, as a background
 
-		gDrawFont.Enable();
-		gDrawFont.UpdateProjection();
 		sprintf(buff, "Level %ld, Hp %d%%, Exp %d%%", gPlayer.fLevel, (int)(gPlayer.fHp * 100), (int)(gPlayer.fExp * 100));
-		gDrawFont.vsfl.prepareSentence(fPlayerStatusSentence, buff);
-		int w = int(strlen(buff)*Options::fgOptions.fFontSize*0.8f); // An approximation
-		gDrawFont.SetOffset(gViewport[2]-w, 0);
-		gDrawFont.vsfl.renderSentence(fPlayerStatusSentence);
+		static string sPrevStat;
+		if (sPrevStat != buff) {
+			// Only update if it changed
+			sPrevStat = buff;
+			fPlayerStatsOneLiner_Element->SetInnerRML(buff);
+		}
 
 		if (gCurrentPing == 0.0)
 			sprintf(buff, "Triangles %7d, draw calls %d. Fps %03d", gDrawnQuads, gNumDraw, int(slAverageFps));
 		else
 			sprintf(buff, "Triangles %7d, draw calls %d. Fps %03d, ping %.1f ms", gDrawnQuads, gNumDraw, int(slAverageFps), gCurrentPing*1000.0);
-		gDrawFont.SetOffset(0,0);
-		gDrawFont.vsfl.prepareSentence(fFPSsentence, buff);
-		gDrawFont.vsfl.renderSentence(fFPSsentence);
+		static string sPrevFPS;
+		if (sPrevFPS != buff) {
+			// Only update if it changed
+			sPrevFPS = buff;
+			fFPS_Element->SetInnerRML(buff);
+		}
+
 		if (gMode.Get() == GameMode::CONSTRUCT) {
 			ChunkCoord cc;
 			gPlayer.GetChunkCoord(&cc);
@@ -974,9 +1033,6 @@ void gameDialog::render() {
 	}
 
 	if (!fDrawMap && !fShowInventory && (!fShowMainDialog || fHideDialog)) {
-		if (gShowMsgWindow)
-			gMsgWindow.Render();
-
 		if (gMode.Get() == GameMode::CONSTRUCT)
 			fBuildingBlocks->Draw(gProjectionMatrix);
 	}
@@ -997,8 +1053,7 @@ void gameDialog::render() {
 }
 
 void gameDialog::init(void) {
-	fRenderControl.reset(new RenderControl);
-	fRenderControl->Init();
+	fRenderControl.Init();
 
 	std::shared_ptr<DrawFont> gabriola18(new DrawFont);
 	gabriola18->Init("textures/gabriola18");
@@ -1013,12 +1068,9 @@ void gameDialog::init(void) {
 	}
 	if (maxRenderDistance < 5.0f)
 		maxRenderDistance = 5.0f;
-	gMsgWindow.Init();
 	gTranspShader.Init();
 	fBuildingBlocks = BuildingBlocks::Make(7); // TODO: Need something more adaptive than a constant.
-	fFPSsentence = gDrawFont.vsfl.genSentence();
 	fInputPromptSentence = gDrawFont.vsfl.genSentence();
-	fPlayerStatusSentence = gDrawFont.vsfl.genSentence();
 	gMonsterDef.Init(0);
 	sfCurrentGameDialog = this; // Used by callback functions.
 	fShader = ChunkShader::Make(); // Singleton
@@ -1035,9 +1087,19 @@ void gameDialog::init(void) {
 
 	glfwDisable(GLFW_KEY_REPEAT);
 	glfwSetWindowSizeCallback(::handleResize);
-	glfwSetMousePosCallback(handleMouseActiveMotion);
+	glfwSetMousePosCallback(::handleMouseActiveMotion);
 	glfwSetKeyCallback(handleKeypress);
 	glfwSetCharCallback(handleCharacter);
+	glfwSetMouseButtonCallback(dialogHandleMouse);
+
+	fMainUserInterface.Init();
+	gMsgWindow.Init(fMainUserInterface.GetElement("chat"));
+	fFPS_Element = fMainUserInterface.GetElement("fps");
+	if (fFPS_Element == 0)
+		ErrorDialog("Missing UI definition for FPS");
+	fPlayerStatsOneLiner_Element = fMainUserInterface.GetElement("playerstatsoneliner");
+	if (fPlayerStatsOneLiner_Element == 0)
+		ErrorDialog("Missing UI definition for one line player stats");
 
 	checkError("gameDialog::init");
 }

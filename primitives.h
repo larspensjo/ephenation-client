@@ -104,8 +104,6 @@ struct TriangleSurfacef {
 	VertexDataf v[3];
 };
 
-#define PI 3.1415926535898f
-
 void checkError(const char *functionName, bool ignore = true); // If 'ignore', then no check will be done to save execution time
 void dumpGraphicsMemoryStats(void);
 void DumpTriangles(TriangleSurfacef *t, int num);

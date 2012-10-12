@@ -17,8 +17,6 @@
 
 #pragma once
 
-#include <memory>
-
 //
 // A class to manage buffers and shaders for the various render passes.
 // The class is used for several stages:
@@ -26,6 +24,8 @@
 // 2. Call the functions that update the images in the FBO
 // 3. Project the final result to the screen.
 //
+
+#include <memory>
 
 class ChunkShader;
 class AddDynamicShadow;
@@ -38,6 +38,7 @@ class AddPointShadow;
 class SkyBox;
 class AddLocalFog;
 class AddSSAO;
+class MainUserInterface;
 
 class RenderControl {
 public:
@@ -51,7 +52,7 @@ public:
 	void ShadowMapMatrix(const glm::mat4 &) const;
 
 	GLuint Debug(void);
-	void Draw(Object *selectedObject, bool underWater, bool thirdPersonView, Object *fSelectedObject, bool showMap, int mapWidth);
+	void Draw(Object *selectedObject, bool underWater, bool thirdPersonView, Object *fSelectedObject, bool showMap, int mapWidth, MainUserInterface *ui);
 private:
 
 	// Free the buffers. Also needed to reinitialize for a new size.
@@ -89,7 +90,7 @@ private:
 	void drawSkyBox(void);
 	void drawLocalFog(void);
 	void drawSelection(const glm::vec3 &);
-	void drawUI(void);
+	void drawUI(MainUserInterface *ui);
 	void drawMap(int mapWidth);
 	void drawSSAO(void);
 };

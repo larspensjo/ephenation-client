@@ -17,6 +17,7 @@
 					<Add option="-std=c++0x" />
 					<Add option="-g" />
 					<Add option="-DWIN32 -DOV_EXCLUDE_STATIC_CALLBACKS" />
+					<Add option="-DSTATIC_LIB" />
 				</Compiler>
 			</Target>
 			<Target title="Release">
@@ -42,6 +43,7 @@
 			<Add directory="win32\tinyxml" />
 			<Add directory="C:\MinGW\msys\1.0\local\include" />
 			<Add directory="C:\MinGW\msys\1.0\bin\assimp\include" />
+			<Add directory="win32\libRocket\include" />
 		</Compiler>
 		<Linker>
 			<Add library="win32\glfw-2.7.bin.WIN32\lib-mingw\libglfw.a" />
@@ -63,6 +65,10 @@
 			<Add library="uuid" />
 			<Add library="comdlg32" />
 			<Add library="assimp" />
+			<Add library="win32\libRocket\libRocketCore.a" />
+			<Add library="win32\libRocket\libRocketControls.a" />
+			<Add library="win32\libRocket\libRocketDebugger.a" />
+			<Add library="win32\libRocket\libfreetype.dll.a" />
 			<Add directory="C:\MinGW\msys\1.0\lib" />
 			<Add directory="C:\MinGW\msys\1.0\local\lib" />
 			<Add directory="C:\MinGW\msys\1.0\bin\assimp\lib" />
@@ -175,6 +181,8 @@
 		<Unit filename="shaders\addpointshadow.h" />
 		<Unit filename="shaders\addssao.cpp" />
 		<Unit filename="shaders\addssao.h" />
+		<Unit filename="shaders\modulatedtextureshader.cpp" />
+		<Unit filename="shaders\modulatedtextureshader.h" />
 		<Unit filename="shaders\shader.cpp" />
 		<Unit filename="shaders\shader.h" />
 		<Unit filename="shaders\shadowmapshader.cpp" />
@@ -217,6 +225,12 @@
 		<Unit filename="ui\OptionsDialog.cpp" />
 		<Unit filename="ui\OptionsDialog.fl" />
 		<Unit filename="ui\OptionsDialog.h" />
+		<Unit filename="ui\RocketGui.cpp" />
+		<Unit filename="ui\RocketGui.h" />
+		<Unit filename="ui\RocketRenderInterface.cpp" />
+		<Unit filename="ui\RocketRenderInterface.h" />
+		<Unit filename="ui\RocketSystemInterface.cpp" />
+		<Unit filename="ui\RocketSystemInterface.h" />
 		<Unit filename="ui\advancedoptions.cpp" />
 		<Unit filename="ui\advancedoptions.h" />
 		<Unit filename="ui\dialog.cpp" />
@@ -227,6 +241,8 @@
 		<Unit filename="ui\lighting.h" />
 		<Unit filename="ui\maindialog.cpp" />
 		<Unit filename="ui\maindialog.h" />
+		<Unit filename="ui\mainuserinterface.cpp" />
+		<Unit filename="ui\mainuserinterface.h" />
 		<Unit filename="ui\messagedialog.cpp" />
 		<Unit filename="ui\messagedialog.h" />
 		<Unit filename="ui\optionsdialog2.cpp" />

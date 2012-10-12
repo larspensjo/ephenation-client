@@ -42,7 +42,7 @@ struct GameTexture {
 	static GLuint RedScalesId, Morran;
 	static GLuint Fur1Id, MonsterFace1;
 	static GLuint LanternSideId, Teleport;
-	static GLuint InGameUiId, LightBallsHeal, InventoryId, EquipmentId;
+	static GLuint LightBallsHeal, InventoryId, EquipmentId;
 	static GLuint PlayerFace[5];
 	static GLuint RedColor, GreenColor, BlueColor, DarkGray;
 	static GLuint RedChunkBorder, BlueChunkBorder, GreenChunkBorder;
@@ -62,3 +62,6 @@ struct GameTexture {
 class Image;
 
 extern const glm::vec2 gPoissonDisk[64];
+
+// Load bitmaps to be used for the GUI.
+extern GLuint LoadBitmapForGui(shared_ptr<Image>);

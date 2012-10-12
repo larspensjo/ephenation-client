@@ -17,7 +17,7 @@
 
 #pragma once
 
-// Shader used for drawing a texture, and not much more.
+// Shader used for drawing a texture, and not much else.
 
 #include "shader.h"
 
@@ -31,7 +31,7 @@ public:
 	void ForceTransparent(float alpha); // This will change alpha to a lower value for all colors.
 	void TextureOffsetMulti(float offsX, float offsY, float mult);
 	// Define memory layout for the vertices. A buffer must be bound to do this.
-	void VertexAttribPointer(GLenum type, GLsizei stride, const GLvoid * pointer);
+	void VertexAttribPointer(GLenum type, GLint size, GLsizei stride, const GLvoid * pointer);
 	// Define memory layout for the textures. A buffer must be bound to do this.
 	void TextureAttribPointer(GLenum type, GLsizei stride, const GLvoid * pointer);
 
@@ -41,10 +41,9 @@ private:
 	// Define all uniform and attribute indices.
 	virtual void GetLocations(void);
 	SimpleTextureShader(); // Only allow access through the maker.
-	virtual ~SimpleTextureShader();
 	static SimpleTextureShader fgSingleton; // This is the singleton instance
 	static const GLchar *fVertexShaderSource[];
 	static const GLchar *fFragmentShaderSource[];
-	GLint fgProjectionMatrixIndex, fgFirstTextureIndex, fgVertexIndex, fgTexCoordIndex, fModelViewMatrixIndex, fColorOffsetIdx;
+	GLint fgProjectionMatrixIndex, fgVertexIndex, fgTexCoordIndex, fModelViewMatrixIndex, fColorOffsetIdx;
 	GLint fgForceTranspInd, fTextOffsMultiInd;
 };

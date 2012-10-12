@@ -74,6 +74,7 @@ BlenderModel::~BlenderModel() {
 	// In case of glew not having run yet.
 	if (glDeleteBuffers != 0) {
 		glDeleteBuffers(1, &fBufferId);
+		glDeleteBuffers(1, &fIndexBufferId);
 		glDeleteVertexArrays(1, &fVao);
 	}
 }
@@ -349,7 +350,7 @@ void BlenderModel::Init(const char *filename, float xRotateCorrection, bool norm
 	delete []weights;
 	delete []joints;
 
-	// Allocated the index data in OpenGL
+	// Allocate the index data in OpenGL
 	glGenBuffers(1, &fIndexBufferId);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, fIndexBufferId);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexSize*sizeof indexData[0], indexData, GL_STATIC_DRAW);

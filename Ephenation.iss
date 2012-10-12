@@ -30,7 +30,7 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 [Files]
 Source: "ephenation.exe"; DestDir: "{app}"; DestName: "ephenation.exe"; Flags: ignoreversion
 Source: "ephenation.ico"; DestDir: "{app}"; Flags: ignoreversion
-Source: "alut.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "*.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "readme.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "win32/OpenAL/redist/oalinst.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "\MinGW\msys\1.0\bin\libvorbis-0.dll"; DestDir: "{app}"; Flags: ignoreversion

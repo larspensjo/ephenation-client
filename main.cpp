@@ -63,6 +63,7 @@
 #include "uniformbuffer.h"
 #include "billboard.h"
 #include "worsttime.h"
+#include "ui/RocketGui.h"
 
 #define CLIENT_MAJOR_VERSION 4
 #define CLIENT_MINOR_VERSION 2
@@ -362,10 +363,6 @@ static struct option long_options[] = {
 	{0, 0, 0, 0}
 };
 
-static void dialogHandleMouse(int button, int action) {
-	gGameDialog.handleMouse(button, action);
-}
-
 int main(int argc, char** argv) {
 	if (!glfwInit()) {
 		ErrorDialog("Failed to initialize GLFW\n");
@@ -511,6 +508,9 @@ int main(int argc, char** argv) {
 			glDebugMessageCallbackAMD(DebugFuncAMD, (void*)15);
 	}
 
+	RocketGui rocket;
+	rocket.Init();
+
 	glfwSwapInterval(Options::fgOptions.fVSYNC); // 0 means do not wait for VSYNC, which would delay the FPS sometimes.
 
 	ComputeRelativeChunksSortedDistances();
@@ -527,7 +527,6 @@ int main(int argc, char** argv) {
 	Tree::InitStatic();
 	gLantern.Init(shader);
 	gQuadStage1.Init();
-	glfwSetMouseButtonCallback(dialogHandleMouse);
 	gBillboard.Init();
 
 	gSoundControl.RequestMusicMode(SoundControl::SMusicModeTourist);
@@ -557,20 +556,12 @@ int main(int argc, char** argv) {
 			while (gCurrentPing == 0.0 && glfwGetTime() - gLastPing < 0.5)
 				ListenForServerMessages();
 		}
-#if 0
-		// Put a limit on max FPS.
-		double delta = gCurrentFrameTime - prevTime;
-		prevTime = gCurrentFrameTime;
-		double sleepTime = 1.0/60 - delta;
-		if (sleepTime > 0.0) {
-			glfwSleep(sleepTime);
-		}
-#endif
 
 		gGameDialog.Update();
 		gGameDialog.render();
 
 		glfwSwapBuffers();
+
 		if (gMode.Get() == GameMode::OPTIONS && glfwGetWindowParam(GLFW_ICONIFIED) == GL_TRUE) {
 			// Stop player footsteps since player stops
 			gGameDialog.UpdateRunningStatus(true);

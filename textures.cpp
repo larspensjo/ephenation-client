@@ -97,7 +97,7 @@ GLuint GameTexture::TreeBarkId, GameTexture::Hedge, GameTexture::Window, GameTex
 GLuint GameTexture::Sky1Id, GameTexture::Sky2Id, GameTexture::Sky3Id, GameTexture::Sky4Id, GameTexture::SkyupId;
 GLuint GameTexture::RedScalesId, GameTexture::Fur1Id, GameTexture::MonsterFace1, GameTexture::PlayerFace[5], GameTexture::Morran;
 GLuint GameTexture::LanternSideId, GameTexture::Teleport;
-GLuint GameTexture::InGameUiId, GameTexture::LightBallsHeal, GameTexture::InventoryId, GameTexture::EquipmentId;
+GLuint GameTexture::LightBallsHeal, GameTexture::InventoryId, GameTexture::EquipmentId;
 GLuint GameTexture::RedColor, GameTexture::GreenColor, GameTexture::BlueColor, GameTexture::DarkGray;
 GLuint GameTexture::RedChunkBorder, GameTexture::BlueChunkBorder, GameTexture::GreenChunkBorder;
 GLuint GameTexture::CompassRose, GameTexture::DamageIndication;
@@ -229,7 +229,6 @@ GLuint loadTexture(shared_ptr<Image> image, unsigned fl = 0) {
 	} else if (mipmap) {
 		glGenerateMipmap(GL_TEXTURE_2D);
 	}
-	checkError("loadTexture");
 	return textureId;
 }
 
@@ -352,10 +351,6 @@ void GameTexture::Init(void) {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-	InGameUiId = loadTexture(loadBMP("textures/InGameUI.bmp"), TF_NOMIPMAP);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
 	InventoryId = loadTexture(loadBMP("textures/Inventory.bmp"), TF_NOMIPMAP);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
@@ -440,4 +435,12 @@ void GameTexture::Init(void) {
 	glTexImage1D(GL_TEXTURE_1D, 0, GL_RG32F, NELEM(gPoissonDisk), 0, GL_RG, GL_FLOAT, gPoissonDisk);
 	glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+}
+
+// Load bitmaps to be used for the GUI.
+GLuint LoadBitmapForGui(shared_ptr<Image> img) {
+	GLuint ret = loadTexture(img, TF_NOMIPMAP|TF_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	return ret;
 }

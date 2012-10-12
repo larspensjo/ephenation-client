@@ -145,7 +145,7 @@ void BuildingBlocks::Init(int numToDisplay) {
 	glBufferData(GL_ARRAY_BUFFER, sizeof vertexData, vertexData, GL_STATIC_DRAW);
 	vertex *p = 0;
 	fShader->TextureAttribPointer(GL_UNSIGNED_BYTE, sizeof (vertex), &p->t);
-	fShader->VertexAttribPointer(GL_BYTE, sizeof (vertex), &p->v);
+	fShader->VertexAttribPointer(GL_BYTE, 2, sizeof (vertex), &p->v);
 	glBindVertexArray(0);
 	// check data size in VBO is same as input array, if not return 0 and delete VBO
 	int bufferSize = 0;

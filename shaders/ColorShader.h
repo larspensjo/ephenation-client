@@ -23,6 +23,7 @@
 #pragma once
 
 #include "shader.h"
+#include "../glm/glm.hpp"
 
 class ColorShader : ShaderBase {
 public:
@@ -42,7 +43,5 @@ private:
 	virtual void GetLocations(void);
 	ColorShader(); // Only allow access through the maker.
 	static ColorShader fgSingleton; // This is the singleton instance
-	static const GLchar *fVertexShaderSource[];
-	static const GLchar *fFragmentShaderSource[];
 	GLint fProjectionMatrixIndex, fColorIndex, fModelViewMatrixIndex;
 };

@@ -324,7 +324,7 @@ VSFLFont::prepareSentence(unsigned int index, const std::string &sentence) {
 	// positions
 	glBindBuffer(GL_ARRAY_BUFFER, buffer[0]);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * size * 6 * 3, positions,GL_STATIC_DRAW);
-	VSFLFont::sShader->VertexAttribPointer(GL_FLOAT, 0, 0);
+	VSFLFont::sShader->VertexAttribPointer(GL_FLOAT, 3, 0, 0);
 
 	// texCoords
 	glBindBuffer(GL_ARRAY_BUFFER, buffer[1]);

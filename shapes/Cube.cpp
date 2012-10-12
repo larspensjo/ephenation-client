@@ -18,6 +18,10 @@
 #include <math.h>
 #include <GL/glew.h>
 
+#ifndef M_PI
+#define M_PI		3.14159265358979323846
+#endif
+
 #include "Cube.h"
 #include "../primitives.h"
 #include "../shaders/ChunkShader.h"
@@ -40,7 +44,7 @@ Cube::~Cube() {
 // TODO: Should be redesigned using a predefined table.
 void Cube::Init(ChunkShader *shader) {
 	const int numSegments = 4;
-	float deltaAngle = 2*PI/numSegments;
+	float deltaAngle = 2*M_PI/numSegments;
 	float radius = 0.5f;
 
 	glm::vec3 v1(radius, 0.0f, 0.0f);
