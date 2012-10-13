@@ -138,7 +138,7 @@ private:
 	Rocket::Core::Context *fCurrentRocketContextInput;
 
 	MainUserInterface fMainUserInterface;
-	Rocket::Core::Element *fFPS_Element, *fPlayerStatsOneLiner_Element;
+	Rocket::Core::Element *fFPS_Element, *fPlayerStatsOneLiner_Element, *fInputLine;
 
 	MessageDialog fMessageDialog;
 };

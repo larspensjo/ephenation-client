@@ -109,7 +109,6 @@ gameDialog::gameDialog() {
 	fShowWeapon = true;
 	fShowMainDialog = false;
 	fHideDialog = false; // This will override the fShowMainDialog
-	fDebugTextLength = 0;
 	fSelectedObject = 0;
 	fShader = 0;
 	fInputPromptSentence = 0xFFFFFFFF;
@@ -121,6 +120,7 @@ gameDialog::gameDialog() {
 	fCurrentRocketContextInput = 0;
 	fFPS_Element = 0;
 	fPlayerStatsOneLiner_Element = 0;
+	fInputLine = 0;
 }
 
 gameDialog::~gameDialog() {
@@ -128,8 +128,12 @@ gameDialog::~gameDialog() {
 	fShader = 0; // Don't delete this singleton
 	fBuildingBlocks = 0; // Singleton
 	fHealthBar = 0; // Singleton
-	fPlayerStatsOneLiner_Element->RemoveReference();
-	fFPS_Element->RemoveReference();
+	if (fPlayerStatsOneLiner_Element)
+		fPlayerStatsOneLiner_Element->RemoveReference();
+	if (fFPS_Element)
+		fFPS_Element->RemoveReference();
+	if (fInputLine)
+		fInputLine->RemoveReference();
 }
 
 // In game mode, find the object that the player clicked on.
@@ -472,21 +476,6 @@ void gameDialog::HandleCharacter(int key, int action) {
 		dialog::DispatchChar(key);
 		return;
 	}
-	if (!fEnterDebugText)
-		return;
-	if (key != 0 && action == GLFW_PRESS && fDebugTextLength+3 < sizeof fDebugText) {
-		// Key 0 is used to force an update of the shown string.
-		fDebugText[fDebugTextLength+3] = key;
-		fDebugTextLength++;
-	}
-	char buff[1000];
-#ifdef WIN32
-	_snprintf(buff, sizeof buff-1, "%.*s_", fDebugTextLength, (char*)fDebugText+3);
-#else
-	snprintf(buff, sizeof buff-1, "%.*s_", fDebugTextLength, (char*)fDebugText+3);
-#endif
-	gDrawFont.vsfl.prepareSentence(fInputPromptSentence, buff);
-	// gDebugWindow.Add((char *)fDebugText+3);
 }
 
 static void handleKeypress(int key, int action) {
@@ -497,7 +486,7 @@ static void handleKeypress(int key, int action) {
 	}
 }
 
-string prevCommand("/");
+string prevCommand;
 
 void gameDialog::HandleKeyPress(int key) {
 	if (key == GLFW_KEY_F12) {
@@ -506,6 +495,19 @@ void gameDialog::HandleKeyPress(int key) {
 			fCurrentRocketContextInput = 0;
 		else
 			fCurrentRocketContextInput = fMainUserInterface.GetRocketContext();
+		return;
+	}
+
+	if ((key == GLFW_KEY_ENTER || key == GLFW_KEY_KP_ENTER) && fEnterDebugText && fCurrentRocketContextInput) {
+		fCurrentRocketContextInput = 0; // Override. Use ENTER key to submit the input text.
+	}
+
+	if (key == GLFW_KEY_ESC && fEnterDebugText && fCurrentRocketContextInput) {
+		// Override, cancel input of text.
+		fCurrentRocketContextInput = 0;
+		fInputLine->SetAttribute("value", "");
+		fInputLine->Blur();
+		fEnterDebugText = false;
 		return;
 	}
 
@@ -529,41 +531,26 @@ void gameDialog::HandleKeyPress(int key) {
 		return;
 	}
 	if (fEnterDebugText) {
-		// Override the switch, and catch all characters.
-		switch (key) {
-		case GLFW_KEY_KP_ENTER:
-		case GLFW_KEY_ENTER: // ENTER key
-			// Done.
-			if (fDebugTextLength > 0) {
-				fDebugText[fDebugTextLength+3] = 0;
-				const char *begin = (char *)fDebugText+3;
-				const char *end = strchr(begin, ' ');
-				if (end == 0)
-					prevCommand = string(begin, fDebugTextLength);
-				else
-					prevCommand = string(begin, end-begin+1); // Including the space character
-				// printf("Prev command: '%s'\n", prevCommand.c_str());
-				// There is something to send. Make a proper command of it.
-				fDebugText[0] = fDebugTextLength+3;
-				fDebugText[1] = 0;
-				fDebugText[2] = CMD_DEBUG;
-				SendMsg(fDebugText, fDebugTextLength+3);
-			}
-			// Fall through!
-		case GLFW_KEY_ESC: // Escape key, stop composing a command.
-			glfwDisable(GLFW_KEY_REPEAT);
-			fEnterDebugText = false;
-			break;
-		case GLFW_KEY_BACKSPACE: // Back space
-			if (fDebugTextLength > 0) {
-				if (strncmp((const char *)fDebugText+3, prevCommand.c_str(), fDebugTextLength) == 0)
-					fDebugTextLength = 1; // Keep the leading '/' only
-				else
-					fDebugTextLength--;
-			}
-			this->HandleCharacter(0,0); // Update the shown string
-			break;
-		}
+		glfwDisable(GLFW_KEY_REPEAT);
+		Rocket::Core::String def = "";
+		Rocket::Core::String str = fInputLine->GetAttribute("value", def); // This call generates 100 lines of warnings
+		size_t len = str.Length();
+		const char *begin = str.CString();
+		const char *end = strchr(begin, ' ');
+		if (end == 0)
+			prevCommand = begin;
+		else
+			prevCommand = string(begin, end-begin+1); // Including the space character
+		unsigned char cmd[4];
+		cmd[0] = len+4;
+		cmd[1] = 0;
+		cmd[2] = CMD_DEBUG;
+		cmd[3] = '/';
+		SendMsg(cmd, 4);
+		SendMsg((const unsigned char *)begin, len);
+		fEnterDebugText = false;
+		fInputLine->SetAttribute("value", "");
+		fInputLine->Blur();
 		return;
 	}
 
@@ -662,11 +649,10 @@ void gameDialog::HandleKeyPress(int key) {
 	case GLFW_KEY_ENTER: // ENTER key
 		fEnterDebugText = true;
 		glfwEnable(GLFW_KEY_REPEAT);
-		// gDebugWindow.Add("Starting to capture debug message");
-		strcpy((char *)fDebugText+3, prevCommand.c_str());
-		fDebugTextLength = prevCommand.length();
-		fDebugText[fDebugTextLength+3] = 0;
-		this->HandleCharacter(0,0); // Update the shown string
+		fInputLine->SetAttribute("value", prevCommand.c_str());
+		fInputLine->Focus();
+		fCurrentRocketContextInput = fMainUserInterface.GetRocketContext();
+		fCurrentRocketContextInput->ProcessKeyDown(Rocket::Core::Input::KI_END, Rocket::Core::Input::KM_SHIFT);
 		break;
 	case GLFW_KEY_SPACE: { // space key
 		unsigned char b[] = { 0x03, 0x00, CMD_JUMP };
@@ -1021,11 +1007,6 @@ void gameDialog::render() {
 			gDrawFont.vsfl.renderAndDiscard(buff);
 		}
 
-		if (fEnterDebugText) {
-			int bottomLine = gViewport[3]-25;
-			gDrawFont.SetOffset(0, float(bottomLine));
-			gDrawFont.vsfl.renderSentence(fInputPromptSentence);
-		}
 		gDrawFont.Disable();
 		gScrollingMessages.Update();
 	}
@@ -1100,6 +1081,12 @@ void gameDialog::init(void) {
 	if (fPlayerStatsOneLiner_Element == 0)
 		ErrorDialog("Missing UI definition for one line player stats");
 	fPlayerStatsOneLiner_Element->AddReference();
+
+	fInputLine = fMainUserInterface.GetElement("inputline");
+	if (fInputLine == 0)
+		ErrorDialog("Missing input line in main user interface");
+	fInputLine->AddReference();
+	fInputLine->Blur(); // Don't want a flashing cursor until player wants to input text.
 
 	fMessageDialog.Init(fMainUserInterface.GetRocketContext());
 

@@ -65,6 +65,13 @@
 			overflow: scroll; /* Text flowing outside the area is not shown */
 		}
 
+		.inputarea {
+			font-size: 22px;
+			background-color: rgba(0,0,0,30%);
+			bottom: 0px;
+			left: 5px;
+			position: absolute;
+		}
 	</style>
 </head>
 <body id="body">
@@ -74,5 +81,8 @@
 	<div class="playerstats"></div>
 	<div id="fps" class="fpsdisplay"></div>
 	<div id="playerstatsoneliner" class="playerstatsoneliner"></div>
+	<form class="inputarea">
+		<input type=text id="inputline"></input>
+	</form>
 </body>
 </rml>
