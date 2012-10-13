@@ -16,14 +16,14 @@
 //
 
 #include <string>
-#include <Rocket/Core.h>
 
 #include "messagedialog.h"
 #include "Error.h"
+#include "../gamedialog.h"
 
 using std::string;
 
-MessageDialog::MessageDialog() : fRocketContext(0), fDocument(0), fHeader(0), fContent(0) {
+MessageDialog::MessageDialog() : fRocketContext(0), fDocument(0), fHeader(0), fContent(0), fCallback(0) {
 }
 
 MessageDialog::~MessageDialog() {
@@ -48,6 +48,9 @@ void MessageDialog::Init(Rocket::Core::Context *context) {
 	fContent = fDocument->GetElementById("content");
 	if (fContent)
 		fContent->AddReference();
+	Rocket::Core::Element *closeButton = fDocument->GetElementById("closebutton");
+	if (closeButton)
+		closeButton->AddEventListener("click", this);
 }
 
 void MessageDialog::Set(const string &title, const string &body, void (*callback)(void)) {
@@ -55,10 +58,18 @@ void MessageDialog::Set(const string &title, const string &body, void (*callback
 		fHeader->SetInnerRML(title.c_str());
 	if (fContent)
 		fContent->SetInnerRML(body.c_str());
+	fCallback = callback;
 	fDocument->Show();
 }
 
 void MessageDialog::Draw() {
 	fRocketContext->Update();
 	fRocketContext->Render();
+}
+
+void MessageDialog::ProcessEvent(Rocket::Core::Event& event) {
+	fDocument->Hide();
+	if (fCallback)
+		(*fCallback)();
+	gGameDialog.ClearInputRedirect();
 }

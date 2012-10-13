@@ -75,8 +75,6 @@
 #include "worsttime.h"
 #include "ChunkProcess.h"
 
-gameDialog *gameDialog::sfCurrentGameDialog = 0;
-
 const float defaultRenderViewAngle = 60.0f;
 float renderViewAngle = defaultRenderViewAngle;
 
@@ -438,7 +436,7 @@ void handleResize(int w, int h) {
 	// printf("::handleResize: %dx%d", w, h);
 	if (w == 0 || h == 0)
 		return; // This will happen when window is iconified.
-	gameDialog::sfCurrentGameDialog->handleResize(w, h);
+	gGameDialog.handleResize(w, h);
 }
 
 glm::mat4 gProjectionMatrix;
@@ -923,6 +921,7 @@ void gameDialog::render() {
 		if (gPlayer.IsDead() && !wasDead) {
 			wasDead = true;
 			fMessageDialog.Set("Oops", "You are dead.\n\nYou will be revived, and transported back to your starting place.\n\nThe place can be changed with a scroll of resurrection point.", revive);
+			fCurrentRocketContextInput = fMainUserInterface.GetRocketContext();
 			this->ClearForDialog();
 		} else if (fShowInventory)
 			gInventory.DrawInventory(fDrawTexture);
@@ -931,6 +930,7 @@ void gameDialog::render() {
 		else if (sgPopup.length() > 0) {
 			// There are some messages that shall be shown in a popup dialog.
 			fMessageDialog.Set(sgPopupTitle, sgPopup, 0);
+			fCurrentRocketContextInput = fMainUserInterface.GetRocketContext();
 			sgPopupTitle = "Ephenation"; // Reset to default.
 			sgPopup.clear();
 			this->ClearForDialog();
@@ -1070,7 +1070,6 @@ void gameDialog::init(void) {
 	fBuildingBlocks = BuildingBlocks::Make(7); // TODO: Need something more adaptive than a constant.
 	fInputPromptSentence = gDrawFont.vsfl.genSentence();
 	gMonsterDef.Init(0);
-	sfCurrentGameDialog = this; // Used by callback functions.
 	fShader = ChunkShader::Make(); // Singleton
 	fHealthBar = HealthBar::Make(); // Singleton
 	fDrawTexture = DrawTexture::Make();
@@ -1495,4 +1494,8 @@ void gameDialog::CalibrateMode(Calibration cal) {
 	if (fShowMainDialog)
 		fHideDialog = true;
 	fCalibrationMode = cal;
+}
+
+void gameDialog::ClearInputRedirect(void) {
+	fCurrentRocketContextInput = 0;
 }

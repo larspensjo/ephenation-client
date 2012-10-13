@@ -20,19 +20,11 @@
 #include <string>
 
 // This class manages the in-game dialog messages.
-
-// Forward declaration
-namespace Rocket {
-	namespace Core {
-		class Context;
-		class Element;
-		class ElementDocument;
-	}
-};
+#include <Rocket/Core.h>
 
 using std::string;
 
-class MessageDialog {
+class MessageDialog : public Rocket::Core::EventListener {
 public:
 	MessageDialog();
 	~MessageDialog();
@@ -43,8 +35,12 @@ public:
 
 	// Draw the dialog.
 	virtual void Draw();
+
+	// Process the incoming event.
+	virtual void ProcessEvent(Rocket::Core::Event& event);
 private:
 	Rocket::Core::Context *fRocketContext;
 	Rocket::Core::ElementDocument *fDocument;
 	Rocket::Core::Element *fHeader, *fContent;
+	void (*fCallback)(void);
 };

@@ -53,7 +53,7 @@
 		<div  id="content">
 These properties set the top, right, bottom and left margins of a box. Negative values are allowed, and will extend the content area of the box past its normal boundaries.
 		</div>
-		<div class="closebutton">Close</div>
+		<button class="closebutton" onclick="Close" id="closebutton">Close</button>
 	</div>
 </body>
 </rml>

@@ -52,16 +52,16 @@ namespace Rocket {
 class gameDialog {
 public:
 	gameDialog();
-	virtual void render();
-	virtual void init();
-	virtual ~gameDialog();
-	virtual void handleMouse(int button, int action);
-	virtual void Update();
-	virtual void SetMessage(const char *);
-	virtual void HandleKeyRelease(int key); // Keyboard event
-	virtual void HandleKeyPress(int key);	// Keyboard event
-	virtual void HandleCharacter(int key, int action);	// Character event
-	virtual void handleResize(int w, int h);
+	void render();
+	void init();
+	~gameDialog();
+	void handleMouse(int button, int action);
+	void Update();
+	void SetMessage(const char *);
+	void HandleKeyRelease(int key); // Keyboard event
+	void HandleKeyPress(int key);	// Keyboard event
+	void HandleCharacter(int key, int action);	// Character event
+	void handleResize(int w, int h);
 	void handleMouseActiveMotion(int x, int y);
 
 	void ClickOnBlock(int x, int y);
@@ -79,8 +79,6 @@ public:
 	// Manage the running status of the player
 	void UpdateRunningStatus(bool disable);
 
-	static gameDialog *sfCurrentGameDialog;
-
 	bool fShowInventory;
 
 	// Define possible effects that can be requested. They will all terminate automatically.
@@ -92,6 +90,9 @@ public:
 	void RequestEffect(Effect eff);
 	void CancelCurrentEffect(void);
 	void UpdateEffect(void);
+
+	// If there is a redirect of inputs to a Rocket context, then clear it.
+	void ClearInputRedirect(void);
 
 private:
 	Effect fCurrentEffect;
