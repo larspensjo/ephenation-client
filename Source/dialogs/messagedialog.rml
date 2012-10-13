@@ -1,6 +1,6 @@
 <rml>
 <head>
-	/* <link type="text/rcss" href="ephenation.rcss"/> */
+	<link type="text/rcss" href="ephenation.rcss"/>
 	<style>
 		/* Definition of the complete document */
 		body
@@ -21,12 +21,18 @@
 			text-align:center;
 		}
 
+		.content {
+			height: 65%;
+			white-space: pre-wrap; /* Preserve newlines, but wrap also when needed */
+			overflow: auto; /* Text flowing outside the area is not shown */
+		}
+
 		/* A big display that will show graphical representations of player data */
 		.messagedialog
 		{
 			width: 800px;
 			height: 600px;
-			font-size: 18px;
+			font-size: 22px;
 			background-decorator: image;
 			background-image: DialogBackground.bmp;
 			padding-top: 30px;
@@ -37,11 +43,12 @@
 
 		.closebutton {
 			font-size: 36px;
-/*
-			left: 50px;
-			bottom: 0px;
-			position: absolute;
-*/
+		}
+
+		.closebutton:hover {
+			font-size: 36px;
+			color:white;
+			background: rgba(0,0,0, 20%);
 		}
 	</style>
 </head>
@@ -50,7 +57,7 @@
 		<div class="header" id="header">
 			Header
 		</div>
-		<div  id="content">
+		<div  id="content" class="content">
 These properties set the top, right, bottom and left margins of a box. Negative values are allowed, and will extend the content area of the box past its normal boundaries.
 		</div>
 		<button class="closebutton" onclick="Close" id="closebutton">Close</button>

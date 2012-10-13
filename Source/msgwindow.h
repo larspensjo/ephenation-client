@@ -18,6 +18,7 @@
 #pragma once
 //
 // This is a class that will manage a window with scrolling messages on the screen.
+// It is also called the chat window, as defined by the Rocket main context.
 //
 
 #include <string>
