@@ -27,7 +27,15 @@ Manage the main user interface when gaming. That includes:
 #pragma once
 
 #include <string>
-#include <Rocket/Core.h>
+
+// Forward declaration
+namespace Rocket {
+	namespace Core {
+		class Context;
+		class Element;
+		class ElementDocument;
+	}
+};
 
 using std::string;
 

@@ -17,6 +17,7 @@
 
 #include <GL/glew.h>
 #include <Rocket/Debugger.h>
+#include <Rocket/Core.h>
 
 #include "mainuserinterface.h"
 #include "../primitives.h"
