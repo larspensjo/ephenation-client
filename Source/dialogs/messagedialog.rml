@@ -1,0 +1,59 @@
+<rml>
+<head>
+	/* <link type="text/rcss" href="ephenation.rcss"/> */
+	<style>
+		/* Definition of the complete document */
+		body
+		{
+			font-family: Gabriola;
+			font-size: 48px;
+			width: 100%; /* The document will use the whole display */
+			height: 100%;
+			color: black;
+		}
+
+		div {
+			display: block;
+		}
+
+		.header {
+			font-size: 48px;
+			text-align:center;
+		}
+
+		/* A big display that will show graphical representations of player data */
+		.messagedialog
+		{
+			width: 800px;
+			height: 600px;
+			font-size: 18px;
+			background-decorator: image;
+			background-image: DialogBackground.bmp;
+			padding-top: 30px;
+			padding-left: 50px;
+			padding-right: 50px;
+			padding-bottom: 10px;
+		}
+
+		.closebutton {
+			font-size: 36px;
+/*
+			left: 50px;
+			bottom: 0px;
+			position: absolute;
+*/
+		}
+	</style>
+</head>
+<body id="body">
+	<div class="messagedialog">
+		<div class="header" id="header">
+			Header
+		</div>
+		<div  id="content">
+These properties set the top, right, bottom and left margins of a box. Negative values are allowed, and will extend the content area of the box past its normal boundaries.
+		</div>
+		<div class="closebutton">Close</div>
+	</div>
+</body>
+</rml>

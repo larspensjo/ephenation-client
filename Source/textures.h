@@ -51,7 +51,6 @@ struct GameTexture {
 	static GLuint WEP1, WEP2, WEP3, WEP4;
 	static GLuint WEP1Text, WEP2Text, WEP3Text, WEP4Text;
 	static GLuint Coin, Quest;
-	static GLuint DialogBackground;
 	static GLuint PoissonDisk;
 
 	static const int fgNumBuildBlocks; // Number of available building blocks

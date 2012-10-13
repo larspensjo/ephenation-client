@@ -27,6 +27,11 @@
 MainUserInterface::MainUserInterface() : fRocketContext(0), fDocument(0) {
 }
 
+MainUserInterface::~MainUserInterface() {
+	fDocument->RemoveReference();
+	fRocketContext->RemoveReference();
+}
+
 void MainUserInterface::Init() {
 	// Create the main Rocket context and set it on the shell's input layer.
 	fRocketContext = Rocket::Core::CreateContext("main", Rocket::Core::Vector2i(gViewport[2], gViewport[3]));
@@ -35,15 +40,16 @@ void MainUserInterface::Init() {
 		printf("Rocket::Core::CreateContext failed\n");
 		exit(1);
 	}
+	fRocketContext->AddReference();
 
 	Rocket::Debugger::Initialise(fRocketContext);
 
 	// Load and show the UI.
 	fDocument = fRocketContext->LoadDocument("dialogs/userinterface.rml");
 	if (fDocument == 0)
-		ErrorDialog("MainUserInterface::MainUserInterface: Failed to load user interface");
+		ErrorDialog("MainUserInterface::Init: Failed to load user interface");
+	fDocument->AddReference();
 	fDocument->Show();
-	fDocument->RemoveReference();
 }
 
 void MainUserInterface::Resize(int w, int h) {

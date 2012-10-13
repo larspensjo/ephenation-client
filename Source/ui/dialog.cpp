@@ -52,7 +52,6 @@ void dialog::Draw(DrawTexture *drawTexture, float alpha) {
 
 	// The quad defined from 0 to 1, center it on screen.
 	model = glm::translate(model, glm::vec3(-0.5f, -0.5f, 0.0f));
-	glBindTexture(GL_TEXTURE_2D, GameTexture::DialogBackground);
 	glEnable(GL_BLEND);
 	drawTexture->Draw(ident, model, alpha);
 }

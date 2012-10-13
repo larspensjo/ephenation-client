@@ -42,6 +42,7 @@ using std::string;
 class MainUserInterface {
 public:
 	MainUserInterface();
+	~MainUserInterface();
 	void Resize(int w, int h);
 	void Init(void);
 	void Draw(void);

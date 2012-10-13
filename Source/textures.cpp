@@ -104,7 +104,6 @@ GLuint GameTexture::CompassRose, GameTexture::DamageIndication;
 GLuint GameTexture::WEP1, GameTexture::WEP2, GameTexture::WEP3, GameTexture::WEP4;
 GLuint GameTexture::Coin, GameTexture::Quest;
 GLuint GameTexture::WEP1Text, GameTexture::WEP2Text, GameTexture::WEP3Text, GameTexture::WEP4Text;
-GLuint GameTexture::DialogBackground;
 GLuint GameTexture::PoissonDisk;
 
 using glm::vec2;
@@ -417,10 +416,6 @@ void GameTexture::Init(void) {
 	WEP4Text = loadTexture(loadBMP("textures/WEP4Text.bmp"), TF_NOMIPMAP);
 
 	Branch = loadTexture(loadBMP("textures/branch.bmp", true), TF_SRGB|TF_MIPMAP2|TF_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-	DialogBackground = loadTexture(loadBMP("textures/DialogBackground.bmp"), TF_NOMIPMAP|TF_NEAREST|TF_SRGB);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 

@@ -130,6 +130,8 @@ gameDialog::~gameDialog() {
 	fShader = 0; // Don't delete this singleton
 	fBuildingBlocks = 0; // Singleton
 	fHealthBar = 0; // Singleton
+	fPlayerStatsOneLiner_Element->RemoveReference();
+	fFPS_Element->RemoveReference();
 }
 
 // In game mode, find the object that the player clicked on.
@@ -920,9 +922,7 @@ void gameDialog::render() {
 		static bool wasDead = false;
 		if (gPlayer.IsDead() && !wasDead) {
 			wasDead = true;
-			fShowMainDialog = true;
-			fHideDialog = false;
-			dialog::DispatchDraw(fDrawTexture, 1.0f, new MessageDialog("Oops", "You are dead.\n\nYou will be revived, and transported back to your starting place.\n\nThe place can be changed with a scroll of resurrection point.", revive));
+			fMessageDialog.Set("Oops", "You are dead.\n\nYou will be revived, and transported back to your starting place.\n\nThe place can be changed with a scroll of resurrection point.", revive);
 			this->ClearForDialog();
 		} else if (fShowInventory)
 			gInventory.DrawInventory(fDrawTexture);
@@ -930,9 +930,7 @@ void gameDialog::render() {
 			dialog::DispatchDraw(fDrawTexture, fHideDialog ? 0.5f : 1.0f);
 		else if (sgPopup.length() > 0) {
 			// There are some messages that shall be shown in a popup dialog.
-			fShowMainDialog = true;
-			fHideDialog = false;
-			dialog::DispatchDraw(fDrawTexture, 1.0f, new MessageDialog(sgPopupTitle, sgPopup, 0));
+			fMessageDialog.Set(sgPopupTitle, sgPopup, 0);
 			sgPopupTitle = "Ephenation"; // Reset to default.
 			sgPopup.clear();
 			this->ClearForDialog();
@@ -1097,9 +1095,14 @@ void gameDialog::init(void) {
 	fFPS_Element = fMainUserInterface.GetElement("fps");
 	if (fFPS_Element == 0)
 		ErrorDialog("Missing UI definition for FPS");
+	fFPS_Element->AddReference();
+
 	fPlayerStatsOneLiner_Element = fMainUserInterface.GetElement("playerstatsoneliner");
 	if (fPlayerStatsOneLiner_Element == 0)
 		ErrorDialog("Missing UI definition for one line player stats");
+	fPlayerStatsOneLiner_Element->AddReference();
+
+	fMessageDialog.Init(fMainUserInterface.GetRocketContext());
 
 	checkError("gameDialog::init");
 }

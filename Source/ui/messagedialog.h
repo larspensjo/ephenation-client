@@ -17,25 +17,34 @@
 
 #pragma once
 
+#include <string>
+
 // This class manages the in-game dialog messages.
 
-#include "dialog.h"
+// Forward declaration
+namespace Rocket {
+	namespace Core {
+		class Context;
+		class Element;
+		class ElementDocument;
+	}
+};
 
-class MessageDialog : public dialog {
+using std::string;
+
+class MessageDialog {
 public:
-	// Initialize a dialog. Call the callback function (if any) when it is closed.
-	MessageDialog(const std::string &title, const std::string &body, void (*callback)(void) = 0);
+	MessageDialog();
+	~MessageDialog();
+
+	void Init(Rocket::Core::Context *context);
+
+	void Set(const string &title, const string &body, void (*callback)(void));
 
 	// Draw the dialog.
-	virtual void Draw(DrawTexture *drawTexture, float alpha);
-
-	// The player clicked on something.
-	virtual void Click(void);
-
-	virtual void Escape(void);
+	virtual void Draw();
 private:
-	DialogText fClose, fTitle, fBody;
-	enum class ActiveElement { NONE, CLOSE };
-	ActiveElement fActiveElement;
-	void (*fCallback)(void);
+	Rocket::Core::Context *fRocketContext;
+	Rocket::Core::ElementDocument *fDocument;
+	Rocket::Core::Element *fHeader, *fContent;
 };

@@ -20,6 +20,7 @@
 #include <memory>
 
 #include "ui/mainuserinterface.h"
+#include "ui/messagedialog.h"
 #include "rendercontrol.h"
 
 using std::string;
@@ -137,6 +138,8 @@ private:
 
 	MainUserInterface fMainUserInterface;
 	Rocket::Core::Element *fFPS_Element, *fPlayerStatsOneLiner_Element;
+
+	MessageDialog fMessageDialog;
 };
 
 extern gameDialog gGameDialog;
