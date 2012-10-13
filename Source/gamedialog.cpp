@@ -1184,7 +1184,7 @@ void gameDialog::Update() {
 		// Full screen, which means mouse is usually disabled. But there are cases when it is needed.
 		bool showMouseFullscreen = false;
 		static bool wasShowingMouse = false;
-		if ((fShowMainDialog && !fHideDialog) || gMode.Get() == GameMode::CONSTRUCT || fShowInventory)
+		if ((fShowMainDialog && !fHideDialog) || gMode.Get() == GameMode::CONSTRUCT || fShowInventory || gMode.Get() == GameMode::TELEPORT)
 			showMouseFullscreen = true;
 		if (wasShowingMouse && !showMouseFullscreen) {
 			glfwDisable(GLFW_MOUSE_CURSOR);
