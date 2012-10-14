@@ -1,0 +1,47 @@
+body
+{
+	font-family: Gabriola;
+	font-size: 48px;
+	width: 100%; /* The document will use the whole display */
+	height: 100%;
+	color: black;
+}
+
+div {
+	display: block;
+}
+
+.header {
+	font-size: 48px;
+	text-align:center;
+}
+
+.content {
+	height: 65%;
+	white-space: pre-wrap; /* Preserve newlines, but wrap also when needed */
+	overflow: auto; /* Text flowing outside the area is not shown */
+}
+
+/* A big display that will show graphical representations of player data */
+.messagedialog
+{
+	width: 800px;
+	height: 600px;
+	font-size: 22px;
+	background-decorator: image;
+	background-image: DialogBackground.bmp;
+	padding-top: 30px;
+	padding-left: 50px;
+	padding-right: 50px;
+	padding-bottom: 10px;
+}
+
+.formatbutton {
+	font-size: 36px;
+}
+
+.formatbutton:hover {
+	font-size: 36px;
+	color:white;
+	background: rgba(0,0,0, 20%);
+}

@@ -1,55 +1,11 @@
+<!--A pop-up window used to show information. -->
+
 <rml>
 <head>
 	<link type="text/rcss" href="ephenation.rcss"/>
+	<link type="text/rcss" href="popup.rcss"/>
 	<style>
 		/* Definition of the complete document */
-		body
-		{
-			font-family: Gabriola;
-			font-size: 48px;
-			width: 100%; /* The document will use the whole display */
-			height: 100%;
-			color: black;
-		}
-
-		div {
-			display: block;
-		}
-
-		.header {
-			font-size: 48px;
-			text-align:center;
-		}
-
-		.content {
-			height: 65%;
-			white-space: pre-wrap; /* Preserve newlines, but wrap also when needed */
-			overflow: auto; /* Text flowing outside the area is not shown */
-		}
-
-		/* A big display that will show graphical representations of player data */
-		.messagedialog
-		{
-			width: 800px;
-			height: 600px;
-			font-size: 22px;
-			background-decorator: image;
-			background-image: DialogBackground.bmp;
-			padding-top: 30px;
-			padding-left: 50px;
-			padding-right: 50px;
-			padding-bottom: 10px;
-		}
-
-		.closebutton {
-			font-size: 36px;
-		}
-
-		.closebutton:hover {
-			font-size: 36px;
-			color:white;
-			background: rgba(0,0,0, 20%);
-		}
 	</style>
 </head>
 <body id="body">
@@ -58,9 +14,8 @@
 			Header
 		</div>
 		<div  id="content" class="content">
-These properties set the top, right, bottom and left margins of a box. Negative values are allowed, and will extend the content area of the box past its normal boundaries.
 		</div>
-		<button class="closebutton" onclick="Close" id="closebutton">Close</button>
+		<button class="formatbutton" onclick="Close" id="closebutton">Close</button>
 	</div>
 </body>
 </rml>

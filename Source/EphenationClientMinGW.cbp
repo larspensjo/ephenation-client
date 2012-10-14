@@ -70,7 +70,7 @@
 			<Add library="contrib\win32\libRocket\libRocketControls.a" />
 			<Add library="contrib\win32\libRocket\libRocketDebugger.a" />
 			<Add library="contrib\win32\libRocket\libfreetype.dll.a" />
-			<Add library="contrib/win32/lloyd-yajl-17b1790/src/lib/yajl_s.lib" />
+			<Add library="contrib\win32\lloyd-yajl-17b1790\src\lib\yajl_s.lib" />
 			<Add directory="C:\MinGW\msys\1.0\lib" />
 			<Add directory="C:\MinGW\msys\1.0\local\lib" />
 			<Add directory="C:\MinGW\msys\1.0\bin\assimp\lib" />
@@ -155,6 +155,9 @@
 		<Unit filename="crypt.cpp" />
 		<Unit filename="crypt.h" />
 		<Unit filename="dialogs\ephenation.rcss" />
+		<Unit filename="dialogs\messagedialog.rml" />
+		<Unit filename="dialogs\popup.rcss" />
+		<Unit filename="dialogs\topleveldialog.rml" />
 		<Unit filename="dialogs\userinterface.rml" />
 		<Unit filename="ephenation.rc">
 			<Option compilerVar="WINDRES" />

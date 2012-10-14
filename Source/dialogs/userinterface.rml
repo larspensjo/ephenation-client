@@ -1,3 +1,5 @@
+<!-- The document that describes all the main permanent elements shown during playing. -->
+
 <rml>
 <head>
 	<link type="text/rcss" href="ephenation.rcss"/>

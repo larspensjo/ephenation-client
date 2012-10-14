@@ -1,0 +1,23 @@
+<!--The first dialog shown when the player press ESC in the game.-->
+
+<rml>
+<head>
+	<link type="text/rcss" href="ephenation.rcss"/>
+	<link type="text/rcss" href="popup.rcss"/>
+	<style>
+	</style>
+</head>
+<body id="body">
+	<div class="messagedialog">
+		<div class="header" id="header">
+			Ephenation
+		</div>
+		<div  id="content" class="content">
+			<button class="formatbutton" onclick="Options..." id="closebutton">Play</button>
+			<button class="formatbutton" onclick="Help..." id="closebutton">Play</button>
+		</div>
+		<button class="formatbutton" onclick="Close" id="closebutton">Play</button>
+		<button class="formatbutton" onclick="Quit" id="quitbutton">Quit</button>
+	</div>
+</body>
+</rml>
