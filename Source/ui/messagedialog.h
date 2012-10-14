@@ -19,7 +19,7 @@
 
 #include <string>
 
-// This class manages the in-game dialog messages.
+// This class manages in-game dialog messages.
 #include <Rocket/Core.h>
 
 using std::string;
@@ -29,18 +29,16 @@ public:
 	MessageDialog();
 	~MessageDialog();
 
+	// Define what context shall be used for the documents.
 	void Init(Rocket::Core::Context *context);
 
+	// Load a special dialog that onlhy shows a title and a message.
 	void Set(const string &title, const string &body, void (*callback)(void));
-
-	// Draw the dialog.
-	virtual void Draw();
-
+private:
 	// Process the incoming event.
 	virtual void ProcessEvent(Rocket::Core::Event& event);
-private:
+
 	Rocket::Core::Context *fRocketContext;
 	Rocket::Core::ElementDocument *fDocument;
-	Rocket::Core::Element *fHeader, *fContent;
 	void (*fCallback)(void);
 };

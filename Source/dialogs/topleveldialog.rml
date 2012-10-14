@@ -2,6 +2,7 @@
 
 <rml>
 <head>
+	<title>toplevel.rml</title>
 	<link type="text/rcss" href="ephenation.rcss"/>
 	<link type="text/rcss" href="popup.rcss"/>
 	<style>
@@ -13,11 +14,11 @@
 			Ephenation
 		</div>
 		<div  id="content" class="content">
-			<button class="formatbutton" onclick="Options..." id="closebutton">Play</button>
-			<button class="formatbutton" onclick="Help..." id="closebutton">Play</button>
+			<button class="formatbutton" onclick="Options...">Play</button>
+			<button class="formatbutton" onclick="Help...">Play</button>
 		</div>
-		<button class="formatbutton" onclick="Close" id="closebutton">Play</button>
-		<button class="formatbutton" onclick="Quit" id="quitbutton">Quit</button>
+		<button class="formatbutton" onclick="Close">Play</button>
+		<button class="formatbutton" onclick="Quit">Quit</button>
 	</div>
 </body>
 </rml>

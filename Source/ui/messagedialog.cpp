@@ -20,59 +20,64 @@
 #include "messagedialog.h"
 #include "Error.h"
 #include "../gamedialog.h"
+#include "../Splitter.h"
 
 using std::string;
 
-MessageDialog::MessageDialog() : fRocketContext(0), fDocument(0), fHeader(0), fContent(0), fCallback(0) {
+MessageDialog::MessageDialog() : fRocketContext(0), fDocument(0), fCallback(0) {
 }
 
 MessageDialog::~MessageDialog() {
 	if (fDocument)
 		fDocument->RemoveReference();
-	if (fHeader)
-		fHeader->RemoveReference();
-	if (fContent)
-		fContent->RemoveReference();
 }
 
 void MessageDialog::Init(Rocket::Core::Context *context) {
 	fRocketContext = context;
+}
 
+void MessageDialog::Set(const string &title, const string &body, void (*callback)(void)) {
+	if (fDocument != 0)
+		return; // TODO: handle mutiple simultaneous requests
 	// Load and show the UI.
 	fDocument = fRocketContext->LoadDocument("dialogs/messagedialog.rml");
 	if (fDocument == 0)
 		ErrorDialog("MessageDialog::Init: Failed to load user interface");
 	// Document is owned by the caller, which means reference count has already been incremented.
-	fHeader = fDocument->GetElementById("header");
-	if (fHeader)
-		fHeader->AddReference();
-	fContent = fDocument->GetElementById("content");
-	if (fContent)
-		fContent->AddReference();
-	Rocket::Core::Element *closeButton = fDocument->GetElementById("closebutton");
-	if (closeButton)
-		fDocument->AddEventListener("click", this);
-}
-
-void MessageDialog::Set(const string &title, const string &body, void (*callback)(void)) {
-	if (fHeader)
-		fHeader->SetInnerRML(title.c_str());
-	if (fContent)
-		fContent->SetInnerRML(body.c_str());
+	Rocket::Core::Element *header = fDocument->GetElementById("header");
+	Rocket::Core::Element *content = fDocument->GetElementById("content");
+	if (header)
+		header->SetInnerRML(title.c_str());
+	if (content)
+		content->SetInnerRML(body.c_str());
+	fDocument->AddEventListener("click", this);
 	fCallback = callback;
 	fDocument->Show();
 }
 
-void MessageDialog::Draw() {
-/* This is done for the context elsewhere
-	fRocketContext->Update();
-	fRocketContext->Render();
-*/
-}
-
 void MessageDialog::ProcessEvent(Rocket::Core::Event& event) {
-	fDocument->Hide();
-	if (fCallback)
-		(*fCallback)();
-	gGameDialog.ClearInputRedirect();
+	Rocket::Core::Element *e = event.GetTargetElement();
+	string attr = e->GetAttribute("onclick", Rocket::Core::String("")).CString();
+	// Use the argument to "onclick" to determine what to do.
+	Splitter split(attr, " ");
+	if (split[0] == "Close") {
+		fDocument->Hide();
+		fDocument->RemoveReference();
+		fDocument = 0;
+		if (fCallback)
+			(*fCallback)();
+		gGameDialog.ClearInputRedirect();
+	} else if (split[0] == "Quit") {
+		fDocument->Hide();
+		fDocument->RemoveReference();
+		fDocument = 0;
+		if (fCallback)
+			(*fCallback)();
+		gGameDialog.ClearInputRedirect();
+		gMode.Set(GameMode::ESC);
+	} else if (attr == "") {
+		// Ignore
+	} else {
+		ErrorDialog("MessageDialog::ProcessEvent Unknown 'onclick' attribute '%s' in %s", attr.c_str(), fDocument->GetTitle().CString());
+	}
 }

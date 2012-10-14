@@ -2,6 +2,7 @@
 
 <rml>
 <head>
+	<title>userinterface.rml</title>
 	<link type="text/rcss" href="ephenation.rcss"/>
 	<style>
 		/* Definition of the complete document */

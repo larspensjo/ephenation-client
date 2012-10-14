@@ -2,6 +2,7 @@
 
 <rml>
 <head>
+	<title>messagedialog.rml</title>
 	<link type="text/rcss" href="ephenation.rcss"/>
 	<link type="text/rcss" href="popup.rcss"/>
 	<style>
@@ -15,7 +16,7 @@
 		</div>
 		<div  id="content" class="content">
 		</div>
-		<button class="formatbutton" onclick="Close" id="closebutton">Close</button>
+		<button class="formatbutton" onclick="Close">Close</button>
 	</div>
 </body>
 </rml>

@@ -18,8 +18,9 @@ div {
 
 .content {
 	height: 65%;
-	white-space: pre-wrap; /* Preserve newlines, but wrap also when needed */
+	white-space: pre-wrap; /* Preserve newlines, but wrap when needed */
 	overflow: auto; /* Text flowing outside the area is not shown */
+	line-height: 1em; /* Default is 1.2em */
 }
 
 /* A big display that will show graphical representations of player data */
