@@ -27,7 +27,8 @@ MessageDialog::MessageDialog() : fRocketContext(0), fDocument(0), fHeader(0), fC
 }
 
 MessageDialog::~MessageDialog() {
-	fDocument->RemoveReference();
+	if (fDocument)
+		fDocument->RemoveReference();
 	if (fHeader)
 		fHeader->RemoveReference();
 	if (fContent)
@@ -41,7 +42,7 @@ void MessageDialog::Init(Rocket::Core::Context *context) {
 	fDocument = fRocketContext->LoadDocument("dialogs/messagedialog.rml");
 	if (fDocument == 0)
 		ErrorDialog("MessageDialog::Init: Failed to load user interface");
-	fDocument->AddReference();
+	// Document is owned by the caller, which means reference count has already been incremented.
 	fHeader = fDocument->GetElementById("header");
 	if (fHeader)
 		fHeader->AddReference();
@@ -50,7 +51,7 @@ void MessageDialog::Init(Rocket::Core::Context *context) {
 		fContent->AddReference();
 	Rocket::Core::Element *closeButton = fDocument->GetElementById("closebutton");
 	if (closeButton)
-		closeButton->AddEventListener("click", this);
+		fDocument->AddEventListener("click", this);
 }
 
 void MessageDialog::Set(const string &title, const string &body, void (*callback)(void)) {
@@ -63,8 +64,10 @@ void MessageDialog::Set(const string &title, const string &body, void (*callback
 }
 
 void MessageDialog::Draw() {
+/* This is done for the context elsewhere
 	fRocketContext->Update();
 	fRocketContext->Render();
+*/
 }
 
 void MessageDialog::ProcessEvent(Rocket::Core::Event& event) {

@@ -28,8 +28,12 @@ MainUserInterface::MainUserInterface() : fRocketContext(0), fDocument(0) {
 }
 
 MainUserInterface::~MainUserInterface() {
-	fDocument->RemoveReference();
-	fRocketContext->RemoveReference();
+	if (fDocument)
+		fDocument->RemoveReference();
+/* This doesn't work.
+	if (fRocketContext)
+		fRocketContext->RemoveReference();
+*/
 }
 
 void MainUserInterface::Init() {
@@ -40,15 +44,16 @@ void MainUserInterface::Init() {
 		printf("Rocket::Core::CreateContext failed\n");
 		exit(1);
 	}
-	fRocketContext->AddReference();
+	// The reference count is initialized to 1.
 
-	Rocket::Debugger::Initialise(fRocketContext);
+	if (gDebugOpenGL)
+		Rocket::Debugger::Initialise(fRocketContext);
 
 	// Load and show the UI.
 	fDocument = fRocketContext->LoadDocument("dialogs/userinterface.rml");
+	// LoadDocument will add one to reference already.
 	if (fDocument == 0)
 		ErrorDialog("MainUserInterface::Init: Failed to load user interface");
-	fDocument->AddReference();
 	fDocument->Show();
 }
 
