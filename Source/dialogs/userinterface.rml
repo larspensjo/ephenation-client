@@ -48,6 +48,7 @@
 			top: 0;
 			font-family: Georgia;
 			background-color: rgba(0,0,0,30%); /* Semi transparent black background */
+			z-index: 0;
 		}
 
 		.chatwindow
@@ -63,6 +64,7 @@
 			color: white;
 			white-space: pre-wrap; /* Preserve newlines, but wrap also when needed */
 			overflow: scroll; /* Text flowing outside the area is not shown */
+			z-index: 1;
 		}
 
 		.inputarea {
@@ -71,6 +73,7 @@
 			bottom: 0px;
 			left: 5px;
 			position: absolute;
+			z-index: 1;
 		}
 	</style>
 </head>

@@ -50,10 +50,11 @@ void MsgWindow::Add(const char *fmt, ...) {
 	vsnprintf(buff, sizeof buff, fmt, vl);
 #endif
 
-	fCompleteMessage = fCompleteMessage + "\n" + buff;
+	fCompleteMessage = fCompleteMessage + "<div>\n" + buff + "</div>";
 
 	if (fRocketElement) {
-		fRocketElement->SetInnerRML(fCompleteMessage.c_str());
+		fRocketElement->SetInnerRML((fCompleteMessage).c_str());
+		fRocketElement->GetLastChild()->ScrollIntoView();
 	}
 
 	if (gMode.Get() != GameMode::GAME && gMode.Get() != GameMode::CONSTRUCT && gMode.Get() != GameMode::TELEPORT) {
