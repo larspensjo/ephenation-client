@@ -18,6 +18,8 @@
 #pragma once
 
 #include <string>
+#include <deque>
+#include <utility>
 
 // This class manages in-game dialog messages.
 #include <Rocket/Core.h>
@@ -38,7 +40,15 @@ private:
 	// Process the incoming event.
 	virtual void ProcessEvent(Rocket::Core::Event& event);
 
+	// Close the current document and free resources.
+	void CloseCurrentDocument(void);
+
 	Rocket::Core::Context *fRocketContext;
 	Rocket::Core::ElementDocument *fDocument;
 	void (*fCallback)(void);
+
+	typedef std::pair<Rocket::Core::ElementDocument*, void (*)(void)> PushedDialog;
+	std::deque<PushedDialog> fStack; // Need a stack to push multiple dialogs.
+	void Push(void);
+	bool Pop(void); // Return true if there was something to pop
 };

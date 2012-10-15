@@ -38,7 +38,7 @@ void MessageDialog::Init(Rocket::Core::Context *context) {
 
 void MessageDialog::Set(const string &title, const string &body, void (*callback)(void)) {
 	if (fDocument != 0)
-		return; // TODO: handle mutiple simultaneous requests
+		this->Push();
 	// Load and show the UI.
 	fDocument = fRocketContext->LoadDocument("dialogs/messagedialog.rml");
 	if (fDocument == 0)
@@ -61,23 +61,45 @@ void MessageDialog::ProcessEvent(Rocket::Core::Event& event) {
 	// Use the argument to "onclick" to determine what to do.
 	Splitter split(attr, " ");
 	if (split[0] == "Close") {
-		fDocument->Hide();
-		fDocument->RemoveReference();
-		fDocument = 0;
 		if (fCallback)
 			(*fCallback)();
-		gGameDialog.ClearInputRedirect();
+		if (!this->Pop())
+			gGameDialog.ClearInputRedirect();
 	} else if (split[0] == "Quit") {
-		fDocument->Hide();
-		fDocument->RemoveReference();
-		fDocument = 0;
 		if (fCallback)
 			(*fCallback)();
+		// Pop all saved documents, if any.
+		while(this->Pop())
+			continue;
 		gGameDialog.ClearInputRedirect();
 		gMode.Set(GameMode::ESC);
 	} else if (attr == "") {
-		// Ignore
+		// No attribute given, ignore the event
 	} else {
 		ErrorDialog("MessageDialog::ProcessEvent Unknown 'onclick' attribute '%s' in %s", attr.c_str(), fDocument->GetTitle().CString());
 	}
+}
+
+void MessageDialog::CloseCurrentDocument(void) {
+	fDocument->Hide();
+	fDocument->RemoveReference();
+	fDocument = 0;
+}
+
+void MessageDialog::Push(void) {
+	fDocument->Hide();
+	fStack.push_back(PushedDialog(fDocument, fCallback));
+	fDocument = 0;
+	fCallback = 0;
+}
+
+bool MessageDialog::Pop(void) {
+	this->CloseCurrentDocument();
+	if (fStack.size() == 0)
+		return false;
+	fDocument = fStack.back().first;
+	fCallback = fStack.back().second;
+	fStack.pop_back();
+	fDocument->Show();
+	return true;
 }
