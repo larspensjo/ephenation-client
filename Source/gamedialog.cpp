@@ -1070,6 +1070,8 @@ void gameDialog::init(void) {
 	glfwSetCharCallback(handleCharacter);
 	glfwSetMouseButtonCallback(dialogHandleMouse);
 
+	fRocketGui.Init();
+
 	fMainUserInterface.Init();
 	gMsgWindow.Init(fMainUserInterface.GetElement("chat"));
 	fFPS_Element = fMainUserInterface.GetElement("fps");

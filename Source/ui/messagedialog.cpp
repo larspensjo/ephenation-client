@@ -16,6 +16,7 @@
 //
 
 #include <string>
+#include <GL/glew.h>
 
 #include "messagedialog.h"
 #include "Error.h"

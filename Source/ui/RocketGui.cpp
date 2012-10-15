@@ -148,9 +148,9 @@ void RocketGui::Init()
 }
 
 RocketGui::~RocketGui() {
+	Rocket::Core::Shutdown();
 	Rocket::Core::SetSystemInterface(0);
 	Rocket::Core::SetRenderInterface(0);
-	Rocket::Core::Shutdown();
 }
 
 void RocketGui::LoadFonts(const std::string& dir)

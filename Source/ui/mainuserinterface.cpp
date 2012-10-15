@@ -30,10 +30,8 @@ MainUserInterface::MainUserInterface() : fRocketContext(0), fDocument(0) {
 MainUserInterface::~MainUserInterface() {
 	if (fDocument)
 		fDocument->RemoveReference();
-/* This doesn't work.
 	if (fRocketContext)
 		fRocketContext->RemoveReference();
-*/
 }
 
 void MainUserInterface::Init() {

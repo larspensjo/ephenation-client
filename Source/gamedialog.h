@@ -21,6 +21,7 @@
 
 #include "ui/mainuserinterface.h"
 #include "ui/messagedialog.h"
+#include "ui/RocketGui.h"
 #include "rendercontrol.h"
 
 using std::string;
@@ -133,6 +134,8 @@ private:
 	HealthBar *fHealthBar;
 	DrawTexture *fDrawTexture;
 	RenderControl fRenderControl;
+
+	RocketGui fRocketGui; // Has to be declared before the MainUserInterface
 
 	// All keyboard and mouse events are redirected to this one if it is non-null
 	Rocket::Core::Context *fCurrentRocketContextInput;

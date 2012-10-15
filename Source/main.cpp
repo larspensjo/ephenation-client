@@ -63,7 +63,6 @@
 #include "uniformbuffer.h"
 #include "billboard.h"
 #include "worsttime.h"
-#include "ui/RocketGui.h"
 
 #define CLIENT_MAJOR_VERSION 4
 #define CLIENT_MINOR_VERSION 2
@@ -507,9 +506,6 @@ int main(int argc, char** argv) {
 		else if (glDebugMessageCallbackAMD != 0)
 			glDebugMessageCallbackAMD(DebugFuncAMD, (void*)15);
 	}
-
-	RocketGui rocket;
-	rocket.Init();
 
 	glfwSwapInterval(Options::fgOptions.fVSYNC); // 0 means do not wait for VSYNC, which would delay the FPS sometimes.
 
