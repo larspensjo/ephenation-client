@@ -37,6 +37,19 @@ void MessageDialog::Init(Rocket::Core::Context *context) {
 	fRocketContext = context;
 }
 
+void MessageDialog::LoadDialog(const string &file) {
+	if (fDocument != 0)
+		this->Push();
+	// Load and show the UI.
+	fDocument = fRocketContext->LoadDocument(file.c_str());
+	if (fDocument == 0)
+		ErrorDialog("MessageDialog::LoadDialog: Failed to load %s", file.c_str());
+	// Document is owned by the caller, which means reference count has already been incremented.
+	fDocument->AddEventListener("click", this);
+	fCallback = 0;
+	fDocument->Show();
+}
+
 void MessageDialog::Set(const string &title, const string &body, void (*callback)(void)) {
 	if (fDocument != 0)
 		this->Push();
@@ -66,6 +79,12 @@ void MessageDialog::ProcessEvent(Rocket::Core::Event& event) {
 			(*fCallback)();
 		if (!this->Pop())
 			gGameDialog.ClearInputRedirect();
+	} else if (split[0] == "Popup" && split.size() == 2) {
+		this->Push();
+		fDocument = fRocketContext->LoadDocument(("dialogs/" + split[1]).c_str());
+		fDocument->AddEventListener("click", this);
+		fCallback = 0;
+		fDocument->Show();
 	} else if (split[0] == "Quit") {
 		if (fCallback)
 			(*fCallback)();

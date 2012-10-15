@@ -106,6 +106,9 @@
 		<Unit filename="crypt.cpp" />
 		<Unit filename="crypt.h" />
 		<Unit filename="dialogs/ephenation.rcss" />
+		<Unit filename="dialogs/messagedialog.rml" />
+		<Unit filename="dialogs/popup.rcss" />
+		<Unit filename="dialogs/topleveldialog.rml" />
 		<Unit filename="dialogs/userinterface.rml" />
 		<Unit filename="gamedialog.cpp" />
 		<Unit filename="gamedialog.h" />

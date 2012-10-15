@@ -1,0 +1,41 @@
+<!--A pop-up window used to help information. -->
+
+<rml>
+<head>
+	<title>help.rml</title>
+	<link type="text/rcss" href="ephenation.rcss"/>
+	<link type="text/rcss" href="popup.rcss"/>
+	<style>
+		/* Definition of the complete document */
+	</style>
+</head>
+<body id="body">
+	<div class="messagedialog">
+		<div class="header">
+			Ephenation Help
+		</div>
+		<div  id="content" class="content">
+			Lead programmers:
+			<div style="margin-left:50px;">Lars Pensjö</div>
+			<div style="margin-left:50px;">Mikael Grah</div>
+			Level design and testing: Andreas Andersson
+			Music: Kevin MacLeod, http://incompetech.com
+			Sound effects: http://www.mediacollege.com/
+			Graphics support: Jonas Pensjö, David Condon
+
+			Libraries:
+			<div style="margin-left:50px;">glm: G-Truc Creation (www.g-truc.net)</div>
+			<div style="margin-left:50px;">glfw: http://www.glfw.org/</div>
+			<div style="margin-left:50px;">tinyxml: Lee Thomason, www.sourceforge.net/projects/tinyxml</div>
+			<div style="margin-left:50px;">glew: http://glew.sourceforge.net/</div>
+			<div style="margin-left:50px;">assimp: http://assimp.sourceforge.net/</div>
+			<div style="margin-left:50px;">fltk: http://www.fltk.org/</div>
+			<div style="margin-left:50px;">openal: http://connect.creativelabs.com/openal/default.aspx</div>
+			<div style="margin-left:50px;">ogg: http://xiph.org/ogg/</div>
+			<div style="margin-left:50px;">vorbis: http://www.vorbis.com/</div>
+			<div style="margin-left:50px;">libRocket: http://librocket.com/</div>
+		</div>
+		<button class="formatbutton" onclick="Close">Close</button>
+	</div>
+</body>
+</rml>

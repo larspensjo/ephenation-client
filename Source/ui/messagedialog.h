@@ -36,6 +36,9 @@ public:
 
 	// Load a special dialog that onlhy shows a title and a message.
 	void Set(const string &title, const string &body, void (*callback)(void));
+
+	// Load a dialog from a file and show it
+	void LoadDialog(const string &file);
 private:
 	// Process the incoming event.
 	virtual void ProcessEvent(Rocket::Core::Event& event);

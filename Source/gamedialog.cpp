@@ -564,11 +564,8 @@ void gameDialog::HandleKeyPress(int key) {
 			fShowInventory = false;
 			gMsgWindow.SetAlternatePosition(0,0,false);
 		} else {
-			if (fShowMainDialog) {
-				fHideDialog = !fHideDialog;
-			}
-			fShowMainDialog = true;
-			this->ClearForDialog();
+			fMessageDialog.LoadDialog("dialogs/topleveldialog.rml");
+			fCurrentRocketContextInput = fMainUserInterface.GetRocketContext();
 		}
 		break;
 	case 'C':

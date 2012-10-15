@@ -1,0 +1,60 @@
+<!--A pop-up window used to help information. -->
+
+<rml>
+<head>
+	<title>help.rml</title>
+	<link type="text/rcss" href="ephenation.rcss"/>
+	<link type="text/rcss" href="popup.rcss"/>
+	<style>
+		/* Definition of the complete document */
+	</style>
+</head>
+<body id="body">
+	<div class="messagedialog">
+		<div class="header">
+			Ephenation Help
+		</div>
+		<div  id="content" class="content">
+			* Adventure, kill monsters, go up in level
+			* Monsters get progressively harder from the starting point
+			* Find and use better equipments
+			* Find a free area, allocate a territory of your own and redesign it as you want
+			* Make an exciting adventure for others, or a place to invite friends to
+			* Look at the high scores of popular areas, to find places to go adventure
+			* To kill a monster, use TAB to select it and initiate attack with '1'.
+			<div style="font-size: 36px;margin-left:150px;">General</div>
+			ESC: Get this dialog
+			Mouse: right button: Turn around
+			I: Inventory
+			W: Move forwards
+			A: Strafe left
+			S: Move backward
+			D: Strafe right
+			SPACE: Jump
+			M: Toggle map
+			Mouse wheel: Zoom in and out
+			<div style="font-size: 36px;margin-left:150px;">Attack</div>
+			TAB: Select monster
+			1: Start autoattack
+			2: Heal self (costs mana)
+			3: Double hit (costs mana)
+			F1: Use healing potion
+			F2: Use mana potion
+			<div style="font-size: 36px;margin-left:150px;">Commands</div>
+			ENTER: Start typing a command. Type ENTER again to confirm, or ESC to abort.
+			"say": Say something to nearby players.
+			"tell [player] [message]": Send a message to the specified player.
+			"sethome": Register current position as home. Can only be done at home territory.
+			"home": Immediately teleport home to registered position.
+			"resetpos": Go to start position immediately.
+			<div style="font-size: 36px;margin-left:150px;">Construction mode</div>
+			C: Toggle construction mode
+			Mouse wheel: Change block type
+			B: Build a block where the mouse points
+			V: Remove a block where the mouse points
+			V+Mouse button 1: Continous block removal
+		</div>
+		<button class="formatbutton" onclick="Close">Close</button>
+	</div>
+</body>
+</rml>

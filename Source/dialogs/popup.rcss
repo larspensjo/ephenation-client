@@ -16,11 +16,21 @@ div {
 	text-align:center;
 }
 
+/* Used for a multi line block of text */
 .content {
 	height: 65%;
 	white-space: pre-wrap; /* Preserve newlines, but wrap when needed */
 	overflow: auto; /* Text flowing outside the area is not shown */
 	line-height: 1em; /* Default is 1.2em */
+}
+
+/* Used for a multi line list of choices, one per line */
+.menulist {
+	height: 65%;
+	white-space: pre-wrap; /* Preserve newlines, but wrap when needed */
+	overflow: auto; /* Text flowing outside the area is not shown */
+	line-height: 1em; /* Default is 1.2em */
+	display: block;
 }
 
 /* A big display that will show graphical representations of player data */
@@ -32,7 +42,7 @@ div {
 	background-decorator: image;
 	background-image: DialogBackground.bmp;
 	padding-top: 30px;
-	padding-left: 50px;
+	padding-left: 70px;
 	padding-right: 50px;
 	padding-bottom: 10px;
 }

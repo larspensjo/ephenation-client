@@ -13,12 +13,13 @@
 		<div class="header" id="header">
 			Ephenation
 		</div>
-		<div  id="content" class="content">
-			<button class="formatbutton" onclick="Options...">Play</button>
-			<button class="formatbutton" onclick="Help...">Play</button>
+		<div class="menulist">
+			<button class="formatbutton" onclick="Options...">Options...</button> <br/>
+			<button class="formatbutton" onclick="Popup help.rml">Help...</button> <br/>
+			<button class="formatbutton" onclick="Popup credits.rml">Credits...</button> <br/>
 		</div>
-		<button class="formatbutton" onclick="Close">Play</button>
-		<button class="formatbutton" onclick="Quit">Quit</button>
+		<button class="formatbutton" onclick="Close" style="margin-left:150px;">Play</button>
+		<button class="formatbutton" onclick="Quit" style="margin-left:400px;">Quit</button>
 	</div>
 </body>
 </rml>
