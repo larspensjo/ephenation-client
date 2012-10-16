@@ -19,9 +19,9 @@
 #include <GL/glew.h>
 
 #include "messagedialog.h"
-#include "Error.h"
 #include "../gamedialog.h"
 #include "../Splitter.h"
+#include "Error.h"
 
 using std::string;
 
