@@ -1,0 +1,33 @@
+<!--The first dialog shown when the player press ESC in the game.-->
+
+<rml>
+<head>
+	<title>toplevel.rml</title>
+	<link type="text/rcss" href="ephenation.rcss"/>
+	<link type="text/rcss" href="popup.rcss"/>
+	<style>
+	</style>
+</head>
+<body id="body">
+	<div class="messagedialog">
+		<div class="header" id="header">
+			Ephenation options
+		</div>
+		<form>
+			<div class="menulist">
+				<select name="Performance">
+					<option value="Low">Low</option>
+					<option value="Ok" selected>OK</option>
+					<option value="Good">Good</option>
+					<option value="High">High</option>
+				</select><br/>
+				<input type="checkbox" name="Enable music" value="false"> Enable music</input><br/>
+				<input type="checkbox" name="Enable ping" value="false"> Enable ping</input><br/>
+				<input type="checkbox" name="Full screen" value="false"> Use full screen</input><br/>
+			</div>
+			<button class="formatbutton" onclick="Close" style="margin-left:150px;">Ok</button>
+			<button class="formatbutton" onclick="Close" style="margin-left:400px;">Cancel</button>
+		</form>
+	</div>
+</body>
+</rml>

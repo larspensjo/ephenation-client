@@ -1,3 +1,50 @@
+input.checkbox {
+	icon-decorator: image;
+	icon-image: decorators.bmp 411px 64px 433px 86px;
+
+	width: 27px;
+	height: 24px;
+}
+
+input.checkbox:hover {
+	icon-decorator: image;
+	icon-image: decorators.bmp 441px 64px 463px 86px;
+
+	width: 27px;
+	height: 24px;
+}
+
+input.checkbox:active {
+	icon-decorator: image;
+	icon-image: decorators.bmp 471px 64px 493px 86px;
+
+	width: 27px;
+	height: 24px;
+}
+
+input.checkbox:checked {
+	icon-decorator: image;
+	icon-image: decorators.bmp 411px 94px 433px 116px;
+
+	width: 27px;
+	height: 24px;
+}
+
+input.checkbox:hover:checked {
+	icon-decorator: image;
+	icon-image: decorators.bmp 441px 94px 463px 116px;
+
+	width: 27px;
+	height: 24px;
+}
+
+input.checkbox:active:checked {
+	icon-decorator: image;
+	icon-image: decorators.bmp 471px 94px 493px 116px;
+
+	width: 27px;
+	height: 24px;
+}
 
 scrollbarvertical
 {

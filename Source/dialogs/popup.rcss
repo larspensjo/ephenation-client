@@ -22,6 +22,7 @@ div {
 	white-space: pre-wrap; /* Preserve newlines, but wrap when needed */
 	overflow: auto; /* Text flowing outside the area is not shown */
 	line-height: 1em; /* Default is 1.2em */
+	display: block;
 }
 
 /* Used for a multi line list of choices, one per line */
@@ -47,12 +48,23 @@ div {
 	padding-bottom: 10px;
 }
 
+.menuitem {
+	font-size: 36px;
+	display: block;
+}
+
+.menuitem:hover {
+	font-size: 36px;
+	color: white;
+	background: rgba(0,0,0, 20%);
+}
+
 .formatbutton {
 	font-size: 36px;
 }
 
 .formatbutton:hover {
 	font-size: 36px;
-	color:white;
+	color: white;
 	background: rgba(0,0,0, 20%);
 }
