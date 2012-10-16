@@ -51,20 +51,11 @@ div {
 .menuitem {
 	font-size: 36px;
 	display: block;
-}
-
-.menuitem:hover {
-	font-size: 36px;
-	color: white;
-	background: rgba(0,0,0, 20%);
+	max-height: 36px;
+	margin: 10px;
 }
 
 .formatbutton {
 	font-size: 36px;
-}
-
-.formatbutton:hover {
-	font-size: 36px;
-	color: white;
-	background: rgba(0,0,0, 20%);
+	display: inline;
 }

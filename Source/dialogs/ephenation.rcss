@@ -9,41 +9,47 @@ input.checkbox {
 input.checkbox:hover {
 	icon-decorator: image;
 	icon-image: decorators.bmp 441px 64px 463px 86px;
-
-	width: 27px;
-	height: 24px;
 }
 
 input.checkbox:active {
 	icon-decorator: image;
 	icon-image: decorators.bmp 471px 64px 493px 86px;
-
-	width: 27px;
-	height: 24px;
 }
 
 input.checkbox:checked {
 	icon-decorator: image;
 	icon-image: decorators.bmp 411px 94px 433px 116px;
-
-	width: 27px;
-	height: 24px;
 }
 
 input.checkbox:hover:checked {
 	icon-decorator: image;
 	icon-image: decorators.bmp 441px 94px 463px 116px;
-
-	width: 27px;
-	height: 24px;
 }
 
 input.checkbox:active:checked {
 	icon-decorator: image;
 	icon-image: decorators.bmp 471px 94px 493px 116px;
+}
 
-	width: 27px;
-	height: 24px;
+button {
+	padding-left: 20px;
+	padding-right: 20px;
+	icon-background-decorator: tiled-horizontal;
+	icon-background-left-image: decorators.bmp 253px 7px 257px 38px;
+	icon-background-center-image: decorators.bmp stretch 257px 7px 395px 38px;
+	icon-background-right-image: decorators.bmp 395px 7px 399px 38px;
+}
+
+button:hover {
+	icon-background-left-image: decorators.bmp 253px 52px 257px 83px;
+	icon-background-center-image: decorators.bmp stretch 257px 52px 395px 83px;
+	icon-background-right-image: decorators.bmp 395px 52px 399px 83px;
+}
+
+button:active {
+	icon-background-left-image: decorators.bmp 253px 97px 257px 128px;
+	icon-background-center-image: decorators.bmp stretch 257px 97px 395px 128px;
+	icon-background-right-image: decorators.bmp 395px 97px 399px 128px;
 }
 
 scrollbarvertical
