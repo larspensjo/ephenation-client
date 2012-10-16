@@ -15,15 +15,15 @@
 		</div>
 		<form>
 			<div class="menulist">
+				<input type="checkbox" name="Enable music" value="false"> Enable music</input><br/>
+				<input type="checkbox" name="Enable ping" value="false"> Enable ping</input><br/>
+				<input type="checkbox" name="Full screen" value="false"> Use full screen</input><br/>
 				<select name="Performance">
 					<option value="Low">Low</option>
 					<option value="Ok" selected>OK</option>
 					<option value="Good">Good</option>
 					<option value="High">High</option>
-				</select><br/>
-				<input type="checkbox" name="Enable music" value="false"> Enable music</input><br/>
-				<input type="checkbox" name="Enable ping" value="false"> Enable ping</input><br/>
-				<input type="checkbox" name="Full screen" value="false"> Use full screen</input><br/>
+				</select> System performance<br/>
 			</div>
 			<button class="formatbutton" onclick="Close" style="margin-left:150px;">Ok</button>
 			<button class="formatbutton" onclick="Close" style="margin-left:400px;">Cancel</button>
