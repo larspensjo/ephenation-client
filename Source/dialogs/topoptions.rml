@@ -20,7 +20,7 @@
 				<input type="checkbox" name="Full screen" value="false"> Use full screen</input><br/>
 				<select name="Performance">
 					<option value="Low">Low</option>
-					<option value="Ok" selected>OK</option>
+					<option value="Medium" selected>Medium</option>
 					<option value="Good">Good</option>
 					<option value="High">High</option>
 				</select> System performance<br/>
