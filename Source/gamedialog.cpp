@@ -478,10 +478,38 @@ void gameDialog::HandleCharacter(int key, int action) {
 	}
 }
 
+static int rocketKeyModifiers = 0;
+
 static void handleKeypress(int key, int action) {
+	int modifier = 0;
+	switch(key) {
+	case GLFW_KEY_LSHIFT:
+	case GLFW_KEY_RSHIFT:
+		modifier = Rocket::Core::Input::KM_SHIFT;
+		break;
+	case GLFW_KEY_LCTRL:
+	case GLFW_KEY_RCTRL:
+		modifier = Rocket::Core::Input::KM_CTRL;
+		break;
+	case GLFW_KEY_CAPS_LOCK:
+		modifier = Rocket::Core::Input::KM_CAPSLOCK;
+		break;
+	case GLFW_KEY_KP_NUM_LOCK:
+		modifier = Rocket::Core::Input::KM_NUMLOCK;
+		break;
+	case GLFW_KEY_LALT:
+		modifier = Rocket::Core::Input::KM_ALT;
+		break;
+	case GLFW_KEY_SCROLL_LOCK:
+		modifier = Rocket::Core::Input::KM_SCROLLLOCK;
+		break;
+	}
+
 	if (action == GLFW_PRESS) {
+		rocketKeyModifiers |= modifier;
 		gGameDialog.HandleKeyPress(key);
 	} else {
+		rocketKeyModifiers &= ~modifier;
 		gGameDialog.HandleKeyRelease(key);
 	}
 }
@@ -518,7 +546,7 @@ void gameDialog::HandleKeyPress(int key) {
 	}
 
 	if (fCurrentRocketContextInput) {
-		fCurrentRocketContextInput->ProcessKeyDown(RocketGui::KeyMap(key), 0);
+		fCurrentRocketContextInput->ProcessKeyDown(RocketGui::KeyMap(key), rocketKeyModifiers);
 		return;
 	}
 
@@ -1102,7 +1130,9 @@ void gameDialog::Update() {
 	// Detect usage of the mouse wheel
 	int newWheel = glfwGetMouseWheel();
 	if (newWheel != wheel) {
-		if (gMode.Get() == GameMode::CONSTRUCT) {
+		if (fCurrentRocketContextInput) {
+			fCurrentRocketContextInput->ProcessMouseWheel(wheel-newWheel, rocketKeyModifiers);
+		} else if (gMode.Get() == GameMode::CONSTRUCT) {
 			fBuildingBlocks->UpdateSelection(newWheel);
 		} else if (fDrawMap) {
 			float fact = 1.0f + (wheel-newWheel)/10.0f;
