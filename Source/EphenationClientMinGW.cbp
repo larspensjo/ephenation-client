@@ -107,6 +107,7 @@
 		<Unit filename="ScrollingMessages.h" />
 		<Unit filename="SoundControl.cpp" />
 		<Unit filename="SoundControl.h" />
+		<Unit filename="Splitter.h" />
 		<Unit filename="SuperChunkManager.cpp" />
 		<Unit filename="SuperChunkManager.h" />
 		<Unit filename="TSExec.cpp" />
@@ -154,10 +155,13 @@
 		<Unit filename="contrib\win32\tinyxml\tinyxmlparser.cpp" />
 		<Unit filename="crypt.cpp" />
 		<Unit filename="crypt.h" />
+		<Unit filename="dialogs\credits.rml" />
 		<Unit filename="dialogs\ephenation.rcss" />
+		<Unit filename="dialogs\help.rml" />
 		<Unit filename="dialogs\messagedialog.rml" />
 		<Unit filename="dialogs\popup.rcss" />
 		<Unit filename="dialogs\topleveldialog.rml" />
+		<Unit filename="dialogs\topoptions.rml" />
 		<Unit filename="dialogs\userinterface.rml" />
 		<Unit filename="ephenation.rc">
 			<Option compilerVar="WINDRES" />

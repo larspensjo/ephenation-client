@@ -15,12 +15,13 @@
 			Ephenation credits
 		</div>
 		<div  id="content" class="content">
-			Lead programmers:
-			<div style="margin-left:50px;">Lars Pensjö</div>
-			<div style="margin-left:50px;">Mikael Grah</div>
+			Lead programmer:
+			<div style="margin-left:50px; max-height:40px;">Lars Pensjo</div>
+			Assistant programmer:
+			<div style="margin-left:50px; max-height:40px;">Mikael Grah</div>
 			Level design and testing: Andreas Andersson
 			Music: Kevin MacLeod, http://incompetech.com
-			Sound effects: http://www.mediacollege.com/
+			Sound effects: Home made and http://www.mediacollege.com/
 			Graphics support: Jonas Pensjö, David Condon
 
 			Libraries:

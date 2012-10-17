@@ -13,7 +13,7 @@
 		<div class="header" id="header">
 			Ephenation
 		</div>
-		<div class="menulist">
+		<div class="menulist" style="width:180px;">
 			<button class="menuitem" onclick="Popup topoptions.rml">Options...</button>
 			<button class="menuitem" onclick="Popup help.rml">Help...</button>
 			<button class="menuitem" onclick="Popup credits.rml">Credits...</button>

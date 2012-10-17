@@ -22,7 +22,7 @@
 			* Make an exciting adventure for others, or a place to invite friends to
 			* Look at the high scores of popular areas, to find places to go adventure
 			* To kill a monster, use TAB to select it and initiate attack with '1'.
-			<div style="font-size: 36px;margin-left:150px;">General</div>
+			<div style="font-size: 36px;margin-left:150px; max-height:0px;">General</div>
 			ESC: Get this dialog
 			Mouse: right button: Turn around
 			I: Inventory
@@ -33,21 +33,21 @@
 			SPACE: Jump
 			M: Toggle map
 			Mouse wheel: Zoom in and out
-			<div style="font-size: 36px;margin-left:150px;">Attack</div>
+			<div style="font-size: 36px;margin-left:150px; max-height:0px;">Attack</div>
 			TAB: Select monster
 			1: Start autoattack
 			2: Heal self (costs mana)
 			3: Double hit (costs mana)
 			F1: Use healing potion
 			F2: Use mana potion
-			<div style="font-size: 36px;margin-left:150px;">Commands</div>
+			<div style="font-size: 36px;margin-left:150px; max-height:0px;">Commands</div>
 			ENTER: Start typing a command. Type ENTER again to confirm, or ESC to abort.
 			"say": Say something to nearby players.
 			"tell [player] [message]": Send a message to the specified player.
 			"sethome": Register current position as home. Can only be done at home territory.
 			"home": Immediately teleport home to registered position.
 			"resetpos": Go to start position immediately.
-			<div style="font-size: 36px;margin-left:150px;">Construction mode</div>
+			<div style="font-size: 36px;margin-left:150px; max-height:0px;">Construction mode</div>
 			C: Toggle construction mode
 			Mouse wheel: Change block type
 			B: Build a block where the mouse points
