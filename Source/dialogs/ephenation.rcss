@@ -31,6 +31,7 @@ input.checkbox:active:checked {
 	icon-image: decorators.bmp 471px 94px 493px 116px;
 }
 
+input.submit,
 button {
 	padding-left: 20px;
 	padding-right: 20px;
@@ -40,12 +41,14 @@ button {
 	icon-background-right-image: decorators.bmp 395px 7px 399px 38px;
 }
 
+input.submit:hover,
 button:hover {
 	icon-background-left-image: decorators.bmp 253px 52px 257px 83px;
 	icon-background-center-image: decorators.bmp stretch 257px 52px 395px 83px;
 	icon-background-right-image: decorators.bmp 395px 52px 399px 83px;
 }
 
+input.submit:active,
 button:active {
 	icon-background-left-image: decorators.bmp 253px 97px 257px 128px;
 	icon-background-center-image: decorators.bmp stretch 257px 97px 395px 128px;
