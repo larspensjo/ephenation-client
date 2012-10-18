@@ -35,6 +35,63 @@ using std::endl;
 
 Options Options::fgOptions;
 
+void Options::ParseOneOption(const string &key, const string &arg) {
+	if (key == "Login.email")
+		fEmail = arg;
+	if (key == "Login.licensekey")
+		fLicenseKey = arg;
+	if (key == "Login.testbutton")
+		fEnableTestbutton = atoi(arg.c_str());
+	if (key == "Display.viewingdistance")
+		fViewingDistance = atof(arg.c_str());
+	if (key == "Display.windowwidth")
+		fWindowWidth = atoi(arg.c_str());
+	if (key == "Display.windowheight")
+		fWindowHeight = atoi(arg.c_str());
+	if (key == "Display.fontsize")
+		fFontSize = atoi(arg.c_str());
+	if (key == "Display.msgwindowtransparency")
+		fMsgWinTransparency = atoi(arg.c_str());
+	if (key == "Display.cameradistance")
+		fCameraDistance = atof(arg.c_str());
+	if (key == "Display.whitepoint")
+		fWhitePoint = atof(arg.c_str());
+	if (key == "Display.exposure")
+		fExposure = atof(arg.c_str());
+	if (key == "Display.vsync")
+		fVSYNC = atof(arg.c_str());
+	if (key == "Audio.musicvolume")
+		fMusicVolume = atoi(arg.c_str());
+	if (key == "Audio.musicon")
+		fMusicOn = atoi(arg.c_str());
+	if (key == "Audio.effectvolume")
+		fSoundFxVolume = atoi(arg.c_str());
+	if (key == "Graphics.performance")
+		fNewPerformance = fPerformance = atoi(arg.c_str());
+	if (key == "Graphics.maxlamps")
+		fMaxLamps = atoi(arg.c_str());
+	if (key == "Graphics.maxshadows")
+		fMaxShadows = atoi(arg.c_str());
+	if (key == "Graphics.maxfogs")
+		fMaxFog = atoi(arg.c_str());
+	if (key == "Graphics.fullscreen")
+		fFullScreen = atoi(arg.c_str());
+	if (key == "Graphics.ambient")
+		fAmbientLight = atoi(arg.c_str());
+	if (key == "Graphics.SmoothTerrain")
+		fSmoothTerrain = atoi(arg.c_str());
+	if (key == "Graphics.MergeNormals")
+		fMergeNormals = atoi(arg.c_str());
+	if (key == "Graphics.AddNoise")
+		fAddNoise = atoi(arg.c_str());
+	if (key == "Graphics.DynamicShadows")
+		fDynamicShadows = atoi(arg.c_str());
+	if (key == "Graphics.StaticShadows")
+		fStaticShadows = atoi(arg.c_str());
+	if (key == "Graphics.AnisotropicFiltering")
+		fAnisotropicFiltering = atoi(arg.c_str());
+}
+
 void Options::Init(const std::string &fileName) {
 	fFileName = fileName;
 	ifstream optionsFile;
@@ -58,60 +115,7 @@ void Options::Init(const std::string &fileName) {
 			auto comment = arg.find('#');
 			if (comment != arg.npos)
 				arg = arg.substr(0,comment-1); // Truncate comment
-			if (key == "Login.email")
-				fEmail = arg;
-			if (key == "Login.licensekey")
-				fLicenseKey = arg;
-			if (key == "Login.testbutton")
-				fEnableTestbutton = atoi(arg.c_str());
-			if (key == "Display.viewingdistance")
-				fViewingDistance = atof(arg.c_str());
-			if (key == "Display.windowwidth")
-				fWindowWidth = atoi(arg.c_str());
-			if (key == "Display.windowheight")
-				fWindowHeight = atoi(arg.c_str());
-			if (key == "Display.fontsize")
-				fFontSize = atoi(arg.c_str());
-			if (key == "Display.msgwindowtransparency")
-				fMsgWinTransparency = atoi(arg.c_str());
-			if (key == "Display.cameradistance")
-				fCameraDistance = atof(arg.c_str());
-			if (key == "Display.whitepoint")
-				fWhitePoint = atof(arg.c_str());
-			if (key == "Display.exposure")
-				fExposure = atof(arg.c_str());
-			if (key == "Display.vsync")
-				fVSYNC = atof(arg.c_str());
-			if (key == "Audio.musicvolume")
-				fMusicVolume = atoi(arg.c_str());
-			if (key == "Audio.musicon")
-				fMusicOn = atoi(arg.c_str());
-			if (key == "Audio.effectvolume")
-				fSoundFxVolume = atoi(arg.c_str());
-			if (key == "Graphics.performance")
-				fNewPerformance = fPerformance = atoi(arg.c_str());
-			if (key == "Graphics.maxlamps")
-				fMaxLamps = atoi(arg.c_str());
-			if (key == "Graphics.maxshadows")
-				fMaxShadows = atoi(arg.c_str());
-			if (key == "Graphics.maxfogs")
-				fMaxFog = atoi(arg.c_str());
-			if (key == "Graphics.fullscreen")
-				fFullScreen = atoi(arg.c_str());
-			if (key == "Graphics.ambient")
-				fAmbientLight = atoi(arg.c_str());
-			if (key == "Graphics.SmoothTerrain")
-				fSmoothTerrain = atoi(arg.c_str());
-			if (key == "Graphics.MergeNormals")
-				fMergeNormals = atoi(arg.c_str());
-			if (key == "Graphics.AddNoise")
-				fAddNoise = atoi(arg.c_str());
-			if (key == "Graphics.DynamicShadows")
-				fDynamicShadows = atoi(arg.c_str());
-			if (key == "Graphics.StaticShadows")
-				fStaticShadows = atoi(arg.c_str());
-			if (key == "Graphics.AnisotropicFiltering")
-				fAnisotropicFiltering = atoi(arg.c_str());
+			this->ParseOneOption(key, arg);
 		}
 		optionsFile.close();
 	}

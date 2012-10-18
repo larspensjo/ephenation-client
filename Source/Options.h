@@ -19,6 +19,8 @@
 
 #include <string>
 
+using std::string;
+
 class OptionsDialog;
 
 class Options {
@@ -62,6 +64,8 @@ public:
 
 	// Update all settings from an options dialog.
 	void UpdateSettings(OptionsDialog *);
+
+	void ParseOneOption(const string &key, const string &arg);
 private:
 	void Save(void) const; // Save the parsed data back to the file again
 	Options(void);
@@ -71,4 +75,5 @@ private:
 	// When the general performance is changed, other options may change as a result. Don't call
 	// this function unless the user actively changes the performance index.
 	void UpdatePerformance(int perf);
+
 };
