@@ -65,7 +65,8 @@ public:
 	// Update all settings from an options dialog.
 	void UpdateSettings(OptionsDialog *);
 
-	void ParseOneOption(const string &key, const string &arg);
+	// Parse one option, and return true if it was a valid option.
+	bool ParseOneOption(const string &key, const string &arg);
 private:
 	void Save(void) const; // Save the parsed data back to the file again
 	Options(void);
