@@ -21,6 +21,7 @@
 #include "messagedialog.h"
 #include "../gamedialog.h"
 #include "../Splitter.h"
+#include "../Options.h"
 #include "Error.h"
 
 using std::string;
@@ -71,6 +72,14 @@ void MessageDialog::Set(const string &title, const string &body, void (*callback
 
 void MessageDialog::ProcessEvent(Rocket::Core::Event& event) {
 	Rocket::Core::Element *e = event.GetTargetElement();
+	Rocket::Core::String type = event.GetType();
+	string submit = e->GetAttribute("onsubmit", Rocket::Core::String("")).CString();
+	if (submit != "") {
+		this->FormEvent(event, submit);
+		if (!this->Pop())
+			gGameDialog.ClearInputRedirect();
+		return;
+	}
 	string attr = e->GetAttribute("onclick", Rocket::Core::String("")).CString();
 	// Use the argument to "onclick" to determine what to do.
 	Splitter split(attr, " ");
@@ -85,6 +94,16 @@ void MessageDialog::ProcessEvent(Rocket::Core::Event& event) {
 		fDocument->AddEventListener("click", this);
 		fCallback = 0;
 		fDocument->Show();
+	} else if (split[0] == "Form" && split.size() == 2) {
+		// This is like "Popup", but a form with updated inputs will be shown.
+		this->Push();
+		fDocument = fRocketContext->LoadDocument(("dialogs/" + split[1]).c_str());
+		fDocument->AddEventListener("click", this);
+		fDocument->AddEventListener("submit", this);
+		fCallback = 0;
+		fFormResultValues.clear(); // The tree walk will fill parameters
+		this->Treewalk(fDocument);
+		fDocument->Show();
 	} else if (split[0] == "Quit") {
 		if (fCallback)
 			(*fCallback)();
@@ -97,6 +116,25 @@ void MessageDialog::ProcessEvent(Rocket::Core::Event& event) {
 		// No attribute given, ignore the event
 	} else {
 		ErrorDialog("MessageDialog::ProcessEvent Unknown 'onclick' attribute '%s' in %s", attr.c_str(), fDocument->GetTitle().CString());
+	}
+}
+
+void MessageDialog::FormEvent(Rocket::Core::Event& event, const string &submit) {
+	const Rocket::Core::Dictionary *dic = event.GetParameters();
+	int size = dic->Size();
+	// printf("Submit %s: size %d\n", submit.c_str(), size);
+	for (int pos=0, i=0; i<size; i++) {
+		Rocket::Core::String key;
+		Rocket::Core::String value;
+		dic->Iterate(pos, key, value);
+		// printf("\tKey (%d): %s, value %s\n", pos, key.CString(), value.CString());
+		fFormResultValues[key.CString()] = value.CString();
+	}
+
+	// printf("Results are:\n");
+	for (auto it = fFormResultValues.begin(); it != fFormResultValues.end(); it++) {
+		// printf("\t%s:%s\n", it->first.c_str(), it->second.c_str());
+		Options::fgOptions.ParseOneOption(it->first, it->second);
 	}
 }
 
@@ -122,4 +160,63 @@ bool MessageDialog::Pop(void) {
 	fStack.pop_back();
 	fDocument->Show();
 	return true;
+}
+
+void MessageDialog::Treewalk(Rocket::Core::Element *e) {
+	int numChildren = e->GetNumChildren();
+	for (int i=0; i<numChildren; i++) {
+		Rocket::Core::Element *child = e->GetChild(i);
+		this->Treewalk(child);
+		this->UpdateInput(child);
+	}
+}
+
+void MessageDialog::UpdateInput(Rocket::Core::Element *e) {
+	Rocket::Core::String def = "";
+	string tag = e->GetTagName().CString();
+	string type = e->GetAttribute("type", def).CString();
+	string name = e->GetAttribute("name", def).CString();
+	string value = e->GetAttribute("value", def).CString();
+	if (tag == "input") {
+		fFormResultValues[name] = "";
+		if (name == "Display.vsync" && Options::fgOptions.fVSYNC) {
+			e->SetAttribute("checked", 1);
+		}
+
+		if (name == "Audio.musicvolume") {
+			e->SetAttribute("value", Options::fgOptions.fMusicVolume);
+		}
+		if (name == "Audio.musicon" && Options::fgOptions.fMusicOn) {
+			e->SetAttribute("checked", 1);
+		}
+		if (name == "Audio.effectvolume") {
+			e->SetAttribute("value", Options::fgOptions.fSoundFxVolume);
+		}
+
+		if (name == "Graphics.performance") {
+			e->SetAttribute("value", Options::fgOptions.fPerformance);
+		}
+		if (name == "Graphics.fullscreen" && Options::fgOptions.fFullScreen) {
+			e->SetAttribute("checked", 1);
+		}
+		if (name == "Graphics.SmoothTerrain" && Options::fgOptions.fSmoothTerrain) {
+			e->SetAttribute("checked", 1);
+		}
+		if (name == "Graphics.MergeNormals" && Options::fgOptions.fMergeNormals) {
+			e->SetAttribute("checked", 1);
+		}
+		if (name == "Graphics.DynamicShadows" && Options::fgOptions.fDynamicShadows) {
+			e->SetAttribute("checked", 1);
+		}
+		if (name == "Graphics.StaticShadows" && Options::fgOptions.fStaticShadows) {
+			e->SetAttribute("checked", 1);
+		}
+		if (name == "Graphics.DynamicShadows" && Options::fgOptions.fDynamicShadows) {
+			e->SetAttribute("checked", 1);
+		}
+	} else if (tag == "option") {
+		if (name == "Graphics.performance" && atoi(value.c_str()) == Options::fgOptions.fPerformance) {
+			e->SetAttribute("selected", 1);
+		}
+	}
 }

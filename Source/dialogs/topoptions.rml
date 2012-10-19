@@ -13,19 +13,19 @@
 		<div class="header" id="header">
 			Ephenation options
 		</div>
-		<form>
+		<form onsubmit="options">
 			<div class="menulist">
-				<input type="checkbox" name="Enable music" value="false"> Enable music</input><br/>
-				<input type="checkbox" name="Enable ping" value="false"> Enable ping</input><br/>
-				<input type="checkbox" name="Full screen" value="false"> Use full screen</input><br/>
-				<select name="Performance">
-					<option value="Low">Low</option>
-					<option value="Medium" selected>Medium</option>
-					<option value="Good">Good</option>
-					<option value="High">High</option>
+				<input type="checkbox" name="Audio.musicon" value="1"/> Enable music<br/>
+				<input type="checkbox" name="options.ping" value="1"/> Enable ping<br/>
+				<input type="checkbox" name="Graphics.fullscreen" value="1"/> Use full screen<br/>
+				<select name="Graphics.performance">
+					<option name="Graphics.performance" value="1">Low</option>
+					<option name="Graphics.performance" value="2">Medium</option>
+					<option name="Graphics.performance" value="3">High</option>
+					<option name="Graphics.performance" value="4">Super</option>
 				</select> System performance<br/>
 			</div>
-			<button class="formatbutton" onclick="Close" style="margin-left:150px;">Ok</button>
+			<input class="formatbutton" type="submit" value="ok">Ok</input>
 			<button class="formatbutton" onclick="Close" style="margin-left:400px;">Cancel</button>
 		</form>
 	</div>

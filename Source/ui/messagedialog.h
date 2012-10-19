@@ -20,6 +20,7 @@
 #include <string>
 #include <deque>
 #include <utility>
+#include <map>
 
 // This class manages in-game dialog messages.
 #include <Rocket/Core.h>
@@ -40,8 +41,15 @@ public:
 	// Load a dialog from a file and show it
 	void LoadDialog(const string &file);
 private:
+	// When the document is a form, remember what input parameters are used
+	// and what values they are mapped to.
+	std::map<string, string> fFormResultValues;
+
 	// Process the incoming event.
 	virtual void ProcessEvent(Rocket::Core::Event& event);
+
+	// Called on submit of a form
+	void FormEvent(Rocket::Core::Event& event, const string &submit);
 
 	// Close the current document and free resources.
 	void CloseCurrentDocument(void);
@@ -54,4 +62,10 @@ private:
 	std::deque<PushedDialog> fStack; // Need a stack to push multiple dialogs.
 	void Push(void);
 	bool Pop(void); // Return true if there was something to pop
+
+	// Walk through the tree and upate all input values.
+	void Treewalk(Rocket::Core::Element *);
+
+	// Update inputs of this element (if there is any)
+	void UpdateInput(Rocket::Core::Element *);
 };
