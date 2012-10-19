@@ -32,10 +32,13 @@ MessageDialog::MessageDialog() : fRocketContext(0), fDocument(0), fCallback(0) {
 MessageDialog::~MessageDialog() {
 	if (fDocument)
 		fDocument->RemoveReference();
+	if (fRocketContext)
+		fRocketContext->RemoveReference();
 }
 
 void MessageDialog::Init(Rocket::Core::Context *context) {
 	fRocketContext = context;
+	fRocketContext->AddReference(); // This way, it will not be deallocated until we are done with it.
 }
 
 void MessageDialog::LoadDialog(const string &file) {
@@ -55,14 +58,15 @@ void MessageDialog::Set(const string &title, const string &body, void (*callback
 	if (fDocument != 0)
 		this->Push();
 	// Load and show the UI.
-	fDocument = fRocketContext->LoadDocument("dialogs/messagedialog.rml");
+	const char *fn = "dialogs/messagedialog.rml";
+	fDocument = fRocketContext->LoadDocument(fn);
 	if (fDocument == 0)
-		ErrorDialog("MessageDialog::Init: Failed to load user interface");
+		ErrorDialog("MessageDialog::Init: Failed to load user interface '%s'", fn);
 	// Document is owned by the caller, which means reference count has already been incremented.
 	Rocket::Core::Element *header = fDocument->GetElementById("header");
-	Rocket::Core::Element *content = fDocument->GetElementById("content");
 	if (header)
 		header->SetInnerRML(title.c_str());
+	Rocket::Core::Element *content = fDocument->GetElementById("content");
 	if (content)
 		content->SetInnerRML(body.c_str());
 	fDocument->AddEventListener("click", this);
@@ -70,20 +74,26 @@ void MessageDialog::Set(const string &title, const string &body, void (*callback
 	fDocument->Show();
 }
 
+// This event callback is generated automatically from libRocket.
+// Notice that there may be "click" events for any part of the document.
 void MessageDialog::ProcessEvent(Rocket::Core::Event& event) {
-	Rocket::Core::Element *e = event.GetTargetElement();
+	Rocket::Core::Element *e = event.GetTargetElement(); // The element that generated the event.
 	Rocket::Core::String type = event.GetType();
 	string submit = e->GetAttribute("onsubmit", Rocket::Core::String("")).CString();
 	if (submit != "") {
+		// It was a "submit" event from a form element. The string in 'submit' is a feedback
+		// that is currently not used.
 		this->FormEvent(event, submit);
-		if (!this->Pop())
-			gGameDialog.ClearInputRedirect();
 		return;
 	}
 	string attr = e->GetAttribute("onclick", Rocket::Core::String("")).CString();
-	// Use the argument to "onclick" to determine what to do.
-	Splitter split(attr, " ");
-	if (split[0] == "Close") {
+	// Use the attribute "onclick" to determine what to do.
+	this->ClickEvent(event, attr);
+}
+
+void MessageDialog::ClickEvent(Rocket::Core::Event& event, const string &action) {
+	Splitter split(action, " ");
+	if (action == "Close") {
 		if (fCallback)
 			(*fCallback)();
 		if (!this->Pop())
@@ -98,13 +108,13 @@ void MessageDialog::ProcessEvent(Rocket::Core::Event& event) {
 		// This is like "Popup", but a form with updated inputs will be shown.
 		this->Push();
 		fDocument = fRocketContext->LoadDocument(("dialogs/" + split[1]).c_str());
+		fFormResultValues.clear(); // Restart with an empty list
+		this->Treewalk(fDocument); // Fill default parameters in the document
 		fDocument->AddEventListener("click", this);
 		fDocument->AddEventListener("submit", this);
 		fCallback = 0;
-		fFormResultValues.clear(); // The tree walk will fill parameters
-		this->Treewalk(fDocument);
 		fDocument->Show();
-	} else if (split[0] == "Quit") {
+	} else if (action == "Quit") {
 		if (fCallback)
 			(*fCallback)();
 		// Pop all saved documents, if any.
@@ -112,17 +122,19 @@ void MessageDialog::ProcessEvent(Rocket::Core::Event& event) {
 			continue;
 		gGameDialog.ClearInputRedirect();
 		gMode.Set(GameMode::ESC);
-	} else if (attr == "") {
+	} else if (action == "") {
 		// No attribute given, ignore the event
 	} else {
-		ErrorDialog("MessageDialog::ProcessEvent Unknown 'onclick' attribute '%s' in %s", attr.c_str(), fDocument->GetTitle().CString());
+		ErrorDialog("MessageDialog::ProcessEvent Unknown 'onclick' attribute '%s' in %s", action.c_str(), fDocument->GetTitle().CString());
 	}
 }
 
-void MessageDialog::FormEvent(Rocket::Core::Event& event, const string &submit) {
+void MessageDialog::FormEvent(Rocket::Core::Event& event, const string &action) {
 	const Rocket::Core::Dictionary *dic = event.GetParameters();
 	int size = dic->Size();
-	// printf("Submit %s: size %d\n", submit.c_str(), size);
+	// printf("Submit %s: size %d\n", action.c_str(), size);
+	// Iterate through the list of arguments given to the event. This list only contains
+	// elements that are used or filled with something. Cleared checkboxes are not included.
 	for (int pos=0, i=0; i<size; i++) {
 		Rocket::Core::String key;
 		Rocket::Core::String value;
@@ -132,10 +144,14 @@ void MessageDialog::FormEvent(Rocket::Core::Event& event, const string &submit) 
 	}
 
 	// printf("Results are:\n");
+	// The resulting list in fFormResultValues now contains all the requested values.
 	for (auto it = fFormResultValues.begin(); it != fFormResultValues.end(); it++) {
 		// printf("\t%s:%s\n", it->first.c_str(), it->second.c_str());
 		Options::fgOptions.ParseOneOption(it->first, it->second);
 	}
+
+	if (!this->Pop())
+		gGameDialog.ClearInputRedirect();
 }
 
 void MessageDialog::CloseCurrentDocument(void) {
