@@ -1,6 +1,6 @@
 input.checkbox {
 	icon-decorator: image;
-	icon-image: decorators.bmp 411px 64px 433px 86px;
+	icon-image: decorators.bmp 408px 61px 436px 89px;
 
 	width: 27px;
 	height: 24px;
@@ -8,27 +8,27 @@ input.checkbox {
 
 input.checkbox:hover {
 	icon-decorator: image;
-	icon-image: decorators.bmp 441px 64px 463px 86px;
+	icon-image: decorators.bmp 438px 61px 466px 89px;
 }
 
 input.checkbox:active {
 	icon-decorator: image;
-	icon-image: decorators.bmp 471px 64px 493px 86px;
+	icon-image: decorators.bmp 468px 61px 496px 89px;
 }
 
 input.checkbox:checked {
 	icon-decorator: image;
-	icon-image: decorators.bmp 411px 94px 433px 116px;
+	icon-image: decorators.bmp 408px 91px 436px 119px;
 }
 
 input.checkbox:hover:checked {
 	icon-decorator: image;
-	icon-image: decorators.bmp 441px 94px 463px 116px;
+	icon-image: decorators.bmp 438px 91px 466px 119px;
 }
 
 input.checkbox:active:checked {
 	icon-decorator: image;
-	icon-image: decorators.bmp 471px 94px 493px 116px;
+	icon-image: decorators.bmp 468px 91px 496px 119px;
 }
 
 input.submit,
@@ -36,23 +36,23 @@ button {
 	padding-left: 20px;
 	padding-right: 20px;
 	icon-background-decorator: tiled-horizontal;
-	icon-background-left-image: decorators.bmp 253px 7px 257px 38px;
-	icon-background-center-image: decorators.bmp stretch 257px 7px 395px 38px;
-	icon-background-right-image: decorators.bmp 395px 7px 399px 38px;
+	icon-background-left-image: decorators.bmp 250px 4px 257px 41px;
+	icon-background-center-image: decorators.bmp stretch 257px 4px 395px 41px;
+	icon-background-right-image: decorators.bmp 395px 4px 402px 41px;
 }
 
 input.submit:hover,
 button:hover {
-	icon-background-left-image: decorators.bmp 253px 52px 257px 83px;
-	icon-background-center-image: decorators.bmp stretch 257px 52px 395px 83px;
-	icon-background-right-image: decorators.bmp 395px 52px 399px 83px;
+	icon-background-left-image: decorators.bmp 250px 49px 257px 86px;
+	icon-background-center-image: decorators.bmp stretch 257px 49px 395px 86px;
+	icon-background-right-image: decorators.bmp 395px 49px 402px 86px;
 }
 
 input.submit:active,
 button:active {
-	icon-background-left-image: decorators.bmp 253px 97px 257px 128px;
-	icon-background-center-image: decorators.bmp stretch 257px 97px 395px 128px;
-	icon-background-right-image: decorators.bmp 395px 97px 399px 128px;
+	icon-background-left-image: decorators.bmp 250px 94px 257px 131px;
+	icon-background-center-image: decorators.bmp stretch 257px 94px 395px 131px;
+	icon-background-right-image: decorators.bmp 395px 94px 402px 131px;
 }
 
 scrollbarvertical
@@ -211,4 +211,60 @@ select selectbox option:nth-child(even)
 select selectbox option:hover
 {
 	background: #FF5D5D;
+}
+
+/* Force the tabset element to a fixed size. */
+tabset
+{
+	width: 300px;
+	height: 200px;
+}
+
+/* Display the tab container as a block element 20 pixels high; it will
+   be positioned at the top of the tabset. */
+tabset tabs
+{
+	height: 20px;
+}
+
+/* Force each tab to only take up constant width across the tabs element. */
+tabset tab
+{
+	width: 100px;
+	font-size: 36;
+	max-height:40;
+	padding-left: 20px;
+	padding-right: 20px;
+	/* Use a button cut-off at the bottom */
+	icon-background-decorator: tiled-horizontal;
+	icon-background-left-image: decorators.bmp 250px 4px 257px 33px;
+	icon-background-center-image: decorators.bmp stretch 257px 4px 395px 33px;
+	icon-background-right-image: decorators.bmp 395px 4px 402px 33px;
+}
+
+tabset tab:hover {
+	icon-background-left-image: decorators.bmp 250px 49px 257px 78px;
+	icon-background-center-image: decorators.bmp stretch 257px 49px 395px 78px;
+	icon-background-right-image: decorators.bmp 395px 49px 402px 78px;
+}
+
+tabset tab:selected {
+	icon-background-left-image: decorators.bmp 250px 94px 257px 123px;
+	icon-background-center-image: decorators.bmp stretch 257px 94px 395px 123px;
+	icon-background-right-image: decorators.bmp 395px 94px 402px 123px;
+}
+
+/* Display the panel container as a block element 180 pixels high; it will
+   be positioned below the tab container and take up the rest of the space
+   in the tabset. */
+tabset panels
+{
+	height: 180px;
+}
+
+/* Fix each panel to take up exactly the panelled space. */
+tabset panels panel
+{
+	width: 100%;
+	height: 100%;
 }

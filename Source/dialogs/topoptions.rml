@@ -11,23 +11,32 @@
 <body id="body">
 	<div class="messagedialog">
 		<div class="header" id="header">
-			Ephenation options
+			Options
 		</div>
-		<form onsubmit="options">
-			<div class="menulist">
-				<input type="checkbox" name="Audio.musicon" value="1"/> Enable music<br/>
-				<input type="checkbox" name="options.ping" value="1"/> Enable ping<br/>
-				<input type="checkbox" name="Graphics.fullscreen" value="1"/> Use full screen<br/>
-				<select name="Graphics.performance">
-					<option name="Graphics.performance" value="1">Low</option>
-					<option name="Graphics.performance" value="2">Medium</option>
-					<option name="Graphics.performance" value="3">High</option>
-					<option name="Graphics.performance" value="4">Super</option>
-				</select> System performance<br/>
-			</div>
-			<input class="formatbutton" type="submit" value="ok">Ok</input>
-			<button class="formatbutton" onclick="Close" style="margin-left:400px;">Cancel</button>
-		</form>
+		<tabset>
+			<tab>Basic</tab>
+			<panel>
+				<form onsubmit="options">
+					<div class="menulist">
+						<input type="checkbox" name="Audio.musicon" value="1"/> Enable music<br/>
+						<input type="checkbox" name="options.ping" value="1"/> Enable ping<br/>
+						<input type="checkbox" name="Graphics.fullscreen" value="1"/> Use full screen<br/>
+						<select name="Graphics.performance">
+							<option name="Graphics.performance" value="1">Low</option>
+							<option name="Graphics.performance" value="2">Medium</option>
+							<option name="Graphics.performance" value="3">High</option>
+							<option name="Graphics.performance" value="4">Super</option>
+						</select> System performance<br/>
+					</div>
+					<input class="formatbutton" type="submit" value="ok">Ok</input>
+					<button class="formatbutton" onclick="Close" style="margin-left:400px;">Cancel</button>
+				</form>
+			</panel>
+			<tab>Advanced</tab>
+			<panel>
+				Welcome to the second tab!
+			</panel>
+		</tabset>
 	</div>
 </body>
 </rml>

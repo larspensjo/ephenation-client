@@ -14,6 +14,7 @@ div {
 .header {
 	font-size: 48px;
 	text-align:center;
+	max-height: 48px;
 }
 
 /* Used for a multi line block of text */
