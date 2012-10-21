@@ -192,9 +192,9 @@ void SoundControl::Init(void) {
 	//TODO: Error handling - if OpenAL can not be initialized, allow the game to be played anyway?
 
 	// Initialize Settings
-	fMusicVolumePref = ((float)Options::fgOptions.fMusicVolume)/100.0f;
+	fMusicVolumePref = ((float)gOptions.fMusicVolume)/100.0f;
 	fMusicVolume = fMusicVolumePref;
-	fMusicOn = Options::fgOptions.fMusicOn == 1;
+	fMusicOn = gOptions.fMusicOn == 1;
 
 	// Initialize data structures
 	for( idx=0; idx < MAX_CREATURES; idx++ ) {
@@ -1439,7 +1439,7 @@ void *SoundControl::Thread(void *p) {
 		if (ss->fMusicOn != MusicWasOn) {
 			// Execute only if music mode has changed
 			MusicWasOn = ss->fMusicOn;
-			Options::fgOptions.fMusicOn = ss->fMusicOn;
+			gOptions.fMusicOn = ss->fMusicOn;
 
 			if( ss->fMusicOn ) {
 				// printf("Music switch mode, now ON\n");

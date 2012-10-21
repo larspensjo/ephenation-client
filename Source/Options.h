@@ -27,8 +27,12 @@ class Options {
 public:
 	void Init(const std::string &fileName);
 
-	static Options fgOptions;
+	// These are the options that will be saved at shutdown. They can be changed in any way
+	// with no effect on the current game play, as they are not otherwise used.
+	static Options sfSave;
 
+	// The path to where the ini file is saved. It is not really saved itself, it is just
+	// kept here.
 	std::string fSavePath;
 
 	// These are parameters initialized from the ini file
@@ -67,14 +71,17 @@ public:
 
 	// Parse one option, and return true if it was a valid option.
 	bool ParseOneOption(const string &key, const string &arg);
-private:
-	void Save(void) const; // Save the parsed data back to the file again
 	Options(void);
 	~Options(void);
+private:
+	void Save(void) const; // Save the parsed data back to the file again
 	std::string fFileName;
 
 	// When the general performance is changed, other options may change as a result. Don't call
 	// this function unless the user actively changes the performance index.
 	void UpdatePerformance(int perf);
-
 };
+
+// These are the options used during play. They are initialized at startup, but will not
+// be saved at shutdown. That way, changing options during play will have no effect until next session.
+extern Options gOptions;

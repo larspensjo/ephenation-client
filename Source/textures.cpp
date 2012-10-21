@@ -204,7 +204,7 @@ GLuint loadTexture(shared_ptr<Image> image, unsigned fl = 0) {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	if (mipmap && Options::fgOptions.fAnisotropicFiltering) {
+	if (mipmap && gOptions.fAnisotropicFiltering) {
 		if (GLEW_EXT_texture_filter_anisotropic) {
 			static int max = 0;
 			if (max == 0)

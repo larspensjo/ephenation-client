@@ -13165,7 +13165,7 @@ void LoginDialog::cb_Cancel(Fl_Button* o, void* v) {
 void LoginDialog::cb_Options_i(Fl_Button*, void*) {
   OptionsDialog *p = new OptionsDialog();
 p->fGraphicsTab->activate();
-Options::fgOptions.ListGraphicModes(p);
+Options::sfSave.ListGraphicModes(p);
 }
 void LoginDialog::cb_Options(Fl_Button* o, void* v) {
   ((LoginDialog*)(o->parent()->user_data()))->cb_Options_i(o,v);

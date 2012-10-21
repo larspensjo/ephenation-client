@@ -1,6 +1,6 @@
 # data file for the Fltk User Interface Designer (fluid)
-version 1.0110 
-header_name {.h} 
+version 1.0110
+header_name {.h}
 code_name {.cpp}
 class LoginDialog {open
 } {
@@ -77,7 +77,7 @@ fFullLogin = true;}
         label {Options...}
         callback {OptionsDialog *p = new OptionsDialog();
 p->fGraphicsTab->activate();
-Options::fgOptions.ListGraphicModes(p);}
+Options::sfSave.ListGraphicModes(p);}
         xywh {274 481 85 25}
         code0 {\#include "OptionsDialog.h"}
         code1 {\#include "../Options.h"}
@@ -138,4 +138,4 @@ fTesting = 0;} {}
   }
   decl {bool fFullLogin;} {public
   }
-} 
+}

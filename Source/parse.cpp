@@ -185,7 +185,6 @@ static void ServerMessage(const char *msg) {
 			return;
 		}
 		sgPopup = sgPopup + &msg[1] + "\n";
-		gGameDialog.NotifyMessage();
 		return;
 	}
 	gMsgWindow.Add("%s", msg);

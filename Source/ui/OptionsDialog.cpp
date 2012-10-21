@@ -4,7 +4,7 @@
 
 void OptionsDialog::cb_fMusic_i(Fl_Check_Button*, void*) {
   gSoundControl.SwitchMusicStatus();
-Options::fgOptions.fMusicOn = fMusic->value();
+Options::sfSave.fMusicOn = fMusic->value();
 }
 void OptionsDialog::cb_fMusic(Fl_Check_Button* o, void* v) {
   ((OptionsDialog*)(o->parent()->parent()->parent()->user_data()))->cb_fMusic_i(o,v);
@@ -18,7 +18,7 @@ void OptionsDialog::cb_fPing(Fl_Check_Button* o, void* v) {
 }
 
 void OptionsDialog::cb_Ok_i(Fl_Return_Button*, void*) {
-  Options::fgOptions.UpdateSettings(this);
+  Options::sfSave.UpdateSettings(this);
 fWindow->hide();
 Fl::delete_widget(fWindow);
 }
@@ -69,7 +69,7 @@ OptionsDialog::OptionsDialog() {
           fMusic->tooltip("Enable or disable music.");
           fMusic->down_box(FL_DOWN_BOX);
           fMusic->callback((Fl_Callback*)cb_fMusic);
-          fMusic->value(Options::fgOptions.fMusicOn);
+          fMusic->value(Options::sfSave.fMusicOn);
         } // Fl_Check_Button* fMusic
         { fPing = new Fl_Check_Button(35, 84, 70, 30, "Show ping");
           fPing->tooltip("Used to measure response time from server. This will add traffic, don\'t leav\
@@ -91,7 +91,7 @@ rameters.");
           fPerformanceSlider->step(1);
           fPerformanceSlider->value(1);
           fPerformanceSlider->slider_size(0.25);
-          fPerformanceSlider->value(Options::fgOptions.fPerformance);
+          fPerformanceSlider->value(Options::sfSave.fPerformance);
         } // Fl_Slider* fPerformanceSlider
         { Fl_Group* o = new Fl_Group(110, 78, 15, 15, "Low");
           o->align(Fl_Align(FL_ALIGN_TOP_LEFT));
@@ -127,30 +127,30 @@ rameters.");
           fAmbientLight->value(25);
           fAmbientLight->slider_size(0.121212);
           fAmbientLight->textsize(14);
-          fAmbientLight->value(Options::fgOptions.fAmbientLight);
+          fAmbientLight->value(Options::sfSave.fAmbientLight);
         } // Fl_Value_Slider* fAmbientLight
         { fSmoothTerrain = new Fl_Check_Button(215, 107, 64, 15, "Smooth terrain");
           fSmoothTerrain->tooltip("Show the world smooth instead of blocky. Depends on CPU performance, not grap\
 hics.");
           fSmoothTerrain->down_box(FL_DOWN_BOX);
-          fSmoothTerrain->value(Options::fgOptions.fSmoothTerrain);
+          fSmoothTerrain->value(Options::sfSave.fSmoothTerrain);
         } // Fl_Check_Button* fSmoothTerrain
         { fMergeNormals = new Fl_Check_Button(215, 132, 64, 15, "Merge normals");
           fMergeNormals->tooltip("If showing the world as smooth, this option will enhance it further. Depends \
 on CPU, not on graphics.");
           fMergeNormals->down_box(FL_DOWN_BOX);
-          fMergeNormals->value(Options::fgOptions.fMergeNormals);
+          fMergeNormals->value(Options::sfSave.fMergeNormals);
         } // Fl_Check_Button* fMergeNormals
         { fAddNoise = new Fl_Check_Button(215, 157, 64, 15, "Add noise to terrain");
           fAddNoise->tooltip("If showing the world as smooth, this option will add some random height to ge\
 t variation. Depends on CPU performance.");
           fAddNoise->down_box(FL_DOWN_BOX);
-          fAddNoise->value(Options::fgOptions.fAddNoise);
+          fAddNoise->value(Options::sfSave.fAddNoise);
         } // Fl_Check_Button* fAddNoise
         { fDynamicShadows = new Fl_Check_Button(215, 182, 64, 15, "Dynamic shadows");
           fDynamicShadows->tooltip("Draw realistic shadows.");
           fDynamicShadows->down_box(FL_DOWN_BOX);
-          fDynamicShadows->value(Options::fgOptions.fDynamicShadows);
+          fDynamicShadows->value(Options::sfSave.fDynamicShadows);
         } // Fl_Check_Button* fDynamicShadows
         fGraphicsTab->end();
       } // Fl_Group* fGraphicsTab

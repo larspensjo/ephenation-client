@@ -88,7 +88,7 @@ void player::Draw(AnimationShader *animShader, StageOneShader *staticShader, boo
 		gLightSources.Add(dx, dz, -dy, 12.0f);
 	else
 #endif
-		if (Options::fgOptions.fDynamicShadows == 0 || this->BelowGround())
+		if (gOptions.fDynamicShadows == 0 || this->BelowGround())
 			gShadows.Add(dx, dz-PLAYER_HEIGHT*2.0f, -dy, 1.5f);
 	if (this->fWeaponType > 0) {
 		model = glm::translate(model, glm::vec3(0.6f, PLAYER_HEIGHT*0.4f, -1.2f));

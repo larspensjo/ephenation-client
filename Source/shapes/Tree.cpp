@@ -54,7 +54,7 @@ Tree::~Tree() {
 void Tree::InitStatic() {
 	if (!sfInitialized) {
 		sfInitialized = true;
-		switch (Options::fgOptions.fPerformance) {
+		switch (gOptions.fPerformance) {
 		default:
 		case 1:
 			sfBigTree.Init(3, 5, 10.0f);

@@ -149,22 +149,22 @@ void MessageDialog::FormEvent(Rocket::Core::Event& event, const string &action) 
 	for (auto it = fFormResultValues.begin(); it != fFormResultValues.end(); it++) {
 		// printf("\t%s:%s\n", it->first.c_str(), it->second.c_str());
 		// First try the standard options and see if they match
-		if (Options::fgOptions.ParseOneOption(it->first, it->second)) {
+		if (Options::sfSave.ParseOneOption(it->first, it->second)) {
 			// Nothing just now
 		} else if (it->first == "shadows") {
 			// Map the three alternativs to the two flags
 			switch(atoi(it->second.c_str())) {
 			case 1:
-				Options::fgOptions.fDynamicShadows = 0;
-				Options::fgOptions.fStaticShadows = 0;
+				Options::sfSave.fDynamicShadows = 0;
+				Options::sfSave.fStaticShadows = 0;
 				break;
 			case 2:
-				Options::fgOptions.fDynamicShadows = 0;
-				Options::fgOptions.fStaticShadows = 1;
+				Options::sfSave.fDynamicShadows = 0;
+				Options::sfSave.fStaticShadows = 1;
 				break;
 			case 3:
-				Options::fgOptions.fDynamicShadows = 1;
-				Options::fgOptions.fStaticShadows = 0;
+				Options::sfSave.fDynamicShadows = 1;
+				Options::sfSave.fStaticShadows = 0;
 				break;
 			}
 		} else if (it->first == "ping") {
@@ -221,61 +221,61 @@ void MessageDialog::UpdateInput(Rocket::Core::Element *e) {
 			e->SetAttribute("checked", 1);
 		}
 
-		if (name == "Display.vsync" && Options::fgOptions.fVSYNC) {
+		if (name == "Display.vsync" && Options::sfSave.fVSYNC) {
 			e->SetAttribute("checked", 1);
 		}
 
 		if (name == "Audio.musicvolume") {
-			e->SetAttribute("value", Options::fgOptions.fMusicVolume);
+			e->SetAttribute("value", Options::sfSave.fMusicVolume);
 		}
-		if (name == "Audio.musicon" && Options::fgOptions.fMusicOn) {
+		if (name == "Audio.musicon" && Options::sfSave.fMusicOn) {
 			e->SetAttribute("checked", 1);
 		}
 		if (name == "Audio.effectvolume") {
-			e->SetAttribute("value", Options::fgOptions.fSoundFxVolume);
+			e->SetAttribute("value", Options::sfSave.fSoundFxVolume);
 		}
 
 		if (name == "Graphics.performance") {
-			e->SetAttribute("value", Options::fgOptions.fPerformance);
+			e->SetAttribute("value", Options::sfSave.fPerformance);
 		}
-		if (name == "Graphics.fullscreen" && Options::fgOptions.fFullScreen) {
+		if (name == "Graphics.fullscreen" && Options::sfSave.fFullScreen) {
 			e->SetAttribute("checked", 1);
 		}
-		if (name == "Graphics.SmoothTerrain" && Options::fgOptions.fSmoothTerrain) {
+		if (name == "Graphics.SmoothTerrain" && Options::sfSave.fSmoothTerrain) {
 			e->SetAttribute("checked", 1);
 		}
-		if (name == "Graphics.MergeNormals" && Options::fgOptions.fMergeNormals) {
+		if (name == "Graphics.MergeNormals" && Options::sfSave.fMergeNormals) {
 			e->SetAttribute("checked", 1);
 		}
-		if (name == "Graphics.DynamicShadows" && Options::fgOptions.fDynamicShadows) {
+		if (name == "Graphics.DynamicShadows" && Options::sfSave.fDynamicShadows) {
 			e->SetAttribute("checked", 1);
 		}
-		if (name == "Graphics.StaticShadows" && Options::fgOptions.fStaticShadows) {
+		if (name == "Graphics.StaticShadows" && Options::sfSave.fStaticShadows) {
 			e->SetAttribute("checked", 1);
 		}
-		if (name == "Graphics.DynamicShadows" && Options::fgOptions.fDynamicShadows) {
+		if (name == "Graphics.DynamicShadows" && Options::sfSave.fDynamicShadows) {
 			e->SetAttribute("checked", 1);
 		}
-		if (name == "Graphics.AddNoise" && Options::fgOptions.fAddNoise) {
+		if (name == "Graphics.AddNoise" && Options::sfSave.fAddNoise) {
 			e->SetAttribute("checked", 1);
 		}
 	} else if (tag == "option") {
-		if (name == "Graphics.performance" && atoi(value.c_str()) == Options::fgOptions.fPerformance) {
+		if (name == "Graphics.performance" && atoi(value.c_str()) == Options::sfSave.fPerformance) {
 			e->SetAttribute("selected", 1);
 		}
 		if (name == "shadows") {
 			// Map current configuration of shadows to the drop own list
 			switch(atoi(value.c_str())) {
 			case 1:
-				if (Options::fgOptions.fStaticShadows == 0 && Options::fgOptions.fDynamicShadows == 0)
+				if (Options::sfSave.fStaticShadows == 0 && Options::sfSave.fDynamicShadows == 0)
 					e->SetAttribute("selected", 1);
 				break;
 			case 2:
-				if (Options::fgOptions.fStaticShadows == 1 && Options::fgOptions.fDynamicShadows == 0)
+				if (Options::sfSave.fStaticShadows == 1 && Options::sfSave.fDynamicShadows == 0)
 					e->SetAttribute("selected", 1);
 				break;
 			case 3:
-				if (Options::fgOptions.fStaticShadows == 0 && Options::fgOptions.fDynamicShadows == 1)
+				if (Options::sfSave.fStaticShadows == 0 && Options::sfSave.fDynamicShadows == 1)
 					e->SetAttribute("selected", 1);
 				break;
 			}

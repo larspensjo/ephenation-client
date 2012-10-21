@@ -33,7 +33,8 @@ using std::ofstream;
 using std::string;
 using std::endl;
 
-Options Options::fgOptions;
+Options Options::sfSave;
+Options gOptions;
 
 bool Options::ParseOneOption(const string &key, const string &arg) {
 	if (key == "Login.email")
@@ -124,6 +125,7 @@ void Options::Init(const std::string &fileName) {
 	}
 	if (fDynamicShadows)
 		fStaticShadows = 0; // Override
+	gOptions = *this; // Initialize with a copy
 }
 
 void Options::Save(void) const {

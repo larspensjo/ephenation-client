@@ -160,7 +160,7 @@ void Monsters::RenderMonsters(AnimationShader *shader, bool forShadows, bool sel
 
 			if (forShadows)
 				continue;
-			if (!Options::fgOptions.fDynamicShadows || sun == 0)
+			if (!gOptions.fDynamicShadows || sun == 0)
 				gShadows.Add(pos.x, pos.y, pos.z, size);
 		}
 	}

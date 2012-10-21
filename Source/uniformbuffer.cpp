@@ -62,10 +62,10 @@ void UniformBuffer::Init(void) {
 
 void UniformBuffer::Update(void) {
 	Data data;
-	data.performance = Options::fgOptions.fPerformance;
-	if (Options::fgOptions.fDynamicShadows)
+	data.performance = gOptions.fPerformance;
+	if (gOptions.fDynamicShadows)
 		data.dynamicshadows = 1;
-	else if (Options::fgOptions.fStaticShadows)
+	else if (gOptions.fStaticShadows)
 		data.dynamicshadows = 2;
 	else
 		data.dynamicshadows = 0;
@@ -76,8 +76,8 @@ void UniformBuffer::Update(void) {
 	data.projectionviewmatrix = gProjectionMatrix * gViewMatrix;
 	data.windowheight = gViewport[3];
 	data.toggleTesting = gToggleTesting;
-	data.exposure = Options::fgOptions.fExposure;
-	data.ambientLight = Options::fgOptions.fAmbientLight / 200.0f;
+	data.exposure = gOptions.fExposure;
+	data.ambientLight = gOptions.fAmbientLight / 200.0f;
 
 	glBindBuffer(GL_UNIFORM_BUFFER, fUBOBuffer);
 	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(Data), &data);

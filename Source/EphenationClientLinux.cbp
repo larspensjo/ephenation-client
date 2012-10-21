@@ -219,16 +219,12 @@
 		<Unit filename="ui/dialoginput.h" />
 		<Unit filename="ui/help2.cpp" />
 		<Unit filename="ui/help2.h" />
-		<Unit filename="ui/lighting.cpp" />
-		<Unit filename="ui/lighting.h" />
 		<Unit filename="ui/maindialog.cpp" />
 		<Unit filename="ui/maindialog.h" />
 		<Unit filename="ui/mainuserinterface.cpp" />
 		<Unit filename="ui/mainuserinterface.h" />
 		<Unit filename="ui/messagedialog.cpp" />
 		<Unit filename="ui/messagedialog.h" />
-		<Unit filename="ui/optionsdialog2.cpp" />
-		<Unit filename="ui/optionsdialog2.h" />
 		<Unit filename="uniformbuffer.cpp" />
 		<Unit filename="uniformbuffer.h" />
 		<Unit filename="vsfl/vsfl.cpp" />

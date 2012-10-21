@@ -59,7 +59,7 @@ void DrawFont::UpdateProjection(void) {
 
 void DrawFont::SetOffset(float row, float col) {
 	// The font size use a simple scaling, not different font definitions.
-	float scale = Options::fgOptions.fFontSize / 12.0f;
+	float scale = gOptions.fFontSize / 12.0f;
 	glm::mat4 mat = glm::translate(glm::mat4(1), glm::vec3(row, col, 0.0f));
 	mat = glm::scale(mat, glm::vec3(scale, scale, 1.0f));
 	fShader->ModelView(mat);

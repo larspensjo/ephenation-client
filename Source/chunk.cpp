@@ -101,7 +101,7 @@ float chunk::ComputeAmbientLight(int ox, int oy, int oz) const {
 	    LineToSky(this, ox, oy, oz, -0.707106781f, 0.0f, 0.707106781f) +
 	    LineToSky(this, ox, oy, oz, 0.0f, -0.707106781f, 0.707106781f);
 	float num = 5.0f;
-	if (Options::fgOptions.fPerformance > 2) {
+	if (gOptions.fPerformance > 2) {
 		// Additional tests give even better transition from light to dark, but requires more CPU
 		sky +=
 		    LineToSky(this, ox, oy, oz, 0.577350269f, -0.577350269, 0.577350269) +
@@ -332,14 +332,14 @@ void chunk::DrawObjects(StageOneShader *shader, int dx, int dy, int dz, bool for
 
 		switch (fChunkObject->fTreeList[i].type) {
 		case BT_Tuft:
-			if (forShadows && Options::fgOptions.fPerformance < 4)
+			if (forShadows && gOptions.fPerformance < 4)
 				continue; // Only show shadow if high performance
 			shader->Model(glm::translate(modelMatrix, glm::vec3(0.0f, 0.65f, 0.0f)));
 			glBindTexture(GL_TEXTURE_2D, GameTexture::TuftOfGrass); // This will be used for trunk and all branches.
 			gTuftOfGrass.DrawStatic();
 			break;
 		case BT_Flowers:
-			if (forShadows && Options::fgOptions.fPerformance < 4)
+			if (forShadows && gOptions.fPerformance < 4)
 				continue; // Only show shadow if high performance
 			shader->Model(glm::translate(modelMatrix, glm::vec3(0.0f, 0.65f, 0.0f)));
 			glBindTexture(GL_TEXTURE_2D, GameTexture::Flowers); // This will be used for trunk and all branches.
@@ -360,7 +360,7 @@ void chunk::DrawObjects(StageOneShader *shader, int dx, int dy, int dz, bool for
 			} else {
 				shader->Model(modelMatrix);
 				Tree::sfSmallTree.Draw();
-				if ((!Options::fgOptions.fDynamicShadows && !Options::fgOptions.fStaticShadows) || belowGround) gShadows.Add(treex, treey, treez, 1.5f, 0.8f);
+				if ((!gOptions.fDynamicShadows && !gOptions.fStaticShadows) || belowGround) gShadows.Add(treex, treey, treez, 1.5f, 0.8f);
 			}
 			break;
 		case BT_Tree2:
@@ -378,7 +378,7 @@ void chunk::DrawObjects(StageOneShader *shader, int dx, int dy, int dz, bool for
 			} else {
 				shader->Model(modelMatrix);
 				Tree::sfMediumTree.Draw();
-				if ((!Options::fgOptions.fDynamicShadows && !Options::fgOptions.fStaticShadows) || belowGround) gShadows.Add(treex, treey, treez, 3.0f, 0.8f);
+				if ((!gOptions.fDynamicShadows && !gOptions.fStaticShadows) || belowGround) gShadows.Add(treex, treey, treez, 3.0f, 0.8f);
 			}
 			break;
 		case BT_Tree3:
@@ -396,7 +396,7 @@ void chunk::DrawObjects(StageOneShader *shader, int dx, int dy, int dz, bool for
 			} else {
 				shader->Model(modelMatrix);
 				Tree::sfBigTree.Draw();
-				if ((!Options::fgOptions.fDynamicShadows && !Options::fgOptions.fStaticShadows) || belowGround) gShadows.Add(treex, treey, treez, 4.0f, 0.8f);
+				if ((!gOptions.fDynamicShadows && !gOptions.fStaticShadows) || belowGround) gShadows.Add(treex, treey, treez, 4.0f, 0.8f);
 			}
 			break;
 		}

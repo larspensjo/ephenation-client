@@ -85,7 +85,7 @@ void ShadowRender::Render(int width, int height) {
 	glm::mat4 R1 = glm::rotate(glm::mat4(1), -115.0f, glm::vec3(1.0f, 0.0f, 0.0f));       // Rotate world upwards, in direction of sun
 	glm::mat4 R2 = glm::rotate(glm::mat4(1), -45.0f, glm::vec3(0.0f, 0.0f, 1.0f));        // Rotate world upwards, in direction of sun
 	glm::mat4 T;
-	if (Options::fgOptions.fStaticShadows)
+	if (gOptions.fStaticShadows)
 		T = glm::translate(glm::mat4(1), glm::vec3(-CHUNK_SIZE/2.0f, -CHUNK_SIZE/2.0f, CHUNK_SIZE/2.0f));                  // Move world to put the player in the center
 	else
 		T = glm::translate(glm::mat4(1), -gPlayer.GetOffsetToChunk());                                        // Move world to put the player in the center
@@ -106,7 +106,7 @@ void ShadowRender::Render(int width, int height) {
 
 	DrawLandscapeForShadows(fShader.get());
 
-	if (Options::fgOptions.fDynamicShadows) {
+	if (gOptions.fDynamicShadows) {
 		// Don't render dynamic objects in static shadow mode
 		AnimationShader *anim = AnimationShader::Make();
 		anim->EnableProgram();

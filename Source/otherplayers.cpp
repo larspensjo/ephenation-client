@@ -159,7 +159,7 @@ void OtherPlayers::RenderPlayers(bool selectionMode) const {
 			model = glm::rotate(model, 180.0f - fPlayers[i].fDir, glm::vec3(0.0f, 1.0f, 0.0f));
 
 			gMonsterDef.Draw(model, gViewMatrix, fPlayers[i].IsDead(), GameTexture::PlayerFace[fPlayers[i].id % 5], sun, ambient);
-			if (!Options::fgOptions.fDynamicShadows || sun == 0)
+			if (!gOptions.fDynamicShadows || sun == 0)
 				gShadows.Add(dx, dz-PLAYER_HEIGHT*2.0f, -dy, 1.5f);
 		}
 	}

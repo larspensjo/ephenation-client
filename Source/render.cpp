@@ -559,7 +559,7 @@ void Shadows::Clear() {
 }
 
 void Shadows::Add(float x, float y, float z, float radius, float limit) {
-	if (fNumShadows < Options::fgOptions.fMaxShadows*limit) {
+	if (fNumShadows < gOptions.fMaxShadows*limit) {
 		fShadows[fNumShadows] = glm::vec4(x, y, z, radius);
 		fNumShadows++;
 	}

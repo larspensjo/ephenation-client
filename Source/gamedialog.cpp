@@ -62,7 +62,6 @@
 #include "Map.h"
 #include "ScrollingMessages.h"
 #include "Teleport.h"
-#include "ui/dialog.h"
 #include "ui/messagedialog.h"
 #include "ui/RocketGui.h"
 #include "ui/Error.h"
@@ -107,8 +106,6 @@ gameDialog::gameDialog() {
 	fDrawMap = false;
 	fShowInventory = false;
 	fShowWeapon = true;
-	fShowMainDialog = false;
-	fHideDialog = false; // This will override the fShowMainDialog
 	fSelectedObject = 0;
 	fShader = 0;
 	fBuildingBlocks = 0;
@@ -396,11 +393,6 @@ void gameDialog::handleMouse(int button, int action) {
 			gMsgWindow.SetAlternatePosition(0,0,false);
 		}
 		return;
-	} else if (fShowMainDialog && !fHideDialog) {
-		if (action == GLFW_RELEASE) {
-			fShowMainDialog = dialog::DispatchClick();
-		}
-		return;
 	}
 	// printf("Mouse function: button %d, state %d, at (%d,%d)\n", button, action, x, y);
 	if (button == GLFW_MOUSE_BUTTON_RIGHT) {
@@ -445,7 +437,7 @@ glm::mat4 gProjectionMatrix;
 void gameDialog::handleResize(int w, int h) {
 	float aspectRatio = (float)w / (float)h;
 	// In full screen mode, the window is stretched to match the desktop mode.
-	if (Options::fgOptions.fFullScreen)
+	if (gOptions.fFullScreen)
 		aspectRatio = gDesktopAspectRatio;
 	gProjectionMatrix  = glm::perspective(renderViewAngle, aspectRatio, 0.01f, maxRenderDistance);  // Create our perspective projection matrix
 	gTranspShader.EnableProgram();
@@ -467,11 +459,6 @@ void gameDialog::HandleCharacter(int key, int action) {
 	if (fCurrentRocketContextInput) {
 		if (action == GLFW_PRESS)
 			fCurrentRocketContextInput->ProcessTextInput(key);
-		return;
-	}
-
-	if (fShowMainDialog && !fHideDialog) {
-		dialog::DispatchChar(key);
 		return;
 	}
 }
@@ -548,10 +535,6 @@ void gameDialog::HandleKeyPress(int key) {
 		return;
 	}
 
-	if (fShowMainDialog && !fHideDialog && key != GLFW_KEY_ESC) {
-		dialog::DispatchKey(key);
-		return;
-	}
 	if (key >= GLFW_KEY_F1 && key <= GLFW_KEY_F11) {
 		gInventory.UseObjectFunctionKey(key);
 		return;
@@ -735,16 +718,16 @@ void gameDialog::HandleKeyPress(int key) {
 	case GLFW_KEY_KP_SUBTRACT:
 		switch(fCalibrationMode) {
 		case CALIB_AMBIENT:
-			Options::fgOptions.fAmbientLight -= 1;
-			gMsgWindow.Add("Ambient light: %f", Options::fgOptions.fAmbientLight/100.0);
+			gOptions.fAmbientLight -= 1;
+			gMsgWindow.Add("Ambient light: %f", gOptions.fAmbientLight/100.0);
 			break;
 		case CALIB_EXPOSURE:
-			Options::fgOptions.fExposure /= 1.1f;
-			gMsgWindow.Add("Exposure: %f", Options::fgOptions.fExposure);
+			gOptions.fExposure /= 1.1f;
+			gMsgWindow.Add("Exposure: %f", gOptions.fExposure);
 			break;
 		case CALIB_WHITE_POINT:
-			Options::fgOptions.fWhitePoint /= 1.1f;
-			gMsgWindow.Add("White point: %f", Options::fgOptions.fWhitePoint);
+			gOptions.fWhitePoint /= 1.1f;
+			gMsgWindow.Add("White point: %f", gOptions.fWhitePoint);
 			break;
 		case CALIB_NONE:
 			break;
@@ -763,16 +746,16 @@ void gameDialog::HandleKeyPress(int key) {
 	case GLFW_KEY_KP_ADD:
 		switch(fCalibrationMode) {
 		case CALIB_AMBIENT:
-			Options::fgOptions.fAmbientLight += 1;
-			gMsgWindow.Add("Ambient light: %f", Options::fgOptions.fAmbientLight/100.0);
+			gOptions.fAmbientLight += 1;
+			gMsgWindow.Add("Ambient light: %f", gOptions.fAmbientLight/100.0);
 			break;
 		case CALIB_EXPOSURE:
-			Options::fgOptions.fExposure *= 1.1f;
-			gMsgWindow.Add("Exposure: %f", Options::fgOptions.fExposure);
+			gOptions.fExposure *= 1.1f;
+			gMsgWindow.Add("Exposure: %f", gOptions.fExposure);
 			break;
 		case CALIB_WHITE_POINT:
-			Options::fgOptions.fWhitePoint *= 1.1f;
-			gMsgWindow.Add("White point: %f", Options::fgOptions.fWhitePoint);
+			gOptions.fWhitePoint *= 1.1f;
+			gMsgWindow.Add("White point: %f", gOptions.fWhitePoint);
 			break;
 		case CALIB_NONE:
 			break;
@@ -808,10 +791,7 @@ void gameDialog::HandleKeyRelease(int key) {
 			fCurrentRocketContextInput->ProcessKeyUp(RocketGui::KeyMap(key), 0);
 		return;
 	}
-	if (fShowMainDialog && !fHideDialog) {
-		dialog::DispatchKey(key);
-		return;
-	}
+
 	switch (key) {
 	case 'W':
 	case 283:
@@ -934,8 +914,6 @@ void gameDialog::render() {
 			this->ClearForDialog();
 		} else if (fShowInventory)
 			gInventory.DrawInventory(fDrawTexture);
-		else if (fShowMainDialog)
-			dialog::DispatchDraw(fDrawTexture, fHideDialog ? 0.5f : 1.0f);
 		else if (sgPopup.length() > 0) {
 			// There are some messages that shall be shown in a popup dialog.
 			fMessageDialog.Set(sgPopupTitle, sgPopup, 0);
@@ -1026,7 +1004,7 @@ void gameDialog::render() {
 		gScrollingMessages.Update();
 	}
 
-	if (!fDrawMap && !fShowInventory && (!fShowMainDialog || fHideDialog)) {
+	if (!fDrawMap && !fShowInventory) {
 		if (gMode.Get() == GameMode::CONSTRUCT)
 			fBuildingBlocks->Draw(gProjectionMatrix);
 	}
@@ -1053,8 +1031,8 @@ void gameDialog::init(void) {
 	gabriola18->Init("textures/gabriola18");
 	gScrollingMessages.Init(gabriola18);
 	ChunkBlocks::InitStatic();
-	maxRenderDistance = (float)Options::fgOptions.fViewingDistance;
-	this->fRequestedCameraDistance = Options::fgOptions.fCameraDistance;
+	maxRenderDistance = (float)gOptions.fViewingDistance;
+	this->fRequestedCameraDistance = gOptions.fCameraDistance;
 	if (maxRenderDistance > MAXRENDERDISTANCE) {
 		// Someone tried to trick the program by editing the ini file.
 		// #255 long distances are not handled very well by neither server nor client
@@ -1187,11 +1165,11 @@ void gameDialog::Update() {
 	this->UpdateCameraPosition();
 	gGameDialog.UpdateRunningStatus(false);
 
-	if (Options::fgOptions.fFullScreen) {
+	if (gOptions.fFullScreen) {
 		// Full screen, which means mouse is usually disabled. But there are cases when it is needed.
 		bool showMouseFullscreen = false;
 		static bool wasShowingMouse = false;
-		if ((fShowMainDialog && !fHideDialog) || gMode.Get() == GameMode::CONSTRUCT || fShowInventory || gMode.Get() == GameMode::TELEPORT || fCurrentRocketContextInput)
+		if (gMode.Get() == GameMode::CONSTRUCT || fShowInventory || gMode.Get() == GameMode::TELEPORT || fCurrentRocketContextInput)
 			showMouseFullscreen = true;
 		if (wasShowingMouse && !showMouseFullscreen) {
 			glfwDisable(GLFW_MOUSE_CURSOR);
@@ -1316,7 +1294,8 @@ void gameDialog::UpdateCameraPosition(void) {
 		fCameraDistance += delta;
 	else
 		fCameraDistance = fRequestedCameraDistance;
-	Options::fgOptions.fCameraDistance = fRequestedCameraDistance; // Make sure it is saved
+	gOptions.fCameraDistance = fRequestedCameraDistance;
+	Options::sfSave.fCameraDistance = fRequestedCameraDistance; // Make sure it is saved
 	if (fCameraDistance == 0.0f)
 		return;
 	ChunkCoord cc;
@@ -1406,15 +1385,6 @@ void gameDialog::ClearForDialog(void) {
 	fSelectedObject = 0;
 }
 
-void gameDialog::NotifyMessage(void) {
-	// If the dialog is dimmed down, bring it back again. This will make sure the player
-	// understands there are more messages.
-	if (fShowMainDialog && fHideDialog) {
-		fHideDialog = false;
-		this->ClearForDialog();
-	}
-}
-
 // Manage the running status of the player
 void gameDialog::UpdateRunningStatus(bool disable) {
 	static bool wasRunning = false;
@@ -1496,8 +1466,7 @@ void gameDialog::UpdateEffect(void) {
 }
 
 void gameDialog::CalibrateMode(Calibration cal) {
-	if (fShowMainDialog)
-		fHideDialog = true;
+	// TODO: The dialog should go away temporarily
 	fCalibrationMode = cal;
 }
 

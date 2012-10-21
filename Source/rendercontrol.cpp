@@ -100,10 +100,10 @@ void RenderControl::Init() {
 	fAddSSAO.reset(new AddSSAO);
 	fAddSSAO->Init();
 
-	if (Options::fgOptions.fDynamicShadows) {
+	if (gOptions.fDynamicShadows) {
 		fShadowRender.reset(new ShadowRender(DYNAMIC_SHADOW_MAP_SIZE,DYNAMIC_SHADOW_MAP_SIZE));
 		fShadowRender->Init();
-	} else if (Options::fgOptions.fStaticShadows) {
+	} else if (gOptions.fStaticShadows) {
 		fShadowRender.reset(new ShadowRender(STATIC_SHADOW_MAP_SIZE,STATIC_SHADOW_MAP_SIZE));
 		fShadowRender->Init();
 	}
@@ -216,7 +216,7 @@ void RenderControl::Draw(Object *selectedObject, bool underWater, bool thirdPers
 	glStencilFunc(GL_EQUAL, STENCIL_NOSKY, STENCIL_NOSKY); // Only execute when no sky and no UI
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_ONE, GL_ONE);
-	if ((Options::fgOptions.fDynamicShadows || Options::fgOptions.fStaticShadows) && !gPlayer.BelowGround())
+	if ((gOptions.fDynamicShadows || gOptions.fStaticShadows) && !gPlayer.BelowGround())
 		drawDynamicShadows();
 	drawPointLights();
 	// drawSSAO(); // TODO: Not good enough yet.
@@ -233,7 +233,7 @@ void RenderControl::Draw(Object *selectedObject, bool underWater, bool thirdPers
 	// Draw the main result to the screen. TODO: It would be possible to have the deferred rendering update the depth buffer!
 	if (gShowFramework)
 		glPolygonMode(GL_FRONT, GL_FILL);
-	drawDeferredLighting(underWater, Options::fgOptions.fWhitePoint);
+	drawDeferredLighting(underWater, gOptions.fWhitePoint);
 
 	// Do some post processing
 	if (!underWater)
@@ -318,7 +318,7 @@ void RenderControl::drawDynamicShadows() {
 	tm.Start();
 	GLenum windowBuffers[] = { GL_COLOR_ATTACHMENT4 };
 	glDrawBuffers(1, windowBuffers); // Nothing is transparent here, do not produce any blending data on the 4:th render target.
-	if ((Options::fgOptions.fDynamicShadows || Options::fgOptions.fStaticShadows) && fShadowRender) {
+	if ((gOptions.fDynamicShadows || gOptions.fStaticShadows) && fShadowRender) {
 		glActiveTexture(GL_TEXTURE4);
 		fShadowRender->BindTexture();
 		glActiveTexture(GL_TEXTURE2);
@@ -392,15 +392,15 @@ void RenderControl::drawPointLights(void) {
 			fAddPointLight->Draw(it->pos+glm::vec3(0, 0.3f, 0), LAMP2_DIST);
 			break;
 		case BT_Treasure:
-			if (Options::fgOptions.fPerformance > 1) // Inhibit this for the low performance
+			if (gOptions.fPerformance > 1) // Inhibit this for the low performance
 				fAddPointLight->Draw(it->pos, 1.5f);
 			break;
 		case BT_Quest:
-			if (Options::fgOptions.fPerformance > 1) // Inhibit this for the low performance
+			if (gOptions.fPerformance > 1) // Inhibit this for the low performance
 				fAddPointLight->Draw(it->pos, 1.5f);
 			break;
 		case BT_Teleport:
-			if (Options::fgOptions.fPerformance > 1) // Inhibit this for the low performance
+			if (gOptions.fPerformance > 1) // Inhibit this for the low performance
 				fAddPointLight->Draw(it->pos, 3.0f);
 			break;
 		}
@@ -480,13 +480,13 @@ void RenderControl::drawLocalFog(void) {
 }
 
 void RenderControl::ComputeShadowMap() {
-	if (Options::fgOptions.fDynamicShadows && fShadowRender) {
+	if (gOptions.fDynamicShadows && fShadowRender) {
 		static TimeMeasure tm("ShdwDyn");
 		tm.Start();
 		fShadowRender->Render(352,160);
 		tm.Stop();
 	}
-	if (Options::fgOptions.fStaticShadows && fShadowRender) {
+	if (gOptions.fStaticShadows && fShadowRender) {
 		static TimeMeasure tm("ShdwStat");
 		tm.Start();
 		static ChunkCoord prev = {0x7FFFFFFF, 0x7FFFFFFF, 0x7FFFFFFF};

@@ -70,8 +70,6 @@ public:
 	void AttachBlockToSurface(int row, int col);
 	void ClearSelection(void); // Clear the selected object
 	void AggroFrom(Object *); // The player now has aggro from this monster
-	// Notification that there are new messages available.
-	void NotifyMessage(void);
 	enum Calibration { CALIB_EXPOSURE, CALIB_WHITE_POINT, CALIB_AMBIENT, CALIB_NONE };
 	void CalibrateMode(Calibration);
 
@@ -110,8 +108,6 @@ private:
 	bool fEnterDebugText;
 	bool fDrawMap;
 	bool fShowWeapon;
-	bool fShowMainDialog;
-	bool fHideDialog; // This will override the fShowMainDialog.
 	bool fUnderWater; // True when player is below water
 	unsigned char fDebugText[1000]; // TODO: use std::string
 	unsigned int fDebugTextLength;

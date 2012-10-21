@@ -43,7 +43,7 @@ ChunkObject::ChunkObject() {
 
 unique_ptr<ChunkObject> ChunkObject::Make(const chunk *cp, bool pickingMode, int pdx, int pdy, int pdz) {
 	unique_ptr<ChunkObject> co(new ChunkObject);
-	co->FindTriangles(cp, pickingMode, pdx, pdy, pdz, Options::fgOptions.fSmoothTerrain, Options::fgOptions.fMergeNormals, Options::fgOptions.fAddNoise);
+	co->FindTriangles(cp, pickingMode, pdx, pdy, pdz, gOptions.fSmoothTerrain, gOptions.fMergeNormals, gOptions.fAddNoise);
 	return co;
 }
 
@@ -417,7 +417,7 @@ void ChunkObject::FindTriangles(const chunk *cp, bool pickingMode, int pdx, int 
 				auto d100 = delta[x+1][y][z], d101 = delta[x+1][y][z+1], d110 = delta[x+1][y+1][z], d111 = delta[x+1][y+1][z+1];
 
 				// If dynamic shadows are used, the sun flag is only used to enable shadows in the renderer.
-				bool forceSunFlag = (Options::fgOptions.fDynamicShadows || Options::fgOptions.fStaticShadows) && cp->cc.z >= -1;
+				bool forceSunFlag = (gOptions.fDynamicShadows || gOptions.fStaticShadows) && cp->cc.z >= -1;
 
 				// This block is not water and not air, check if near sides are visible from the outside
 				// TODO: Lot of repetitive things here, should be possible to generalize and compress.

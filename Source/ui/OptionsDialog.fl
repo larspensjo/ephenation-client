@@ -1,6 +1,6 @@
 # data file for the Fltk User Interface Designer (fluid)
-version 1.0300 
-header_name {.h} 
+version 1.0300
+header_name {.h}
 code_name {.cpp}
 class OptionsDialog {open
 } {
@@ -24,10 +24,10 @@ class OptionsDialog {open
           Fl_Check_Button fMusic {
             label {Enable music}
             callback {gSoundControl.SwitchMusicStatus();
-Options::fgOptions.fMusicOn = fMusic->value();}
+Options::sfSave.fMusicOn = fMusic->value();}
             tooltip {Enable or disable music.} xywh {35 60 70 30} down_box DOWN_BOX
             code0 {\#include "../SoundControl.h"}
-            code1 {fMusic->value(Options::fgOptions.fMusicOn);}
+            code1 {fMusic->value(Options::sfSave.fMusicOn);}
           }
           Fl_Check_Button fPing {
             label {Show ping}
@@ -43,7 +43,7 @@ Options::fgOptions.fMusicOn = fMusic->value();}
           Fl_Slider fPerformanceSlider {
             label Performance
             tooltip {The general performance of your system. A high value will show better graphics but at a lower FPS. If you change this value, it will override some other parameters.} xywh {55 54 45 111} minimum 1 maximum 4 step 1 value 1 slider_size 0.25
-            code0 {fPerformanceSlider->value(Options::fgOptions.fPerformance);}
+            code0 {fPerformanceSlider->value(Options::sfSave.fPerformance);}
           }
           Fl_Group {} {
             label Low open
@@ -76,33 +76,33 @@ Options::fgOptions.fMusicOn = fMusic->value();}
           Fl_Value_Slider fAmbientLight {
             label {Ambient light}
             tooltip {The amount of ambient light in dark areas.} xywh {200 55 150 20} type Horizontal maximum 100 step 1 value 25 slider_size 0.121212 textsize 14
-            code0 {fAmbientLight->value(Options::fgOptions.fAmbientLight);}
+            code0 {fAmbientLight->value(Options::sfSave.fAmbientLight);}
           }
           Fl_Check_Button fSmoothTerrain {
             label {Smooth terrain}
             tooltip {Show the world smooth instead of blocky. Depends on CPU performance, not graphics.} xywh {215 107 64 15} down_box DOWN_BOX
-            code0 {fSmoothTerrain->value(Options::fgOptions.fSmoothTerrain);}
+            code0 {fSmoothTerrain->value(Options::sfSave.fSmoothTerrain);}
           }
           Fl_Check_Button fMergeNormals {
             label {Merge normals}
             tooltip {If showing the world as smooth, this option will enhance it further. Depends on CPU, not on graphics.} xywh {215 132 64 15} down_box DOWN_BOX
-            code0 {fMergeNormals->value(Options::fgOptions.fMergeNormals);}
+            code0 {fMergeNormals->value(Options::sfSave.fMergeNormals);}
           }
           Fl_Check_Button fAddNoise {
             label {Add noise to terrain}
             tooltip {If showing the world as smooth, this option will add some random height to get variation. Depends on CPU performance.} xywh {215 157 64 15} down_box DOWN_BOX
-            code0 {fAddNoise->value(Options::fgOptions.fAddNoise);}
+            code0 {fAddNoise->value(Options::sfSave.fAddNoise);}
           }
           Fl_Check_Button fDynamicShadows {
             label {Dynamic shadows}
             tooltip {Draw realistic shadows.} xywh {215 182 64 15} down_box DOWN_BOX
-            code0 {fDynamicShadows->value(Options::fgOptions.fDynamicShadows);}
+            code0 {fDynamicShadows->value(Options::sfSave.fDynamicShadows);}
           }
         }
       }
       Fl_Return_Button {} {
         label Ok
-        callback {Options::fgOptions.UpdateSettings(this);
+        callback {Options::sfSave.UpdateSettings(this);
 fWindow->hide();
 Fl::delete_widget(fWindow);}
         xywh {30 320 72 20}
@@ -136,4 +136,4 @@ Fl::delete_widget(fWindow);}
     }
     code {fWindow->show();} {}
   }
-} 
+}

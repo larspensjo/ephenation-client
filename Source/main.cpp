@@ -208,8 +208,8 @@ static void Password(const char *pass, const char *key) {
 }
 
 static bool HandleLoginDialog(bool testOverride) {
-	const char *email = Options::fgOptions.fEmail.c_str();
-	const char *licenseKey = Options::fgOptions.fLicenseKey.c_str();
+	const char *email = gOptions.fEmail.c_str();
+	const char *licenseKey = gOptions.fLicenseKey.c_str();
 	const char *passwd = 0;
 
 	gSoundControl.RequestMusicMode(SoundControl::SMusicModeMenu);
@@ -226,7 +226,7 @@ static bool HandleLoginDialog(bool testOverride) {
 
 	LoginDialog ld;
 	if (!testOverride) {
-		ld.Init(email, licenseKey, Options::fgOptions.fEnableTestbutton);
+		ld.Init(email, licenseKey, gOptions.fEnableTestbutton);
 		ld.show(CLIENT_MAJOR_VERSION,CLIENT_MINOR_VERSION); // This is the version of the game (client really).
 		Fl::run();
 		Fl::flush();
@@ -241,8 +241,8 @@ static bool HandleLoginDialog(bool testOverride) {
 		passwd = ld.Password();
 		licenseKey = ld.LicenseKey();
 		// Save some data for next time
-		Options::fgOptions.fEmail = email;
-		Options::fgOptions.fLicenseKey = licenseKey;
+		Options::sfSave.fEmail = email;
+		Options::sfSave.fLicenseKey = licenseKey;
 	} else {
 		exit(0);
 	}
@@ -374,14 +374,14 @@ int main(int argc, char** argv) {
 #ifdef unix
 	const char *home = getenv("HOME");
 	// Save Linux Path
-	Options::fgOptions.fSavePath = string(home) + "/.ephenation";
-	const char *ephenationPath = Options::fgOptions.fSavePath.c_str();
+	Options::sfSave.fSavePath = string(home) + "/.ephenation";
+	const char *ephenationPath = Options::sfSave.fSavePath.c_str();
 	struct stat st;
 	if (stat(ephenationPath,&st) != 0) {
 		mkdir(ephenationPath, 0777);
 	}
 	if (home)
-		opt = Options::fgOptions.fSavePath + "/" + opt;
+		opt = Options::sfSave.fSavePath + "/" + opt;
 	else
 		opt = ".ephenation/ephenation.ini";
 #endif
@@ -389,13 +389,13 @@ int main(int argc, char** argv) {
 	TCHAR home[MAX_PATH];
 	HRESULT res = SHGetFolderPath(NULL, CSIDL_LOCAL_APPDATA, 0, 0, home);
 	if (res == S_OK) {
-		Options::fgOptions.fSavePath = string(home) + "\\ephenation";
-		const char *ephenationPath = Options::fgOptions.fSavePath.c_str();
+		Options::sfSave.fSavePath = string(home) + "\\ephenation";
+		const char *ephenationPath = Options::sfSave.fSavePath.c_str();
 		struct _stat st;
 		if (_stat(ephenationPath,&st) != 0) {
 			res = _mkdir(ephenationPath);
 		}
-		opt = Options::fgOptions.fSavePath + "\\" + opt;
+		opt = Options::sfSave.fSavePath + "\\" + opt;
 	}
 #endif
 
@@ -422,8 +422,8 @@ int main(int argc, char** argv) {
 	const char *cacheName = "/cache";
 #endif
 
-	char *cachePath = new char[strlen(Options::fgOptions.fSavePath.c_str()) + strlen(cacheName) + strlen(host) + 2];
-	strcpy(cachePath, Options::fgOptions.fSavePath.c_str());
+	char *cachePath = new char[strlen(Options::sfSave.fSavePath.c_str()) + strlen(cacheName) + strlen(host) + 2];
+	strcpy(cachePath, Options::sfSave.fSavePath.c_str());
 #ifdef WIN32
 	strcat(cachePath, "\\cache");
 	strcat(cachePath, host);
@@ -436,11 +436,11 @@ int main(int argc, char** argv) {
 
 	ChunkCache::fgChunkCache.SetCacheDir(cachePath);
 
-	//printf("Game Path: %s\n", Options::fgOptions.fSavePath);
+	//printf("Game Path: %s\n", Options::sfSave.fSavePath);
 
-	Options::fgOptions.Init(opt); // This one should come early, as it is used to initalize things.
+	gOptions.Init(opt); // This one should come early, as it is used to initalize things.
 	if (sSingleThread) {
-		Options::fgOptions.fNumThreads = 1; // Override this number
+		gOptions.fNumThreads = 1; // Override this number
 		std::cout << "Limit to minimum number of threads" << std::endl;
 	}
 	ConnectToServer(host, port);
@@ -451,8 +451,8 @@ int main(int argc, char** argv) {
 		exit(1);
 
 	if (gDebugOpenGL)
-		printf("Number of threads: %d\n", Options::fgOptions.fNumThreads);
-	int numChunkProc = Options::fgOptions.fNumThreads - 1;
+		printf("Number of threads: %d\n", gOptions.fNumThreads);
+	int numChunkProc = gOptions.fNumThreads - 1;
 	if (numChunkProc <= 0)
 		numChunkProc = 1;
 	gChunkProcess.Init(numChunkProc);
@@ -463,7 +463,7 @@ int main(int argc, char** argv) {
 	// glfwOpenWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 	//glfwOpenWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // Need to specify at least version 3.3 for this to work.
 
-	if (!glfwOpenWindow(Options::fgOptions.fWindowWidth, Options::fgOptions.fWindowHeight, 0, 0, 0, 0, 16, 1, Options::fgOptions.fFullScreen ? GLFW_FULLSCREEN : GLFW_WINDOW)) {
+	if (!glfwOpenWindow(gOptions.fWindowWidth, gOptions.fWindowHeight, 0, 0, 0, 0, 16, 1, gOptions.fFullScreen ? GLFW_FULLSCREEN : GLFW_WINDOW)) {
 		glfwTerminate();
 
 		ErrorDialog("Failed to open GLFW window");
@@ -507,7 +507,7 @@ int main(int argc, char** argv) {
 			glDebugMessageCallbackAMD(DebugFuncAMD, (void*)15);
 	}
 
-	glfwSwapInterval(Options::fgOptions.fVSYNC); // 0 means do not wait for VSYNC, which would delay the FPS sometimes.
+	glfwSwapInterval(gOptions.fVSYNC); // 0 means do not wait for VSYNC, which would delay the FPS sometimes.
 
 	ComputeRelativeChunksSortedDistances();
 
@@ -563,7 +563,7 @@ int main(int argc, char** argv) {
 			gGameDialog.UpdateRunningStatus(true);
 			gSoundControl.RequestMusicMode(SoundControl::SMusicModeMenu);
 			OptionsDialog opt;
-			Options::fgOptions.ListGraphicModes(&opt);
+			Options::sfSave.ListGraphicModes(&opt);
 			Fl::run();
 			Fl::flush();
 			glfwRestoreWindow();
@@ -596,9 +596,9 @@ int main(int argc, char** argv) {
 	}
 
 	// The options will be saved by the destructor.
-	Options::fgOptions.fViewingDistance = maxRenderDistance;
-	Options::fgOptions.fWindowWidth = gViewport[2];
-	Options::fgOptions.fWindowHeight = gViewport[3];
+	Options::sfSave.fViewingDistance = maxRenderDistance;
+	Options::sfSave.fWindowWidth = gViewport[2];
+	Options::sfSave.fWindowHeight = gViewport[3];
 	gMode.Set(GameMode::EXIT);
 	return 0;
 }
