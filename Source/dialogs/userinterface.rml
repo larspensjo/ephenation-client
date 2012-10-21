@@ -17,7 +17,7 @@
 		/* A small display that shows the FPS */
 		.fpsdisplay
 		{
-			height: 1.5em;
+			/* height: 1.5em; */
 			width: 300px;
 			position: absolute;
 			top: 0px;
