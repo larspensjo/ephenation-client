@@ -111,7 +111,6 @@ gameDialog::gameDialog() {
 	fHideDialog = false; // This will override the fShowMainDialog
 	fSelectedObject = 0;
 	fShader = 0;
-	fInputPromptSentence = 0xFFFFFFFF;
 	fBuildingBlocks = 0;
 	fHealthBar = 0;
 	fDrawTexture = 0;
@@ -124,7 +123,6 @@ gameDialog::gameDialog() {
 }
 
 gameDialog::~gameDialog() {
-	fInputPromptSentence = 0xFFFFFFFF;
 	fShader = 0; // Don't delete this singleton
 	fBuildingBlocks = 0; // Singleton
 	fHealthBar = 0; // Singleton
@@ -990,13 +988,6 @@ void gameDialog::render() {
 	// Various text messages
 	//=========================================================================
 	{
-		// A big chunk with text drawing. But first some background to improve contrast.
-		int yOffset = Options::fgOptions.fFontSize*2;
-		float totalWinHeight = gViewport[3]; // Measured in pixels
-		glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(-1.0f, 1.0f - yOffset*2/totalWinHeight, 0.0f));
-		float yScale = yOffset*2/totalWinHeight;
-		model = glm::scale(model, glm::vec3(2.0f, yScale, 1.0f));
-
 		sprintf(buff, "Level %ld, Hp %d%%, Exp %d%%", gPlayer.fLevel, (int)(gPlayer.fHp * 100), (int)(gPlayer.fExp * 100));
 		static string sPrevStat;
 		if (sPrevStat != buff) {
@@ -1009,12 +1000,6 @@ void gameDialog::render() {
 			sprintf(buff, "Triangles %7d, draw calls %d. Fps %03d", gDrawnQuads, gNumDraw, int(slAverageFps));
 		else
 			sprintf(buff, "Triangles %7d, draw calls %d. Fps %03d, ping %.1f ms", gDrawnQuads, gNumDraw, int(slAverageFps), gCurrentPing*1000.0);
-		static string sPrevFPS;
-		if (sPrevFPS != buff) {
-			// Only update if it changed
-			sPrevFPS = buff;
-			fFPS_Element->SetInnerRML(buff);
-		}
 
 		if (gMode.Get() == GameMode::CONSTRUCT) {
 			ChunkCoord cc;
@@ -1026,13 +1011,18 @@ void gameDialog::render() {
 				cb = cp->fChunkBlocks;
 			if (cb)
 				uid = cb->fOwner;
-			gDrawFont.SetOffset(0,float(yOffset));
+			// This will override other the other text
 			sprintf(buff, "Construction mode, Chunk (%d,%d,%d) offset: %.1f,%.1f,%.1f, coord(%.1f,%.1f,%.1f) owner %d",
 			        cc.x, cc.y, cc.z, playerOffset.x, playerOffset.y, playerOffset.z, gPlayer.x/100.0, gPlayer.y/100.0, gPlayer.z/100.0, uid);
-			gDrawFont.vsfl.renderAndDiscard(buff);
 		}
 
-		gDrawFont.Disable();
+		static string sPrevFPS;
+		if (sPrevFPS != buff) {
+			// Only update if it changed
+			sPrevFPS = buff;
+			fFPS_Element->SetInnerRML(buff);
+		}
+
 		gScrollingMessages.Update();
 	}
 
@@ -1074,7 +1064,6 @@ void gameDialog::init(void) {
 		maxRenderDistance = 5.0f;
 	gTranspShader.Init();
 	fBuildingBlocks = BuildingBlocks::Make(7); // TODO: Need something more adaptive than a constant.
-	fInputPromptSentence = gDrawFont.vsfl.genSentence();
 	gMonsterDef.Init(0);
 	fShader = ChunkShader::Make(); // Singleton
 	fHealthBar = HealthBar::Make(); // Singleton

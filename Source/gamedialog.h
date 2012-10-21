@@ -126,9 +126,6 @@ private:
 	// henceforth be forwarded to the dialog, and the player can't stop moving.
 	void ClearForDialog(void);
 	Object *fSelectedObject; // Pointer to the object (monster, player, ...) that is selected
-	GLuint fFPSsentence;
-	GLuint fInputPromptSentence;
-	GLuint fPlayerStatusSentence;
 	ChunkShader *fShader;
 	BuildingBlocks *fBuildingBlocks;
 	HealthBar *fHealthBar;
