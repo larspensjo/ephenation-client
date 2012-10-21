@@ -36,7 +36,7 @@
 			<div style="margin-left:50px;">vorbis: http://www.vorbis.com/</div>
 			<div style="margin-left:50px;">libRocket: http://librocket.com/</div>
 		</div>
-		<button class="formatbutton" onclick="Close">Close</button>
+		<button class="formatbutton firstbuttonpos" onclick="Close">Close</button>
 	</div>
 </body>
 </rml>

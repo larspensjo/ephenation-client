@@ -16,7 +16,7 @@
 		</div>
 		<div  id="content" class="content">
 		</div>
-		<button class="formatbutton" onclick="Close">Close</button>
+		<button class="formatbutton firstbuttonpos" onclick="Close">Close</button>
 	</div>
 </body>
 </rml>

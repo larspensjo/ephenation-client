@@ -60,3 +60,11 @@ div {
 	font-size: 36px;
 	display: inline;
 }
+
+.firstbuttonpos {
+	margin-left:150px; /* The position of the button at the bottom of dialogs. */
+}
+
+.secondbuttonpos {
+	margin-left:400px; /* The position of the button at the bottom of dialogs. */
+}

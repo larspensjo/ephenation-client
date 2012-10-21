@@ -44,8 +44,8 @@
 					</div>
 				</panel>
 			</tabset>
-			<input class="formatbutton" type="submit" value="ok" style="margin-left:150px;">Ok</input>
-			<button class="formatbutton" onclick="Close" style="margin-left:400px;">Cancel</button>
+			<input class="formatbutton firstbuttonpos" type="submit" value="ok">Ok</input>
+			<button class="formatbutton secondbuttonpos" onclick="Close">Cancel</button>
 		</form>
 	</div>
 </body>
