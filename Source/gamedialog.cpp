@@ -996,7 +996,7 @@ void gameDialog::render() {
 			fPlayerStatsOneLiner_Element->SetInnerRML(buff);
 		}
 
-		if (gCurrentPing == 0.0)
+		if (gCurrentPing == 0.0 || !gShowPing)
 			sprintf(buff, "Triangles %7d, draw calls %d. Fps %03d", gDrawnQuads, gNumDraw, int(slAverageFps));
 		else
 			sprintf(buff, "Triangles %7d, draw calls %d. Fps %03d, ping %.1f ms", gDrawnQuads, gNumDraw, int(slAverageFps), gCurrentPing*1000.0);

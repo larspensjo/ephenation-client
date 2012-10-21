@@ -10,16 +10,16 @@
 </head>
 <body id="body">
 	<div class="messagedialog">
-		<div class="header" id="header">
-			Options
-		</div>
-		<tabset>
-			<tab>Basic</tab>
-			<panel>
-				<form onsubmit="options">
+		<form onsubmit="options">
+			<div class="header" id="header">
+				Options
+			</div>
+			<tabset>
+				<tab>Basic</tab>
+				<panel>
 					<div class="menulist">
 						<input type="checkbox" name="Audio.musicon" value="1"/> Enable music<br/>
-						<input type="checkbox" name="options.ping" value="1"/> Enable ping<br/>
+						<input type="checkbox" name="ping" value="1"/> Enable ping<br/>
 						<input type="checkbox" name="Graphics.fullscreen" value="1"/> Use full screen<br/>
 						<select name="Graphics.performance">
 							<option name="Graphics.performance" value="1">Low</option>
@@ -28,15 +28,25 @@
 							<option name="Graphics.performance" value="4">Super</option>
 						</select> System performance<br/>
 					</div>
-					<input class="formatbutton" type="submit" value="ok">Ok</input>
-					<button class="formatbutton" onclick="Close" style="margin-left:400px;">Cancel</button>
-				</form>
-			</panel>
-			<tab>Advanced</tab>
-			<panel>
-				Welcome to the second tab!
-			</panel>
-		</tabset>
+				</panel>
+				<tab>Advanced</tab>
+				<panel>
+					<div class="menulist">
+						<input type="checkbox" name="Display.vsync" value="1"/> VSYNC<br/>
+						<input type="checkbox" name="Graphics.SmoothTerrain" value="1"/> Smooth terrain<br/>
+						<input type="checkbox" name="Graphics.MergeNormals" value="1"/> Merge normals<br/>
+						<input type="checkbox" name="Graphics.AddNoise" value="1"/> Add random height noise<br/>
+						<select name="shadows">
+							<option name="shadows" value="1">Precomputed</option>
+							<option name="shadows" value="2">Static</option>
+							<option name="shadows" value="3">Dynamic</option>
+						</select> Shadows<br/>
+					</div>
+				</panel>
+			</tabset>
+			<input class="formatbutton" type="submit" value="ok" style="margin-left:150px;">Ok</input>
+			<button class="formatbutton" onclick="Close" style="margin-left:400px;">Cancel</button>
+		</form>
 	</div>
 </body>
 </rml>
