@@ -45,7 +45,6 @@
 #include "modes.h"
 #include "monsters.h"
 #include "otherplayers.h"
-#include "vsfl/vsfl.h"
 #include "DrawText.h"
 #include "shaders/ChunkShader.h"
 #include "shaders/ChunkShaderPicking.h"
@@ -445,7 +444,6 @@ void gameDialog::handleResize(int w, int h) {
 	gTranspShader.DisableProgram();
 	glViewport(0, 0, w, h);
 	gViewport = glm::vec4(0.0f, 0.0f, (float)w, (float)h );
-	gDrawFont.UpdateProjection();
 	fRenderControl.Resize(w, h);
 	fMainUserInterface.Resize(w, h);
 }

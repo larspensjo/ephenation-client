@@ -304,7 +304,6 @@ static string ArmorLevelDiffMultiplier(unsigned long pLevel, unsigned long itemL
 }
 
 void Inventory::DrawInventory(DrawTexture *drawTexture) {
-	gDrawFont.UpdateProjection();
 	glm::mat4 baseModel = glm::translate(glm::mat4(1.0f), glm::vec3(INVENTORY_SCREEN_X_OFFS, INVENTORY_SCREEN_Y_OFFS, 0.0f));
 	// The bitmap is 1000x600
 	screenRatio = 600.0f/1000.0f*gViewport[2] / gViewport[3];
@@ -423,6 +422,7 @@ void Inventory::DrawInventory(DrawTexture *drawTexture) {
 	glBindTexture(GL_TEXTURE_2D, 0);
 
 	gDrawFont.Enable();
+	gDrawFont.UpdateProjection();
 	if (drawTooltip) {
 		gDrawFont.SetOffset(tooltipX, tooltipY);
 		gDrawFont.vsfl.renderAndDiscard(buff);

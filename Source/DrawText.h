@@ -34,9 +34,7 @@ public:
 	~DrawFont();
 	void Init(const std::string &fontName);				// Call once, sometimes after OpenGL is enabled.
 private:
-	bool fProjectionMatrixNeedUpdate;
 	SimpleTextureShader *fShader;
-	bool fShaderEnabled;
 };
 
 extern DrawFont gDrawFont;

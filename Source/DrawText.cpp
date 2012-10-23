@@ -32,8 +32,6 @@
 
 DrawFont::DrawFont() {
 	fShader = 0;
-	fProjectionMatrixNeedUpdate = false;
-	fShaderEnabled = false;
 }
 
 DrawFont::~DrawFont() {
@@ -47,14 +45,8 @@ void DrawFont::Init(const std::string &fontName) {
 }
 
 void DrawFont::UpdateProjection(void) {
-	if (fShaderEnabled) {
-		glm::mat4 projectionMatrix = glm::ortho((float)gViewport[0], (float)(gViewport[0] + gViewport[2]), (float)(gViewport[1] + gViewport[3]), (float)gViewport[1], 0.0f, 1.0f);
-		fShader->Projection(projectionMatrix);
-		fProjectionMatrixNeedUpdate = false;
-	} else {
-		// Can't do it now, save it for later.
-		fProjectionMatrixNeedUpdate = true;
-	}
+	glm::mat4 projectionMatrix = glm::ortho((float)gViewport[0], (float)(gViewport[0] + gViewport[2]), (float)(gViewport[1] + gViewport[3]), (float)gViewport[1], 0.0f, 1.0f);
+	fShader->Projection(projectionMatrix);
 }
 
 void DrawFont::SetOffset(float row, float col) {
@@ -67,14 +59,9 @@ void DrawFont::SetOffset(float row, float col) {
 
 void DrawFont::Enable(void) {
 	fShader->EnableProgram();
-	fShaderEnabled = true;
-	if (fProjectionMatrixNeedUpdate) {
-		this->UpdateProjection();
-	}
 }
 
 void DrawFont::Disable(void) {
-	fShaderEnabled = false;
 	fShader->DisableProgram();
 }
 
