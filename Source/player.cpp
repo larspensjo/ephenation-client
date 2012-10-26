@@ -82,7 +82,7 @@ void player::Draw(AnimationShader *animShader, StageOneShader *staticShader, boo
 	double tm = gCurrentFrameTime-0.22; // Offset in time where model is not in a stride.
 	if (fMoving)
 		tm = 0.0;
-	gFrog.Draw(animShader, model, tm);
+	gFrog.DrawAnimation(animShader, model, tm);
 #if 0
 	if (torch)
 		gLightSources.Add(dx, dz, -dy, 12.0f);

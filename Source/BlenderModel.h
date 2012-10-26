@@ -40,9 +40,9 @@ public:
 	// normalize: Normalize the size to 1.0. Doesn't work for animations.
 	void Init(const char *filename, float xRotateCorrection, bool normalize);
 
-	void Draw(AnimationShader *shader, const glm::mat4 &modelMatrix, double animationStart = 0.0, bool dead = false);
+	void DrawAnimation(AnimationShader *shader, const glm::mat4 &modelMatrix, double animationStart = 0.0, bool dead = false);
 
-	// Use the model, but don't animate it using bones. Use default shader.
+	// Use the model, with any shader.
 	void DrawStatic(void);
 	static void InitModels(void);
 

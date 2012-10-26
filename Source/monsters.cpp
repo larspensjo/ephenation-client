@@ -152,11 +152,11 @@ void Monsters::RenderMonsters(AnimationShader *shader, bool forShadows, bool sel
 			model = glm::translate(model, glm::vec3(-size/3, 0.0f, size/3));
 
 			if (fMonsters[i].IsDead())
-				bm->Draw(shader, model, fMonsters[i].lastTimeMoved, true);
+				bm->DrawAnimation(shader, model, fMonsters[i].lastTimeMoved, true);
 			else if (fMonsters[i].lastTimeMoved + 0.2 > gCurrentFrameTime)
-				bm->Draw(shader, model, 0.0);
+				bm->DrawAnimation(shader, model, 0.0);
 			else
-				bm->Draw(shader, model, gCurrentFrameTime-0.22); // Offset in time where model is not in a stride.
+				bm->DrawAnimation(shader, model, gCurrentFrameTime-0.22); // Offset in time where model is not in a stride.
 
 			if (forShadows)
 				continue;

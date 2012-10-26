@@ -15,6 +15,16 @@
 // along with Ephenation.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+//
+// This is probably the most complicated part of the Ephenation client. One reason
+// is that model and animation data in Assimp is complex. Another is that the data
+// has to be converted to a local representation optimized for drawing using a shader.
+// At first glance, it may look as if Assimp is unecessaery complex. But the data is
+// really needed, and it has to be organized they way it is. There is a reason for it.
+//
+// See http://ephenationopengl.blogspot.de/2012/06/doing-animations-in-opengl.html
+//
+
 #include <assimp/assimp.hpp>      // C++ importer interface
 #include <assimp/aiScene.h>       // Output data structure
 #include <assimp/aiPostProcess.h> // Post processing flags
@@ -175,6 +185,7 @@ void BlenderModel::Init(const char *filename, float xRotateCorrection, bool norm
 		return;
 	}
 
+	// Number of vertices and number of indices
 	int vertexSize = 0, indexSize = 0;
 	if (gVerbose) {
 		printf("Scene: %s\n", scene->mRootNode->mName.data);
@@ -182,7 +193,8 @@ void BlenderModel::Init(const char *filename, float xRotateCorrection, bool norm
 	}
 
 	//**********************************************************************
-	// Count how much data is needed.
+	// Count how much data is needed. All indices and vetices are saved in
+	// the same buffer.
 	//**********************************************************************
 
 	fMeshData.reset(new Mesh[scene->mNumMeshes]);
@@ -196,7 +208,7 @@ void BlenderModel::Init(const char *filename, float xRotateCorrection, bool norm
 		mat->Get(AI_MATKEY_COLOR_DIFFUSE, c);
 		fMeshData[i].colour = glm::vec4(c.r, c.g, c.b, 1.0f);
 		indexSize += m->mNumFaces * 3; // Always 3 indices for each face (triangle).
-		vertexSize += m->mNumVertices;        // 3 floats for each vertex, times two because we count vertices + normals
+		vertexSize += m->mNumVertices;
 
 		// Iterate through all bones used in this mesh. They may have been seen in another mesh already, which isn't handled yet.
 		fMeshData[i].bones.reset(new MeshBone[m->mNumBones]);
@@ -221,18 +233,18 @@ void BlenderModel::Init(const char *filename, float xRotateCorrection, bool norm
 	glm::mat4 meshmatrix[scene->mNumMeshes];
 	FindMeshTransformations(0, meshmatrix, glm::mat4(1), scene->mRootNode);
 
-	// Copy all data into one big buffer
-	VertexDataf *vertexData = new VertexDataf[vertexSize];
-	unsigned short *indexData = new unsigned short[indexSize];
-	int dataOffset = 0, indexOffset = 0;
-	int previousOffset = 0;
+	// Copy all vertex data into one big buffer and all index data into another buffer
+	VertexDataf vertexData[vertexSize];
+	unsigned short indexData[indexSize];
+	int vertexOffset = 0, indexOffset = 0;
+	int previousOffset = 0; // The index offset for the current mesh
 
 	// Skinning data. Allocate even if not using bones.
-	char *numWeights = new char[vertexSize];
-	memset(numWeights, 0, vertexSize);
-	glm::vec3 *weights = new glm::vec3[vertexSize];
-	float *joints = new float[vertexSize*3]; // Up to 4 joints per vertex, but only three are used.
-	memset(joints, 0, vertexSize*3*sizeof (float));
+	char numWeights[vertexSize];
+	memset(numWeights, 0, sizeof numWeights);
+	glm::vec3 weights[vertexSize];
+	float joints[vertexSize*3]; // Up to 4 joints per vertex, but only three are used.
+	memset(joints, 0, sizeof joints);
 
 	//**********************************************************************
 	// Traverse the meshes again, generating the vertex data
@@ -261,37 +273,43 @@ void BlenderModel::Init(const char *filename, float xRotateCorrection, bool norm
 			printf("\n");
 		}
 #endif
-		fMeshData[i].numFaces = m->mNumFaces;
+
+		// Copy faces, but only those that are proper triangles.
+		unsigned int numTriangles = 0; // The number of found triangles.
 		for (unsigned int face=0; face < m->mNumFaces; face++) {
-			ASSERT(m->mFaces[face].mNumIndices == 3); // Only allow triangles
+			if (m->mFaces[face].mNumIndices != 3)
+				continue; // Only allow triangles
+			// m->mFaces[face].mIndices is a local index into the current mesh. Value 0 will thus
+			// adress the first vertex in the current mesh. As all vertices are stored in the same buffer,
+			// an offset need to be added to get the correct index of the vertex.
 			indexData[indexOffset++] = m->mFaces[face].mIndices[0] + previousOffset;
 			indexData[indexOffset++] = m->mFaces[face].mIndices[1] + previousOffset;
 			indexData[indexOffset++] = m->mFaces[face].mIndices[2] + previousOffset;
+			numTriangles++;
 		}
+		fMeshData[i].numFaces = numTriangles;
+
+		// Copy all vertices
 		for (unsigned int v = 0; v < m->mNumVertices; v++) {
 			glm::vec4 v1(m->mVertices[v].x, m->mVertices[v].y, m->mVertices[v].z, 1);
 			glm::vec4 v2 = meshmatrix[i] * v1;
-#if 0
-			if (gVerbose) {
-				printf("from %6.3f %6.3f %6.3f %6.3f\n", v1.x, v1.y, v1.z, v1.w);
-				printf("to   %6.3f %6.3f %6.3f %6.3f\n", v2.x, v2.y, v2.z, v2.w);
-			}
-#endif
-			vertexData[dataOffset].SetVertex(glm::vec3(v2));
+			vertexData[vertexOffset].SetVertex(glm::vec3(v2));
 			glm::vec4 n1(m->mNormals[v].x, m->mNormals[v].y, m->mNormals[v].z, 1);
 			glm::vec4 n2 = meshmatrix[i] * glm::normalize(n1);
-			vertexData[dataOffset].SetNormal(glm::vec3(n2));
+			vertexData[vertexOffset].SetNormal(glm::vec3(n2));
 			if (m->mTextureCoords[0] != 0) {
-				vertexData[dataOffset].SetTexture(m->mTextureCoords[0][v].x, m->mTextureCoords[0][v].y);
+				vertexData[vertexOffset].SetTexture(m->mTextureCoords[0][v].x, m->mTextureCoords[0][v].y);
 			} else {
-				vertexData[dataOffset].SetTexture(0,0);
+				vertexData[vertexOffset].SetTexture(0,0);
 			}
-			vertexData[dataOffset].SetIntensity(255);
-			vertexData[dataOffset].SetAmbient(100);
-			dataOffset++;
+			vertexData[vertexOffset].SetIntensity(255);
+			vertexData[vertexOffset].SetAmbient(100);
+			vertexOffset++;
 		}
 
-		// Iterate through all bones used in this mesh, and copy weights to respective vertex.
+		// Every bone in Assimp data structures have a list of weights and vertex index.
+		// We want the weights, 0-3 of them, sorted on vertices instead.
+		// Iterate through all bones used in this mesh, and copy weights to respective vertex data.
 		for (unsigned j=0; j < m->mNumBones; j++) {
 			fMeshData[i].bones[j].offset *= glm::inverse(meshmatrix[i]);
 			aiBone *aib = m->mBones[j];
@@ -300,25 +318,29 @@ void BlenderModel::Init(const char *filename, float xRotateCorrection, bool norm
 				PrintMatrix(4, fMeshData[i].bones[j].offset);
 			}
 			for (unsigned k=0; k < aib->mNumWeights; k++) {
-				int v = aib->mWeights[k].mVertexId;
-				int w = numWeights[v+previousOffset]++;
+				int v = aib->mWeights[k].mVertexId + previousOffset; // Add the local vertex number in the current mesh to the offset to get the global number
+				int w = numWeights[v]++;
+				// Because AI_CONFIG_PP_LBW_MAX_WEIGHTS is maximized to 3, There can't be more than 3 weights for a vertex
+				// unless there is a bug in Assimp.
 				if (w >= 3)
 					ErrorDialog("Too many bone weights on vertice %d, bone %s, model %s", v, aib->mName.data, filename);
-				weights[v+previousOffset][w] = aib->mWeights[k].mWeight;
+				weights[v][w] = aib->mWeights[k].mWeight;
 				boneindexIT_t it = fBoneIndex.find(aib->mName.data);
 				if (it == fBoneIndex.end())
 					ErrorDialog("Mesh %d bone %s not found", i, aib->mName.data);
-				joints[(v+previousOffset)*3 + w] = it->second;
+				joints[v*3 + w] = it->second;
 			}
 		}
-		previousOffset = dataOffset;
+		previousOffset = vertexOffset;
 	}
+
+	// Now that the weights are sorted on vertices, it is possible to normalize them. The sum shall be 1.
 	for (int j=0; j < vertexSize; j++)
 		NormalizeWeights(weights[j], numWeights[j]);
-	ASSERT(dataOffset == vertexSize);
-	ASSERT(indexOffset == indexSize);
+	ASSERT(vertexOffset == vertexSize);
+	ASSERT(indexOffset <= indexSize);
 
-	// Allocated the vertex data in OpenGL. One buffer object is used, with the following layout:
+	// Allocated the vertex data in OpenGL. The buffer object is used with the following layout:
 	// 1. The usual vertex data, and array of type VertexDataf
 	// 2. Skin weights, array of glm::vec3. 3 floats for each vertex.
 	// 3. Bones index, 4 bytes for each vertex (only 3 used)
@@ -328,11 +350,11 @@ void BlenderModel::Init(const char *filename, float xRotateCorrection, bool norm
 	glGenBuffers(1, &fBufferId);
 	glBindBuffer(GL_ARRAY_BUFFER, fBufferId);
 	int bufferSize = AREA1;
-	if (this->fUsingBones) {
+	if (fUsingBones) {
 		// Also need space for weights and bones indices.
 		bufferSize += AREA2 + AREA3;
 	}
-	glBufferData(GL_ARRAY_BUFFER, bufferSize, 0, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, bufferSize, 0, GL_STATIC_DRAW); // Allocate the buffer, random content so far
 	// check data size in VBO is same as input array, if not return 0 and delete VBO
 	int tst = 0;
 	glGetBufferParameteriv(GL_ARRAY_BUFFER, GL_BUFFER_SIZE, &tst);
@@ -346,14 +368,11 @@ void BlenderModel::Init(const char *filename, float xRotateCorrection, bool norm
 		glBufferSubData(GL_ARRAY_BUFFER, AREA1, AREA2, weights);
 		glBufferSubData(GL_ARRAY_BUFFER, AREA1+AREA2, AREA3, joints);
 	}
-	delete []numWeights;
-	delete []weights;
-	delete []joints;
 
 	// Allocate the index data in OpenGL
 	glGenBuffers(1, &fIndexBufferId);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, fIndexBufferId);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexSize*sizeof indexData[0], indexData, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexSize*sizeof indexData[0], indexData, GL_STATIC_DRAW); // Allocate and copy
 	// check data size in VBO is same as input array, if not return 0 and delete VBO
 	bufferSize = 0;
 	glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_SIZE, &bufferSize);
@@ -373,8 +392,6 @@ void BlenderModel::Init(const char *filename, float xRotateCorrection, bool norm
 	checkError("BlenderModel::Init");
 	glBindVertexArray(0);
 
-	delete []vertexData;
-	delete []indexData;
 	if (gVerbose) {
 		printf("Mesh bones for '%s':\n", filename);
 		for (boneindexIT_t it = fBoneIndex.begin(); it != fBoneIndex.end(); it++) {
@@ -494,71 +511,70 @@ void BlenderModel::Init(const char *filename, float xRotateCorrection, bool norm
 	}
 }
 
-void BlenderModel::Draw(AnimationShader *shader, const glm::mat4 &modelMatrix, double animationStart, bool dead) {
+void BlenderModel::DrawAnimation(AnimationShader *shader, const glm::mat4 &modelMatrix, double animationStart, bool dead) {
 	glm::mat4 rot = glm::rotate(modelMatrix, fRotateXCorrection, glm::vec3(1, 0, 0));
 	if (!fUsingBones)
 		ErrorDialog("BlenderModel::Draw called for model without bones");
-	if (fUsingBones) {
-		double deathTransform = 0.0;
-		if (dead) {
-			deathTransform = (gCurrentFrameTime - animationStart)/3.0;
-			if (deathTransform > 1.0)
-				deathTransform = 1.0;
-			deathTransform = 1 - deathTransform;
-			deathTransform *= deathTransform; // Higher slope in beginning.
-			animationStart = gCurrentFrameTime; // disable the other animations
-		}
-		int a = 0; // Can only handle first animation
-		int numKeyFrames = fAnimations[a].numKeys;
-		double totalAnimationTime = fAnimations[a].times[numKeyFrames-1];
-		double delta = gCurrentFrameTime - animationStart; // Time since this animation started
-		double animationOffset = fmod(delta, totalAnimationTime); // Compute time offset into current animation.
-		// Find the key on the left side
-		int key = 0;
-		while (animationOffset > fAnimations[a].times[key+1])
-			key++;
-		double keyFrameOffset = animationOffset - fAnimations[a].times[key]; // Time offset after key
-		int keyNext = key+1;
-		if (keyNext >= numKeyFrames)
-			keyNext = numKeyFrames-1; // Safe guard, should not happen
-		// Find the time interval from this key frame to next
-		double keyFrameLength = fAnimations[a].times[keyNext] - fAnimations[a].times[key];
-		// 'w' is a value between 0 and 1, Depending on the distance between previous key frame and next.
-		double w = 1.0;
-		if (keyFrameLength > 0)
-			w = keyFrameOffset / keyFrameLength;
-		unsigned int numBonesActual = fBoneIndex.size();
-		glm::mat4 m[numBonesActual];
-		for (unsigned int i=0; i<numBonesActual; i++) {
-			m[i] = fAnimations[a].bones[i].frameMatrix[key] * (1-w) + fAnimations[a].bones[i].frameMatrix[keyNext] * w;
-			if (dead) {
-				// Move all bones toward 0 translation.
-				m[i][3][0] *= deathTransform;
-				m[i][3][1] *= deathTransform;
-				m[i][3][2] *= deathTransform;
-			}
-
-		}
-		shader->Bones(m, numBonesActual);
-		shader->Model(rot);
-#if 0
-		static double lastTime = 0.0;
-		if (gCurrentFrameTime != lastTime) {
-			printf("numKeyFrames %d totalAnimationTime %.2f delta %.2f animationOffset %.2f key %d keyFrameOffset %.2f keyFrameLength %.2f w %.2f\n",
-			       numKeyFrames, totalAnimationTime, delta, animationOffset, key, keyFrameOffset, keyFrameLength, w);
-#if 0
-			for (unsigned i=0; i<numBonesActual; i++) {
-				printf("Joint %d key %d offset time %5.3f final matrix:\n", i, key, offset);
-				PrintMatrix(1, m[i]);
-			}
-#endif
-			lastTime = gCurrentFrameTime;
-		}
-#endif
+	double deathTransform = 0.0;
+	if (dead) {
+		deathTransform = (gCurrentFrameTime - animationStart)/3.0;
+		if (deathTransform > 1.0)
+			deathTransform = 1.0;
+		deathTransform = 1 - deathTransform;
+		deathTransform *= deathTransform; // Higher slope in beginning.
+		animationStart = gCurrentFrameTime; // disable the other animations
 	}
+	int a = 0; // Can only handle first animation
+	int numKeyFrames = fAnimations[a].numKeys;
+	double totalAnimationTime = fAnimations[a].times[numKeyFrames-1];
+	double delta = gCurrentFrameTime - animationStart; // Time since this animation started
+	double animationOffset = fmod(delta, totalAnimationTime); // Compute time offset into current animation.
+	// Find the key on the left side
+	int key = 0;
+	while (animationOffset > fAnimations[a].times[key+1])
+		key++;
+	double keyFrameOffset = animationOffset - fAnimations[a].times[key]; // Time offset after key
+	int keyNext = key+1;
+	if (keyNext >= numKeyFrames)
+		keyNext = numKeyFrames-1; // Safe guard, should not happen
+	// Find the time interval from this key frame to next
+	double keyFrameLength = fAnimations[a].times[keyNext] - fAnimations[a].times[key];
+	// 'w' is a value between 0 and 1, Depending on the distance between previous key frame and next.
+	double w = 1.0;
+	if (keyFrameLength > 0)
+		w = keyFrameOffset / keyFrameLength;
+	unsigned int numBonesActual = fBoneIndex.size();
+	glm::mat4 m[numBonesActual];
+	for (unsigned int i=0; i<numBonesActual; i++) {
+		m[i] = fAnimations[a].bones[i].frameMatrix[key] * (1-w) + fAnimations[a].bones[i].frameMatrix[keyNext] * w;
+		if (dead) {
+			// Move all bones toward 0 translation.
+			m[i][3][0] *= deathTransform;
+			m[i][3][1] *= deathTransform;
+			m[i][3][2] *= deathTransform;
+		}
+	}
+	shader->Bones(m, numBonesActual);
+	shader->Model(rot);
+#if 0
+	static double lastTime = 0.0;
+	if (gCurrentFrameTime != lastTime) {
+		printf("numKeyFrames %d totalAnimationTime %.2f delta %.2f animationOffset %.2f key %d keyFrameOffset %.2f keyFrameLength %.2f w %.2f\n",
+			   numKeyFrames, totalAnimationTime, delta, animationOffset, key, keyFrameOffset, keyFrameLength, w);
+#if 0
+		for (unsigned i=0; i<numBonesActual; i++) {
+			printf("Joint %d key %d offset time %5.3f final matrix:\n", i, key, offset);
+			PrintMatrix(1, m[i]);
+		}
+#endif
+		lastTime = gCurrentFrameTime;
+	}
+#endif
+	// The AnimationShader is now prepared with input data, do the actual drawing.
 	this->DrawStatic();
 }
 
+#if 0
 void BlenderModel::DrawStatic(void) {
 	glBindVertexArray(fVao);
 	int faces = 0;
@@ -570,6 +586,20 @@ void BlenderModel::DrawStatic(void) {
 	gNumDraw++;
 	gDrawnQuads += faces*3;
 }
+#else
+void BlenderModel::DrawStatic(void) {
+	glBindVertexArray(fVao);
+	int indexOffset = 0;
+	for (unsigned int i=0; i<fNumMeshes; i++) {
+		// fShader->Color(fColor[i]);
+		glDrawElements(GL_TRIANGLES, fMeshData[i].numFaces*3, GL_UNSIGNED_SHORT, reinterpret_cast<void*>(indexOffset));
+		gDrawnQuads += fMeshData[i].numFaces*3;
+		gNumDraw++;
+		int n = fMeshData[i].numFaces * 3 * sizeof (unsigned short); // Always 3 indices for each face (triangle).
+		indexOffset += n;
+	}
+}
+#endif
 
 void BlenderModel::Align(glm::mat4 &mat) const {
 	mat = glm::rotate(mat, fRotateXCorrection, glm::vec3(1, 0, 0));
