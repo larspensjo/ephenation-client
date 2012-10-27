@@ -15,3 +15,5 @@ There is a page about the game progress at [Google+](https://plus.google.com/u/0
 and a blog about some of the OpenGL experiences [Ephenation OpenGL](http://ephenationopengl.blogspot.se/).
 
 ![Pict](https://lh5.googleusercontent.com/-osMriYp7jLg/UGcrFi1suUI/AAAAAAAAAUY/deSaaYmIsco/s650/Valley_2012-09-30.jpeg)
+
+Interested in joining the project? All talents are welcome, send mail to info@ephenation.net.
