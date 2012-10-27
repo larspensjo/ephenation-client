@@ -128,7 +128,11 @@ void Options::Init(const std::string &fileName) {
 	gOptions = *this; // Initialize with a copy
 }
 
-void Options::Save(void) const {
+void Options::Save(void) {
+	ASSERT(fFileName != "");
+	if (fPerformance != fNewPerformance)
+		this->UpdatePerformance(fNewPerformance);
+
 	ofstream optionsFile;
 	optionsFile.open(fFileName.c_str());
 	optionsFile << "# This file describes default options\n";
@@ -212,11 +216,6 @@ Options::Options(void) : fViewingDistance(50), fWindowWidth(1024), fWindowHeight
 }
 
 Options::~Options(void) {
-	if (fFileName != "") {
-		if (fPerformance != fNewPerformance)
-			this->UpdatePerformance(fNewPerformance);
-		this->Save();
-	}
 }
 
 void Options::UpdatePerformance(int perf) {

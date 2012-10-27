@@ -370,32 +370,33 @@ int main(int argc, char** argv) {
 
 	gCurrentFrameTime = 0.0;
 
-	string opt = "ephenation.ini";
+	string optionsFilename = "ephenation.ini";
+	string dataDir; // The directory where the client can save data
 #ifdef unix
 	const char *home = getenv("HOME");
 	// Save Linux Path
-	Options::sfSave.fSavePath = string(home) + "/.ephenation";
-	const char *ephenationPath = Options::sfSave.fSavePath.c_str();
+	dataDir = string(home) + "/.ephenation";
+	const char *ephenationPath = dataDir.c_str();
 	struct stat st;
 	if (stat(ephenationPath,&st) != 0) {
 		mkdir(ephenationPath, 0777);
 	}
 	if (home)
-		opt = Options::sfSave.fSavePath + "/" + opt;
+		optionsFilename = dataDir + "/" + optionsFilename;
 	else
-		opt = ".ephenation/ephenation.ini";
+		optionsFilename = ".ephenation/ephenation.ini"; // Fallback
 #endif
 #ifdef WIN32
 	TCHAR home[MAX_PATH];
 	HRESULT res = SHGetFolderPath(NULL, CSIDL_LOCAL_APPDATA, 0, 0, home);
 	if (res == S_OK) {
-		Options::sfSave.fSavePath = string(home) + "\\ephenation";
-		const char *ephenationPath = Options::sfSave.fSavePath.c_str();
+		dataDir = string(home) + "\\ephenation";
+		const char *ephenationPath = dataDir.c_str();
 		struct _stat st;
 		if (_stat(ephenationPath,&st) != 0) {
 			res = _mkdir(ephenationPath);
 		}
-		opt = Options::sfSave.fSavePath + "\\" + opt;
+		optionsFilename = dataDir + "\\" + optionsFilename; // Fallback
 	}
 #endif
 
@@ -405,8 +406,7 @@ int main(int argc, char** argv) {
 	int option_index = 0;
 
 	while(1) {
-		int c = getopt_long (argc, argv, "",
-		                     long_options, &option_index);
+		int c = getopt_long (argc, argv, "", long_options, &option_index);
 
 		/* Detect the end of the options. */
 		if (c == -1)
@@ -422,8 +422,8 @@ int main(int argc, char** argv) {
 	const char *cacheName = "/cache";
 #endif
 
-	char *cachePath = new char[strlen(Options::sfSave.fSavePath.c_str()) + strlen(cacheName) + strlen(host) + 2];
-	strcpy(cachePath, Options::sfSave.fSavePath.c_str());
+	char *cachePath = new char[strlen(dataDir.c_str()) + strlen(cacheName) + strlen(host) + 2];
+	strcpy(cachePath, dataDir.c_str());
 #ifdef WIN32
 	strcat(cachePath, "\\cache");
 	strcat(cachePath, host);
@@ -436,11 +436,12 @@ int main(int argc, char** argv) {
 
 	ChunkCache::fgChunkCache.SetCacheDir(cachePath);
 
-	//printf("Game Path: %s\n", Options::sfSave.fSavePath);
+	//printf("Game Path: %s\n", dataDir);
 
-	gOptions.Init(opt); // This one should come early, as it is used to initalize things.
+	gOptions.Init(optionsFilename); // This one should come early, as it is used to initalize things.
+	unsigned maxThreads = gOptions.fNumThreads;
 	if (sSingleThread) {
-		gOptions.fNumThreads = 1; // Override this number
+		maxThreads = 1; // Override this number
 		std::cout << "Limit to minimum number of threads" << std::endl;
 	}
 	ConnectToServer(host, port);
@@ -451,8 +452,8 @@ int main(int argc, char** argv) {
 		exit(1);
 
 	if (gDebugOpenGL)
-		printf("Number of threads: %d\n", gOptions.fNumThreads);
-	int numChunkProc = gOptions.fNumThreads - 1;
+		printf("Number of threads: %d\n", maxThreads);
+	int numChunkProc = maxThreads - 1;
 	if (numChunkProc <= 0)
 		numChunkProc = 1;
 	gChunkProcess.Init(numChunkProc);
@@ -533,6 +534,8 @@ int main(int argc, char** argv) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
 	glfwSwapBuffers();
 
+	// Last thing before starting the game, update the save copy of the options.
+	Options::sfSave = gOptions;
 	// double prevTime = 0.0;
 	while(glfwGetWindowParam(GLFW_OPENED)) {
 		static WorstTime tm(" Mainloop");
@@ -600,5 +603,6 @@ int main(int argc, char** argv) {
 	Options::sfSave.fWindowWidth = gViewport[2];
 	Options::sfSave.fWindowHeight = gViewport[3];
 	gMode.Set(GameMode::EXIT);
+	Options::sfSave.Save();
 	return 0;
 }

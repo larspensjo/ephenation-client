@@ -31,10 +31,6 @@ public:
 	// with no effect on the current game play, as they are not otherwise used.
 	static Options sfSave;
 
-	// The path to where the ini file is saved. It is not really saved itself, it is just
-	// kept here.
-	std::string fSavePath;
-
 	// These are parameters initialized from the ini file
 	std::string fEmail;
 	std::string fLicenseKey;
@@ -73,8 +69,8 @@ public:
 	bool ParseOneOption(const string &key, const string &arg);
 	Options(void);
 	~Options(void);
+	void Save(void); // Save the parsed data back to the file again
 private:
-	void Save(void) const; // Save the parsed data back to the file again
 	std::string fFileName;
 
 	// When the general performance is changed, other options may change as a result. Don't call
