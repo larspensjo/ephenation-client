@@ -31,6 +31,7 @@
 #include <stdio.h>
 #include <GL/glew.h>
 #include <map>
+#include <vector>
 #include <math.h>
 
 #include <glm/glm.hpp>
@@ -51,9 +52,9 @@ struct MeshBone {
 };
 
 struct BlenderModel::Mesh {
-	glm::vec4 colour;                  // The colour of this mesh
-	unsigned int numFaces;             // Number of faces used by this mesh
-	std::unique_ptr<MeshBone[]> bones; // All bones used by this mesh
+	glm::vec4 colour;            // The colour of this mesh
+	unsigned int numFaces;       // Number of faces used by this mesh
+	std::vector<MeshBone> bones; // All bones used by this mesh
 };
 
 // One bone in an animation contains the absolute location of all frames
@@ -228,7 +229,7 @@ void BlenderModel::Init(const char *filename, float xRotateCorrection, bool norm
 		vertexSize += m->mNumVertices;
 
 		// Find all animation bones in all meshes. They may have been seen in another mesh already.
-		fMeshData[i].bones.reset(new MeshBone[m->mNumBones]);
+		fMeshData[i].bones.resize(m->mNumBones);
 		for (unsigned int j=0; j < m->mNumBones; j++) {
 			aiBone *aib = m->mBones[j];
 			// Add the bone to the global list of bones if it isn't already there.
@@ -568,19 +569,36 @@ void BlenderModel::DrawAnimation(AnimationShader *shader, const glm::mat4 &model
 	double w = 1.0;
 	if (keyFrameLength > 0)
 		w = keyFrameOffset / keyFrameLength;
+	shader->Model(rot);
+
+	// The AnimationShader is now prepared with input data, do the actual drawing.
 	unsigned int numBonesActual = fBoneIndex.size();
 	glm::mat4 m[numBonesActual];
-	for (unsigned int i=0; i<numBonesActual; i++) {
-		m[i] = fAnimations[a].bones[i].frameMatrix[key] * (1-w) + fAnimations[a].bones[i].frameMatrix[keyNext] * w;
-		if (dead) {
-			// Move all bones toward 0 translation.
-			m[i][3][0] *= deathTransform;
-			m[i][3][1] *= deathTransform;
-			m[i][3][2] *= deathTransform;
+	glBindVertexArray(fVao);
+	int indexOffset = 0;
+	for (unsigned int i=0; i<fNumMeshes; i++) {
+		Mesh *mesh = &fMeshData[i];
+		if (mesh->numFaces == 0)
+			continue;
+		for (unsigned int i=0; i<numBonesActual; i++) {
+			m[i] = fAnimations[a].bones[i].frameMatrix[key] * (1-w) + fAnimations[a].bones[i].frameMatrix[keyNext] * w;
+			if (dead) {
+				// Move all bones toward 0 translation.
+				m[i][3][0] *= deathTransform;
+				m[i][3][1] *= deathTransform;
+				m[i][3][2] *= deathTransform;
+			}
 		}
+		shader->Bones(m, numBonesActual);
+
+		// if (i == 1)
+		glDrawElements(GL_TRIANGLES, mesh->numFaces*3, GL_UNSIGNED_SHORT, reinterpret_cast<void*>(indexOffset));
+		gDrawnQuads += mesh->numFaces*3;
+		gNumDraw++;
+		int n = mesh->numFaces * 3 * sizeof (unsigned short); // Always 3 indices for each face (triangle).
+		indexOffset += n;
 	}
-	shader->Bones(m, numBonesActual);
-	shader->Model(rot);
+
 #if 0
 	static double lastTime = 0.0;
 	if (gCurrentFrameTime != lastTime) {
@@ -595,12 +613,10 @@ void BlenderModel::DrawAnimation(AnimationShader *shader, const glm::mat4 &model
 		lastTime = gCurrentFrameTime;
 	}
 #endif
-	// The AnimationShader is now prepared with input data, do the actual drawing.
-	this->DrawStatic();
 }
 
-#if 0
 void BlenderModel::DrawStatic(void) {
+	// Draw all meshes in one go.
 	glBindVertexArray(fVao);
 	int faces = 0;
 	for (unsigned int i=0; i<fNumMeshes; i++) {
@@ -611,23 +627,6 @@ void BlenderModel::DrawStatic(void) {
 	gNumDraw++;
 	gDrawnQuads += faces*3;
 }
-#else
-void BlenderModel::DrawStatic(void) {
-	glBindVertexArray(fVao);
-	int indexOffset = 0;
-	for (unsigned int i=0; i<fNumMeshes; i++) {
-		// fShader->Color(fColor[i]);
-		Mesh *m = &fMeshData[i];
-		if (m->numFaces == 0)
-			continue;
-		glDrawElements(GL_TRIANGLES, m->numFaces*3, GL_UNSIGNED_SHORT, reinterpret_cast<void*>(indexOffset));
-		gDrawnQuads += m->numFaces*3;
-		gNumDraw++;
-		int n = m->numFaces * 3 * sizeof (unsigned short); // Always 3 indices for each face (triangle).
-		indexOffset += n;
-	}
-}
-#endif
 
 void BlenderModel::Align(glm::mat4 &mat) const {
 	mat = glm::rotate(mat, fRotateXCorrection, glm::vec3(1, 0, 0));
