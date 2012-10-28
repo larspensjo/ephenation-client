@@ -52,7 +52,7 @@ struct MeshBone {
 
 struct BlenderModel::Mesh {
 	glm::vec4 colour;                  // The colour of this mesh
-	unsigned int numFaces;             // Num ber of faces used by this mesh
+	unsigned int numFaces;             // Number of faces used by this mesh
 	std::unique_ptr<MeshBone[]> bones; // All bones used by this mesh
 };
 
@@ -71,7 +71,7 @@ struct BlenderModel::Animation {
 	double duration;                  // Number of ticks
 };
 
-BlenderModel gSwordModel1, gTuftOfGrass, gFrog, gMorran;
+BlenderModel gSwordModel1, gTuftOfGrass, gFrog, gMorran, gAlien;
 
 BlenderModel::BlenderModel() {
 	fBufferId = 0;
@@ -141,6 +141,23 @@ static aiNode *FindNode(aiNode *node, const char *name) {
 
 static glm::mat4 armature(1);
 
+// Print out the complete hierarchical node tree
+static void DumpNodeTree(int level, const aiNode *node) {
+	printf("%*sNode '%s', %d meshes ", level*4, "", node->mName.data, node->mNumMeshes);
+	if (node->mNumMeshes > 0) {
+		printf("(");
+		for (unsigned m = 0; m < node->mNumMeshes; m++)
+			printf("%d ", node->mMeshes[m]);
+		printf(")");
+	}
+	printf("\n");
+
+	// Recursively print children
+	for (unsigned int i=0; i < node->mNumChildren; i++) {
+		DumpNodeTree(level+1, node->mChildren[i]);
+	}
+}
+
 // Iterate through the node tree and compute all mesh relative matrices.
 void BlenderModel::FindMeshTransformations(int level, glm::mat4 *meshmatrix, const glm::mat4 &base, const aiNode *node) {
 	glm::mat4 delta;
@@ -188,7 +205,7 @@ void BlenderModel::Init(const char *filename, float xRotateCorrection, bool norm
 	// Number of vertices and number of indices
 	int vertexSize = 0, indexSize = 0;
 	if (gVerbose) {
-		printf("Scene: %s\n", scene->mRootNode->mName.data);
+		printf("\nScene: %s (%s)*******************\n", scene->mRootNode->mName.data, filename);
 		printf("%d materials, %d meshes, %d animations, %d textures\n", scene->mNumMaterials, scene->mNumMeshes, scene->mNumAnimations, scene->mNumTextures);
 	}
 
@@ -210,7 +227,7 @@ void BlenderModel::Init(const char *filename, float xRotateCorrection, bool norm
 		indexSize += m->mNumFaces * 3; // Always 3 indices for each face (triangle).
 		vertexSize += m->mNumVertices;
 
-		// Iterate through all bones used in this mesh. They may have been seen in another mesh already, which isn't handled yet.
+		// Find all animation bones in all meshes. They may have been seen in another mesh already.
 		fMeshData[i].bones.reset(new MeshBone[m->mNumBones]);
 		for (unsigned int j=0; j < m->mNumBones; j++) {
 			aiBone *aib = m->mBones[j];
@@ -307,14 +324,17 @@ void BlenderModel::Init(const char *filename, float xRotateCorrection, bool norm
 			vertexOffset++;
 		}
 
-		// Every bone in Assimp data structures have a list of weights and vertex index.
+		// Every animation bone in Assimp data structures have a list of weights and vertex index.
 		// We want the weights, 0-3 of them, sorted on vertices instead.
 		// Iterate through all bones used in this mesh, and copy weights to respective vertex data.
 		for (unsigned j=0; j < m->mNumBones; j++) {
 			fMeshData[i].bones[j].offset *= glm::inverse(meshmatrix[i]);
 			aiBone *aib = m->mBones[j];
+			boneindexIT_t it = fBoneIndex.find(aib->mName.data);
+			if (it == fBoneIndex.end())
+				ErrorDialog("Mesh %d bone %s not found", i, aib->mName.data);
 			if (gVerbose) {
-				printf("    Offset for mesh %d %s:\n", i, aib->mName.data);
+				printf("    Offset for mesh %d %s (%d) joint %d:\n", i, aib->mName.data, j, it->second);
 				PrintMatrix(4, fMeshData[i].bones[j].offset);
 			}
 			for (unsigned k=0; k < aib->mNumWeights; k++) {
@@ -325,9 +345,6 @@ void BlenderModel::Init(const char *filename, float xRotateCorrection, bool norm
 				if (w >= 3)
 					ErrorDialog("Too many bone weights on vertice %d, bone %s, model %s", v, aib->mName.data, filename);
 				weights[v][w] = aib->mWeights[k].mWeight;
-				boneindexIT_t it = fBoneIndex.find(aib->mName.data);
-				if (it == fBoneIndex.end())
-					ErrorDialog("Mesh %d bone %s not found", i, aib->mName.data);
 				joints[v*3 + w] = it->second;
 			}
 		}
@@ -405,6 +422,8 @@ void BlenderModel::Init(const char *filename, float xRotateCorrection, bool norm
 	if (numMeshBones > 0 && scene->mNumAnimations == 0)
 		ErrorDialog("BlenderModel::Init %s: Bones but no animations", filename);
 	if (scene->mNumAnimations > 0) {
+		if (numMeshBones == 0)
+			ErrorDialog("BlenderModel::Init %s: No mesh bones", filename);
 		if (gVerbose)
 			printf("Parsing %d animations\n", scene->mNumAnimations);
 	}
@@ -429,6 +448,8 @@ void BlenderModel::Init(const char *filename, float xRotateCorrection, bool norm
 		unsigned numChannels = aia->mNumChannels;
 		if (numChannels == 0)
 			ErrorDialog("BlenderModel::Init no animation channels for %s, %s", aia->mName.data, filename);
+		if (numChannels != numMeshBones)
+			ErrorDialog("BlenderModel::Init %s animation %d: Can only handle when all bones are used (%d out of %d)", filename, i, numChannels, numMeshBones);
 		unsigned int numKeys = aia->mChannels[0]->mNumPositionKeys;
 		struct channel {
 			glm::mat4 mat; // Relative transformation matrix to parent
@@ -439,6 +460,7 @@ void BlenderModel::Init(const char *filename, float xRotateCorrection, bool norm
 		};
 		channel channels[numChannels]; // This is the list of all bones in this animation
 		// Check that there are the same number of keys for all channels, and allocate transformation matrices
+		bool foundOneBone = false;
 		for (unsigned int j=0; j < numChannels; j++) {
 			aiNodeAnim *ain = aia->mChannels[j];
 			if (ain->mNumPositionKeys != numKeys || ain->mNumRotationKeys != numKeys || ain->mNumScalingKeys != numKeys)
@@ -452,10 +474,13 @@ void BlenderModel::Init(const char *filename, float xRotateCorrection, bool norm
 				continue;
 				// ErrorDialog("BlenderModel::Init: Unknown bone %s in animation %s for %s", ain->mNodeName.data, fAnimations[i].name.c_str(), filename);
 			}
+			foundOneBone = true;
 			unsigned int joint = it->second;
 			fAnimations[i].bones[joint].frameMatrix.reset(new glm::mat4[numKeys]);
 			channels[j].joint = joint;
 		}
+		if (!foundOneBone)
+			ErrorDialog("BlenderModel::Init %s animation %d no bones used", filename, i);
 
 		// Find the parent for each animation node
 		for (unsigned j=0; j<numChannels; j++) {
@@ -474,7 +499,7 @@ void BlenderModel::Init(const char *filename, float xRotateCorrection, bool norm
 
 		fAnimations[i].times.reset(new double[numKeys]);
 		fAnimations[i].numKeys = numKeys;
-		// For some reason, the first key frame doesn't always start at time 0
+		// The first key frame doesn't always start at time 0
 		double firstKeyTime = channels[0].node->mPositionKeys[0].mTime;
 		for (unsigned k=0; k < numKeys; k++) {
 			fAnimations[i].times[k] = channels[0].node->mPositionKeys[k].mTime - firstKeyTime;
@@ -499,12 +524,12 @@ void BlenderModel::Init(const char *filename, float xRotateCorrection, bool norm
 					mat = node->mat * mat;
 				}
 				mat = armature * mat;
-				if (gVerbose) {
-					printf("     Key %d animation bone %s absolute\n", k, channels[j].node->mNodeName.data);
-					PrintMatrix(10, mat);
-				}
 				if (joint != UNUSEDCHANNEL) {
 					fAnimations[i].bones[joint].frameMatrix[k] = mat * fMeshData[i].bones[joint].offset;
+					if (gVerbose) {
+						printf("     Key %d animation bone %s channel %d absolute\n", k, channels[j].node->mNodeName.data, j);
+						PrintMatrix(10, mat);
+					}
 				}
 			}
 		}
@@ -563,7 +588,7 @@ void BlenderModel::DrawAnimation(AnimationShader *shader, const glm::mat4 &model
 			   numKeyFrames, totalAnimationTime, delta, animationOffset, key, keyFrameOffset, keyFrameLength, w);
 #if 0
 		for (unsigned i=0; i<numBonesActual; i++) {
-			printf("Joint %d key %d offset time %5.3f final matrix:\n", i, key, offset);
+			printf("Joint %d key %d final matrix:\n", i, key);
 			PrintMatrix(1, m[i]);
 		}
 #endif
@@ -592,10 +617,13 @@ void BlenderModel::DrawStatic(void) {
 	int indexOffset = 0;
 	for (unsigned int i=0; i<fNumMeshes; i++) {
 		// fShader->Color(fColor[i]);
-		glDrawElements(GL_TRIANGLES, fMeshData[i].numFaces*3, GL_UNSIGNED_SHORT, reinterpret_cast<void*>(indexOffset));
-		gDrawnQuads += fMeshData[i].numFaces*3;
+		Mesh *m = &fMeshData[i];
+		if (m->numFaces == 0)
+			continue;
+		glDrawElements(GL_TRIANGLES, m->numFaces*3, GL_UNSIGNED_SHORT, reinterpret_cast<void*>(indexOffset));
+		gDrawnQuads += m->numFaces*3;
 		gNumDraw++;
-		int n = fMeshData[i].numFaces * 3 * sizeof (unsigned short); // Always 3 indices for each face (triangle).
+		int n = m->numFaces * 3 * sizeof (unsigned short); // Always 3 indices for each face (triangle).
 		indexOffset += n;
 	}
 }
@@ -610,4 +638,5 @@ void BlenderModel::InitModels(void) {
 	gMorran.Init("models/morran.dae", 0.0f, false);
 	gTuftOfGrass.Init("models/tuft.obj", 0.0f, true);
 	gSwordModel1.Init("models/BasicSword.obj", -90.0f, true);
+	gAlien.Init("models/alien.dae", 0.0f, false);
 }
