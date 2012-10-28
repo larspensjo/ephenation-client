@@ -140,13 +140,21 @@ void Monsters::RenderMonsters(AnimationShader *shader, bool forShadows, bool sel
 			glm::vec3 pos = fMonsters[i].GetPosition();
 			float size = RandomMonster::Size(level);
 			glm::mat4 model = glm::translate(glm::mat4(1.0f), pos);
-			BlenderModel *bm;
-			if (level & 1) {
+			BlenderModel *bm = 0;
+			// Choose a monster model, depending on the level.
+			switch(level % 3) {
+			case 2:
+				bm = &gAlien;
+				glBindTexture(GL_TEXTURE_2D, GameTexture::RedScalesId);
+				break;
+			case 1:
 				bm = &gFrog; // Get some variation
 				glBindTexture(GL_TEXTURE_2D, GameTexture::GreenColor);
-			} else {
+				break;
+			case 0:
 				bm = &gMorran;
 				glBindTexture(GL_TEXTURE_2D, GameTexture::Morran);
+				break;
 			}
 			model = glm::rotate(model, -fMonsters[i].fDir, glm::vec3(0.0f, 1.0f, 0.0f));
 			model = glm::translate(model, glm::vec3(-size/3, 0.0f, size/3));
