@@ -33,10 +33,10 @@
 #include <map>
 #include <vector>
 #include <math.h>
-
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/quaternion.hpp>
+
 #include "BlenderModel.h"
 #include "shaders/ChunkShader.h"
 #include "shaders/AnimationShader.h"
@@ -227,6 +227,8 @@ void BlenderModel::Init(const char *filename, float xRotateCorrection, bool norm
 		fMeshData[i].colour = glm::vec4(c.r, c.g, c.b, 1.0f);
 		indexSize += m->mNumFaces * 3; // Always 3 indices for each face (triangle).
 		vertexSize += m->mNumVertices;
+		if (gVerbose)
+			printf("\tMesh %d ('%s'): %d faces, %d vertices\n", i, m->mName.data, m->mNumFaces, m->mNumVertices);
 
 		// Find all animation bones in all meshes. They may have been seen in another mesh already.
 		fMeshData[i].bones.resize(m->mNumBones);
@@ -250,6 +252,8 @@ void BlenderModel::Init(const char *filename, float xRotateCorrection, bool norm
 	// Find all mesh transformations and update the bones matrix dependency on parents
 	glm::mat4 meshmatrix[scene->mNumMeshes];
 	FindMeshTransformations(0, meshmatrix, glm::mat4(1), scene->mRootNode);
+	if (gVerbose)
+		DumpNodeTree(0, scene->mRootNode);
 
 	// Copy all vertex data into one big buffer and all index data into another buffer
 	VertexDataf vertexData[vertexSize];
@@ -526,7 +530,7 @@ void BlenderModel::Init(const char *filename, float xRotateCorrection, bool norm
 				}
 				mat = armature * mat;
 				if (joint != UNUSEDCHANNEL) {
-					fAnimations[i].bones[joint].frameMatrix[k] = mat * fMeshData[i].bones[joint].offset;
+					fAnimations[i].bones[joint].frameMatrix[k] = mat;
 					if (gVerbose) {
 						printf("     Key %d animation bone %s channel %d absolute\n", k, channels[j].node->mNodeName.data, j);
 						PrintMatrix(10, mat);
@@ -580,13 +584,16 @@ void BlenderModel::DrawAnimation(AnimationShader *shader, const glm::mat4 &model
 		Mesh *mesh = &fMeshData[i];
 		if (mesh->numFaces == 0)
 			continue;
-		for (unsigned int i=0; i<numBonesActual; i++) {
-			m[i] = fAnimations[a].bones[i].frameMatrix[key] * (1-w) + fAnimations[a].bones[i].frameMatrix[keyNext] * w;
+		unsigned numBonesInMesh = mesh->bones.size();
+		for (unsigned int i=0; i<numBonesInMesh; i++) {
+			unsigned joint = mesh->bones[i].jointIndex;
+			m[joint] = fAnimations[a].bones[joint].frameMatrix[key] * (1-w) + fAnimations[a].bones[joint].frameMatrix[keyNext] * w;
+			m[joint] *= mesh->bones[i].offset;
 			if (dead) {
 				// Move all bones toward 0 translation.
-				m[i][3][0] *= deathTransform;
-				m[i][3][1] *= deathTransform;
-				m[i][3][2] *= deathTransform;
+				m[joint][3][0] *= deathTransform;
+				m[joint][3][1] *= deathTransform;
+				m[joint][3][2] *= deathTransform;
 			}
 		}
 		shader->Bones(m, numBonesActual);

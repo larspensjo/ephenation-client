@@ -67,4 +67,4 @@ private:
 	std::map<std::string, unsigned int> fBoneIndex;
 };
 
-extern BlenderModel gSwordModel1, gTuftOfGrass, gFrog, gMorran;
+extern BlenderModel gSwordModel1, gTuftOfGrass, gFrog, gMorran, gAlien;
