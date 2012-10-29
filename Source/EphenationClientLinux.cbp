@@ -92,6 +92,8 @@
 		<Unit filename="TSExec.h" />
 		<Unit filename="Teleport.cpp" />
 		<Unit filename="Teleport.h" />
+		<Unit filename="animationmodels.cpp" />
+		<Unit filename="animationmodels.h" />
 		<Unit filename="assert.cpp" />
 		<Unit filename="assert.h" />
 		<Unit filename="billboard.cpp" />

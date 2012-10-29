@@ -63,7 +63,7 @@ glm::vec3 player::GetOffsetToChunk() const {
 	return glm::vec3(float(dx)/BLOCK_COORD_RES, float(dz)/BLOCK_COORD_RES, -float(dy)/BLOCK_COORD_RES);
 }
 
-void player::Draw(AnimationShader *animShader, StageOneShader *staticShader, bool torch) {
+void player::Draw(AnimationShader *animShader, StageOneShader *staticShader, bool torch, const AnimationModels *animationModels) {
 	ChunkCoord cc;
 	this->GetChunkCoord(&cc);
 	float dx = (this->x - (signed long long)cc.x*BLOCK_COORD_RES * CHUNK_SIZE)/(float)BLOCK_COORD_RES;
@@ -82,7 +82,7 @@ void player::Draw(AnimationShader *animShader, StageOneShader *staticShader, boo
 	double tm = gCurrentFrameTime-0.22; // Offset in time where model is not in a stride.
 	if (fMoving)
 		tm = 0.0;
-	gFrog.DrawAnimation(animShader, model, tm);
+	gFrog.DrawAnimation(animShader, model, tm, false, 0);
 #if 0
 	if (torch)
 		gLightSources.Add(dx, dz, -dy, 12.0f);

@@ -23,6 +23,7 @@
 #include <glm/glm.hpp>
 
 class ShadowMapShader;
+class AnimationModels;
 
 class ShadowRender {
 public:
@@ -34,7 +35,7 @@ public:
 
 	// Render a shadow map, give the specified world volume (specified in blocks).
 	// Blocks horisontal from -width/2 to +width/2 will be included, and -height/2 to +height/2.
-	void Render(int width, int height);
+	void Render(int width, int height, const AnimationModels *animationModels);
 
 	// Bind the texture so the result can be used.
 	void BindTexture(void) const;

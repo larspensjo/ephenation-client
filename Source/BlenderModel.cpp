@@ -541,7 +541,7 @@ void BlenderModel::Init(const char *filename, float xRotateCorrection, bool norm
 	}
 }
 
-void BlenderModel::DrawAnimation(AnimationShader *shader, const glm::mat4 &modelMatrix, double animationStart, bool dead) {
+void BlenderModel::DrawAnimation(AnimationShader *shader, const glm::mat4 &modelMatrix, double animationStart, bool dead, const GLuint *textures) {
 	glm::mat4 rot = glm::rotate(modelMatrix, fRotateXCorrection, glm::vec3(1, 0, 0));
 	if (!fUsingBones)
 		ErrorDialog("BlenderModel::Draw called for model without bones");
@@ -575,7 +575,6 @@ void BlenderModel::DrawAnimation(AnimationShader *shader, const glm::mat4 &model
 		w = keyFrameOffset / keyFrameLength;
 	shader->Model(rot);
 
-	// The AnimationShader is now prepared with input data, do the actual drawing.
 	unsigned int numBonesActual = fBoneIndex.size();
 	glm::mat4 m[numBonesActual];
 	glBindVertexArray(fVao);
@@ -583,14 +582,14 @@ void BlenderModel::DrawAnimation(AnimationShader *shader, const glm::mat4 &model
 	for (unsigned int i=0; i<fNumMeshes; i++) {
 		Mesh *mesh = &fMeshData[i];
 		if (mesh->numFaces == 0)
-			continue;
+			continue; // Not normally the case, but can happen for funny models.
 		unsigned numBonesInMesh = mesh->bones.size();
 		for (unsigned int i=0; i<numBonesInMesh; i++) {
 			unsigned joint = mesh->bones[i].jointIndex;
 			m[joint] = fAnimations[a].bones[joint].frameMatrix[key] * (1-w) + fAnimations[a].bones[joint].frameMatrix[keyNext] * w;
 			m[joint] *= mesh->bones[i].offset;
 			if (dead) {
-				// Move all bones toward 0 translation.
+				// Work-around for dying animation.
 				m[joint][3][0] *= deathTransform;
 				m[joint][3][1] *= deathTransform;
 				m[joint][3][2] *= deathTransform;
@@ -598,7 +597,9 @@ void BlenderModel::DrawAnimation(AnimationShader *shader, const glm::mat4 &model
 		}
 		shader->Bones(m, numBonesActual);
 
-		// if (i == 1)
+		if (textures != 0)
+			glBindTexture(GL_TEXTURE_2D, textures[i]);
+		// The AnimationShader is now prepared with input data, do the actual drawing.
 		glDrawElements(GL_TRIANGLES, mesh->numFaces*3, GL_UNSIGNED_SHORT, reinterpret_cast<void*>(indexOffset));
 		gDrawnQuads += mesh->numFaces*3;
 		gNumDraw++;

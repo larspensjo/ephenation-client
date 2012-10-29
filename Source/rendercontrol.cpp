@@ -52,6 +52,8 @@
 #include "worsttime.h"
 #include "msgwindow.h"
 #include "ui/mainuserinterface.h"
+#include "animationmodels.h"
+
 
 #define NELEM(x) (sizeof x / sizeof x[0])
 
@@ -99,6 +101,7 @@ void RenderControl::Init() {
 	fAddLocalFog->Init();
 	fAddSSAO.reset(new AddSSAO);
 	fAddSSAO->Init();
+	fAnimationModels.Init();
 
 	if (gOptions.fDynamicShadows) {
 		fShadowRender.reset(new ShadowRender(DYNAMIC_SHADOW_MAP_SIZE,DYNAMIC_SHADOW_MAP_SIZE));
@@ -300,7 +303,7 @@ void RenderControl::drawMonsters(void) {
 	GLenum windowBuffOpaque[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
 	glDrawBuffers(3, windowBuffOpaque); // Nothing is transparent here, do not produce any blending data on the 4:th render target.
 	fAnimation->EnableProgram();
-	gMonsters.RenderMonsters(fAnimation, false, false);
+	gMonsters.RenderMonsters(fAnimation, false, false, &fAnimationModels);
 	fAnimation->DisableProgram();
 	tm.Stop();
 }
@@ -309,7 +312,7 @@ void RenderControl::drawPlayer(void) {
 	GLenum windowBuffOpaque[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
 	glDrawBuffers(3, windowBuffOpaque); // Nothing is transparent here, do not produce any blending data on the 4:th render target.
 	fAnimation->EnableProgram();
-	gPlayer.Draw(fAnimation, fShader, false);
+	gPlayer.Draw(fAnimation, fShader, false, &fAnimationModels);
 	fAnimation->DisableProgram();
 }
 
@@ -483,7 +486,7 @@ void RenderControl::ComputeShadowMap() {
 	if (gOptions.fDynamicShadows && fShadowRender) {
 		static TimeMeasure tm("ShdwDyn");
 		tm.Start();
-		fShadowRender->Render(352,160);
+		fShadowRender->Render(352, 160, &fAnimationModels);
 		tm.Stop();
 	}
 	if (gOptions.fStaticShadows && fShadowRender) {
@@ -495,7 +498,7 @@ void RenderControl::ComputeShadowMap() {
 		gPlayer.GetChunkCoord(&curr);
 		if (curr.x != prev.x || curr.y != prev.y || curr.z != prev.z || gCurrentFrameTime-1.0 > prevTime) {
 			// Only update the shadowmap when the player move to another chunk, or after a time out
-			fShadowRender->Render(224,160);
+			fShadowRender->Render(224, 160, &fAnimationModels);
 			prev = curr;
 			prevTime = gCurrentFrameTime;
 		}
@@ -566,7 +569,7 @@ void RenderControl::drawMap(int mapWidth) {
 	glClearColor(0, 0, 0, 0);
 	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 	fShader->EnableProgram();
-	map->Create(fAnimation, fShader, _angleHor, mapWidth);
+	map->Create(fAnimation, fShader, _angleHor, mapWidth, &fAnimationModels);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 	glBindTexture(GL_TEXTURE_2D, fDiffuseTexture); // Override
 	map->Draw(0.6f);

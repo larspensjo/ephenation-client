@@ -44,7 +44,7 @@ Map::Map() {
 Map::~Map() {
 }
 
-void Map::Create(AnimationShader *anim, StageOneShader *shader, float rotate, int width) {
+void Map::Create(AnimationShader *anim, StageOneShader *shader, float rotate, int width, const AnimationModels *animationModels) {
 	gViewMatrix = glm::mat4(1);
 	gViewMatrix = glm::rotate(gViewMatrix, -90.0f, glm::vec3(1.0f, 0.0f, 0.0f)); // Looking downwards
 	gViewMatrix = glm::rotate(gViewMatrix, rotate, glm::vec3(0.0f, 1.0f, 0.0f));
@@ -61,8 +61,8 @@ void Map::Create(AnimationShader *anim, StageOneShader *shader, float rotate, in
 	DrawLandscapeTopDown(shader, width, 64, false, DL_NoTransparent);
 	DrawLandscapeTopDown(shader, width, 64, false, DL_OnlyTransparent);
 	anim->EnableProgram();
-	gPlayer.Draw(anim, shader, false);
-	gMonsters.RenderMonsters(anim, false, false);
+	gPlayer.Draw(anim, shader, false, animationModels);
+	gMonsters.RenderMonsters(anim, false, false, animationModels);
 	gOtherPlayers.RenderPlayers(false);
 
 	gProjectionMatrix = saveProj;

@@ -127,7 +127,7 @@ Object *Monsters::Find(unsigned long id) {
 	return 0;
 }
 
-void Monsters::RenderMonsters(AnimationShader *shader, bool forShadows, bool selectionMode) const {
+void Monsters::RenderMonsters(AnimationShader *shader, bool forShadows, bool selectionMode, const AnimationModels *animationModels) const {
 	// The monsters triangles are drawn CW, which is not the default for culling
 	float sun = 1.0f;
 	if (gPlayer.BelowGround()) {
@@ -160,11 +160,11 @@ void Monsters::RenderMonsters(AnimationShader *shader, bool forShadows, bool sel
 			model = glm::translate(model, glm::vec3(-size/3, 0.0f, size/3));
 
 			if (fMonsters[i].IsDead())
-				bm->DrawAnimation(shader, model, fMonsters[i].lastTimeMoved, true);
+				bm->DrawAnimation(shader, model, fMonsters[i].lastTimeMoved, true, 0);
 			else if (fMonsters[i].lastTimeMoved + 0.2 > gCurrentFrameTime)
-				bm->DrawAnimation(shader, model, 0.0);
+				bm->DrawAnimation(shader, model, 0.0, false, 0);
 			else
-				bm->DrawAnimation(shader, model, gCurrentFrameTime-0.22); // Offset in time where model is not in a stride.
+				bm->DrawAnimation(shader, model, gCurrentFrameTime-0.22, false, 0); // Offset in time where model is not in a stride.
 
 			if (forShadows)
 				continue;

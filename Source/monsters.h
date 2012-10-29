@@ -25,6 +25,7 @@
 
 class RandomMonster;
 class AnimationShader;
+class AnimationModels;
 
 class Monsters {
 private:
@@ -57,7 +58,7 @@ public:
 	Monsters();
 	void SetMonster(unsigned long id, unsigned char hp, unsigned int level, signed long long x, signed long long y, signed long long z, float dir);
 	Object *Find(unsigned long id); // Get a pointer to a monster, or 0 if not found.
-	void RenderMonsters(AnimationShader *, bool forShadows, bool selectionMode) const; // draw all near monsters
+	void RenderMonsters(AnimationShader *, bool forShadows, bool selectionMode, const AnimationModels *animationModels) const; // draw all near monsters
 	void RenderMinimap(const glm::mat4 &model, HealthBar *hb) const; // draw all near monsters
 	OneMonster *GetSelection(unsigned char R, unsigned char G, unsigned char B);
 	void Cleanup(void); // Throw away "old" monsters

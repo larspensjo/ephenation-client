@@ -18,6 +18,7 @@
 #pragma once
 
 class DrawTexture;
+class AnimationModels;
 
 class Map {
 public:
@@ -25,7 +26,7 @@ public:
 	virtual ~Map();
 
 	// Create a map
-	void Create(AnimationShader *anim, StageOneShader *shader, float rotate, int width);
+	void Create(AnimationShader *anim, StageOneShader *shader, float rotate, int width, const AnimationModels *animationModels);
 
 	void Draw(float alpha) const;
 private:

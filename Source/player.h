@@ -24,6 +24,7 @@
 struct ChunkCoord;
 class StageOneShader;
 class AnimationShader;
+class AnimationModels;
 
 class player : public Object {
 public:
@@ -55,7 +56,7 @@ public:
 	void GetChunkCoord(ChunkCoord*) const;
 	glm::vec3 GetOffsetToChunk(void) const; // This gives the head of the player
 	bool InFight(void) const;
-	void Draw(AnimationShader *animShader, StageOneShader *staticShader, bool torch); // Draw self
+	void Draw(AnimationShader *animShader, StageOneShader *staticShader, bool torch, const AnimationModels *animationModels); // Draw self
 
 	player() {
 		fHp = 1.0f; fPreviousHp = 1.0f; fMana = 1.0f; fWeaponType = 0; fWeaponLevel = 0; fArmorType = 0; fArmorLevel = 0;

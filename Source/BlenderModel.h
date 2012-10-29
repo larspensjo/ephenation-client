@@ -15,6 +15,12 @@
 // along with Ephenation.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+//
+// This class implements a loader for animated models defined in Blender, as well as a Draw() function.
+// The loading is based on Assimp, which actually allows for many different
+// file formats. As of now, the Collada format has been used (.dae).
+//
+
 #pragma once
 
 #include <string>
@@ -40,7 +46,8 @@ public:
 	// normalize: Normalize the size to 1.0. Doesn't work for animations.
 	void Init(const char *filename, float xRotateCorrection, bool normalize);
 
-	void DrawAnimation(AnimationShader *shader, const glm::mat4 &modelMatrix, double animationStart = 0.0, bool dead = false);
+	// 'textures' has to be an array of textures, one for each mesh.
+	void DrawAnimation(AnimationShader *shader, const glm::mat4 &modelMatrix, double animationStart, bool dead, const GLuint *textures);
 
 	// Use the model, with any shader.
 	void DrawStatic(void);

@@ -32,6 +32,8 @@
 #undef hypot
 #include <glm/glm.hpp>
 
+#include "animationmodels.h"
+
 class ChunkShader;
 class AddDynamicShadow;
 class ShadowRender;
@@ -77,6 +79,7 @@ private:
 	std::unique_ptr<SkyBox> fSkyBox;
 	ChunkShader *fShader;
 	AnimationShader *fAnimation;
+	AnimationModels fAnimationModels;
 
 	void ComputeShadowMap(void);
 	float ComputeAverageLuminance(void);

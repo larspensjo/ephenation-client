@@ -81,7 +81,7 @@ void ShadowRender::Init() {
 	fShader = ShadowMapShader::Make();
 }
 
-void ShadowRender::Render(int width, int height) {
+void ShadowRender::Render(int width, int height, const AnimationModels *animationModels) {
 	glm::mat4 R1 = glm::rotate(glm::mat4(1), -115.0f, glm::vec3(1.0f, 0.0f, 0.0f));       // Rotate world upwards, in direction of sun
 	glm::mat4 R2 = glm::rotate(glm::mat4(1), -45.0f, glm::vec3(0.0f, 0.0f, 1.0f));        // Rotate world upwards, in direction of sun
 	glm::mat4 T;
@@ -111,8 +111,8 @@ void ShadowRender::Render(int width, int height) {
 		AnimationShader *anim = AnimationShader::Make();
 		anim->EnableProgram();
 		anim->Shadowmap(true, fProjViewMatrix);
-		gMonsters.RenderMonsters(anim, true, false);
-		gPlayer.Draw(anim, fShader.get(), false);
+		gMonsters.RenderMonsters(anim, true, false, animationModels);
+		gPlayer.Draw(anim, fShader.get(), false, animationModels);
 		anim->EnableProgram(); // This is lost in the player drawing for weapons.
 		anim->Shadowmap(false, fProjViewMatrix);
 	}
