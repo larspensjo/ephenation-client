@@ -39,6 +39,7 @@
 #include "BlenderModel.h"
 #include "shaders/AnimationShader.h"
 #include "Options.h"
+#include "animationmodels.h"
 
 using std::string;
 using std::stringstream;
@@ -140,31 +141,28 @@ void Monsters::RenderMonsters(AnimationShader *shader, bool forShadows, bool sel
 			glm::vec3 pos = fMonsters[i].GetPosition();
 			float size = RandomMonster::Size(level);
 			glm::mat4 model = glm::translate(glm::mat4(1.0f), pos);
-			BlenderModel *bm = 0;
+			AnimationModels::AnimationModelId anim;
 			// Choose a monster model, depending on the level.
 			switch(level % 3) {
 			case 2:
-				bm = &gAlien;
-				glBindTexture(GL_TEXTURE_2D, GameTexture::RedScalesId);
+				anim = AnimationModels::AnimationModelId::Alien;
 				break;
 			case 1:
-				bm = &gFrog; // Get some variation
-				glBindTexture(GL_TEXTURE_2D, GameTexture::GreenColor);
+				anim = AnimationModels::AnimationModelId::Frog;
 				break;
 			case 0:
-				bm = &gMorran;
-				glBindTexture(GL_TEXTURE_2D, GameTexture::Morran);
+				anim = AnimationModels::AnimationModelId::Morran;
 				break;
 			}
 			model = glm::rotate(model, -fMonsters[i].fDir, glm::vec3(0.0f, 1.0f, 0.0f));
 			model = glm::translate(model, glm::vec3(-size/3, 0.0f, size/3));
 
 			if (fMonsters[i].IsDead())
-				bm->DrawAnimation(shader, model, fMonsters[i].lastTimeMoved, true, 0);
+				animationModels->Draw(anim, model, fMonsters[i].lastTimeMoved, true);
 			else if (fMonsters[i].lastTimeMoved + 0.2 > gCurrentFrameTime)
-				bm->DrawAnimation(shader, model, 0.0, false, 0);
+				animationModels->Draw(anim, model, 0.0, false);
 			else
-				bm->DrawAnimation(shader, model, gCurrentFrameTime-0.22, false, 0); // Offset in time where model is not in a stride.
+				animationModels->Draw(anim, model, gCurrentFrameTime-0.22, false); // Offset in time where model is not in a stride.
 
 			if (forShadows)
 				continue;

@@ -64,3 +64,6 @@ extern const glm::vec2 gPoissonDisk[64];
 
 // Load bitmaps to be used for the GUI.
 extern GLuint LoadBitmapForGui(shared_ptr<Image>);
+
+// Load bitmaps to be used for animated models.
+extern GLuint LoadBitmapForModels(shared_ptr<Image>);

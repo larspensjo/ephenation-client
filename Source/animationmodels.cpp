@@ -19,6 +19,7 @@
 #include "animationmodels.h"
 #include "textures.h"
 #include "shaders/AnimationShader.h"
+#include "imageloader.h"
 
 void AnimationModels::Init() {
 	for (unsigned i=0; i < LAST; i++) {
@@ -34,17 +35,31 @@ void AnimationModels::Init() {
 	fModels.at(Frog)->textures.push_back(GameTexture::BlueColor);
 
 	fModels.at(Morran)->model->Init("models/morran.dae", 0.0f, false);
-	fModels.at(Alien)->textures.push_back(GameTexture::Morran);
+	fModels.at(Morran)->textures.push_back(GameTexture::Morran);
 
 	fModels.at(Alien)->model->Init("models/alien.dae", 0.0f, false);
-	fModels.at(Alien)->textures.push_back(GameTexture::GreenColor);
-	fModels.at(Alien)->textures.push_back(GameTexture::RedScalesId);
-	fModels.at(Alien)->textures.push_back(GameTexture::Fur1Id);
-	fModels.at(Alien)->textures.push_back(GameTexture::BlueColor);
+	fModels.at(Alien)->textures.push_back(GameTexture::GreenColor); // Unused mesh
+	fModels.at(Alien)->textures.push_back(this->LoadTexture("alien_body.bmp"));   // Body
+	fModels.at(Alien)->textures.push_back(this->LoadTexture("alien_eyes.bmp"));   // Eyes
+	fModels.at(Alien)->textures.push_back(this->LoadTexture("alien_teeth.bmp"));  // Teeth
+	fModels.at(Alien)->textures.push_back(this->LoadTexture("alien_spikes.bmp")); // Spikes
 
 	fShader = AnimationShader::Make();
 }
 
-void AnimationModels::Draw(AnimationModelId id, const glm::mat4 &modelMatrix, double animationStart, bool dead) {
+void AnimationModels::Draw(AnimationModelId id, const glm::mat4 &modelMatrix, double animationStart, bool dead) const {
 	fModels[id]->model->DrawAnimation(fShader, modelMatrix, animationStart, dead, &fModels[id]->textures[0]);
+}
+
+AnimationModels::~AnimationModels() {
+	// All local textures have to be deallocated
+	glDeleteTextures(fLocalTextures.size(), &fLocalTextures[0]);
+}
+
+GLuint AnimationModels::LoadTexture(const string &file) {
+	string path = "models/" + file;
+	auto bmp = loadBMP(path.c_str());
+	GLuint texture = LoadBitmapForModels(bmp);
+	fLocalTextures.push_back(texture);
+	return texture;
 }

@@ -517,9 +517,8 @@ int main(int argc, char** argv) {
 	gPlayer.loginOk = true;
 	gUniformBuffer.Init();
 	gDrawFont.Init("textures/georgia12"); // Must be done before gGameDialog.
-	gGameDialog.init();
-
 	GameTexture::Init();
+	gGameDialog.init();
 	ChunkShader *shader = ChunkShader::Make();
 	Tree::InitStatic();
 	gLantern.Init(shader);

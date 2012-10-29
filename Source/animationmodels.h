@@ -23,9 +23,12 @@
 
 #include <vector>
 #include <memory>
+#include <string>
 #include <glm/glm.hpp>
 
 #include "BlenderModel.h"
+
+using std::string;
 
 class AnimationShader;
 
@@ -37,14 +40,18 @@ public:
 		LAST // This one must always come last
 	};
 
-	void Draw(AnimationModelId id, const glm::mat4 &modelMatrix, double animationStart, bool dead);
+	void Draw(AnimationModelId id, const glm::mat4 &modelMatrix, double animationStart, bool dead) const;
+	~AnimationModels();
 private:
-
 	struct Data { // TODO: Shouldn't it be enough with a forward declaration of this struct?
 		std::unique_ptr<BlenderModel> model;
 		std::vector<GLuint> textures; // The textures to use for each mesh
 	};
 	std::vector<std::unique_ptr<Data> > fModels;
+	std::vector<GLuint> fLocalTextures; // This is textures allocated locally for animations only
 
 	AnimationShader *fShader; // Singleton, do not destroy
+
+	// Load a local texture.
+	GLuint LoadTexture(const string &);
 };

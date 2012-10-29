@@ -303,6 +303,7 @@ void GameTexture::Init(void) {
 	Teleport = BlockTypeTotextureId[BT_Teleport];
 	TuftOfGrass = BlockTypeTotextureId[BT_Tuft];
 	Flowers = BlockTypeTotextureId[BT_Flowers];
+	Snow = BlockTypeTotextureId[BT_Snow];
 
 	// Now load special textures, not represented by a block type
 	GrassTextureId = loadTexture(loadBMP("textures/grass.bmp"), TF_SRGB);
@@ -435,6 +436,14 @@ void GameTexture::Init(void) {
 // Load bitmaps to be used for the GUI.
 GLuint LoadBitmapForGui(shared_ptr<Image> img) {
 	GLuint ret = loadTexture(img, TF_NOMIPMAP|TF_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	return ret;
+}
+
+// Load bitmaps to be used for the GUI.
+GLuint LoadBitmapForModels(shared_ptr<Image> img) {
+	GLuint ret = loadTexture(img, TF_SRGB);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	return ret;
