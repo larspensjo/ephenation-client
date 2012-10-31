@@ -270,7 +270,7 @@ void GameTexture::Init(void) {
 			GLuint id = loadTexture(loadBMP(gameTextures[i].fileName, boolAlpha), gameTextures[i].flag);
 			gameTextures[i].id = id;
 			BlockTypeTotextureId[gameTextures[i].blType] = id;
-		} else switch (gameTextures[i].blType) {
+		} else switch (gameTextures[i].blType) { // Some textures are created dynamically, not loaded from file
 			case BT_Lamp1:
 				gameTextures[i].id = loadTexture(ColorImage(127, 127, 0, 64), TF_NOMIPMAP);
 				BlockTypeTotextureId[gameTextures[i].blType] = gameTextures[i].id;
@@ -298,6 +298,7 @@ void GameTexture::Init(void) {
 			}
 	}
 
+	// Some of the standard blocks have textures that are used dynamically
 	Coin = BlockTypeTotextureId[BT_Treasure];
 	Quest = BlockTypeTotextureId[BT_Quest];
 	Teleport = BlockTypeTotextureId[BT_Teleport];

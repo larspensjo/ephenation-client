@@ -19,11 +19,13 @@
 #include <stdio.h>
 
 #include "RocketSystemInterface.h"
+#include "../primitives.h"
 
 bool RocketSystemInterface::LogMessage(Rocket::Core::Log::Type error_type, const Rocket::Core::String& message)
 {
+
    // Discard LT_INFO information, we don't really need it for now
-	if (Rocket::Core::Log::LT_INFO == error_type)
+	if (Rocket::Core::Log::LT_INFO == error_type && !gDebugOpenGL)
       return true;
 
    std::string type;

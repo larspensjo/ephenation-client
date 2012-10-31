@@ -31,6 +31,15 @@ static const GLchar *vertexShaderSource[] = {
 	"const float VERTEXSCALING="  STR(VERTEXSCALING) ";" // The is the scaling factor used for vertices
 	"const float NORMALSCALING="  STR(NORMALSCALING) ";" // The is the scaling factor used for vertices
 	"const float TEXTURESCALING="  STR(TEXTURESCALING) ";" // The is the scaling factor used for vertices
+
+	// Take an 8-bit signed number and convert it to a texture bitmap offset
+	"float ConvertIntToTexture(int n) {"
+	"	if (n < 128)"
+	"		return float(n)/TEXTURESCALING;"
+	"	else"
+	"		return float(n-256)/TEXTURESCALING;"
+	"}"
+
 	"uniform mat4 modelMatrix;\n",
 	// This contains both a offset and a multiplier to be used for the bitmap. It enables the use
 	// of atlas bitmaps.
@@ -44,10 +53,9 @@ static const GLchar *vertexShaderSource[] = {
 	"out vec3 position;\n",
 	"void main(void)\n",
 	"{\n",
-	"	int t1 = int(vertex[3]);" // Extract the texture data
-	"	vec2 tex = vec2(t1&0xFF, t1>>8);"
 	"	vec4 vertexScaled = vec4(vec3(vertex) / VERTEXSCALING, 1);"
-	"	vec2 textureScaled = tex / TEXTURESCALING;"
+	"	int t1 = int(vertex[3]);" // Extract the texture data
+	"	vec2 textureScaled = vec2(ConvertIntToTexture(t1&0xFF), ConvertIntToTexture(t1>>8));"
 	"	int intens2 = int(normal[3]);" // Bit 0 to 3 is sun intensity, 4 to 7 is ambient light
 	"	if (intens2 < 0) intens2 += 256;"
 	"   float textMult = textOffsMulti.z;\n",

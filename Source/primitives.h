@@ -39,6 +39,17 @@ union PickingData {
 #define NORMALSCALING 127
 #define TEXTURESCALING 100
 
+//
+// This structure defines vertex data used for the first phase of the deferred shading. A voxel based system
+// use a lot of data, so it is important to pack it well. The current implementation uses only 20 bytes,
+// which includes data for:
+// * Vertex coordinate
+// * Normal
+// * Texture coordiate
+// * Light intensity
+// * Ambient light
+// Specifically, the vertex coordinate can be packed efficiently as it is not the world absolute coordinate. It is the coordinate
+// relative to the chunk that the player is in.
 struct VertexDataf {
 private:
 	static float fract(float f) { return f; }

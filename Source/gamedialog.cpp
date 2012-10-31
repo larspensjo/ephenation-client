@@ -191,8 +191,6 @@ chunk *gameDialog::FindSelectedSurface(int x, int y, ChunkOffsetCoord *coc, int 
 
 	if (surfaceDir)
 		*surfaceDir = coding.bitmap.facing;
-
-	checkError("gameDialog::FindSelectedSurface");
 	return cp;
 }
 
@@ -786,7 +784,7 @@ void gameDialog::HandleKeyPress(int key) {
 void gameDialog::HandleKeyRelease(int key) {
 	if (fCurrentRocketContextInput) {
 		if (key != 0)
-			fCurrentRocketContextInput->ProcessKeyUp(RocketGui::KeyMap(key), 0);
+			fCurrentRocketContextInput->ProcessKeyUp(RocketGui::KeyMap(key), rocketKeyModifiers);
 		return;
 	}
 
