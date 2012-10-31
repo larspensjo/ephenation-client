@@ -125,6 +125,8 @@ static int height(unsigned char cube[][2][2]) {
 		return 4 - countEmptyUp;
 	if (countEmptyUp == 0)
 		return countEmptyDown - 4;
+	if ((countEmptyUp == 3 && countEmptyDown == 1) || (countEmptyUp == 1 && countEmptyDown == 3))
+		return 0;
 	return countEmptyUp - countEmptyDown;
 }
 
@@ -152,7 +154,7 @@ static glm::vec3 GetDelta(int x, int y, int z, bool addNoise, const chunk *neigh
 	glm::vec3 ret(0.0f);
 
 	// This scales how big the delta can be.
-	const float FACT = 1.0f / 3.0f / 3.0f;
+	const float FACT = 0.125f;
 
 	// When analyzing a vertex, the 8 surrounding vertices have to be considered. Copy data into
 	// 'cube', to make it easy to apply the same algorithm every time.
@@ -258,13 +260,18 @@ static void MergeNormals(std::vector<TriangleSurfacef> &b) {
 }
 
 // Given the verices for a triangle, compute the normals.
-static void ComputeNormals(TriangleSurfacef &tri1, TriangleSurfacef &tri2) {
-	tri1.v[0].SetNormal(glm::normalize(glm::cross(tri1.v[1].GetVertex() - tri1.v[0].GetVertex(), tri1.v[2].GetVertex() - tri1.v[0].GetVertex())));
-	tri1.v[1].SetNormal(tri1.v[0].GetNormal());
-	tri1.v[2].SetNormal(tri1.v[0].GetNormal());
-	tri2.v[0].SetNormal(glm::normalize(glm::cross(tri2.v[1].GetVertex() - tri2.v[0].GetVertex(), tri2.v[2].GetVertex() - tri2.v[0].GetVertex())));
-	tri2.v[2].SetNormal(tri2.v[0].GetNormal());
-	tri2.v[1].SetNormal(tri2.v[0].GetNormal());
+// Return true if successful, or false if there is no normal.
+static bool ComputeNormals(TriangleSurfacef &tri) {
+	glm::vec3 v1 = tri.v[1].GetVertex() - tri.v[0].GetVertex(), v2 = tri.v[2].GetVertex() - tri.v[0].GetVertex();
+	glm::vec3 cross = glm::cross(v1, v2);
+	if (cross == glm::vec3(0,0,0)) {
+		return false;
+	}
+	glm::vec3 norm = glm::normalize(cross);
+	tri.v[0].SetNormal(norm);
+	tri.v[1].SetNormal(norm);
+	tri.v[2].SetNormal(norm);
+	return true;
 }
 
 // In picking mode, the normals are used to find what surface was selected.
@@ -453,7 +460,8 @@ void ChunkObject::FindTriangles(const chunk *cp, bool pickingMode, int pdx, int 
 					}
 
 					if (!pickingMode) {
-						ComputeNormals(tri1, tri2);
+						ComputeNormals(tri1);
+						ComputeNormals(tri2);
 						unsigned char ambient = (unsigned char)(255 * cp->ComputeAmbientLight(x-1, y, z) + 0.5f);
 						tri1.v[0].SetAmbient(ambient); tri1.v[1].SetAmbient(ambient); tri1.v[2].SetAmbient(ambient);
 						tri2.v[0].SetAmbient(ambient); tri2.v[1].SetAmbient(ambient); tri2.v[2].SetAmbient(ambient);
@@ -496,7 +504,8 @@ void ChunkObject::FindTriangles(const chunk *cp, bool pickingMode, int pdx, int 
 					}
 
 					if (!pickingMode) {
-						ComputeNormals(tri1, tri2);
+						ComputeNormals(tri1);
+						ComputeNormals(tri2);
 						unsigned char ambient = (unsigned char)(255 * cp->ComputeAmbientLight(x, y-1, z) + 0.5f);
 						tri1.v[0].SetAmbient(ambient); tri1.v[1].SetAmbient(ambient); tri1.v[2].SetAmbient(ambient);
 						tri2.v[0].SetAmbient(ambient); tri2.v[1].SetAmbient(ambient); tri2.v[2].SetAmbient(ambient);
@@ -539,7 +548,8 @@ void ChunkObject::FindTriangles(const chunk *cp, bool pickingMode, int pdx, int 
 					}
 
 					if (!pickingMode) {
-						ComputeNormals(tri1, tri2);
+						ComputeNormals(tri1);
+						ComputeNormals(tri2);
 						unsigned char ambient = (unsigned char)(255 * cp->ComputeAmbientLight(x, y, z-1) + 0.5f);
 						tri1.v[0].SetAmbient(ambient); tri1.v[1].SetAmbient(ambient); tri1.v[2].SetAmbient(ambient);
 						tri2.v[0].SetAmbient(ambient); tri2.v[1].SetAmbient(ambient); tri2.v[2].SetAmbient(ambient);
@@ -577,7 +587,8 @@ void ChunkObject::FindTriangles(const chunk *cp, bool pickingMode, int pdx, int 
 					}
 
 					if (!pickingMode) {
-						ComputeNormals(tri1, tri2);
+						ComputeNormals(tri1);
+						ComputeNormals(tri2);
 						unsigned char ambient = (unsigned char)(255 * cp->ComputeAmbientLight(x+1, y, z) + 0.5f);
 						tri1.v[0].SetAmbient(ambient); tri1.v[1].SetAmbient(ambient); tri1.v[2].SetAmbient(ambient);
 						tri2.v[0].SetAmbient(ambient); tri2.v[1].SetAmbient(ambient); tri2.v[2].SetAmbient(ambient);
@@ -620,7 +631,8 @@ void ChunkObject::FindTriangles(const chunk *cp, bool pickingMode, int pdx, int 
 					}
 
 					if (!pickingMode) {
-						ComputeNormals(tri1, tri2);
+						ComputeNormals(tri1);
+						ComputeNormals(tri2);
 						unsigned char ambient = (unsigned char)(255 * cp->ComputeAmbientLight(x, y+1, z) + 0.5f);
 						tri1.v[0].SetAmbient(ambient); tri1.v[1].SetAmbient(ambient); tri1.v[2].SetAmbient(ambient);
 						tri2.v[0].SetAmbient(ambient); tri2.v[1].SetAmbient(ambient); tri2.v[2].SetAmbient(ambient);
@@ -668,7 +680,8 @@ void ChunkObject::FindTriangles(const chunk *cp, bool pickingMode, int pdx, int 
 					}
 
 					if (!pickingMode) {
-						ComputeNormals(tri1, tri2);
+						ComputeNormals(tri1);
+						ComputeNormals(tri2);
 						unsigned char ambient = (unsigned char)(255 * cp->ComputeAmbientLight(x, y, z+1) + 0.5f);
 						tri1.v[0].SetAmbient(ambient); tri1.v[1].SetAmbient(ambient); tri1.v[2].SetAmbient(ambient);
 						tri2.v[0].SetAmbient(ambient); tri2.v[1].SetAmbient(ambient); tri2.v[2].SetAmbient(ambient);
