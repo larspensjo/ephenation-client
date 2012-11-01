@@ -451,15 +451,16 @@ static void handleCharacter(int character, int action) {
 	gGameDialog.HandleCharacter(character, action);
 }
 
+static int rocketKeyModifiers = 0;
+
 void gameDialog::HandleCharacter(int key, int action) {
 	if (fCurrentRocketContextInput) {
-		if (action == GLFW_PRESS)
+		if (action == GLFW_PRESS && (rocketKeyModifiers & (Rocket::Core::Input::KM_CTRL | Rocket::Core::Input::KM_ALT)) == 0) {
 			fCurrentRocketContextInput->ProcessTextInput(key);
+		}
 		return;
 	}
 }
-
-static int rocketKeyModifiers = 0;
 
 static void handleKeypress(int key, int action) {
 	int modifier = 0;

@@ -125,8 +125,12 @@ static void InitialiseKeymap(void)
 	key_identifier_map['\\'] = Rocket::Core::Input::KI_OEM_5;
 	key_identifier_map[']'] = Rocket::Core::Input::KI_OEM_6;
 	key_identifier_map['`'] = Rocket::Core::Input::KI_OEM_3;
+	// Map lowercase to libRocket characters. Not sure if this is really needed.
 	for (int i='a'; i<='z'; i++)
 		key_identifier_map[i] = Rocket::Core::Input::KeyIdentifier(Rocket::Core::Input::KI_A + i - 'a');
+	// Map upper to libRocket characters.
+	for (int i='A'; i<='Z'; i++)
+		key_identifier_map[i] = Rocket::Core::Input::KeyIdentifier(Rocket::Core::Input::KI_A + i - 'A');
 }
 
 Rocket::Core::Input::KeyIdentifier RocketGui::KeyMap(int key) {
