@@ -1,6 +1,6 @@
 input.checkbox {
 	icon-decorator: image;
-	icon-image: decorators.bmp 408px 61px 436px 89px;
+	icon-image: brass_theme_1a.bmp 101px 267px 144px 310px;
 
 	width: 27px;
 	height: 24px;
@@ -8,51 +8,52 @@ input.checkbox {
 
 input.checkbox:hover {
 	icon-decorator: image;
-	icon-image: decorators.bmp 438px 61px 466px 89px;
+	icon-image: brass_theme_1a.bmp 101px 267px 144px 310px;
 }
 
 input.checkbox:active {
 	icon-decorator: image;
-	icon-image: decorators.bmp 468px 61px 496px 89px;
+	icon-image: brass_theme_1a.bmp 148px 267px 191px 310px;
 }
 
 input.checkbox:checked {
 	icon-decorator: image;
-	icon-image: decorators.bmp 408px 91px 436px 119px;
+	icon-image: brass_theme_1a.bmp 101px 171px 144px 213px;
 }
 
 input.checkbox:hover:checked {
 	icon-decorator: image;
-	icon-image: decorators.bmp 438px 91px 466px 119px;
+	icon-image: brass_theme_1a.bmp 148px 171px 191px 213px;
 }
 
 input.checkbox:active:checked {
 	icon-decorator: image;
-	icon-image: decorators.bmp 468px 91px 496px 119px;
+	icon-image: brass_theme_1a.bmp 148px 267px 191px 310px;
 }
 
 input.submit,
 button {
-	padding-left: 20px;
-	padding-right: 20px;
+	padding-left: 55px;
+	padding-right: 60px;
+	padding-top: 25px;
 	icon-background-decorator: tiled-horizontal;
-	icon-background-left-image: decorators.bmp 250px 4px 257px 41px;
-	icon-background-center-image: decorators.bmp stretch 257px 4px 395px 41px;
-	icon-background-right-image: decorators.bmp 395px 4px 402px 41px;
+	icon-background-left-image: brass_theme_1a.bmp 195px 108px 225px 167px;
+	icon-background-center-image: brass_theme_1a.bmp stretch 226px 108px 340px 167px;
+	icon-background-right-image: brass_theme_1a.bmp 340px 108px 371px 167px;
 }
 
 input.submit:hover,
 button:hover {
-	icon-background-left-image: decorators.bmp 250px 49px 257px 86px;
-	icon-background-center-image: decorators.bmp stretch 257px 49px 395px 86px;
-	icon-background-right-image: decorators.bmp 395px 49px 402px 86px;
+	icon-background-left-image: brass_theme_1a.bmp 195px 172px 225px 231px;
+	icon-background-center-image: brass_theme_1a.bmp stretch 226px 172px 340px 231px;
+	icon-background-right-image: brass_theme_1a.bmp 340px 172px 371px 231px;
 }
 
 input.submit:active,
 button:active {
-	icon-background-left-image: decorators.bmp 250px 94px 257px 131px;
-	icon-background-center-image: decorators.bmp stretch 257px 94px 395px 131px;
-	icon-background-right-image: decorators.bmp 395px 94px 402px 131px;
+	icon-background-left-image: brass_theme_1a.bmp 195px 300px 225px 359px;
+	icon-background-center-image: brass_theme_1a.bmp stretch 226px 300px 340px 359px;
+	icon-background-right-image: brass_theme_1a.bmp 340px 300px 371px 359px;
 }
 
 scrollbarvertical
@@ -65,10 +66,8 @@ scrollbarvertical
 
 scrollbarvertical slidertrack
 {
-	background-decorator: tiled-vertical;
-	background-top-image: decorators.bmp 70px 199px 97px 201px;
-	background-center-image: decorators.bmp stretch 70px 201px 97px 202px;
-	background-bottom-image: decorators.bmp 70px 203px 97px 204px;
+	icon-decorator: image;
+	icon-image: brass_theme_1a.bmp 522px 80px 565px 271px;
 }
 
 scrollbarvertical sliderbar
@@ -78,23 +77,9 @@ scrollbarvertical sliderbar
 	min-height: 46px;
 
 	background-decorator: tiled-vertical;
-	background-top-image: decorators.bmp 56px 152px 79px 175px;
-	background-center-image: decorators.bmp stretch 56px 175px 79px 175px;
-	background-bottom-image: decorators.bmp 56px 176px 79px 198px;
-}
-
-scrollbarvertical sliderbar:hover
-{
-	background-top-image-s: 80px 103px;
-	background-center-image-s: 80px 103px;
-	background-bottom-image-s: 80px 103px;
-}
-
-scrollbarvertical sliderbar:active
-{
-	background-top-image-s: 104px 127px;
-	background-center-image-s: 104px 127px;
-	background-bottom-image-s: 104px 127px;
+	background-top-image: brass_theme_1a.bmp 432px 224px 463px 228px;
+	background-center-image: brass_theme_1a.bmp stretch 432px 229px 463px 254px;
+	background-bottom-image: brass_theme_1a.bmp 432px 255px 463px 259px;
 }
 
 scrollbarvertical sliderarrowdec
@@ -103,19 +88,7 @@ scrollbarvertical sliderarrowdec
 	height: 24px;
 
 	icon-decorator: image;
-	icon-image: decorators.bmp 0px 152px 27px 176px;
-}
-
-scrollbarvertical sliderarrowdec:hover,
-scrollbarvertical sliderarrowinc:hover
-{
-	icon-image-t: 177px 201px;
-}
-
-scrollbarvertical sliderarrowdec:active,
-scrollbarvertical sliderarrowinc:active
-{
-	icon-image-t: 202px 226px;
+	icon-image: brass_theme_1a.bmp 432px 81px 463px 133px;
 }
 
 scrollbarvertical sliderarrowinc
@@ -124,7 +97,20 @@ scrollbarvertical sliderarrowinc
 	height: 24px;
 
 	icon-decorator: image;
-	icon-image: decorators.bmp 28px 152px 55px 176px;
+	icon-image: brass_theme_1a.bmp 432px 157px 463px 210px;
+}
+
+scrollbarvertical sliderarrowdec:hover,
+scrollbarvertical sliderarrowdec:active
+{
+	icon-image: brass_theme_1a.bmp 480px 81px 511px 133px;
+}
+
+scrollbarvertical sliderarrowinc:active,
+scrollbarvertical sliderarrowinc:hover
+{
+	icon-decorator: image;
+	icon-image: brass_theme_1a.bmp 480px 157px 511px 210px;
 }
 
 /* Specify the dimensions of the select element. */
@@ -142,8 +128,10 @@ select selectvalue
 	height: 28px;
 	padding: 9px 10px 0px 10px;
 
-	background-decorator: image;
-	background-image: decorators.bmp 162px 192px 307px 229px;
+	icon-background-decorator: tiled-horizontal;
+	icon-background-left-image: brass_theme_1a.bmp 296px 456px 307px 506px;
+	icon-background-center-image: brass_theme_1a.bmp stretch 308px 456px 311px 506px;
+	icon-background-right-image: brass_theme_1a.bmp 312px 456px 325px 506px;
 }
 
 /* Animate the value field when it is hovered. */
@@ -155,43 +143,32 @@ select selectvalue:hover
 /* Fix the size of the select arrow decorate the element. */
 select selectarrow
 {
-	width: 30px;
-	height: 37px;
+	width: 22px;
+	height: 29px;
+	margin-top: 5px;
 
 	icon-decorator: image;
-	icon-image: decorators.bmp 307px 192px 337px 229px;
-}
-
-/* Animate the arrow when hovered. */
-select selectarrow:hover
-{
-	icon-image-t: 230px 267px;
-}
-
-/* Animate the arrow when the button is pressed or the box is visible. */
-select selectarrow:active,
-select selectarrow:checked,
-{
-	icon-image-t: 268px 305px;
+	icon-image: brass_theme_1a.bmp 530px 384px 554px 412px;
 }
 
 /* Fix the width of the select box and fiddle with the margins to get it in exactly the right place. */
 select selectbox
 {
 	margin-left: 1px;
-	margin-top: -7px;
+	margin-top: -2px;
 	width: 162px;
 	padding: 1px 4px 4px 4px;
 
 	background-decorator: tiled-box;
-	background-top-left-image: decorators.bmp 281px 275px 292px 284px;
-	background-top-right-image: decorators.bmp 294px 275px 305px 284px;
-	background-top-image: decorators.bmp stretch 292px 275px 293px 284px;
-	background-bottom-left-image: decorators.bmp 281px 285px 292px 296px;
-	background-bottom-right-image: decorators.bmp 294px 285px 305px 296px;
-	background-bottom-image: decorators.bmp stretch 292px 285px 293px 296px;
-	background-left-image: decorators.bmp stretch 281px 283px 292px 284px;
-	background-center-image: decorators.bmp stretch 292px 283px 293px 284px;
+	background-top-left-image: brass_theme_1a.bmp 295px 424px 306px 435px;
+	background-top-right-image: brass_theme_1a.bmp 307px 424px 318px 435px;
+	background-top-image: brass_theme_1a.bmp stretch 306px 424px 307px 435px;
+	background-bottom-left-image: brass_theme_1a.bmp 295px 437px 306px 449px;
+	background-bottom-right-image: brass_theme_1a.bmp 307px 437px 318px 449px;
+	background-bottom-image: brass_theme_1a.bmp stretch 306px 437px 307px 449px;
+	background-left-image: brass_theme_1a.bmp stretch 295px 435px 306px 436px;
+	background-right-image: brass_theme_1a.bmp stretch 307px 435px 318px 436px;
+	background-center-image: brass_theme_1a.bmp stretch 306px 435px 307px 436px;
 }
 
 /* Sizes the option element to take up the available width in the select box. */
@@ -230,28 +207,29 @@ tabset tabs
 /* Force each tab to only take up constant width across the tabs element. */
 tabset tab
 {
-	width: 100px;
+	width: 120px;
 	font-size: 36;
-	max-height:40;
 	padding-left: 20px;
 	padding-right: 20px;
+	max-height: 40px;
+	z-index: 1;
 	/* Use a button cut-off at the bottom */
 	icon-background-decorator: tiled-horizontal;
-	icon-background-left-image: decorators.bmp 250px 4px 257px 33px;
-	icon-background-center-image: decorators.bmp stretch 257px 4px 395px 33px;
-	icon-background-right-image: decorators.bmp 395px 4px 402px 33px;
+	icon-background-left-image: brass_theme_1a.bmp 164px 519px 190px 567px;
+	icon-background-center-image: brass_theme_1a.bmp stretch 191px 519px 198px 567px;
+	icon-background-right-image: brass_theme_1a.bmp 199px 519px 232px 567px;
 }
 
 tabset tab:hover {
-	icon-background-left-image: decorators.bmp 250px 49px 257px 78px;
-	icon-background-center-image: decorators.bmp stretch 257px 49px 395px 78px;
-	icon-background-right-image: decorators.bmp 395px 49px 402px 78px;
+	icon-background-left-image: brass_theme_1a.bmp 246px 519px 272px 567px;
+	icon-background-center-image: brass_theme_1a.bmp stretch 273px 519px 279px 567px;
+	icon-background-right-image: brass_theme_1a.bmp 280px 519px 311px 567px;
 }
 
 tabset tab:selected {
-	icon-background-left-image: decorators.bmp 250px 94px 257px 123px;
-	icon-background-center-image: decorators.bmp stretch 257px 94px 395px 123px;
-	icon-background-right-image: decorators.bmp 395px 94px 402px 123px;
+	icon-background-left-image: brass_theme_1a.bmp 80px 519px 107px 567px;
+	icon-background-center-image: brass_theme_1a.bmp stretch 108px 519px 114px 567px;
+	icon-background-right-image: brass_theme_1a.bmp 115px 519px 148px 567px;
 }
 
 /* Display the panel container as a block element 180 pixels high; it will
@@ -266,5 +244,17 @@ tabset panels
 tabset panels panel
 {
 	width: 100%;
-	height: 58%;
+	height: 70%;
+	margin-top: -8px;
+	margin-left: -6px;
+	background-decorator: tiled-box;
+	background-top-left-image: brass_theme_1a.bmp 80px 80px 95px 95px;
+	background-top-right-image: brass_theme_1a.bmp 376px 80px 391px 95px;
+	background-top-image: brass_theme_1a.bmp stretch 137px 80px 140px 94px;
+	background-bottom-left-image: brass_theme_1a.bmp 80px 376px 95px 391px;
+	background-bottom-right-image: brass_theme_1a.bmp 376px 376px 391px 391px;
+	background-bottom-image: brass_theme_1a.bmp stretch 137px 376px 140px 391px;
+	background-left-image: brass_theme_1a.bmp stretch 376px 127px 391px 128px;
+	background-right-image: brass_theme_1a.bmp stretch 376px 127px 391px 128px;
+	background-center-image: brass_theme_1a.bmp stretch 306px 435px 307px 436px;
 }

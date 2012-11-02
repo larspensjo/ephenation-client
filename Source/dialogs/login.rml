@@ -1,0 +1,27 @@
+<!--The is the login dialog.-->
+
+<rml>
+<head>
+	<title>login.rml</title>
+	<link type="text/rcss" href="ephenation.rcss"/>
+	<link type="text/rcss" href="popup.rcss"/>
+	<style>
+	</style>
+</head>
+<body id="body">
+	<div class="messagedialog">
+		<form onsubmit="login">
+			<div class="header" id="header">
+				Ephenation login
+			</div>
+			<div class="menulist">
+				<input class="inputarea" type=text id="license">License key</input>
+				<input class="inputarea" type=text id="email">Email</input>
+				<input class="inputarea" type=password id="password">Password</input>
+			</div>
+			<input class="formatbutton firstbuttonpos" type="submit" value="ok">Ok</input>
+			<button class="formatbutton secondbuttonpos" onclick="Close">Cancel</button>
+		</form>
+	</div>
+</body>
+</rml>

@@ -33,27 +33,28 @@ div {
 	overflow: auto; /* Text flowing outside the area is not shown */
 	line-height: 1em; /* Default is 1.2em */
 	display: block;
+	margin-left: 15px;
+	margin-top: 15px;
 }
 
 /* A big display that will show graphical representations of player data */
 .messagedialog
 {
 	width: 800px;
-	height: 600px;
+	height: 700px;
 	font-size: 22px;
 	background-decorator: image;
 	background-image: DialogBackground.bmp;
-	padding-top: 30px;
+	padding-top: 30px; /* Leave space on top of pergament background */
 	padding-left: 70px;
 	padding-right: 50px;
-	padding-bottom: 10px;
+	z-index: -1; /* Should be behind evrything else */
 }
 
 .menuitem {
 	font-size: 36px;
 	display: block;
-	max-height: 36px;
-	margin: 10px;
+	/* max-height: 36px; */
 }
 
 .formatbutton {
@@ -62,9 +63,9 @@ div {
 }
 
 .firstbuttonpos {
-	margin-left:150px; /* The position of the button at the bottom of dialogs. */
+	margin-left:100px; /* The position of the button at the bottom of dialogs. */
 }
 
 .secondbuttonpos {
-	margin-left:400px; /* The position of the button at the bottom of dialogs. */
+	margin-left:300px; /* The position of the button at the bottom of dialogs. */
 }
