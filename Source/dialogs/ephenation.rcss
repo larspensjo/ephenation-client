@@ -129,8 +129,8 @@ select selectvalue
 	padding: 9px 10px 0px 10px;
 
 	icon-background-decorator: tiled-horizontal;
-	icon-background-left-image: brass_theme_1a.bmp 296px 456px 307px 506px;
-	icon-background-center-image: brass_theme_1a.bmp stretch 308px 456px 311px 506px;
+	icon-background-left-image: brass_theme_1a.bmp 296px 456px 309px 506px;
+	icon-background-center-image: brass_theme_1a.bmp stretch 310px 456px 311px 506px;
 	icon-background-right-image: brass_theme_1a.bmp 312px 456px 325px 506px;
 }
 
@@ -257,4 +257,17 @@ tabset panels panel
 	background-left-image: brass_theme_1a.bmp stretch 376px 127px 391px 128px;
 	background-right-image: brass_theme_1a.bmp stretch 376px 127px 391px 128px;
 	background-center-image: brass_theme_1a.bmp stretch 306px 435px 307px 436px;
+}
+
+.onelineinput {
+	font-size: 18px;
+	padding: 15px 15px 0px 15px;
+	font-family: georgia;
+	height: 50;
+	width: 40%;
+
+	icon-background-decorator: tiled-horizontal;
+	icon-background-left-image: brass_theme_1a.bmp 296px 456px 309px 506px;
+	icon-background-center-image: brass_theme_1a.bmp stretch 310px 456px 311px 506px;
+	icon-background-right-image: brass_theme_1a.bmp 312px 456px 325px 506px;
 }

@@ -217,8 +217,16 @@ void MessageDialog::UpdateInput(Rocket::Core::Element *e) {
 	string value = e->GetAttribute("value", def).CString();
 	if (tag == "input") {
 		fFormResultValues[name] = "";
-		if (name == "ping" && gShowPing) {
+
+		if (name == "Display.vsync" && Options::sfSave.fVSYNC) {
 			e->SetAttribute("checked", 1);
+		}
+
+		if (name == "Login.licensekey") {
+			e->SetAttribute("value", Options::sfSave.fLicenseKey.c_str());
+		}
+		if (name == "Login.email") {
+			e->SetAttribute("value", Options::sfSave.fEmail.c_str());
 		}
 
 		if (name == "Display.vsync" && Options::sfSave.fVSYNC) {

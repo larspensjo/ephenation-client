@@ -14,10 +14,10 @@
 			<div class="header" id="header">
 				Ephenation login
 			</div>
-			<div class="menulist">
-				<input class="inputarea" type=text id="license">License key</input>
-				<input class="inputarea" type=text id="email">Email</input>
-				<input class="inputarea" type=password id="password">Password</input>
+			<div style="height:65%;">
+				License key: <input class="onelineinput" type=text name="Login.licensekey" /> <br/>
+				Email: <input class="onelineinput" type=text name="Login.email" /> <br/>
+				Password: <input class="onelineinput" type=password name="Login.password"/> <br/>
 			</div>
 			<input class="formatbutton firstbuttonpos" type="submit" value="ok">Ok</input>
 			<button class="formatbutton secondbuttonpos" onclick="Close">Cancel</button>
