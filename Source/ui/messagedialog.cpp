@@ -17,15 +17,18 @@
 
 #include <string>
 #include <GL/glew.h>
+#include <sstream>
 
 #include "messagedialog.h"
 #include "../gamedialog.h"
 #include "../Splitter.h"
 #include "../Options.h"
 #include "../primitives.h"
+#include "../connection.h"
 #include "Error.h"
 
 using std::string;
+using std::stringstream;
 
 MessageDialog::MessageDialog() : fRocketContext(0), fDocument(0), fCallback(0) {
 }
@@ -51,6 +54,17 @@ void MessageDialog::LoadDialog(const string &file) {
 		ErrorDialog("MessageDialog::LoadDialog: Failed to load %s", file.c_str());
 	// Document is owned by the caller, which means reference count has already been incremented.
 	fDocument->AddEventListener("click", this);
+	fCallback = 0;
+	fDocument->Show();
+}
+
+void MessageDialog::LoadForm(const string &file) {
+	// This is like "Popup", but a form with updated inputs will be shown.
+	fDocument = fRocketContext->LoadDocument(("dialogs/" + file).c_str());
+	fFormResultValues.clear(); // Restart with an empty list
+	this->Treewalk(fDocument); // Fill default parameters in the document
+	fDocument->AddEventListener("click", this);
+	fDocument->AddEventListener("submit", this);
 	fCallback = 0;
 	fDocument->Show();
 }
@@ -106,15 +120,8 @@ void MessageDialog::ClickEvent(Rocket::Core::Event& event, const string &action)
 		fCallback = 0;
 		fDocument->Show();
 	} else if (split[0] == "Form" && split.size() == 2) {
-		// This is like "Popup", but a form with updated inputs will be shown.
 		this->Push();
-		fDocument = fRocketContext->LoadDocument(("dialogs/" + split[1]).c_str());
-		fFormResultValues.clear(); // Restart with an empty list
-		this->Treewalk(fDocument); // Fill default parameters in the document
-		fDocument->AddEventListener("click", this);
-		fDocument->AddEventListener("submit", this);
-		fCallback = 0;
-		fDocument->Show();
+		this->LoadForm(split[1]);
 	} else if (action == "Quit") {
 		if (fCallback)
 			(*fCallback)();
@@ -144,31 +151,35 @@ void MessageDialog::FormEvent(Rocket::Core::Event& event, const string &action) 
 		fFormResultValues[key.CString()] = value.CString();
 	}
 
-	// printf("Results are:\n");
-	// The resulting list in fFormResultValues now contains all the requested values.
-	for (auto it = fFormResultValues.begin(); it != fFormResultValues.end(); it++) {
-		// printf("\t%s:%s\n", it->first.c_str(), it->second.c_str());
-		// First try the standard options and see if they match
-		if (Options::sfSave.ParseOneOption(it->first, it->second)) {
-			// Nothing just now
-		} else if (it->first == "shadows") {
-			// Map the three alternativs to the two flags
-			switch(atoi(it->second.c_str())) {
-			case 1:
-				Options::sfSave.fDynamicShadows = 0;
-				Options::sfSave.fStaticShadows = 0;
-				break;
-			case 2:
-				Options::sfSave.fDynamicShadows = 0;
-				Options::sfSave.fStaticShadows = 1;
-				break;
-			case 3:
-				Options::sfSave.fDynamicShadows = 1;
-				Options::sfSave.fStaticShadows = 0;
-				break;
+	if (action == "login") {
+		PerformLoginProcedure(fFormResultValues["Login.email"], fFormResultValues["Login.licensekey"], fFormResultValues["Login.password"], false);
+		// printf("Login %s, %s, %s\n", fFormResultValues["Login.licensekey"].c_str(), fFormResultValues["Login.email"].c_str(), fFormResultValues["Login.password"].c_str());
+	} else {
+		// The resulting list in fFormResultValues now contains all the requested values.
+		for (auto it = fFormResultValues.begin(); it != fFormResultValues.end(); it++) {
+			// printf("\t%s:%s\n", it->first.c_str(), it->second.c_str());
+			// First try the standard options and see if they match
+			if (Options::sfSave.ParseOneOption(it->first, it->second)) {
+				// Nothing just now
+			} else if (it->first == "shadows") {
+				// Map the three alternativs to the two flags
+				switch(atoi(it->second.c_str())) {
+				case 1:
+					Options::sfSave.fDynamicShadows = 0;
+					Options::sfSave.fStaticShadows = 0;
+					break;
+				case 2:
+					Options::sfSave.fDynamicShadows = 0;
+					Options::sfSave.fStaticShadows = 1;
+					break;
+				case 3:
+					Options::sfSave.fDynamicShadows = 1;
+					Options::sfSave.fStaticShadows = 0;
+					break;
+				}
+			} else if (it->first == "ping") {
+				gShowPing = atoi(it->second.c_str());
 			}
-		} else if (it->first == "ping") {
-			gShowPing = atoi(it->second.c_str());
 		}
 	}
 
@@ -287,6 +298,15 @@ void MessageDialog::UpdateInput(Rocket::Core::Element *e) {
 					e->SetAttribute("selected", 1);
 				break;
 			}
+		}
+	} else if (tag == "p") {
+		if (name == "client.availableversion") {
+			stringstream ss;
+			if (gClientAvailMajor != CLIENT_MAJOR_VERSION || gClientAvailMinor != CLIENT_MINOR_VERSION)
+				ss << "<p style=\"color:red;\">New client version available: " << gClientAvailMajor << "." << gClientAvailMinor << "</p>";
+			else
+				ss << "Client version: " << gClientAvailMajor << "." << gClientAvailMinor;
+			e->SetInnerRML(ss.str().c_str());
 		}
 	}
 }

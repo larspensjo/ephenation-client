@@ -425,7 +425,7 @@ void DrawLandscape(StageOneShader *shader, DL_Type dlType) {
 
 		if (dlType == DL_OnlyTransparent) {
 			unsigned char tx, ty, tz;
-			if (gSuperChunkManager.GetTeleport(&tx, &ty, &tz, &cp->cc)) {
+			if (gMode.CommunicationAllowed() && gSuperChunkManager.GetTeleport(&tx, &ty, &tz, &cp->cc)) {
 				double diffX = double(gPlayer.x)/BLOCK_COORD_RES - cc.x*CHUNK_SIZE - tx - 0.5;
 				double diffY = double(gPlayer.y)/BLOCK_COORD_RES - cc.y*CHUNK_SIZE - ty - 0.5;
 				double diffZ = double(gPlayer.z)/BLOCK_COORD_RES - cc.z*CHUNK_SIZE - tz - PLAYER_HEIGHT*2;
@@ -485,7 +485,7 @@ void DrawLandscape(StageOneShader *shader, DL_Type dlType) {
 			DrawChunkBorders(shader);
 			break;
 		case GameMode::INIT: case GameMode::ESC: case GameMode::EXIT: case GameMode::LOGIN: case GameMode::LOGIN_FAILED:
-		case GameMode::OPTIONS: case GameMode::PASSWORD: case GameMode::REQ_PASSWD: case GameMode::WAIT_ACK:
+		case GameMode::PASSWORD: case GameMode::REQ_PASSWD: case GameMode::WAIT_ACK:
 			break; // Ignore
 		}
 	}

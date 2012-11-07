@@ -31,12 +31,14 @@ public:
 		TELEPORT,   // Similar to game mode, but enable teleporting
 		ESC,		// Player pressed Esc or was disconnected, option-dialog active.
 		EXIT,		// The client is exiting. All processes shall close down.
-		OPTIONS,    // Temporarily close the game window and open the options window.
 	};
 
 	void Set(Mode);
 	Mode Get(void) const;
 	GameMode();
+	bool CommunicationAllowed(void) const {
+		return fMode == GAME || fMode == CONSTRUCT || fMode == TELEPORT;
+	}
 private:
 	Mode fMode;
 };

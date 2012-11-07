@@ -18,6 +18,7 @@
 				License key: <input class="onelineinput" type=text name="Login.licensekey" /> <br/>
 				Email: <input class="onelineinput" type=text name="Login.email" /> <br/>
 				Password: <input class="onelineinput" type=password name="Login.password"/> <br/>
+				<p name="client.availableversion"></p>
 			</div>
 			<input class="formatbutton firstbuttonpos" type="submit" value="ok">Ok</input>
 			<button class="formatbutton secondbuttonpos" onclick="Close">Cancel</button>

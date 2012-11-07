@@ -119,7 +119,7 @@ float chunk::ComputeAmbientLight(int ox, int oy, int oz) const {
 
 void chunk::UpdateGraphics(void) {
 	unsigned char x, y, z;
-	if (gSuperChunkManager.GetTeleport(&x, &y, &z, &this->cc)) {
+	if (gMode.CommunicationAllowed() && gSuperChunkManager.GetTeleport(&x, &y, &z, &this->cc)) {
 		// This is kind of a fake. There are no TP blocks at the server, they are managed in
 		// other types of data structures. But the server understands the command to remove a
 		// TP block.
@@ -248,7 +248,7 @@ void chunk::Draw(StageOneShader *shader, ChunkShaderPicking *pickShader, DL_Type
 	auto cb = fChunkBlocks;
 	// ASSERT(cb);
 
-	if (cb->fChecksumTestNeeded && gCurrentFrameTime > cb->fChecksumTimeout) {
+	if (gMode.CommunicationAllowed() && cb->fChecksumTestNeeded && gCurrentFrameTime > cb->fChecksumTimeout) {
 		// This chunk need to verify the checksum
 		cb->fChecksumTestNeeded = false;
 		cb->fChecksumTimeout = gCurrentFrameTime+cChecksumTimeout; // Reset checksum timer when request is sent

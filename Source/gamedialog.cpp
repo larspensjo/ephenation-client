@@ -861,6 +861,12 @@ static void revive(void) {
 glm::mat4 gViewMatrix; // Store the view matrix
 
 void gameDialog::render() {
+	if (fCurrentRocketContextInput == 0 && gMode.Get() == GameMode::LOGIN) {
+		// Login mode, get the login dialog.
+		fMessageDialog.LoadForm("login.rml");
+		fCurrentRocketContextInput = fMainUserInterface.GetRocketContext();
+	}
+
 	static bool first = true; // Only true first time function is called
 	// Clear list of special effects. It will be added again automatically every frame
 	gShadows.Clear();
@@ -1047,8 +1053,6 @@ void gameDialog::init(void) {
 	handleResize(gViewport[2], gViewport[3]); // Simple way to set the projection
 	glEnable(GL_DEPTH_TEST);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); //Set the blend function
-	unsigned char b[] = { 0x03, 0x00, CMD_GET_COORDINATE }; // GET_COORDINATE
-	SendMsg(b, sizeof b);
 
 	glEnable(GL_CULL_FACE); // Always enabled by default
 

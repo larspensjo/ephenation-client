@@ -17,6 +17,10 @@
 
 #pragma once
 
+#include <string>
+
+using std::string;
+
 // The major and minor version of the available client
 extern int gClientAvailMajor, gClientAvailMinor;
 
@@ -26,5 +30,7 @@ extern bool ListenForServerMessages(void);
 
 extern void SendMsg(const unsigned char *b, int n);
 
-extern void LoginMessage(const char *id); // zero terminated string with the login name
 extern void Password(const unsigned char *key, int len);
+
+// Send login info to server and wait for acknowledge. Return true if success.
+bool PerformLoginProcedure(const string &email, const string &licencekey, const string &password, bool testOverride);

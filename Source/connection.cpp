@@ -43,6 +43,9 @@
 #include "modes.h"
 #include "ui/Error.h"
 #include "worsttime.h"
+#include "Options.h"
+#include "crypt.h"
+#include "SoundControl.h"
 
 #ifdef WIN32
 static SOCKET sock_fd;
@@ -207,7 +210,7 @@ void SendMsg(unsigned char const *b, int n) {
 	}
 }
 
-void LoginMessage(const char *id) {
+static void LoginMessage(const char *id) {
 	int len = strlen(id);
 	int totLength = len+3;
 	unsigned char b[totLength];
@@ -216,4 +219,89 @@ void LoginMessage(const char *id) {
 	b[2] = CMD_LOGIN;
 	memcpy(b+3, id, len);
 	SendMsg(b, totLength);
+}
+
+unsigned char *gLoginChallenge = 0;
+int gLoginChallengeLength = 0;
+
+static void Password(const char *pass, const char *key) {
+	int keylen = strlen(key);
+	int passlen = strlen(pass);
+	// Create a new key, which is the XOR of the "key" and the challenge that
+	// was received from the server. If the vectors are of unequal length,
+	// the end is padded with values from the longest.
+	int newLength = keylen;
+	if (gLoginChallengeLength > newLength)
+		newLength = gLoginChallengeLength;
+	unsigned char newkey[newLength];
+	for (int i=0; i<newLength; i++) newkey[i] = 0;
+	for (int i=0; i<keylen; i++) newkey[i] = key[i];
+	for (int i=0; i<gLoginChallengeLength; i++) newkey[i] ^= gLoginChallenge[i];
+#if 0
+	printf("Password: Key (len %d): ", newLength);
+	for (int i=0; i<newLength; i++) printf("%d ", newkey[i]);
+	printf("\n");
+#endif
+	unsigned char b[passlen+3];
+	// Build the message into 'b'.
+	b[0] = passlen+3; // LSB of message length
+	b[1] = 0;   // MSB of message length
+	b[2] = CMD_RESP_PASSWORD;
+	memcpy(b+3, pass, passlen); // Initialize with the clear text password
+	rc4_init(newkey, newLength);
+	rc4_xor(b+3, passlen); // Encrypt the password
+
+#if 0
+	printf("encr: ");
+	for (int i=0; i<passlen; i++) printf(" %d", b[i+3]);
+	printf("\n");
+#endif
+
+	SendMsg(b, passlen+3);
+}
+
+bool PerformLoginProcedure(const string &email, const string &licencekey, const string &password, bool testOverride) {
+	// Wait for acknowledge from server (in the form of a protocol command)
+	auto beginTime = glfwGetTime();
+	if (gMode.Get() != GameMode::LOGIN)
+		ErrorDialog("Login in wrong state (%d)", gMode.Get());
+
+	LoginMessage(testOverride ? "test0" : email.c_str());
+	gMode.Set(GameMode::PASSWORD);
+	while (gMode.Get() != GameMode::GAME) {
+		glfwSleep(0.01); // Avoid a busy wait
+		ListenForServerMessages(); // Wait for automatic login without password
+		switch (gMode.Get()) {
+		case GameMode::PASSWORD:
+		case GameMode::WAIT_ACK:
+			continue; // Nothing to do yet.
+		case GameMode::REQ_PASSWD:
+			// printf("Parse: mode GameMode::REQ_PASSWD, %d chall bytes\n", gLoginChallengeLength);
+			Password(password.c_str(), licencekey.c_str());
+			gMode.Set(GameMode::WAIT_ACK);
+			// printf("loginDialog::UpdateDialog: Mode GameMode::WAIT_ACK\n");
+			continue;
+		case GameMode::LOGIN_FAILED: {
+			ErrorDialog("Login failed");
+			// printf("Login failed\n");
+			return false;
+		}
+		case GameMode::ESC:
+			exit(1);
+		case GameMode::GAME:
+			break; // Now we are done!
+		case GameMode::TELEPORT:
+		case GameMode::CONSTRUCT:
+		case GameMode::INIT:
+		case GameMode::LOGIN:
+		case GameMode::EXIT:
+			ErrorDialog("HandleLoginDialog:Unexpected mode %d\n", gMode);
+		}
+	}
+	unsigned char b[] = { 0x03, 0x00, CMD_GET_COORDINATE }; // GET_COORDINATE
+	SendMsg(b, sizeof b);
+
+	gSoundControl.RequestMusicMode(SoundControl::SMusicModeTourist);
+
+	return true;
 }

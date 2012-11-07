@@ -49,7 +49,6 @@
 #include "primitives.h"
 #include "ui/LoginDialog.h"
 #include "client_prot.h"
-#include "crypt.h"
 #include "player.h"
 #include "Options.h"
 #include "render.h"
@@ -63,9 +62,6 @@
 #include "uniformbuffer.h"
 #include "billboard.h"
 #include "worsttime.h"
-
-#define CLIENT_MAJOR_VERSION 4
-#define CLIENT_MINOR_VERSION 2
 
 #ifndef GL_VERSION_3_2
 #define GL_CONTEXT_CORE_PROFILE_BIT       0x00000001
@@ -166,123 +162,6 @@ void dumpGraphicsMemoryStats(void) {
 		if (glGetError() == GL_NO_ERROR)
 			printf("VBO_FREE_MEMORY_ATI total %d, largest block %d, total aux %d, largest aux block %d\n", parATI[0], parATI[1], parATI[2], parATI[3]);
 	}
-}
-
-unsigned char *gLoginChallenge = 0;
-int gLoginChallengeLength = 0;
-
-static void Password(const char *pass, const char *key) {
-	int keylen = strlen(key);
-	int passlen = strlen(pass);
-	// Create a new key, which is the XOR of the "key" and the challenge that
-	// was received from the server. If the vectors are of unequal length,
-	// the end is padded with values from the longest.
-	int newLength = keylen;
-	if (gLoginChallengeLength > newLength)
-		newLength = gLoginChallengeLength;
-	unsigned char newkey[newLength];
-	for (int i=0; i<newLength; i++) newkey[i] = 0;
-	for (int i=0; i<keylen; i++) newkey[i] = key[i];
-	for (int i=0; i<gLoginChallengeLength; i++) newkey[i] ^= gLoginChallenge[i];
-#if 0
-	printf("Password: Key (len %d): ", newLength);
-	for (int i=0; i<newLength; i++) printf("%d ", newkey[i]);
-	printf("\n");
-#endif
-	unsigned char b[passlen+3];
-	// Build the message into 'b'.
-	b[0] = passlen+3; // LSB of message length
-	b[1] = 0;   // MSB of message length
-	b[2] = CMD_RESP_PASSWORD;
-	memcpy(b+3, pass, passlen); // Initialize with the clear text password
-	rc4_init(newkey, newLength);
-	rc4_xor(b+3, passlen); // Encrypt the password
-
-#if 0
-	printf("encr: ");
-	for (int i=0; i<passlen; i++) printf(" %d", b[i+3]);
-	printf("\n");
-#endif
-
-	SendMsg(b, passlen+3);
-}
-
-static bool HandleLoginDialog(bool testOverride) {
-	const char *email = gOptions.fEmail.c_str();
-	const char *licenseKey = gOptions.fLicenseKey.c_str();
-	const char *passwd = 0;
-
-	gSoundControl.RequestMusicMode(SoundControl::SMusicModeMenu);
-
-	// Wait for acknowledge from server (in the form of a protocol command)
-	auto beginTime = glfwGetTime();
-	while (gMode.Get() != GameMode::LOGIN) {
-		glfwSleep(0.01);           // Avoid a busy wait
-		ListenForServerMessages(); // Wait for CMD_PROT_VERSION
-	}
-	auto delay = glfwGetTime() - beginTime;
-	if (gVerbose)
-		printf("HandleLoginDialog: Connection time %fs\n", delay);
-
-	LoginDialog ld;
-	if (!testOverride) {
-		ld.Init(email, licenseKey, gOptions.fEnableTestbutton);
-		ld.show(CLIENT_MAJOR_VERSION,CLIENT_MINOR_VERSION); // This is the version of the game (client really).
-		Fl::run();
-		Fl::flush();
-	}
-
-	if (testOverride || ld.fTesting) {
-		email = "test0";
-		passwd = "";
-		licenseKey = "";
-	} else if (ld.fFullLogin) {
-		email = ld.Email();
-		passwd = ld.Password();
-		licenseKey = ld.LicenseKey();
-		// Save some data for next time
-		Options::sfSave.fEmail = email;
-		Options::sfSave.fLicenseKey = licenseKey;
-	} else {
-		exit(0);
-	}
-	// printf("User: %s, password: %s, license: %s\n", email, passwd, licenseKey);
-
-	LoginMessage(email);
-	gMode.Set(GameMode::PASSWORD);
-	while (gMode.Get() != GameMode::GAME) {
-		glfwSleep(0.01); // Avoid a busy wait
-		ListenForServerMessages(); // Wait for automatic login without password
-		switch (gMode.Get()) {
-		case GameMode::PASSWORD:
-		case GameMode::WAIT_ACK:
-			continue; // Nothing to do yet.
-		case GameMode::REQ_PASSWD:
-			// printf("Parse: mode GameMode::REQ_PASSWD, %d chall bytes\n", gLoginChallengeLength);
-			Password(passwd, licenseKey);
-			gMode.Set(GameMode::WAIT_ACK);
-			// printf("loginDialog::UpdateDialog: Mode GameMode::WAIT_ACK\n");
-			continue;
-		case GameMode::LOGIN_FAILED: {
-			ErrorDialog("Login failed");
-			// printf("Login failed\n");
-			return false;
-		}
-		case GameMode::ESC:
-			exit(1);
-		case GameMode::GAME:
-			break; // Now we are done!
-		case GameMode::TELEPORT:
-		case GameMode::CONSTRUCT:
-		case GameMode::INIT:
-		case GameMode::LOGIN:
-		case GameMode::EXIT:
-		case GameMode::OPTIONS:
-			ErrorDialog("HandleLoginDialog:Unexpected mode %d\n", gMode);
-		}
-	}
-
-	return true;
 }
 
 void APIENTRY DebugFunc(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, GLvoid* userParam) {
@@ -448,8 +327,10 @@ int main(int argc, char** argv) {
 	gSoundControl.Init();
 	TSExec::gTSExec.Init(); // This must be called after initiating gSoundControl.
 
+#if 0
 	if (!HandleLoginDialog(sTestUser == 1))
 		exit(1);
+#endif
 
 	if (gDebugOpenGL)
 		printf("Number of threads: %d\n", maxThreads);
@@ -525,7 +406,7 @@ int main(int argc, char** argv) {
 	gQuadStage1.Init();
 	gBillboard.Init();
 
-	gSoundControl.RequestMusicMode(SoundControl::SMusicModeTourist);
+	gSoundControl.RequestMusicMode(SoundControl::SMusicModeMenu);
 	glEnable(GL_DEPTH_TEST); // Always enabled by default
 
 	// Immediately clear screen, to minimize chance that something undefined is shown.
@@ -559,19 +440,6 @@ int main(int argc, char** argv) {
 		gGameDialog.render();
 
 		glfwSwapBuffers();
-
-		if (gMode.Get() == GameMode::OPTIONS && glfwGetWindowParam(GLFW_ICONIFIED) == GL_TRUE) {
-			// Stop player footsteps since player stops
-			gGameDialog.UpdateRunningStatus(true);
-			gSoundControl.RequestMusicMode(SoundControl::SMusicModeMenu);
-			OptionsDialog opt;
-			Options::sfSave.ListGraphicModes(&opt);
-			Fl::run();
-			Fl::flush();
-			glfwRestoreWindow();
-			gSoundControl.RequestMusicMode(SoundControl::SMusicModeTourist);
-			gMode.Set(GameMode::GAME);
-		}
 
 		if (gMode.Get() == GameMode::ESC)
 			glfwCloseWindow();

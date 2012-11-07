@@ -42,6 +42,9 @@ public:
 
 	// Load a dialog from a file and show it.
 	void LoadDialog(const string &file);
+
+	// Like LoadDialog, but a form that accepts input
+	void LoadForm(const string &file);
 private:
 	// When the document is a form, remember what input parameters are used
 	// and what values they are mapped to.
