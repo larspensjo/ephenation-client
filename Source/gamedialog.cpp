@@ -50,7 +50,6 @@
 #include "shaders/ChunkShaderPicking.h"
 #include "shaders/DeferredLighting.h"
 #include "shaders/TranspShader.h"
-#include "shaders/AnimationShader.h"
 #include "HealthBar.h"
 #include "MonsterDef.h"
 #include "BuildingBlocks.h"

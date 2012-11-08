@@ -62,7 +62,7 @@ void Map::Create(AnimationShader *anim, StageOneShader *shader, float rotate, in
 	DrawLandscapeTopDown(shader, width, 64, false, DL_OnlyTransparent);
 	anim->EnableProgram();
 	gPlayer.Draw(anim, shader, false, animationModels);
-	gMonsters.RenderMonsters(anim, false, false, animationModels);
+	gMonsters.RenderMonsters(false, false, animationModels);
 	gOtherPlayers.RenderPlayers(false);
 
 	gProjectionMatrix = saveProj;

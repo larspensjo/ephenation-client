@@ -48,7 +48,9 @@ void AnimationModels::Init() {
 }
 
 void AnimationModels::Draw(AnimationModelId id, const glm::mat4 &modelMatrix, double animationStart, bool dead) const {
+	fShader->EnableProgram();
 	fModels[id]->model->DrawAnimation(fShader, modelMatrix, animationStart, dead, &fModels[id]->textures[0]);
+	fShader->DisableProgram();
 }
 
 AnimationModels::~AnimationModels() {

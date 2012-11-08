@@ -37,7 +37,6 @@
 #include "SoundControl.h"
 #include "DrawText.h"
 #include "BlenderModel.h"
-#include "shaders/AnimationShader.h"
 #include "Options.h"
 #include "animationmodels.h"
 
@@ -128,7 +127,7 @@ Object *Monsters::Find(unsigned long id) {
 	return 0;
 }
 
-void Monsters::RenderMonsters(AnimationShader *shader, bool forShadows, bool selectionMode, const AnimationModels *animationModels) const {
+void Monsters::RenderMonsters(bool forShadows, bool selectionMode, const AnimationModels *animationModels) const {
 	// The monsters triangles are drawn CW, which is not the default for culling
 	float sun = 1.0f;
 	if (gPlayer.BelowGround()) {
