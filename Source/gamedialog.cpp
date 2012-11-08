@@ -1122,8 +1122,6 @@ void gameDialog::Update() {
 	}
 	gMonsters.Cleanup();
 	gOtherPlayers.Cleanup();
-	while (ListenForServerMessages())
-		continue;
 
 	// Determine if player head is under water
 	bl = chunk::GetChunkAndBlock(gPlayer.x, gPlayer.y, gPlayer.z);

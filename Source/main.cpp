@@ -418,6 +418,12 @@ int main(int argc, char** argv) {
 	Options::sfSave = gOptions;
 	// double prevTime = 0.0;
 	while(glfwGetWindowParam(GLFW_OPENED)) {
+		while (ListenForServerMessages())
+			continue;
+		if (sTestUser && gMode.Get() == GameMode::LOGIN) {
+			PerformLoginProcedure("", "", "", true);
+			sTestUser = false; // Try this only once
+		}
 		static WorstTime tm(" Mainloop");
 		tm.Start();
 		gCurrentFrameTime = glfwGetTime();
