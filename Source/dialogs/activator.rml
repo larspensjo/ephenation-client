@@ -1,0 +1,85 @@
+<!--A dialog to configure an activator block-->
+
+<rml>
+<head>
+	<title>activator.rml</title>
+	<link type="text/rcss" href="ephenation.rcss"/>
+	<link type="text/rcss" href="popup.rcss"/>
+	<style>
+	</style>
+</head>
+<body id="body">
+	<div class="messagedialog">
+		<form onsubmit="activator">
+			<div class="header" id="header">
+				Configure activator
+			</div>
+			<tabset>
+				<tab>Actions</tab>
+				<panel>
+					<div class="controls">
+						Spawn monster:
+						<select name="Activator.spawnmonster">
+							<option name="Activator.spawnmonster" value="1">None</option>
+							<option name="Activator.spawnmonster" value="2">Level-2</option>
+							<option name="Activator.spawnmonster" value="3">Level-1</option>
+							<option name="Activator.spawnmonster" value="4">Level+0</option>
+							<option name="Activator.spawnmonster" value="5">Level+1</option>
+							<option name="Activator.spawnmonster" value="6">Level+2</option>
+						</select><br/>
+						Sound effect:
+						<select name="Activator.soundeffect">
+						</select>
+						<input type="submit" type="testsound">Test</input><br/>
+						Reward:
+						<select name="Activator.reward">
+							<option name="Activator.reward" value="1">AAA</option>
+							<option name="Activator.reward" value="2">BBB</option>
+						</select><br/>
+						Jelly block:
+						<select name="Activator.jellyblock">
+							<option name="Activator.jellyblock" value="1">AAA</option>
+							<option name="Activator.jellyblock" value="2">BBB</option>
+						</select><br/>
+						Broadcast:
+						<input type="checkbox" name="Activator.broadcast" value="1"/>
+						<input type="text" name="Activator.boradcastdist" class="onelineinput" />blocks<br/>
+						Add key:
+						<input type="checkbox" name="Activator.addkey" value="1"/>
+						Descr:
+						<input type="text" name="Activator.addkey.text" class="onelineinput" />
+						Id:
+						<input type="text" name="Activator.addkey.id" />
+						<select name="Activator.addkey.picture">
+							<option name="Activator.addkey.picture" value="1">AAA</option>
+							<option name="Activator.addkey.picture" value="2">BBB</option>
+						</select><br/>
+						Text message:
+						<textarea name="Activator.message" style="width: 400px; height: 80px; background: white; font:georgia;" />
+					</div>
+				</panel>
+				<tab>Conditions</tab>
+				<panel>
+					<div class="controls">
+						Conditional key:
+						<input type="checkbox" name="Activator.condkey" value="1"/>
+						Key:
+						<input type="text" name="Activator.condkey.key" class="onelineinput" />
+						Message:
+						<input type="text" name="Activator.condkey.message" class="onelineinput" />
+						Owner:
+						<input type="text" name="Activator.condkey.owner" class="onelineinput" /> <br/>
+						Inhibit retrigger:
+						<input type="text" name="Activator.condkey.inhbit" class="onelineinput" /> <br/>
+						maximum player level:
+						<input type="text" name="Activator.condkey.player.level.max" class="onelineinput" /> <br/>
+						Minimum player level:
+						<input type="text" name="Activator.condkey.player.level.min" class="onelineinput" /> <br/>
+					</div>
+				</panel>
+			</tabset>
+			<input class="formatbutton firstbuttonpos" type="submit" value="ok">Ok</input>
+		</form>
+	</div>
+</body>
+</rml>

@@ -37,6 +37,16 @@ div {
 	margin-top: 15px;
 }
 
+/* Used for a multi line list of choices, one per line */
+.controls {
+	height: 65%;
+	overflow: auto; /* Text flowing outside the area is not shown */
+	line-height: 1em; /* Default is 1.2em */
+	display: block;
+	margin-left: 15px;
+	margin-top: 15px;
+}
+
 /* A big display that will show graphical representations of player data */
 .messagedialog
 {
