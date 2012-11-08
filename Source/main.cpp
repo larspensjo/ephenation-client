@@ -195,8 +195,7 @@ void APIENTRY DebugFunc(GLenum source, GLenum type, GLuint id, GLenum severity, 
 	printf("%s from %s,\t%s priority\nMessage: %s\n",
 	       errorType.c_str(), srcName.c_str(), typeSeverity.c_str(), message);
 	if (severity == GL_DEBUG_SEVERITY_HIGH_ARB && !gIgnoreOpenGLErrors)
-		ErrorDialog("%s from %s,\t%s priority\nMessage: %s\n",
-		            errorType.c_str(), srcName.c_str(), typeSeverity.c_str(), message);
+		printf("%s from %s,\t%s priority\nMessage: %s\n", errorType.c_str(), srcName.c_str(), typeSeverity.c_str(), message); // Can't use ErrorDialog() here.
 }
 
 void APIENTRY DebugFuncAMD(GLuint id, GLenum category, GLenum severity, GLsizei length, const GLchar* message, GLvoid* userParam) {
@@ -222,8 +221,7 @@ void APIENTRY DebugFuncAMD(GLuint id, GLenum category, GLenum severity, GLsizei 
 	printf("%s,\t%s priority\nMessage: %s\n",
 	       typeCategory.c_str(), typeSeverity.c_str(), message);
 	if (severity == GL_DEBUG_SEVERITY_HIGH_ARB && !gIgnoreOpenGLErrors)
-		ErrorDialog("%s,\t%s priority\nMessage: %s\n",
-		            typeCategory.c_str(), typeSeverity.c_str(), message);
+		printf("%s,\t%s priority\nMessage: %s\n", typeCategory.c_str(), typeSeverity.c_str(), message); // Can't use ErrorDialog() here.
 }
 
 // Used for debugging, where it is difficult when there are many threads trigging a break point.
@@ -326,11 +324,6 @@ int main(int argc, char** argv) {
 	ConnectToServer(host, port);
 	gSoundControl.Init();
 	TSExec::gTSExec.Init(); // This must be called after initiating gSoundControl.
-
-#if 0
-	if (!HandleLoginDialog(sTestUser == 1))
-		exit(1);
-#endif
 
 	if (gDebugOpenGL)
 		printf("Number of threads: %d\n", maxThreads);

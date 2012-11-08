@@ -188,6 +188,9 @@ void MessageDialog::FormEvent(Rocket::Core::Event& event, const string &action) 
 }
 
 void MessageDialog::CloseCurrentDocument(void) {
+	// Don't know why, but need to remove listeners or there will be spurious events even after document has been deallocated.
+	fDocument->RemoveEventListener("click", this);
+	fDocument->RemoveEventListener("submit", this);
 	fDocument->Hide();
 	fDocument->RemoveReference();
 	fDocument = 0;
