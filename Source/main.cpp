@@ -465,8 +465,6 @@ int main(int argc, char** argv) {
 
 	// The options will be saved by the destructor.
 	Options::sfSave.fViewingDistance = maxRenderDistance;
-	Options::sfSave.fWindowWidth = gViewport[2];
-	Options::sfSave.fWindowHeight = gViewport[3];
 	gMode.Set(GameMode::EXIT);
 	Options::sfSave.Save();
 	return 0;

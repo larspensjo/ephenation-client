@@ -298,6 +298,9 @@ bool PerformLoginProcedure(const string &email, const string &licencekey, const 
 			ErrorDialog("HandleLoginDialog:Unexpected mode %d\n", gMode);
 		}
 	}
+	double connectionDelay = glfwGetTime() - beginTime;
+	if (connectionDelay > 0.5 && gDebugOpenGL)
+		printf("PerformLoginProcedure connection delay %f\n", connectionDelay);
 	unsigned char b[] = { 0x03, 0x00, CMD_GET_COORDINATE }; // GET_COORDINATE
 	SendMsg(b, sizeof b);
 

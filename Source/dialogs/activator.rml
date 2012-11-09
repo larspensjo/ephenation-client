@@ -1,4 +1,20 @@
-<!--A dialog to configure an activator block-->
+<!-- Copyright 2012 The Ephenation Authors -->
+
+<!-- This file is part of Ephenation. -->
+
+<!-- Ephenation is free software: you can redistribute it and/or modify -->
+<!-- it under the terms of the GNU General Public License as published by -->
+<!-- the Free Software Foundation, version 3. -->
+
+<!-- Ephenation is distributed in the hope that it will be useful, -->
+<!-- but WITHOUT ANY WARRANTY; without even the implied warranty of -->
+<!-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the -->
+<!-- GNU General Public License for more details. -->
+
+<!-- You should have received a copy of the GNU General Public License -->
+<!-- along with Ephenation.  If not, see <http://www.gnu.org/licenses/>. -->
+
+<!-- A dialog to configure an activator block -->
 
 <rml>
 <head>
@@ -20,7 +36,7 @@
 					<div class="controls">
 						Spawn monster:
 						<select name="Activator.spawnmonster">
-							<option name="Activator.spawnmonster" value="1">None</option>
+							<option name="Activator.spawnmonster" value="1" selected>None</option>
 							<option name="Activator.spawnmonster" value="2">Level-2</option>
 							<option name="Activator.spawnmonster" value="3">Level-1</option>
 							<option name="Activator.spawnmonster" value="4">Level+0</option>

@@ -22,6 +22,12 @@
 #define CLIENT_MAJOR_VERSION 4
 #define CLIENT_MINOR_VERSION 2
 
+namespace Rocket {
+	namespace Controls {
+		class ElementFormControlSelect;
+	}
+};
+
 using std::string;
 
 class OptionsDialog;
@@ -63,22 +69,23 @@ public:
 	int fVSYNC;
 	unsigned fNumThreads; // Not really configurable
 
-	void ListGraphicModes(OptionsDialog *) const;
+	// Update the select control with available graphical modes.
+	void ListGraphicModes(Rocket::Controls::ElementFormControlSelect *) const;
 
-	// Update all settings from an options dialog.
-	void UpdateSettings(OptionsDialog *);
+	// Set the graphics mode.
+	void SetGraphicsMode(int);
 
 	// Parse one option, and return true if it was a valid option.
 	bool ParseOneOption(const string &key, const string &arg);
 	Options(void);
 	~Options(void);
 	void Save(void); // Save the parsed data back to the file again
-private:
-	std::string fFileName;
 
 	// When the general performance is changed, other options may change as a result. Don't call
 	// this function unless the user actively changes the performance index.
 	void UpdatePerformance(int perf);
+private:
+	std::string fFileName;
 };
 
 // These are the options used during play. They are initialized at startup, but will not

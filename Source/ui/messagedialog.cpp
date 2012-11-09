@@ -18,6 +18,7 @@
 #include <string>
 #include <GL/glew.h>
 #include <sstream>
+#include <Rocket/Controls.h>
 
 #include "messagedialog.h"
 #include "../gamedialog.h"
@@ -161,7 +162,7 @@ void MessageDialog::FormEvent(Rocket::Core::Event& event, const string &action) 
 			// First try the standard options and see if they match
 			if (Options::sfSave.ParseOneOption(it->first, it->second)) {
 				// Nothing just now
-			} else if (it->first == "shadows") {
+			} else if (it->first == "Options.shadows") {
 				// Map the three alternativs to the two flags
 				switch(atoi(it->second.c_str())) {
 				case 1:
@@ -179,6 +180,9 @@ void MessageDialog::FormEvent(Rocket::Core::Event& event, const string &action) 
 				}
 			} else if (it->first == "ping") {
 				gShowPing = atoi(it->second.c_str());
+			} else if (it->first == "Options.graphicalmode") {
+				int mode = atoi(it->second.c_str());
+				Options::sfSave.SetGraphicsMode(mode);
 			}
 		}
 	}
@@ -285,7 +289,7 @@ void MessageDialog::UpdateInput(Rocket::Core::Element *e) {
 		if (name == "Graphics.performance" && atoi(value.c_str()) == Options::sfSave.fPerformance) {
 			e->SetAttribute("selected", 1);
 		}
-		if (name == "shadows") {
+		if (name == "Options.shadows") {
 			// Map current configuration of shadows to the drop own list
 			switch(atoi(value.c_str())) {
 			case 1:
@@ -310,6 +314,12 @@ void MessageDialog::UpdateInput(Rocket::Core::Element *e) {
 			else
 				ss << "Client version: " << gClientAvailMajor << "." << gClientAvailMinor;
 			e->SetInnerRML(ss.str().c_str());
+		}
+	} else if (tag == "select") {
+		auto *element= dynamic_cast<Rocket::Controls::ElementFormControlSelect*>(e);
+		if (name == "Options.graphicalmode") {
+			gOptions.ListGraphicModes(element);
+		} else if (name == "Activator.soundeffect") {
 		}
 	}
 }

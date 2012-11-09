@@ -443,6 +443,8 @@ void gameDialog::handleResize(int w, int h) {
 	gViewport = glm::vec4(0.0f, 0.0f, (float)w, (float)h );
 	fRenderControl.Resize(w, h);
 	fMainUserInterface.Resize(w, h);
+	Options::sfSave.fWindowWidth = gViewport[2]; // This will override any option dialog changes.
+	Options::sfSave.fWindowHeight = gViewport[3];
 }
 
 static void handleCharacter(int character, int action) {

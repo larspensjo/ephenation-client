@@ -21,11 +21,13 @@
 #include <sstream>
 #include <GL/glfw.h>
 #include <thread>
-
-#include "ui/OptionsDialog.h"
+#include <Rocket/Core.h>
+#include <Rocket/Controls.h>
 #include <glm/glm.hpp>
+
 #include "render.h"
 #include "Options.h"
+#include "assert.h"
 
 using std::stringstream;
 using std::ifstream;
@@ -262,13 +264,9 @@ void Options::UpdatePerformance(int perf) {
 #define MAX_NUM_MODES 40
 static GLFWvidmode sgViewModes[MAX_NUM_MODES];
 
-void Options::ListGraphicModes(OptionsDialog *diag) const {
-	diag->fFullScreenMode->value(this->fFullScreen);
-	Fl_Choice *choice = diag->fGraphicMode;
-	choice->clear();
-	int modecount; // Total numb er of modes found
-	int currentMode = -1; // The mode that currently match the window size
-	int modeIndex = 0; // Counter for number of modes that will be displayed to toe user.
+void Options::ListGraphicModes(Rocket::Controls::ElementFormControlSelect *element) const {
+	element->RemoveAll();
+	int modecount; // Total number of modes found
 
 	// List available video modes. Only allow those that are good for Ephenation.
 	modecount = glfwGetVideoModes( sgViewModes, MAX_NUM_MODES );
@@ -278,36 +276,18 @@ void Options::ListGraphicModes(OptionsDialog *diag) const {
 		if (bits == 24 && sgViewModes[i].Width >= 800 && sgViewModes[i].Height >= 600) {
 			stringstream ss;
 			ss << i << ": " << sgViewModes[i].Width << "x" << sgViewModes[i].Height << " " << bits << " bits";
-			choice->add(ss.str().c_str(), 0, 0, (void *)(uintptr_t)i, 0);
-			if (sgViewModes[i].Width == this->fWindowWidth && sgViewModes[i].Height == this->fWindowHeight && bits == 24)
-				currentMode = modeIndex;
-			modeIndex++;
+			string rml = ss.str().c_str();
+			ss.str(""); // Erase the old string
+			ss << i;
+			int ind = element->Add(rml.c_str(), ss.str().c_str()); // The mode is stored as the value
+			if (sgViewModes[i].Width == this->fWindowWidth && sgViewModes[i].Height == this->fWindowHeight && bits == 24) {
+				element->SetSelection(ind);
+			}
 		}
 	}
-	choice->value(currentMode);
 }
 
-void Options::UpdateSettings(OptionsDialog *diag) {
-	int newPerformance = int(diag->fPerformanceSlider->value());
-	if (newPerformance != fPerformance) {
-		this->UpdatePerformance(newPerformance);
-	} else {
-		fSmoothTerrain = int(diag->fSmoothTerrain->value());
-		fMergeNormals = int(diag->fMergeNormals->value());
-		fAddNoise = int(diag->fAddNoise->value());
-		fDynamicShadows = int(diag->fDynamicShadows->value());
-		fStaticShadows = !fDynamicShadows;
-	}
-	fFullScreen = diag->fFullScreenMode->value();
-	fAmbientLight = diag->fAmbientLight->value();
-
-	// Find what mode it is that is selected, and use the settings from that mode. The only thing that is known
-	// is the mode number.
-	const Fl_Menu_Item *mi = diag->fGraphicMode->mvalue();
-	if (mi != 0) {
-		// There is a valid graphic mode
-		int graphicMode = (uintptr_t)mi->user_data();
-		this->fWindowWidth = sgViewModes[graphicMode].Width;
-		this->fWindowHeight = sgViewModes[graphicMode].Height;
-	}
+void Options::SetGraphicsMode(int graphicMode) {
+	this->fWindowWidth = sgViewModes[graphicMode].Width;
+	this->fWindowHeight = sgViewModes[graphicMode].Height;
 }

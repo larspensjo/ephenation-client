@@ -176,18 +176,19 @@ select selectbox option
 {
 	width: auto;
 	padding-left: 3px;
+	background: #c9b072;
 }
 
 /* Specifies every second option in the selection box to have a white background. */
 select selectbox option:nth-child(even)
 {
-	background: #FFFFFFA0;
+	background: #FFFFFF;
 }
 
 /* Gives the red highlight to the selection box. */
 select selectbox option:hover
 {
-	background: #FF5D5D;
+	background: #e7d6ac;
 }
 
 /* Force the tabset element to a fixed size. */
