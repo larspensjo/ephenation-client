@@ -107,9 +107,11 @@
 		<Unit filename="connection.h" />
 		<Unit filename="crypt.cpp" />
 		<Unit filename="crypt.h" />
+		<Unit filename="dialogs/activator.rml" />
 		<Unit filename="dialogs/credits.rml" />
 		<Unit filename="dialogs/ephenation.rcss" />
 		<Unit filename="dialogs/help.rml" />
+		<Unit filename="dialogs/login.rml" />
 		<Unit filename="dialogs/messagedialog.rml" />
 		<Unit filename="dialogs/popup.rcss" />
 		<Unit filename="dialogs/topleveldialog.rml" />
@@ -203,8 +205,6 @@
 		<Unit filename="ui/Error.h" />
 		<Unit filename="ui/HelpDialog.cpp" />
 		<Unit filename="ui/HelpDialog.h" />
-		<Unit filename="ui/LoginDialog.cpp" />
-		<Unit filename="ui/LoginDialog.h" />
 		<Unit filename="ui/OptionsDialog.cpp" />
 		<Unit filename="ui/OptionsDialog.h" />
 		<Unit filename="ui/RocketGui.cpp" />

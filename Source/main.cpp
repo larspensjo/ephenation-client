@@ -47,7 +47,6 @@
 #include "DrawText.h"
 #include "shaders/ChunkShader.h"
 #include "primitives.h"
-#include "ui/LoginDialog.h"
 #include "client_prot.h"
 #include "player.h"
 #include "Options.h"
