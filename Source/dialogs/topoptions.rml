@@ -62,8 +62,8 @@
 					</div>
 				</panel>
 			</tabset>
-			<input class="formatbutton firstbuttonpos" type="submit" value="ok">Ok</input>
-			<button class="formatbutton secondbuttonpos" onclick="Close">Cancel</button>
+			<input class="formatbutton firstbuttonpos" type="submit" value="ok" enterkey=true>Ok</input>
+			<button class="formatbutton secondbuttonpos" onclick="Close" cancelkey=true>Cancel</button>
 		</form>
 	</div>
 </body>

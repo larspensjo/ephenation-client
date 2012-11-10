@@ -529,7 +529,12 @@ void gameDialog::HandleKeyPress(int key) {
 	}
 
 	if (fCurrentRocketContextInput) {
-		fCurrentRocketContextInput->ProcessKeyDown(RocketGui::KeyMap(key), rocketKeyModifiers);
+		if (key == GLFW_KEY_ENTER || key == GLFW_KEY_KP_ENTER)
+			fMessageDialog.DefaultButton();
+		else if (key == GLFW_KEY_ESC)
+			fMessageDialog.CancelButton();
+		else
+			fCurrentRocketContextInput->ProcessKeyDown(RocketGui::KeyMap(key), rocketKeyModifiers);
 		return;
 	}
 

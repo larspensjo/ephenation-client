@@ -45,6 +45,12 @@ public:
 
 	// Like LoadDialog, but a form that accepts input
 	void LoadForm(const string &file);
+
+	// Generate a click event on the default button
+	void DefaultButton(void);
+
+	// Generate a click on the Cancel or Close button
+	void CancelButton(void);
 private:
 	// When the document is a form, remember what input parameters are used
 	// and what values they are mapped to.
@@ -53,9 +59,10 @@ private:
 	Rocket::Core::Context *fRocketContext; // Remember the Rocket context.
 
 	Rocket::Core::ElementDocument *fDocument; // The currently active document, if any
+	Rocket::Core::Element *fCurrentDefaultButton, *fCurrentCloseButton;
 	void (*fCallback)(void); // Call back for the current document, if any
 
-	typedef std::pair<Rocket::Core::ElementDocument*, void (*)(void)> PushedDialog;
+	struct PushedDialog;
 	std::deque<PushedDialog> fStack; // Need a stack to push multiple simultaneous dialogs.
 
 	// Process all registered events from the current dialog.
@@ -76,9 +83,12 @@ private:
 	// Pop back the previous dialog. Return true if there was something to pop
 	bool Pop(void);
 
-	// Walk through the tree and upate all input values before showing the dialog.
-	void Treewalk(Rocket::Core::Element *);
+	// Walk through the tree and upate all nodes.
+	void Treewalk(Rocket::Core::Element *, void (MessageDialog::*)(Rocket::Core::Element *));
 
 	// Update inputs of this specific element (if there is any).
 	void UpdateInput(Rocket::Core::Element *);
+
+	// Find default buttons
+	void DetectDefaultButton(Rocket::Core::Element *);
 };

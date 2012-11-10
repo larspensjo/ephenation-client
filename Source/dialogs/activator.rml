@@ -94,7 +94,7 @@
 					</div>
 				</panel>
 			</tabset>
-			<input class="formatbutton firstbuttonpos" type="submit" value="ok">Ok</input>
+			<input class="formatbutton firstbuttonpos" type="submit" value="ok" enterket=true>Ok</input>
 		</form>
 	</div>
 </body>

@@ -31,7 +31,21 @@
 using std::string;
 using std::stringstream;
 
-MessageDialog::MessageDialog() : fRocketContext(0), fDocument(0), fCallback(0) {
+struct MessageDialog::PushedDialog {
+	Rocket::Core::ElementDocument *fDocument;
+	void (*fCallback)(void);
+	Rocket::Core::Element *fDefaultButton;
+	Rocket::Core::Element *fCancelButton;
+
+	PushedDialog(Rocket::Core::ElementDocument *document, void (*callback)(void), Rocket::Core::Element *enter, Rocket::Core::Element *close) {
+		fDocument = document;
+		fCallback = callback;
+		fDefaultButton = enter;
+		fCancelButton = close;
+	}
+};
+
+MessageDialog::MessageDialog() : fRocketContext(0), fDocument(0), fCurrentDefaultButton(0), fCurrentCloseButton(0), fCallback(0) {
 }
 
 MessageDialog::~MessageDialog() {
@@ -56,6 +70,7 @@ void MessageDialog::LoadDialog(const string &file) {
 	// Document is owned by the caller, which means reference count has already been incremented.
 	fDocument->AddEventListener("click", this);
 	fCallback = 0;
+	this->Treewalk(fDocument, &MessageDialog::DetectDefaultButton);
 	fDocument->Show();
 }
 
@@ -63,7 +78,8 @@ void MessageDialog::LoadForm(const string &file) {
 	// This is like "Popup", but a form with updated inputs will be shown.
 	fDocument = fRocketContext->LoadDocument(("dialogs/" + file).c_str());
 	fFormResultValues.clear(); // Restart with an empty list
-	this->Treewalk(fDocument); // Fill default parameters in the document
+	this->Treewalk(fDocument, &MessageDialog::UpdateInput); // Fill default parameters in the document
+	this->Treewalk(fDocument, &MessageDialog::DetectDefaultButton);
 	fDocument->AddEventListener("click", this);
 	fDocument->AddEventListener("submit", this);
 	fCallback = 0;
@@ -87,6 +103,7 @@ void MessageDialog::Set(const string &title, const string &body, void (*callback
 		content->SetInnerRML(body.c_str());
 	fDocument->AddEventListener("click", this);
 	fCallback = callback;
+	this->Treewalk(fDocument, &MessageDialog::DetectDefaultButton);
 	fDocument->Show();
 }
 
@@ -118,6 +135,7 @@ void MessageDialog::ClickEvent(Rocket::Core::Event& event, const string &action)
 		this->Push();
 		fDocument = fRocketContext->LoadDocument(("dialogs/" + split[1]).c_str());
 		fDocument->AddEventListener("click", this);
+		this->Treewalk(fDocument, &MessageDialog::DetectDefaultButton);
 		fCallback = 0;
 		fDocument->Show();
 	} else if (split[0] == "Form" && split.size() == 2) {
@@ -202,7 +220,7 @@ void MessageDialog::CloseCurrentDocument(void) {
 
 void MessageDialog::Push(void) {
 	fDocument->Hide();
-	fStack.push_back(PushedDialog(fDocument, fCallback));
+	fStack.push_back(PushedDialog(fDocument, fCallback, fCurrentDefaultButton, fCurrentCloseButton));
 	fDocument = 0;
 	fCallback = 0;
 }
@@ -211,30 +229,33 @@ bool MessageDialog::Pop(void) {
 	this->CloseCurrentDocument();
 	if (fStack.size() == 0)
 		return false;
-	fDocument = fStack.back().first;
-	fCallback = fStack.back().second;
+	fDocument = fStack.back().fDocument;
+	fCallback = fStack.back().fCallback;
+	fCurrentDefaultButton = fStack.back().fDefaultButton;
+	fCurrentCloseButton = fStack.back().fCancelButton;
 	fStack.pop_back();
 	fDocument->Show();
 	return true;
 }
 
-void MessageDialog::Treewalk(Rocket::Core::Element *e) {
+void MessageDialog::Treewalk(Rocket::Core::Element *e, void (MessageDialog::*func)(Rocket::Core::Element *)) {
 	int numChildren = e->GetNumChildren();
 	for (int i=0; i<numChildren; i++) {
 		Rocket::Core::Element *child = e->GetChild(i);
-		this->Treewalk(child);
-		this->UpdateInput(child);
+		this->Treewalk(child, func);
+		(this->*func)(child);
 	}
 }
 
 void MessageDialog::UpdateInput(Rocket::Core::Element *e) {
 	Rocket::Core::String def = "";
-	string tag = e->GetTagName().CString();
-	string type = e->GetAttribute("type", def).CString();
+	auto tag = e->GetTagName();
+	auto type = e->GetAttribute("type", def);
 	string name = e->GetAttribute("name", def).CString();
-	string value = e->GetAttribute("value", def).CString();
+	auto value = e->GetAttribute("value", def);
 	if (tag == "input") {
-		fFormResultValues[name] = "";
+		if (name != "")
+			fFormResultValues[name] = "";
 
 		if (name == "Display.vsync" && Options::sfSave.fVSYNC) {
 			e->SetAttribute("checked", 1);
@@ -286,12 +307,12 @@ void MessageDialog::UpdateInput(Rocket::Core::Element *e) {
 			e->SetAttribute("checked", 1);
 		}
 	} else if (tag == "option") {
-		if (name == "Graphics.performance" && atoi(value.c_str()) == Options::sfSave.fPerformance) {
+		if (name == "Graphics.performance" && atoi(value.CString()) == Options::sfSave.fPerformance) {
 			e->SetAttribute("selected", 1);
 		}
 		if (name == "Options.shadows") {
 			// Map current configuration of shadows to the drop own list
-			switch(atoi(value.c_str())) {
+			switch(atoi(value.CString())) {
 			case 1:
 				if (Options::sfSave.fStaticShadows == 0 && Options::sfSave.fDynamicShadows == 0)
 					e->SetAttribute("selected", 1);
@@ -317,9 +338,33 @@ void MessageDialog::UpdateInput(Rocket::Core::Element *e) {
 		}
 	} else if (tag == "select") {
 		auto *element= dynamic_cast<Rocket::Controls::ElementFormControlSelect*>(e);
-		if (name == "Options.graphicalmode") {
+		if (element && name == "Options.graphicalmode") {
 			gOptions.ListGraphicModes(element);
 		} else if (name == "Activator.soundeffect") {
 		}
 	}
+}
+
+void MessageDialog::DetectDefaultButton(Rocket::Core::Element *e) {
+	Rocket::Core::String def = "false";
+	auto enterkey = e->GetAttribute("enterkey", def);
+	auto cancelkey = e->GetAttribute("cancelkey", def);
+	if (enterkey == "true")
+		fCurrentDefaultButton = e;
+	if (cancelkey == "true")
+		fCurrentCloseButton = e;
+}
+
+void MessageDialog::CancelButton(void) {
+	if (!fCurrentCloseButton)
+		return;
+	Rocket::Core::Dictionary dic;
+	fCurrentCloseButton->DispatchEvent("click", dic);
+}
+
+void MessageDialog::DefaultButton(void) {
+	if (!fCurrentDefaultButton)
+		return;
+	Rocket::Core::Dictionary dic;
+	fCurrentDefaultButton->DispatchEvent("click", dic);
 }

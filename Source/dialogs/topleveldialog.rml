@@ -34,7 +34,7 @@
 			<button class="menuitem" onclick="Popup help.rml">Help...</button>
 			<button class="menuitem" onclick="Popup credits.rml">Credits...</button>
 		</div>
-		<button class="formatbutton firstbuttonpos" onclick="Close">Play</button>
+		<button class="formatbutton firstbuttonpos" onclick="Close" enterkey=true cancelkey=true>Play</button>
 		<button class="formatbutton secondbuttonpos" onclick="Quit">Quit</button>
 	</div>
 </body>
