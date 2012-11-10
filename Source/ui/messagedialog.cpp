@@ -223,6 +223,8 @@ void MessageDialog::Push(void) {
 	fStack.push_back(PushedDialog(fDocument, fCallback, fCurrentDefaultButton, fCurrentCloseButton));
 	fDocument = 0;
 	fCallback = 0;
+	fCurrentCloseButton = 0;
+	fCurrentDefaultButton = 0;
 }
 
 bool MessageDialog::Pop(void) {
