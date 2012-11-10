@@ -205,8 +205,6 @@
 		<Unit filename="ui/Error.h" />
 		<Unit filename="ui/HelpDialog.cpp" />
 		<Unit filename="ui/HelpDialog.h" />
-		<Unit filename="ui/OptionsDialog.cpp" />
-		<Unit filename="ui/OptionsDialog.h" />
 		<Unit filename="ui/RocketGui.cpp" />
 		<Unit filename="ui/RocketGui.h" />
 		<Unit filename="ui/RocketRenderInterface.cpp" />

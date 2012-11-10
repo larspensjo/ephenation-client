@@ -44,9 +44,9 @@
 							<option name="Activator.spawnmonster" value="6">Level+2</option>
 						</select><br/>
 						Sound effect:
-						<select name="Activator.soundeffect">
+						<select name="Activator.soundeffect" onchange="soundeffect">
 						</select>
-						<input type="submit" type="testsound">Test</input><br/>
+						<button class="formatbutton" onclick="testsound" name="apa">Test</button><br/>
 						Reward:
 						<select name="Activator.reward">
 							<option name="Activator.reward" value="1">AAA</option>

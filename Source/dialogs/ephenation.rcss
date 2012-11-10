@@ -158,6 +158,8 @@ select selectbox
 	margin-top: -2px;
 	width: 162px;
 	padding: 1px 4px 4px 4px;
+	font-size: 18px;
+	font-family: georgia;
 
 	background-decorator: tiled-box;
 	background-top-left-image: brass_theme_1a.bmp 295px 424px 306px 435px;

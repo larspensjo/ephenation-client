@@ -26,6 +26,7 @@
 #include "../Options.h"
 #include "../primitives.h"
 #include "../connection.h"
+#include "../SoundControl.h"
 #include "Error.h"
 
 using std::string;
@@ -343,6 +344,15 @@ void MessageDialog::UpdateInput(Rocket::Core::Element *e) {
 		if (element && name == "Options.graphicalmode") {
 			gOptions.ListGraphicModes(element);
 		} else if (name == "Activator.soundeffect") {
+			for (size_t i=0; i < gSoundControl.fNumTrigSounds; i++) {
+				const char *descr = gSoundControl.fTrigSoundList[i].description;
+				// A null pointer indicates that the rest are "private" sounds that may not be used in construction mode
+				if (descr == 0)
+					break;
+				stringstream ss;
+				ss << i;
+				element->Add(descr, ss.str().c_str());
+			}
 		}
 	}
 }
