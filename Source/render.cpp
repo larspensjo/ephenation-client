@@ -219,6 +219,31 @@ static bool Outside(int dx, int dy, int dz, const glm::mat4 &modelMatrix) {
 	return outside;
 }
 
+// Draw a bounding box for a chunk. Optionally, a chunk pointer can be provided to make
+// a more accurate limitation.
+static void DrawBoundingBox(StageOneShader *shader, int dx, int dy, int dz, chunk *cp) {
+	char bxmin = -LAMP2_DIST, bymin = -LAMP2_DIST, bzmin = -LAMP2_DIST;
+	char bxmax = CHUNK_SIZE+LAMP2_DIST, bymax = CHUNK_SIZE+LAMP2_DIST, bzmax = CHUNK_SIZE+LAMP2_DIST;
+	if (cp && !cp->IsDirty()) {
+		shared_ptr<const ChunkObject> co = cp->fChunkObject;
+		if (co != nullptr) {
+			// There are real boundaries available
+			bxmin = co->fBoundXMin; bxmax = co->fBoundXMax; bymin = co->fBoundYMin; bymax = co->fBoundYMax; bzmin = co->fBoundZMin; bzmax = co->fBoundZMax;
+		}
+	}
+
+	glm::mat4 modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(dx*CHUNK_SIZE+16.0f-bxmin, dz*CHUNK_SIZE-bzmin, -dy*CHUNK_SIZE-16.0f+-bymin));
+	modelMatrix = glm::rotate(modelMatrix, 45.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+	const float scale = 32.0f * 1.414f; // Side was originally 1/sqrt(2) blocks, but height was 1.
+	float xFact = float(bxmax-bxmin)/CHUNK_SIZE;
+	float yFact = float(bymax-bymin)/CHUNK_SIZE;
+	float zFact = float(bzmax-bzmin)/CHUNK_SIZE;
+	modelMatrix = glm::scale(modelMatrix, glm::vec3(scale*xFact, 32.0f*zFact, scale*yFact));
+	glBindTexture(GL_TEXTURE_2D, GameTexture::BlueChunkBorder); // Any texture will do
+	shader->Model(modelMatrix);
+	gLantern.Draw(); // TODO: This shape (gLantern) is rotated, a more proper cube should be used, avoiding complicated matrices.
+}
+
 // Investigate chunks in the specified interval, and test if they are visible.
 // This is done in a pipeline, which means enough cubes should be tested every time
 // to make sure the wait for the pipe line isn't too long.
@@ -227,34 +252,16 @@ static bool Outside(int dx, int dy, int dz, const glm::mat4 &modelMatrix) {
 static void QuerySetup(StageOneShader *shader, int from, int to, int *listOfVisibleChunks) {
 	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
 	glDepthMask(GL_FALSE);
+	glBindTexture(GL_TEXTURE_2D, GameTexture::BlueChunkBorder); // Any texture will do
 	for (int i=from; i<to; i++) {
 		int ind = listOfVisibleChunks[i];
 		int dx = sChunkDistances[ind].dx;
 		int dy = sChunkDistances[ind].dy;
 		int dz = sChunkDistances[ind].dz;
 
-		char bxmin = -LAMP2_DIST, bymin = -LAMP2_DIST, bzmin = -LAMP2_DIST;
-		char bxmax = CHUNK_SIZE+LAMP2_DIST, bymax = CHUNK_SIZE+LAMP2_DIST, bzmax = CHUNK_SIZE+LAMP2_DIST;
 		chunk *cp = sListOfNearChunks[ind];
-		if (cp && !cp->IsDirty()) {
-			shared_ptr<const ChunkObject> co = cp->fChunkObject;
-			if (co != nullptr) {
-				// There are real boundaries available
-				bxmin = co->fBoundXMin; bxmax = co->fBoundXMax; bymin = co->fBoundYMin; bymax = co->fBoundYMax; bzmin = co->fBoundZMin; bzmax = co->fBoundZMax;
-			}
-		}
-
-		glm::mat4 modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(dx*CHUNK_SIZE+16.0f-bxmin, dz*CHUNK_SIZE-bzmin, -dy*CHUNK_SIZE-16.0f+-bymin));
-		modelMatrix = glm::rotate(modelMatrix, 45.0f, glm::vec3(0.0f, 1.0f, 0.0f));
-		const float scale = 32.0f * 1.414f; // Side was originally 1/sqrt(2) blocks, but height was 1.
-		float xFact = float(bxmax-bxmin)/CHUNK_SIZE;
-		float yFact = float(bymax-bymin)/CHUNK_SIZE;
-		float zFact = float(bzmax-bzmin)/CHUNK_SIZE;
-		modelMatrix = glm::scale(modelMatrix, glm::vec3(scale*xFact, 32.0f*zFact, scale*yFact));
-		glBindTexture(GL_TEXTURE_2D, GameTexture::BlueChunkBorder); // Any texture will do
-		shader->Model(modelMatrix);
 		glBeginQuery(GL_SAMPLES_PASSED, sQueryId[i%(NUMQUERIES*2)]);
-		gLantern.Draw(); // TODO: This shape (gLantern) is rotated, a more proper cube should be used, avoiding complicated matrices.
+		DrawBoundingBox(shader, dx, dy, dz, cp);
 		glEndQuery(GL_SAMPLES_PASSED);
 	}
 	glDepthMask(GL_TRUE);
@@ -321,7 +328,6 @@ void DrawLandscape(StageOneShader *shader, DL_Type dlType) {
 	// At 80m viewing distance, there are 895 chunks. Using various filters, the actual chunks that can be seen are
 	// much fewer. Save the filtered list, to speed up the drawing.
 	int listOfVisibleChunks[sMaxVolume];
-	int num = 0;
 	int src, dst;
 	// Create list of visible chunks. This check is faster than using queries, so it is a good filter to
 	// start with.
@@ -383,7 +389,6 @@ void DrawLandscape(StageOneShader *shader, DL_Type dlType) {
 		int dy = sChunkDistances[ind].dy;
 		int dz = sChunkDistances[ind].dz;
 		glm::mat4 modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(dx*CHUNK_SIZE, dz*CHUNK_SIZE, -dy*CHUNK_SIZE));
-		num++;
 
 		// Don't allow picking outside of near chunks.
 		if (dlType == DL_Picking && (dx < -1 || dx > 1 || dy < -1 || dy > 1 || dz < -1 || dz > 1))
