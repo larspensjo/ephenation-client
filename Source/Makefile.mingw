@@ -57,7 +57,6 @@ MY_CFLAGS = -L/usr/lib -L/usr/local/lib -I/usr/local/include -I/usr/include\
 	-Icontrib/win32/tinyxml\
 	-Icontrib/win32/libRocket/include\
 	-Icontrib/glm\
-	-I/usr/bin/assimp/include\
 	-DOV_EXCLUDE_STATIC_CALLBACKS\
 	-DWIN32\
 	-DSTATIC_LIB

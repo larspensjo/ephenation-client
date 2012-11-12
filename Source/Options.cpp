@@ -25,6 +25,10 @@
 #include <Rocket/Controls.h>
 #include <glm/glm.hpp>
 
+#ifdef WIN32
+#include <windows.h>
+#endif
+
 #include "render.h"
 #include "Options.h"
 #include "assert.h"
