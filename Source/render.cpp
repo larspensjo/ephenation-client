@@ -219,31 +219,6 @@ static bool Outside(int dx, int dy, int dz, const glm::mat4 &modelMatrix) {
 	return outside;
 }
 
-// Draw a bounding box for a chunk. Optionally, a chunk pointer can be provided to make
-// a more accurate limitation.
-static void DrawBoundingBox(StageOneShader *shader, int dx, int dy, int dz, chunk *cp) {
-	char bxmin = -LAMP2_DIST, bymin = -LAMP2_DIST, bzmin = -LAMP2_DIST;
-	char bxmax = CHUNK_SIZE+LAMP2_DIST, bymax = CHUNK_SIZE+LAMP2_DIST, bzmax = CHUNK_SIZE+LAMP2_DIST;
-	if (cp && !cp->IsDirty()) {
-		shared_ptr<const ChunkObject> co = cp->fChunkObject;
-		if (co != nullptr) {
-			// There are real boundaries available
-			bxmin = co->fBoundXMin; bxmax = co->fBoundXMax; bymin = co->fBoundYMin; bymax = co->fBoundYMax; bzmin = co->fBoundZMin; bzmax = co->fBoundZMax;
-		}
-	}
-
-	glm::mat4 modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(dx*CHUNK_SIZE+16.0f-bxmin, dz*CHUNK_SIZE-bzmin, -dy*CHUNK_SIZE-16.0f+-bymin));
-	modelMatrix = glm::rotate(modelMatrix, 45.0f, glm::vec3(0.0f, 1.0f, 0.0f));
-	const float scale = 32.0f * 1.414f; // Side was originally 1/sqrt(2) blocks, but height was 1.
-	float xFact = float(bxmax-bxmin)/CHUNK_SIZE;
-	float yFact = float(bymax-bymin)/CHUNK_SIZE;
-	float zFact = float(bzmax-bzmin)/CHUNK_SIZE;
-	modelMatrix = glm::scale(modelMatrix, glm::vec3(scale*xFact, 32.0f*zFact, scale*yFact));
-	glBindTexture(GL_TEXTURE_2D, GameTexture::BlueChunkBorder); // Any texture will do
-	shader->Model(modelMatrix);
-	gLantern.Draw(); // TODO: This shape (gLantern) is rotated, a more proper cube should be used, avoiding complicated matrices.
-}
-
 // Investigate chunks in the specified interval, and test if they are visible.
 // This is done in a pipeline, which means enough cubes should be tested every time
 // to make sure the wait for the pipe line isn't too long.
@@ -259,9 +234,9 @@ static void QuerySetup(StageOneShader *shader, int from, int to, int *listOfVisi
 		int dy = sChunkDistances[ind].dy;
 		int dz = sChunkDistances[ind].dz;
 
-		chunk *cp = sListOfNearChunks[ind];
+		chunk *cp = sListOfNearChunks[ind]; // Can be 0!
 		glBeginQuery(GL_SAMPLES_PASSED, sQueryId[i%(NUMQUERIES*2)]);
-		DrawBoundingBox(shader, dx, dy, dz, cp);
+		cp->DrawBoundingBox(shader, dx, dy, dz); // Works also for null pointer
 		glEndQuery(GL_SAMPLES_PASSED);
 	}
 	glDepthMask(GL_TRUE);

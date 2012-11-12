@@ -167,6 +167,10 @@ struct chunk {
 	// Draw the chunk itself
 	void Draw(StageOneShader *shader, ChunkShaderPicking *pickShader, DL_Type dlType);
 
+	// Draw a bounding box for a chunk. Note, 'this' pointer can be zero, in which case
+	// a rough approximation has to be used for the bounding box.
+	void DrawBoundingBox(StageOneShader *shader, int dx, int dy, int dz);
+
 	// Draw all objects in the chunk. If 'forShadows' is true, skip doing things that shall not be
 	// used in the shadow map. dx, dy and dz is the relative distance to the player chunk.
 	void DrawObjects(StageOneShader *shader, int dx, int dy, int dz, bool forShadows);

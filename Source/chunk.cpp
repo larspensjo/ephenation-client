@@ -305,7 +305,6 @@ void chunk::Draw(StageOneShader *shader, ChunkShaderPicking *pickShader, DL_Type
 		}
 	}
 	glBindVertexArray(0);
-	checkError("chunk::Draw");
 }
 
 void chunk::DrawObjects(StageOneShader *shader, int dx, int dy, int dz, bool forShadows) {
@@ -634,4 +633,28 @@ void chunk::SetDirty(bool flag) {
 	ASSERT(flag == false || fScheduledForLoading == false);
 	// if (gVerbose && flag) printf("chunk::SetDirty %d,%d,%d\n", cc.x, cc.y, cc.z);
 	fDirty = flag;
+}
+
+// Note, 'this' pointer can be 0!
+void chunk::DrawBoundingBox(StageOneShader *shader, int dx, int dy, int dz) {
+	char bxmin = -LAMP2_DIST, bymin = -LAMP2_DIST, bzmin = -LAMP2_DIST;
+	char bxmax = CHUNK_SIZE+LAMP2_DIST, bymax = CHUNK_SIZE+LAMP2_DIST, bzmax = CHUNK_SIZE+LAMP2_DIST;
+	if (this && !this->IsDirty()) {
+		shared_ptr<const ChunkObject> co = this->fChunkObject;
+		if (co != nullptr) {
+			// There are real boundaries available
+			bxmin = co->fBoundXMin; bxmax = co->fBoundXMax; bymin = co->fBoundYMin; bymax = co->fBoundYMax; bzmin = co->fBoundZMin; bzmax = co->fBoundZMax;
+		}
+	}
+
+	glm::mat4 modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(dx*CHUNK_SIZE+16.0f-bxmin, dz*CHUNK_SIZE-bzmin, -dy*CHUNK_SIZE-16.0f+-bymin));
+	modelMatrix = glm::rotate(modelMatrix, 45.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+	const float scale = 32.0f * 1.414f; // Side was originally 1/sqrt(2) blocks, but height was 1.
+	float xFact = float(bxmax-bxmin)/CHUNK_SIZE;
+	float yFact = float(bymax-bymin)/CHUNK_SIZE;
+	float zFact = float(bzmax-bzmin)/CHUNK_SIZE;
+	modelMatrix = glm::scale(modelMatrix, glm::vec3(scale*xFact, 32.0f*zFact, scale*yFact));
+	glBindTexture(GL_TEXTURE_2D, GameTexture::BlueChunkBorder); // Any texture will do
+	shader->Model(modelMatrix);
+	gLantern.Draw(); // TODO: This shape (gLantern) is rotated, a more proper cube should be used, avoiding complicated matrices.
 }
