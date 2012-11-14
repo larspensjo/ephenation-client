@@ -40,7 +40,6 @@ void AnimationModels::Init() {
 	fModels.at(Alien)->model->Init("models/alien.dae", 0.0f, false);
 	fModels.at(Alien)->textures.push_back(GameTexture::GreenColor); // Unused mesh
 	fModels.at(Alien)->textures.push_back(this->LoadTexture("alien_body.bmp"));   // Body
-	fModels.at(Alien)->textures.push_back(this->LoadTexture("alien_eyes.bmp"));   // Eyes
 	fModels.at(Alien)->textures.push_back(this->LoadTexture("alien_teeth.bmp"));  // Teeth
 	fModels.at(Alien)->textures.push_back(this->LoadTexture("alien_spikes.bmp")); // Spikes
 
