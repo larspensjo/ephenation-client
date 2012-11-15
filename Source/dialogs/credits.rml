@@ -35,6 +35,7 @@
 			<div style="margin-left:50px;">ogg: http://xiph.org/ogg/</div>
 			<div style="margin-left:50px;">vorbis: http://www.vorbis.com/</div>
 			<div style="margin-left:50px;">libRocket: http://librocket.com/</div>
+			<div style="margin-left:50px;">glsw: http://prideout.net/blog/?p=11</div>
 		</div>
 		<button class="formatbutton firstbuttonpos" onclick="Close" cancelkey=true enterkey=true>Close</button>
 	</div>
