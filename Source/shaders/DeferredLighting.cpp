@@ -40,6 +40,7 @@ static const GLchar *fragmentShaderSource[] = {
 	"common.UniformBuffer",
 	"common.DoubleResolutionFunction",
 	"common.Poissondisk",
+	"common.SunDirection",
 	"deferredlighting.Fragment"
 };
 

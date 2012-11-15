@@ -41,6 +41,7 @@ static const GLchar *fragmentShaderSource[] = {
 	"common.Poissondisk",
 	"#define DYNAMIC_SHADOW_MAP_SIZE " STR(DYNAMIC_SHADOW_MAP_SIZE) "\n",
 	"#define STATIC_SHADOW_MAP_SIZE " STR(STATIC_SHADOW_MAP_SIZE) "\n",
+	"common.SunDirection",
 	"dynamicshadow.Fragment"
 };
 

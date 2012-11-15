@@ -41,7 +41,6 @@ uniform mat4 shadowmat;       // combination of projection * view matrices of th
 uniform sampler2D shadowmapTex; // TODO: Use shadow sampler instead
 const float shadowMapSize1 = DYNAMIC_SHADOW_MAP_SIZE; // The size of the dynamic shadowmap bitmap
 const float shadowMapSize2 = STATIC_SHADOW_MAP_SIZE; // The size of the dynamic shadowmap bitmap
-const vec3 sundir = vec3(-0.577350269, 0.577350269, 0.577350269);
 const int shadowMultiSample = 5;
 
 // This function computes lighting from a low resolution shadow map. The purpose is to use it for

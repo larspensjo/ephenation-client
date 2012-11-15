@@ -54,7 +54,6 @@ vec2 rand(vec2 a, vec2 b) {
 	return seed;
 }
 
-const vec3 sundir = vec3(-0.577350269, 0.577350269, 0.577350269);
 void main(void)
 {
 	// Load data, stored in textures, from the first stage rendering.

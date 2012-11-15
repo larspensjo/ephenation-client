@@ -61,3 +61,7 @@ vec2 DoubleResolution(vec2 coord) {
 	else ret.y = -LogisticFunction(-coord.y);
 	return ret;
 }
+
+-- SunDirection
+
+const vec3 sundir = vec3(-0.577350269, 0.577350269, 0.577350269);
