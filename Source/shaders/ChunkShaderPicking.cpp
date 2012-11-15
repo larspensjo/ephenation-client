@@ -26,39 +26,20 @@
 
 static const GLchar *vertexShaderSource[] = {
 	"#version 330\n", // This corresponds to OpenGL 3.3
-	"precision mediump float;\n",
-	"const float VERTEXSCALING="  STR(VERTEXSCALING) ";" // The is the scaling factor used for vertices
-	"uniform mat4 projectionMatrix;\n",
-	"uniform mat4 modelMatrix;\n",
-	"uniform mat4 viewMatrix;\n",
-	"in vec3 normal;\n",
-	"in vec3 vertex;\n",
-	"out vec3 fragmentNormal;\n",
-	"void main(void)\n",
-	"{\n",
-	"	vec4 vertexScaled = vec4(vec3(vertex) / VERTEXSCALING, 1);"
-	// Special scaling applies for the normal in picking mode.
-	"   fragmentNormal = normal/255;\n", // The normal will be coded into the color, scaled from range 0..255 to 0..1.
-	"	gl_Position = projectionMatrix * viewMatrix * modelMatrix * vertexScaled;\n",
-	"}\n",
+	"#define VERTEXSCALING "  STR(VERTEXSCALING) "\n", // The is the scaling factor used for vertices
+	"chunkshaderpicking.Vertex"
 };
 
 static const GLchar *fragmentShaderSource[] = {
 	"#version 330\n", // This corresponds to OpenGL 3.3
-	"precision mediump float;\n",
-	"in vec3 fragmentNormal;\n",
-	// "layout(location = 0, index = 0) out vec4 fragColor;\n",
-	"void main(void)\n",
-	"{\n",
-	"	gl_FragColor = vec4(fragmentNormal,1.0);\n",
-	"}\n",
+	"chunkshaderpicking.Fragment"
 };
 
 ChunkShaderPicking *ChunkShaderPicking::Make(void) {
 	if (fgSingleton.fNormalIndex == -1) {
 		const GLsizei vertexShaderLines = sizeof(vertexShaderSource) / sizeof(GLchar*);
 		const GLsizei fragmentShaderLines = sizeof(fragmentShaderSource) / sizeof(GLchar*);
-		fgSingleton.Init("ChunkShaderPicking", vertexShaderLines, vertexShaderSource, fragmentShaderLines, fragmentShaderSource);
+		fgSingleton.Initglsw("ChunkShaderPicking", vertexShaderLines, vertexShaderSource, fragmentShaderLines, fragmentShaderSource);
 	}
 	return &fgSingleton;
 }

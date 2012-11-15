@@ -25,37 +25,19 @@
 // Minimum program for drawing text
 static const GLchar *vertexShaderSource[] = {
 	"#version 330\n",
-	"uniform mat4 UprojectionMatrix;\n",
-	"uniform mat4 UmodelViewMatrix;\n",
-	"layout (location=0) in vec3 Avertex;\n", // Location must match VERTEX_INDEX
-	"layout (location=1) in vec4 Acolor;"     // Location must match COLOR_INDEX
-	"out vec4 color;"
-	"void main(void)\n",
-	"{\n",
-	"	gl_Position = UprojectionMatrix * UmodelViewMatrix * vec4(Avertex,1.0);\n",
-	"	color = Acolor;"
-	"}\n",
+	"colorshader.Vertex"
 };
 
 static const GLchar *fragmentShaderSource[] = {
 	"#version 330\n",
-	"precision mediump float;\n",
-	"uniform vec4 Ucolor;\n",
-	"in vec4 color;"
-	"void main(void)\n",
-	"{\n",
-	"	if (Ucolor.a != 0)"
-	"		gl_FragColor = Ucolor;\n",
-	"	else"
-	"		gl_FragColor = color;\n",
-	"}\n",
+	"colorshader.Fragment"
 };
 
 ColorShader *ColorShader::Make(void) {
 	if (fgSingleton.fProjectionMatrixIndex == -1) {
 		const GLsizei vertexShaderLines = sizeof(vertexShaderSource) / sizeof(GLchar*);
 		const GLsizei fragmentShaderLines = sizeof(fragmentShaderSource) / sizeof(GLchar*);
-		fgSingleton.Init("ColorShader", vertexShaderLines, vertexShaderSource, fragmentShaderLines, fragmentShaderSource);
+		fgSingleton.Initglsw("ColorShader", vertexShaderLines, vertexShaderSource, fragmentShaderLines, fragmentShaderSource);
 	}
 	return &fgSingleton;
 }

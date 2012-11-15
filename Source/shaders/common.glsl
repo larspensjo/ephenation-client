@@ -18,6 +18,7 @@
 
 -- UniformBuffer
 
+// This list must match the struct defined in Uniform.cpp.
 layout(std140) uniform GlobalData {
 	mat4 UBOProjectionMatrix;
 	mat4 UBOProjectionviewMatrix;

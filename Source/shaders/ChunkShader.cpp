@@ -27,80 +27,24 @@
 
 static const GLchar *vertexShaderSource[] = {
 	"#version 330\n", // This corresponds to OpenGL 3.3
-	UNIFORMBUFFER
-	"const float VERTEXSCALING="  STR(VERTEXSCALING) ";" // The is the scaling factor used for vertices
-	"const float NORMALSCALING="  STR(NORMALSCALING) ";" // The is the scaling factor used for vertices
-	"const float TEXTURESCALING="  STR(TEXTURESCALING) ";" // The is the scaling factor used for vertices
-
-	// Take an 8-bit signed number and convert it to a texture bitmap offset
-	"float ConvertIntToTexture(int n) {"
-	"	if (n < 128)"
-	"		return float(n)/TEXTURESCALING;"
-	"	else"
-	"		return float(n-256)/TEXTURESCALING;"
-	"}"
-
-	"uniform mat4 modelMatrix;\n",
-	// This contains both a offset and a multiplier to be used for the bitmap. It enables the use
-	// of atlas bitmaps.
-	"uniform vec3 textOffsMulti = vec3(0,0,1);\n",
-	"in vec4 normal;\n",
-	"in vec4 vertex;\n", // First 3 are vertex coordinates, the 4:th is texture data coded as two scaled bytes
-	"out vec3 fragmentNormal;\n",
-	"out vec2 fragmentTexCoord;\n",
-	"out float extIntensity;\n",
-	"out float extAmbientLight;\n",
-	"out vec3 position;\n",
-	"void main(void)\n",
-	"{\n",
-	"	vec4 vertexScaled = vec4(vec3(vertex) / VERTEXSCALING, 1);"
-	"	int t1 = int(vertex[3]);" // Extract the texture data
-	"	vec2 textureScaled = vec2(ConvertIntToTexture(t1&0xFF), ConvertIntToTexture(t1>>8));"
-	"	int intens2 = int(normal[3]);" // Bit 0 to 3 is sun intensity, 4 to 7 is ambient light
-	"	if (intens2 < 0) intens2 += 256;"
-	"   float textMult = textOffsMulti.z;\n",
-	"	fragmentTexCoord = textureScaled*textMult + textOffsMulti.xy;\n",
-	"	fragmentNormal = normalize((modelMatrix*vec4(normal.xyz/NORMALSCALING, 0.0)).xyz);\n",
-	"	gl_Position = UBOProjectionviewMatrix * modelMatrix * vertexScaled;\n",
-	"   position = vec3(modelMatrix * vertexScaled);\n", // Copy position to the fragment shader
-	// Scale the intensity from [0..255] to [0..1].
-	"	extIntensity = (intens2 & 0x0F)/15.0;\n",
-	// "	extIntensity = 0.1;\n",
-	"   extAmbientLight = (intens2 >> 4)/15.0;\n",
-	// "   extAmbientLight = 1;\n",
-	"}\n",
+	"common.UniformBuffer",
+	"#define VERTEXSCALING "  STR(VERTEXSCALING) "\n", // The is the scaling factor used for vertices
+	"#define NORMALSCALING "  STR(NORMALSCALING) "\n", // The is the scaling factor used for vertices
+	"#define TEXTURESCALING "  STR(TEXTURESCALING) "\n", // The is the scaling factor used for vertices
+	"chunkshader.Vertex"
 };
 
 static const GLchar *fragmentShaderSource[] = {
 	"#version 330\n", // This corresponds to OpenGL 3.3
-	UNIFORMBUFFER
-	"uniform sampler2D firstTexture;\n",
-	"in vec3 fragmentNormal;\n",
-	"in vec2 fragmentTexCoord;\n",
-	"in float extIntensity;\n",
-	"in float extAmbientLight;\n",
-	"in vec3 position;\n",       // The model coordinate, as given by the vertex shader
-	"layout(location = 0) out vec4 diffuseOutput;\n",
-	"layout(location = 1) out vec4 posOutput;\n",
-	"layout(location = 2) out vec4 normOutput;\n",
-	"void main(void)\n",
-	"{\n",
-	"   if (distance(UBOCamera.xyz, position) > UBOViewingDistance) { discard; return; }\n",
-	"	vec4 clr = texture(firstTexture, fract(fragmentTexCoord));\n",
-	"   float alpha = clr.a;\n",
-	"   if (alpha == 0) { discard; return; }\n", // For some reason, some alpha that should be discarded is still not exactly 0.
-	"   posOutput.xyz = position;\n",   // This position shall not be transformed by the view matrix
-	"   posOutput.a = extIntensity;\n", // Use the alpha channel for sun intensity. TODO: This is a 32-bit float, very inefficient
-	"   normOutput = vec4(fragmentNormal, extAmbientLight);\n", // Use alpha channel of normal for ambient info.
-	"   diffuseOutput = clr;\n",
-	"}\n",
+	"common.UniformBuffer",
+	"chunkshader.Fragment"
 };
 
 ChunkShader *ChunkShader::Make(void) {
 	if (fgSingleton.fModelMatrixIndex == -1) {
 		const GLsizei vertexShaderLines = sizeof(vertexShaderSource) / sizeof(GLchar*);
 		const GLsizei fragmentShaderLines = sizeof(fragmentShaderSource) / sizeof(GLchar*);
-		fgSingleton.Init("ChunkShader", vertexShaderLines, vertexShaderSource, fragmentShaderLines, fragmentShaderSource);
+		fgSingleton.Initglsw("ChunkShader", vertexShaderLines, vertexShaderSource, fragmentShaderLines, fragmentShaderSource);
 	}
 	return &fgSingleton;
 }
