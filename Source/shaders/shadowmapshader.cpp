@@ -34,49 +34,25 @@
 
 static const GLchar *vertexShaderSource[] = {
 	"#version 330\n", // This corresponds to OpenGL 3.3
-	UNIFORMBUFFER
-	DOUBLERESOLUTIONFUNCTION
-	"const float VERTEXSCALING="  STR(VERTEXSCALING) ";" // The is the scaling factor used for vertices
-	"const float TEXTURESCALING="  STR(TEXTURESCALING) ";" // The is the scaling factor used for vertices
-	"uniform mat4 projectionViewMatrix;\n",
-	"uniform mat4 modelMatrix;\n",
-	// This contains both a offset and a multiplier to be used for the bitmap. It enables the use
-	// of atlas bitmaps.
-	"uniform vec3 textOffsMulti = vec3(0,0,1);\n",
-	"in vec4 vertex;\n", // First 3 are vertex coordinates, the 4:th is texture data coded as two scaled bytes
-	"out vec2 fragmentTexCoord;\n",
-	"void main(void)\n",
-	"{\n",
-	"	vec4 vertexScaled = vec4(vec3(vertex) / VERTEXSCALING, 1);"
-	"	int t1 = int(vertex[3]);" // Extract the texture data
-	"	vec2 tex = vec2(t1&0xFF, t1>>8);"
-	"	vec2 textureScaled = tex / TEXTURESCALING;"
-	"	vec4 pos = projectionViewMatrix * modelMatrix * vertexScaled;\n",
-	"	pos.xy = DoubleResolution(pos.xy);"
-	"	gl_Position = pos;\n",
-	"   float textMult = textOffsMulti.z;\n",
-	"	fragmentTexCoord = textureScaled*textMult + textOffsMulti.xy;\n",
-	"}\n",
+	"common.UniformBuffer",
+	"common.DoubleResolutionFunction",
+	"#define VERTEXSCALING "  STR(VERTEXSCALING) "\n", // The is the scaling factor used for vertices
+	"#define TEXTURESCALING "  STR(TEXTURESCALING) "\n", // The is the scaling factor used for vertices
+	"shadowmapshader.Vertex"
 };
 
 // Normally, the fragment shader wouldn't have to do anything, and it would still work. However, there are textures with
 // transparent areas, and these should not generate shadows. For example, the leaves on the trees are quads with leaves on.
 static const GLchar *fragmentShaderSource[] = {
 	"#version 330\n", // This corresponds to OpenGL 3.3
-	"uniform sampler2D firstTexture;\n",
-	"in vec2 fragmentTexCoord;\n",
-	"void main(void)\n",
-	"{\n",
-	"	vec4 clr = texture(firstTexture, fract(fragmentTexCoord));\n",
-	"   if (clr.a == 0) { discard; }\n",
-	"}\n",
+	"shadowmapshader.Fragment"
 };
 
 std::unique_ptr<ShadowMapShader> ShadowMapShader::Make(void) {
 	std::unique_ptr<ShadowMapShader> shader(new ShadowMapShader);
 	const GLsizei vertexShaderLines = sizeof(vertexShaderSource) / sizeof(GLchar*);
 	const GLsizei fragmentShaderLines = sizeof(fragmentShaderSource) / sizeof(GLchar*);
-	shader->Init("ShadowMapShader", vertexShaderLines, vertexShaderSource, fragmentShaderLines, fragmentShaderSource);
+	shader->Initglsw("ShadowMapShader", vertexShaderLines, vertexShaderSource, fragmentShaderLines, fragmentShaderSource);
 	return shader;
 }
 

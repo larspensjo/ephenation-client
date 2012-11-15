@@ -27,84 +27,25 @@
 
 static const GLchar *vertexShaderSource[] = {
 	"#version 330\n", // This corresponds to OpenGL 3.3
-	UNIFORMBUFFER
-	DOUBLERESOLUTIONFUNCTION
-	"const float VERTEXSCALING="  STR(VERTEXSCALING) ";" // The is the scaling factor used for vertices
-	"const float NORMALSCALING="  STR(NORMALSCALING) ";" // The is the scaling factor used for vertices
-	"const float TEXTURESCALING="  STR(TEXTURESCALING) ";" // The is the scaling factor used for vertices
-	"uniform mat4 modelMatrix;\n",
-	"uniform mat4 bonesMatrix[64];"
-	"uniform bool forShadowmap = false;"
-	"uniform mat4 shadowProjViewMat;"
-	"in vec4 normal;\n",
-	"in vec4 vertex;\n", // First 3 are vertex coordinates, the 4:th is texture data coded as two scaled bytes
-	"in vec3 weights;\n",
-	"in vec3 joints;\n",
-	"out vec3 fragmentNormal;\n",
-	"out vec2 fragmentTexCoord;\n",
-	"out float extIntensity;\n",
-	"out float extAmbientLight;\n",
-	"out vec3 position;\n",
-	"void main(void)\n",
-	"{\n",
-	"	vec4 vertexScaled = vec4(vec3(vertex) / VERTEXSCALING, 1);"
-	"	int t1 = int(vertex[3]);" // Extract the texture data
-	"	vec2 tex = vec2(t1&0xFF, t1>>8);"
-	"	vec2 textureScaled = tex / TEXTURESCALING;"
-	"	vec3 normalScaled = normal.xyz / NORMALSCALING;"
-	"	int intens2 = int(normal[3]);" // Bit 0 to 3 is sun intensity, 4 to 7 is ambient light
-	"	if (intens2 < 0) intens2 += 256;"
-	"	mat4 animationMatrix = weights[0] * bonesMatrix[int(joints[0])] + weights[1] * bonesMatrix[int(joints[1])] + weights[2] * bonesMatrix[int(joints[2])];",
-	"	mat4 newModel = modelMatrix * animationMatrix;",
-	"	vec4 pos;\n",
-	"	if (forShadowmap) {"
-	"		pos = shadowProjViewMat * newModel * vertexScaled;\n",
-	"		pos.xy = DoubleResolution(pos.xy);"
-	"	} else {"
-	"		pos = UBOProjectionviewMatrix * newModel * vertexScaled;\n",
-	// Scale the intensity from [0..255] to [0..1].
-	"		fragmentTexCoord = textureScaled;\n",
-	"		extIntensity = (intens2 & 0x0F)/15.0;\n",
-	"		extAmbientLight = (intens2 >> 4)/15.0;\n",
-	"		fragmentNormal = normalize((newModel*vec4(normalScaled, 0.0)).xyz);\n",
-	"	}"
-	"	position = vec3(newModel * vertexScaled);\n", // Copy position to the fragment shader
-	"	gl_Position = pos;\n",
-	"}\n",
+	"common.UniformBuffer",
+	"common.DoubleResolutionFunction",
+	"#define VERTEXSCALING "  STR(VERTEXSCALING) "\n", // The is the scaling factor used for vertices
+	"#define NORMALSCALING "  STR(NORMALSCALING) "\n", // The is the scaling factor used for vertices
+	"#define TEXTURESCALING "  STR(TEXTURESCALING) "\n", // The is the scaling factor used for vertices
+	"animationshader.Vertex"
 };
 
 static const GLchar *fragmentShaderSource[] = {
 	"#version 330\n", // This corresponds to OpenGL 3.3
-	UNIFORMBUFFER
-	"uniform sampler2D firstTexture;\n",
-	"uniform bool forShadowmap = false;"
-	"in vec3 fragmentNormal;\n",
-	"in vec2 fragmentTexCoord;\n",
-	"in float extIntensity;\n",
-	"in float extAmbientLight;\n",
-	"in vec3 position;\n",       // The model coordinate, as given by the vertex shader
-	"out vec4 diffuseOutput;\n", // layout(location = 0)
-	"out vec4 posOutput;\n",     // layout(location = 1)
-	"out vec4 normOutput;\n",    // layout(location = 2)
-	"void main(void)\n",
-	"{\n",
-	"   if (distance(UBOCamera.xyz, position) > UBOViewingDistance) { discard; return; }\n",
-	"	vec4 clr = texture(firstTexture, fract(fragmentTexCoord));\n",
-	"   float alpha = clr.a;\n",
-	"   if (alpha == 0) { discard; return; }\n",
-	"   if (forShadowmap) return;"		// Ignore the rest, only depth buffer is used anyway.
-	"   posOutput.xyz = position;\n",   // This position shall not be transformed by the view matrix
-	"   posOutput.a = extIntensity;\n", // Use the alpha channel for sun intensity
-	"   normOutput = vec4(fragmentNormal, extAmbientLight);\n", // Use alpha channel of normal for ambient info.
-	"   diffuseOutput = clr;\n",
-	"}\n",
+	"common.UniformBuffer",
+	"animationshader.Fragment"
 };
 
 AnimationShader *AnimationShader::Make(void) {
 	if (fgSingleton.fModelMatrixIndex == -1) {
 		const GLsizei vertexShaderLines = sizeof(vertexShaderSource) / sizeof(GLchar*);
 		const GLsizei fragmentShaderLines = sizeof(fragmentShaderSource) / sizeof(GLchar*);
-		fgSingleton.Init("AnimationShader", vertexShaderLines, vertexShaderSource, fragmentShaderLines, fragmentShaderSource);
+		fgSingleton.Initglsw("AnimationShader", vertexShaderLines, vertexShaderSource, fragmentShaderLines, fragmentShaderSource);
 	}
 	return &fgSingleton;
 }
