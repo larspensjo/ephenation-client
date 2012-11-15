@@ -61,6 +61,7 @@
 #include "uniformbuffer.h"
 #include "billboard.h"
 #include "worsttime.h"
+#include "contrib/glsw.h"
 
 #ifndef GL_VERSION_3_2
 #define GL_CONTEXT_CORE_PROFILE_BIT       0x00000001
@@ -320,6 +321,8 @@ int main(int argc, char** argv) {
 		maxThreads = 1; // Override this number
 		std::cout << "Limit to minimum number of threads" << std::endl;
 	}
+	glswInit();
+	glswSetPath("shaders/", ".glsl");
 	ConnectToServer(host, port);
 	gSoundControl.Init();
 	TSExec::gTSExec.Init(); // This must be called after initiating gSoundControl.
@@ -451,6 +454,7 @@ int main(int argc, char** argv) {
 	// The logout acknowledge from the server may take sime time. Take the opportunity to
 	// halt the process pool.ss
 	gChunkProcess.RequestTerminate();
+	glswShutdown();
 
 	double timer = glfwGetTime();
 	// Wait for ack from server, but not indefinitely

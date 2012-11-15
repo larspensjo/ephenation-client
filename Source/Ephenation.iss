@@ -19,7 +19,7 @@ OutputBaseFilename=setup
 Compression=lzma
 SolidCompression=yes
 InfoBeforeFile=Disclaimer.rtf
-InfoAfterFile=readme.txt 
+InfoAfterFile=readme.txt
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
@@ -47,6 +47,7 @@ Source: "textures\*"; DestDir: "{app}\textures"; Flags: ignoreversion recursesub
 Source: "models\*.dae"; DestDir: "{app}\models"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "models\*.obj"; DestDir: "{app}\models"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "models\*.mtl"; DestDir: "{app}\models"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "shaders\*.glsl"; DestDir: "{app}\shaders"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]

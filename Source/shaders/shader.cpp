@@ -27,6 +27,33 @@
 #include "shader.h"
 #include "../uniformbuffer.h"
 #include "../ui/Error.h"
+#include "../contrib/glsw.h"
+
+void ShaderBase::Initglsw(const char *debug, int vertexShaderLines, const char **vertexShaderSource, int fragmentShaderLines, const char **fragmentShaderSource) {
+	const char *loadedVertexLines[vertexShaderLines];
+	for (int i=0; i<vertexShaderLines; i++) {
+		const char *p = vertexShaderSource[i];
+		if (p[0] != '#')
+			p = glswGetShader(p); // Directives are not translated
+		if (p == 0)
+			ErrorDialog("ShaderBase::Initglsw %s failed to load '%s'\n", debug, vertexShaderSource[i]);
+		// printf("%s", p);
+		loadedVertexLines[i] = p;
+	}
+
+	const char *loadedFragmnetLines[fragmentShaderLines];
+	for (int i=0; i<fragmentShaderLines; i++) {
+		const char *p = fragmentShaderSource[i];
+		if (p[0] != '#')
+			p = glswGetShader(p); // Directives are not translated
+		if (p == 0)
+			ErrorDialog("ShaderBase::Initglsw %s failed to load '%s'\n", debug, fragmentShaderSource[i]);
+		// printf("%s", p);
+		loadedFragmnetLines[i] = p;
+	}
+
+	this->Init(debug, vertexShaderLines, loadedVertexLines, fragmentShaderLines, loadedFragmnetLines);
+}
 
 void ShaderBase::Init(const char *debug, int vertexShaderLines, const char **vertexShaderSource, int fragmentShaderLines, const char **fragmentShaderSource) {
 	GLuint vertexShader = compileShaderSource (GL_VERTEX_SHADER, vertexShaderLines, vertexShaderSource);

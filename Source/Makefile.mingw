@@ -87,7 +87,7 @@ LDFLAGS   =
 
 # The directories in which source files reside.
 # If not specified, only the current directory will be serached.
-SRCDIRS   = . vsfl shaders ui shapes contrib/win32/tinyxml\
+SRCDIRS   = . vsfl shaders ui shapes contrib contrib/win32/tinyxml\
 	contrib/win32/lloyd-yajl-17b1790/src
 
 # The executable file name.

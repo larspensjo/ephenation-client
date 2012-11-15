@@ -78,7 +78,7 @@ LDFLAGS   =
 
 # The directories in which source files reside.
 # If not specified, only the current directory will be serached.
-SRCDIRS   = . vsfl shaders ui shapes
+SRCDIRS   = . vsfl shaders ui shapes contrib
 
 # The executable file name.
 # If not specified, current directory name or `a.out' will be used.

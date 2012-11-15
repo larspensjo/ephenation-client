@@ -27,6 +27,9 @@ public:
 
 	// Initialize the shader program, and call back to setup uniform and attribute indices.
 	void Init(const char *debug, int vertexShaderLines, const char **vertexShaderSource, int fragmentShaderLines, const char **fragmentShaderSource);
+
+	// Same as Init(), but process all lines with the glsw shader wrangler.
+	void Initglsw(const char *debug, int vertexShaderLines, const char **vertexShaderSource, int fragmentShaderLines, const char **fragmentShaderSource);
 protected:
 	GLuint Program(void) const { return this->fProgram; }
 	// Define all uniform and attribute indices. This function must be overridden.
