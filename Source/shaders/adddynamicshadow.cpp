@@ -69,7 +69,7 @@ static const GLchar *fragmentShaderSource[] = {
 	"	shadowmapcoord.xy = DoubleResolution(shadowmapcoord.xy);"
 	// Scale x and y from -1..1 to 0..1 so that they can be used to lookup a bitmap.
 	// z is also scaled, as OpenGL returns the interval 0..1 from the depth buffer.
-	"   shadowmapcoord = shadowmapcoord/2 + 0.5;\n"
+	"   shadowmapcoord.xyz = shadowmapcoord.xyz/2 + 0.5;\n"
 	"   float sun = 1.0;\n"
 	"   if (shadowmapcoord.x > 0 && shadowmapcoord.x < 1 && shadowmapcoord.y > 0 && shadowmapcoord.y < 1 && shadowmapcoord.z < 1) {\n"
 	"       const float p = 1.0/shadowMapSize2;\n" // Size of one pixel
@@ -93,7 +93,7 @@ static const GLchar *fragmentShaderSource[] = {
 	"	shadowmapcoord.xy = DoubleResolution(shadowmapcoord.xy);"
 	// Scale x and y from -1..1 to 0..1 so that they can be used to lookup a bitmap.
 	// z is also scaled, as OpenGL returns the interval 0..1 from the depth buffer.
-	"   shadowmapcoord = shadowmapcoord/2 + 0.5;\n"
+	"   shadowmapcoord.xyz = shadowmapcoord.xyz/2 + 0.5;\n"
 	"   float sun = 1.0;\n"
 	"   if (shadowmapcoord.x > 0 && shadowmapcoord.x < 1 && shadowmapcoord.y > 0 && shadowmapcoord.y < 1 && shadowmapcoord.z < 1) {\n"
 	"       const float p = 1.0/shadowMapSize1;\n" // Size of one pixel
