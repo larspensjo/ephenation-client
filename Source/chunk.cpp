@@ -342,7 +342,7 @@ void chunk::DrawObjects(StageOneShader *shader, int dx, int dy, int dz, bool for
 				continue; // Only show shadow if high performance
 			shader->Model(glm::translate(modelMatrix, glm::vec3(0.0f, 0.65f, 0.0f)));
 			glBindTexture(GL_TEXTURE_2D, GameTexture::Flowers); // This will be used for trunk and all branches.
-			gTuftOfGrass.DrawStatic();
+			gTuftOfGrass.DrawStatic(); // The same model as "tuft of grass" is used, but with a different texture
 			break;
 		case BT_Tree1:
 			if (d > limit) {

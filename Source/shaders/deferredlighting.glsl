@@ -89,7 +89,7 @@ void main(void)
 	fact = fact/num + (ambient+UBOambientLight)*0.03;
 	if (UBODynamicshadows == 0) fact += inSun;         // Add pre computed light instead of using shadow map
 	if (skyPixel) { fact = 0.8; }
-	vec3 step1 = fact*hdr.xyz + inSun*pow(max(dot(normal.xyz,vHalfVector),0.0), 100) * 0.1;
+	vec3 step1 = fact*hdr.xyz; // + inSun*pow(max(dot(normal.xyz,vHalfVector),0.0), 100) * 0.1; // TODO: Specular glare isn't correct
 	step1 *= UBOexposure;
 
 	// Apply Reinhard tone mapping, based on the luminance
