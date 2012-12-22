@@ -18,10 +18,12 @@
 #pragma once
 
 //
-// This is a class that manages other players that we know of.
+// This is a class that manages other players that we know of. The client will only know of
+// near players, which may need to be drawn.
 //
 
 class HealthBar;
+class AnimationShader;
 
 class OtherPlayers {
 private:
@@ -58,7 +60,7 @@ public:
 	void SetPlayerName(unsigned long uid, const char *name, int n, int adminLevel);
 	// draw all near players.
 	// 'selectionMode' is true when actively selecting players.
-	void RenderPlayers(bool selectionMode) const;
+	void RenderPlayers(AnimationShader *animShader, bool selectionMode) const;
 	// Render the stats of players. This has to be done after the deferred shader.
 	// 'angle' is the viewing angle, used to draw player data rotated correctly to the camera.
 	void RenderPlayerStats(HealthBar *hb, float angle) const;

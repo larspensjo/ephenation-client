@@ -505,7 +505,7 @@ void RenderControl::ComputeShadowMap() {
 }
 
 void RenderControl::drawOtherPlayers(void) {
-	gOtherPlayers.RenderPlayers(false);
+	gOtherPlayers.RenderPlayers(fAnimation, false);
 }
 
 void RenderControl::drawSelection(const glm::vec3 &coord) {

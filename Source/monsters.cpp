@@ -30,8 +30,6 @@
 #include "chunk.h"
 #include "player.h"
 #include "primitives.h"
-#include "MonsterDef.h"
-#include "RandomMonster.h"
 #include "HealthBar.h"
 #include "textures.h"
 #include "SoundControl.h"
@@ -49,7 +47,6 @@ Monsters::Monsters() : fMaxIndex(0) {
 	for (int i=0; i<MAXMONSTERS; i++) {
 		fMonsters[i].slotFree = true;
 	}
-	fRandomMonster = RandomMonster::Make();
 }
 
 glm::vec3 Monsters::OneMonster::GetSelectionColor() const {
@@ -138,7 +135,7 @@ void Monsters::RenderMonsters(bool forShadows, bool selectionMode, const Animati
 		if (fMonsters[i].ingame) {
 			unsigned int level = fMonsters[i].level;
 			glm::vec3 pos = fMonsters[i].GetPosition();
-			float size = RandomMonster::Size(level);
+			float size = this->Size(level);
 			glm::mat4 model = glm::translate(glm::mat4(1.0f), pos);
 			AnimationModels::AnimationModelId anim;
 			// Choose a monster model, depending on the level.
@@ -277,4 +274,15 @@ void Monsters::Cleanup(void) {
 		// Remove this monster as a creature in SoundControl
 		gSoundControl.RemoveCreatureSound(SoundControl::SMonster,fMonsters[i].id);
 	}
+}
+
+float Monsters::Size(unsigned int level) {
+	// This algorithm is the same one used by the server. Do not change it, as the server must have the same
+	// knowledge of monster sizes as the client
+	unsigned int rnd = (level + 137) * 871; // pseudo random 32-bit number
+	float rnd2 = float(rnd & 0xff) / 255.0f; // Random number 0-1
+	rnd2 *= rnd2;
+	rnd2 *= rnd2;
+	rnd2 = 1.0f + rnd2*4.0f; // The monster size will range from 1 blocks to 5 blocks
+	return rnd2;
 }

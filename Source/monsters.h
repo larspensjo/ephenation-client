@@ -63,7 +63,9 @@ public:
 	void Cleanup(void); // Throw away "old" monsters
 	// Find the next monster after 'current', based on distance from player.
 	Object *GetNext(Object *current);
-	RandomMonster *fRandomMonster;
+
+	// All monsters for a given level has the same size, a value from 1 to 5.
+	static float Size(unsigned int level);
 };
 
 extern Monsters gMonsters;

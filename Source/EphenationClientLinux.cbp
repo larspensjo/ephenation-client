@@ -76,12 +76,8 @@
 		<Unit filename="Makefile.mingw" />
 		<Unit filename="Map.cpp" />
 		<Unit filename="Map.h" />
-		<Unit filename="MonsterDef.cpp" />
-		<Unit filename="MonsterDef.h" />
 		<Unit filename="Options.cpp" />
 		<Unit filename="Options.h" />
-		<Unit filename="RandomMonster.cpp" />
-		<Unit filename="RandomMonster.h" />
 		<Unit filename="ScrollingMessages.cpp" />
 		<Unit filename="ScrollingMessages.h" />
 		<Unit filename="SoundControl.cpp" />
@@ -105,6 +101,14 @@
 		<Unit filename="client_prot.h" />
 		<Unit filename="connection.cpp" />
 		<Unit filename="connection.h" />
+		<Unit filename="contrib/bstrlib.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="contrib/bstrlib.h" />
+		<Unit filename="contrib/glsw.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="contrib/glsw.h" />
 		<Unit filename="crypt.cpp" />
 		<Unit filename="crypt.h" />
 		<Unit filename="dialogs/activator.rml" />
@@ -224,11 +228,11 @@
 		<Extensions>
 			<code_completion />
 			<debugger>
-				<remote_debugging target="Release">
-					<options conn_type="0" serial_baud="115200" additional_cmds_before="set args --debug" />
-				</remote_debugging>
 				<remote_debugging target="Debug">
 					<options conn_type="0" serial_baud="115200" additional_cmds_before="set args --debug  --singlethread --testuser localhost" />
+				</remote_debugging>
+				<remote_debugging target="Release">
+					<options conn_type="0" serial_baud="115200" additional_cmds_before="set args --debug" />
 				</remote_debugging>
 			</debugger>
 		</Extensions>
