@@ -55,7 +55,6 @@ MY_CFLAGS = -Dunix -Icontrib/glm
 MY_LIBS   = -lGL\
 	-lGLEW\
 	-lassimp\
-	-lyajl\
 	-lglfw\
 	-ltinyxml\
 	-lfltk\
