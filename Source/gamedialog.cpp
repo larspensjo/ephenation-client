@@ -1032,6 +1032,12 @@ void gameDialog::render() {
 	first = false;
 }
 
+// Catch the window close request by the player.
+static int GLFWCALL CloseWindowCallback(void) {
+	gMode.Set(GameMode::ESC); // This will initiate a proper shutdown
+	return GL_FALSE;          // Prevent the window from closing immediately.
+}
+
 void gameDialog::init(void) {
 	fRenderControl.Init();
 
@@ -1066,6 +1072,7 @@ void gameDialog::init(void) {
 	glfwSetKeyCallback(handleKeypress);
 	glfwSetCharCallback(handleCharacter);
 	glfwSetMouseButtonCallback(dialogHandleMouse);
+	glfwSetWindowCloseCallback(CloseWindowCallback);
 
 	fRocketGui.Init();
 
