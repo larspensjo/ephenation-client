@@ -30,7 +30,6 @@
 #include "chunk.h"
 #include "player.h"
 #include "primitives.h"
-#include "MonsterDef.h"
 #include "textures.h"
 #include "SoundControl.h"
 #include "HealthBar.h"
@@ -38,6 +37,8 @@
 #include "connection.h"
 #include "DrawText.h"
 #include "Options.h"
+#include "shaders/AnimationShader.h"
+#include "BlenderModel.h"
 
 using std::string;
 using std::stringstream;
@@ -139,16 +140,16 @@ void OtherPlayers::SetPlayerName(unsigned long uid, const char *name, int n, int
 	// printf("Player %d got name %s and admin level %d\n", uid, fPlayers[ind].playerName, adminLevel);
 }
 
-void OtherPlayers::RenderPlayers(bool selectionMode) const {
+void OtherPlayers::RenderPlayers(AnimationShader *animShader, bool selectionMode) const {
 	ChunkCoord cc;
 	gPlayer.GetChunkCoord(&cc);
-	glFrontFace(GL_CW);
-	float sun = 1.0f, ambient = 0.4f;
+	float sun = 1.0f;
 	if (gPlayer.BelowGround()) {
 		// A gross simplification. If underground, disable all sun.
 		sun = 0.0f;
-		ambient = 0.2f;
 	}
+	glBindTexture(GL_TEXTURE_2D, GameTexture::RedColor);
+	animShader->EnableProgram();
 	for (int i=0; i<fMaxIndex; i++) {
 		if (fPlayers[i].ingame) {
 			float dx = (fPlayers[i].x - (signed long long)cc.x*BLOCK_COORD_RES * CHUNK_SIZE)/(float)BLOCK_COORD_RES;
@@ -156,14 +157,19 @@ void OtherPlayers::RenderPlayers(bool selectionMode) const {
 			float dz = (fPlayers[i].z - (signed long long)cc.z*BLOCK_COORD_RES * CHUNK_SIZE)/(float)BLOCK_COORD_RES;
 
 			glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(dx, dz-PLAYER_HEIGHT*2.0f, -dy));
-			model = glm::rotate(model, 180.0f - fPlayers[i].fDir, glm::vec3(0.0f, 1.0f, 0.0f));
+			model = glm::rotate(model, -fPlayers[i].fDir, glm::vec3(0.0f, 1.0f, 0.0f));
 
-			gMonsterDef.Draw(model, gViewMatrix, fPlayers[i].IsDead(), GameTexture::PlayerFace[fPlayers[i].id % 5], sun, ambient);
+			double tm = gCurrentFrameTime-0.22; // Offset in time where model is not in a stride.
+#if 0
+			if (fMoving)
+				tm = 0.0;
+#endif
+			gFrog.DrawAnimation(animShader, model, tm, false, 0);
 			if (!gOptions.fDynamicShadows || sun == 0)
 				gShadows.Add(dx, dz-PLAYER_HEIGHT*2.0f, -dy, 1.5f);
 		}
 	}
-	glFrontFace(GL_CCW);
+	animShader->DisableProgram();
 }
 
 void OtherPlayers::RenderPlayerStats(HealthBar *hb, float angle) const {
@@ -235,13 +241,13 @@ void OtherPlayers::Cleanup(void) {
 			continue;
 		if (now - fPlayers[i].fUpdateTime < 5.0)
 			continue;
-		printf("Found stale player: index %d, id %ld\n", i, fPlayers[i].id);
+		// printf("Found stale player: index %d, id %ld\n", i, fPlayers[i].id);
 		fPlayers[i].ingame = false;
 		fPlayers[i].slotFree = true;
 		delete []fPlayers[i].playerName;
 		fPlayers[i].playerName = 0;
 
-		// Remove this monster as a creature in SoundControl
+		// Remove this players as a creature in SoundControl
 		gSoundControl.RemoveCreatureSound(SoundControl::SOtherPlayer,fPlayers[i].id);
 	}
 }

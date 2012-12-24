@@ -16,23 +16,6 @@
 					<Add option="-Dunix" />
 					<Add directory="contrib/glm" />
 				</Compiler>
-				<Linker>
-					<Add library="GLEW" />
-					<Add library="yajl" />
-					<Add library="assimp" />
-					<Add library="glfw" />
-					<Add library="tinyxml" />
-					<Add library="fltk" />
-					<Add library="alut" />
-					<Add library="openal" />
-					<Add library="pthread" />
-					<Add library="ogg" />
-					<Add library="vorbis" />
-					<Add library="vorbisfile" />
-					<Add library="RocketCore" />
-					<Add library="RocketDebugger" />
-					<Add library="RocketControls" />
-				</Linker>
 			</Target>
 			<Target title="Release">
 				<Option output="bin/Release/EphenationClient" prefix_auto="1" extension_auto="1" />
@@ -53,6 +36,20 @@
 		<Linker>
 			<Add library="GL" />
 			<Add library="X11" />
+			<Add library="GLEW" />
+			<Add library="assimp" />
+			<Add library="glfw" />
+			<Add library="tinyxml" />
+			<Add library="fltk" />
+			<Add library="alut" />
+			<Add library="openal" />
+			<Add library="pthread" />
+			<Add library="ogg" />
+			<Add library="vorbis" />
+			<Add library="vorbisfile" />
+			<Add library="RocketCore" />
+			<Add library="RocketDebugger" />
+			<Add library="RocketControls" />
 		</Linker>
 		<Unit filename="BlenderModel.cpp" />
 		<Unit filename="BlenderModel.h" />
@@ -76,12 +73,8 @@
 		<Unit filename="Makefile.mingw" />
 		<Unit filename="Map.cpp" />
 		<Unit filename="Map.h" />
-		<Unit filename="MonsterDef.cpp" />
-		<Unit filename="MonsterDef.h" />
 		<Unit filename="Options.cpp" />
 		<Unit filename="Options.h" />
-		<Unit filename="RandomMonster.cpp" />
-		<Unit filename="RandomMonster.h" />
 		<Unit filename="ScrollingMessages.cpp" />
 		<Unit filename="ScrollingMessages.h" />
 		<Unit filename="SoundControl.cpp" />
@@ -105,6 +98,14 @@
 		<Unit filename="client_prot.h" />
 		<Unit filename="connection.cpp" />
 		<Unit filename="connection.h" />
+		<Unit filename="contrib/bstrlib.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="contrib/bstrlib.h" />
+		<Unit filename="contrib/glsw.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="contrib/glsw.h" />
 		<Unit filename="crypt.cpp" />
 		<Unit filename="crypt.h" />
 		<Unit filename="dialogs/activator.rml" />

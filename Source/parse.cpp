@@ -54,7 +54,6 @@ using std::string;
 #include "monsters.h"
 #include "SoundControl.h"
 #include "ui/Error.h"
-#include "RandomMonster.h"
 #include "ChunkProcess.h"
 #include "ChunkBlocks.h"
 #include "assert.h"
@@ -284,7 +283,7 @@ void Parse(const unsigned char *b, int n) {
 				gMonsters.SetMonster(id, hp, level, gPlayer.x+dx, gPlayer.y+dy, gPlayer.z+dz-(int)(PLAYER_HEIGHT*BLOCK_COORD_RES*2), dir);
 
 				// Update this monster as a creature in SoundControl
-				float size = RandomMonster::Size(level)/5.0f; // Value is from 0.2 to 1.0
+				float size = Monsters::Size(level)/5.0f; // Value is from 0.2 to 1.0
 				gSoundControl.SetCreatureSound(SoundControl::SMonster,id,dx,dy,dz,hp==0,size);
 			}
 		}

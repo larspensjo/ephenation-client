@@ -43,7 +43,6 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include "shaders/ChunkShader.h"
 #include "shaders/ChunkShaderPicking.h"
-#include "MonsterDef.h"
 #include "modes.h"
 #include "ChunkObject.h"
 #include "ChunkProcess.h"

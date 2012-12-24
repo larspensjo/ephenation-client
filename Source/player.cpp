@@ -28,7 +28,6 @@
 #include "client_prot.h"
 #include "primitives.h"
 #include "textures.h"
-#include "MonsterDef.h"
 #include "BlenderModel.h"
 #include "modes.h"
 #include "shaders/StageOneShader.h"
@@ -77,12 +76,9 @@ void player::Draw(AnimationShader *animShader, StageOneShader *staticShader, boo
 	model = glm::rotate(model, -this->fAngleHor, glm::vec3(0.0f, 1.0f, 0.0f));
 	model = glm::scale(model, glm::vec3(PLAYER_HEIGHT, PLAYER_HEIGHT, PLAYER_HEIGHT));
 
-	// gMonsterDef.Draw(model, gViewMatrix, this->IsDead(), GameTexture::PlayerFace[0], sun, ambient);
-
-	// glBindTexture(GL_TEXTURE_2D, GameTexture::BlueColor);
 	glBindTexture(GL_TEXTURE_2D, GameTexture::RedColor);
 	double tm = gCurrentFrameTime-0.22; // Offset in time where model is not in a stride.
-	if (fMoving)
+	if (PlayerIsMoving())
 		tm = 0.0;
 	animShader->EnableProgram();
 	gFrog.DrawAnimation(animShader, model, tm, false, 0);
@@ -92,8 +88,8 @@ void player::Draw(AnimationShader *animShader, StageOneShader *staticShader, boo
 		gLightSources.Add(dx, dz, -dy, 12.0f);
 	else
 #endif
-		if (gOptions.fDynamicShadows == 0 || this->BelowGround())
-			gShadows.Add(dx, dz-PLAYER_HEIGHT*2.0f, -dy, 1.5f);
+    if (gOptions.fDynamicShadows == 0 || this->BelowGround())
+        gShadows.Add(dx, dz-PLAYER_HEIGHT*2.0f, -dy, 1.5f);
 	if (this->fWeaponType > 0) {
 		model = glm::translate(model, glm::vec3(0.6f, PLAYER_HEIGHT*0.4f, -1.2f));
 		switch(this->fWeaponType) {

@@ -51,7 +51,6 @@
 #include "shaders/DeferredLighting.h"
 #include "shaders/TranspShader.h"
 #include "HealthBar.h"
-#include "MonsterDef.h"
 #include "BuildingBlocks.h"
 #include "DrawTexture.h"
 #include "SoundControl.h"
@@ -1033,6 +1032,12 @@ void gameDialog::render() {
 	first = false;
 }
 
+// Catch the window close request by the player.
+static int GLFWCALL CloseWindowCallback(void) {
+	gMode.Set(GameMode::ESC); // This will initiate a proper shutdown
+	return GL_FALSE;          // Prevent the window from closing immediately.
+}
+
 void gameDialog::init(void) {
 	fRenderControl.Init();
 
@@ -1051,7 +1056,6 @@ void gameDialog::init(void) {
 		maxRenderDistance = 5.0f;
 	gTranspShader.Init();
 	fBuildingBlocks = BuildingBlocks::Make(7); // TODO: Need something more adaptive than a constant.
-	gMonsterDef.Init(0);
 	fShader = ChunkShader::Make(); // Singleton
 	fHealthBar = HealthBar::Make(); // Singleton
 	fDrawTexture = DrawTexture::Make();
@@ -1068,6 +1072,7 @@ void gameDialog::init(void) {
 	glfwSetKeyCallback(handleKeypress);
 	glfwSetCharCallback(handleCharacter);
 	glfwSetMouseButtonCallback(dialogHandleMouse);
+	glfwSetWindowCloseCallback(CloseWindowCallback);
 
 	fRocketGui.Init();
 
