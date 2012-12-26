@@ -43,7 +43,6 @@ public:
 	float fMana;
 	unsigned long fLevel;
 	unsigned char fAdmin; // 0 to 10, where 0 means no admin rights.
-	bool fKnownPosition; // False until the position of the player is known.
 	unsigned long fUid; // The unique server ID of the player.
 	unsigned long fFlags; // From the server, see UserFlag* defined in client_prot.h
 	unsigned char fWeaponType;
@@ -82,6 +81,9 @@ public:
 	// Extrapolate new coordinates, guess from time.
 	void UpdatePositionSmooth(void);
 
+	// Return true if the player position is known.
+	bool KnownPosition() const { return fKnownPosition; }
+
 	bool PlayerIsMoving(void) const;
 private:
 	glm::dvec3 fServerPosition; // Most recent position of feet as given from server
@@ -89,6 +91,7 @@ private:
 	double fPrevUpdate, fLastUpdate;
 
 	bool fMoving;
+	bool fKnownPosition; // False until the position of the player is known.
 };
 
 extern player gPlayer;

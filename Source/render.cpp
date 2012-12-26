@@ -147,7 +147,7 @@ void ComputeRelativeChunksSortedDistances() {
 
 static void FindAllNearChunks(const std::vector<ChunkDist> &chunkDistances) {
 	ChunkCoord player_cc;
-	if (!gPlayer.fKnownPosition)
+	if (!gPlayer.KnownPosition())
 		return;
 	gPlayer.GetChunkCoord(&player_cc);
 	for (int i=0; i<sMaxVolume; i++) {
@@ -276,7 +276,7 @@ static void DrawChunkBorders(StageOneShader *shader) {
 
 // TODO: This function should be split into a separate function for picking mode.
 void DrawLandscape(StageOneShader *shader, DL_Type dlType) {
-	if (!gPlayer.fKnownPosition)
+	if (!gPlayer.KnownPosition())
 		return;
 	if (dlType == DL_NoTransparent) {
 		// The lits of chunks used for shadowing is computed below, when in non-transparent mode.
@@ -471,7 +471,7 @@ void DrawLandscape(StageOneShader *shader, DL_Type dlType) {
 }
 
 void DrawLandscapeTopDown(StageOneShader *shader, int width, int height, bool forceload, DL_Type dlType) {
-	if (!gPlayer.fKnownPosition)
+	if (!gPlayer.KnownPosition())
 		return;
 	ChunkCoord player_cc;
 	gPlayer.GetChunkCoord(&player_cc);
@@ -505,7 +505,7 @@ void DrawLandscapeTopDown(StageOneShader *shader, int width, int height, bool fo
 }
 
 void DrawLandscapeForShadows(StageOneShader *shader) {
-	if (!gPlayer.fKnownPosition)
+	if (!gPlayer.KnownPosition())
 		return;
 	ChunkCoord player_cc;
 	gPlayer.GetChunkCoord(&player_cc);

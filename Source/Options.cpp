@@ -99,7 +99,14 @@ bool Options::ParseOneOption(const string &key, const string &arg) {
 		fStaticShadows = atoi(arg.c_str());
 	else if (key == "Graphics.AnisotropicFiltering")
 		fAnisotropicFiltering = atoi(arg.c_str());
-	else
+	else if (key == "Player.position") {
+		char *end = 0;
+		fPlayerX = strtoll(arg.c_str(), &end, 10);
+		if (*end == ',')
+			fPlayerY = strtoll(end+1, &end, 10);
+		if (*end == ',')
+			fPlayerZ = strtoll(end+1, &end, 10);
+	} else
 		return false; // Not a recognized option
 	return true;
 }
@@ -186,6 +193,9 @@ void Options::Save(void) {
 	optionsFile << "StaticShadows=" << fStaticShadows << endl;
 	optionsFile << "AnisotropicFiltering=" << fAnisotropicFiltering << endl;
 	optionsFile << endl;
+	optionsFile << "# Remember some last known player data\n";
+	optionsFile << "[Player]\n";
+	optionsFile << "position=" << fPlayerX << "," << fPlayerY << "," << fPlayerZ << endl;
 	optionsFile.close();
 }
 
@@ -203,6 +213,9 @@ Options::Options(void) : fViewingDistance(50), fWindowWidth(1024), fWindowHeight
 	fWhitePoint = 8.0f;
 	fExposure = 1.0f;
 	fVSYNC = 0;
+	fPlayerX = 0;
+	fPlayerY = 0;
+	fPlayerZ = 0;
 
 #ifdef WIN32
 	fNumThreads = 0;

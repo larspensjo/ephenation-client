@@ -150,7 +150,7 @@ void ChunkProcess::Task(void) {
 				continue; // Ignore a recomputation, as the chunk will be loaded by new data anyway, later followed by a new computation
 			}
 			fMutex.unlock(); // Unlock the mutex while doing some heavy work
-			// printf("ChunkProcess phase 1, size %d, chunk %d,%d,%d\n", fComputeObjectsInput.size()+1, ch->cc.x, ch->cc.y, ch->cc.z);
+			// printf("ChunkProcess phase 1, size %lu, chunk %d,%d,%d\n", fComputeObjectsInput.size()+1, ch->cc.x, ch->cc.y, ch->cc.z);
 			auto co = ChunkObject::Make(ch, false, 0, 0, 0);
 			co->FindSpecialObjects(ch); // This will find light sources, and should be done before FindTriangles().
 			fMutex.lock();
@@ -167,7 +167,7 @@ void ChunkProcess::Task(void) {
 			// schedule a new recomputation again.
 			ASSERT(pc->fScheduledForLoading);
 			fMutex.unlock(); // Unlock the mutex while doing some work
-			// printf("ChunkProcess phase 2, size %d\n", fNewChunksInput.size()+1);
+			// printf("ChunkProcess phase 2, size %lu\n", fNewChunksInput.size()+1);
 			nc->Uncompress();
 
 			// Save chunk in cache

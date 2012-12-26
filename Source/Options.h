@@ -68,6 +68,7 @@ public:
 	int fAnisotropicFiltering;
 	int fVSYNC;
 	unsigned fNumThreads; // Not really configurable
+	signed long long fPlayerX, fPlayerY, fPlayerZ; // Remember the last known player position
 
 	// Update the select control with available graphical modes.
 	void ListGraphicModes(Rocket::Controls::ElementFormControlSelect *) const;
