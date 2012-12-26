@@ -207,7 +207,7 @@ void RenderControl::Draw(Object *selectedObject, bool underWater, bool thirdPers
 	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE); // Replace bits when something is drawn
 	gDrawObjectList.clear();
 	drawNonTransparentLandscape();
-	if (thirdPersonView)
+	if (thirdPersonView && gMode.Get() != GameMode::LOGIN)
 		drawPlayer(); // Draw self, but not if camera is too close
 	drawOtherPlayers();
 	drawMonsters();
@@ -552,7 +552,7 @@ void RenderControl::drawUI(MainUserInterface *ui) {
 	tm.Start();
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	ui->Draw();
+	ui->Draw(gMode.Get() != GameMode::LOGIN);
 	glDisable(GL_BLEND);
 	tm.Stop();
 }

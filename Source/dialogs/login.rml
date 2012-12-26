@@ -22,22 +22,38 @@
 	<link type="text/rcss" href="ephenation.rcss"/>
 	<link type="text/rcss" href="popup.rcss"/>
 	<style>
+	.logindialog
+	{
+		width: 500px;
+		height: 500px;
+		font-size: 22px;
+		background-color: rgba(209,195,174,50%); /* Semi transparent black background */
+		padding-top: 30px; /* Leave space on top of pergament background */
+		padding-left: 70px;
+		padding-right: 50px;
+		z-index: -1; /* Should be behind everything else */
+	}
+	.overrideinput {
+		width:270px;
+	}
 	</style>
 </head>
 <body id="body">
-	<div class="messagedialog">
+	<div class="logindialog">
 		<form onsubmit="login">
 			<div class="header" id="header">
 				Ephenation login
 			</div>
-			<div style="height:65%;">
-				License key: <input class="onelineinput" type=text name="Login.licensekey" /> <br/>
-				Email: <input class="onelineinput" type=text name="Login.email" /> <br/>
-				Password: <input class="onelineinput" type=password name="Login.password"/> <br/>
+			<br />
+			<div>
+				License key: <input class="onelineinput overrideinput" type=text name="Login.licensekey" /> <br/>
+				Email: <input class="onelineinput overrideinput" type=text name="Login.email"  /> <br/>
+				Password: <input class="onelineinput overrideinput" type=password name="Login.password" /> <br/>
 				<p name="client.availableversion"></p>
 			</div>
-			<input class="formatbutton firstbuttonpos" type="submit" value="ok" enterkey=true>Ok</input>
-			<button class="formatbutton secondbuttonpos" onclick="Close" cancelkey=true>Cancel</button>
+			<br />
+			<input class="formatbutton" type="submit" value="ok" enterkey=true style="margin-left:10px;">Ok</input>
+			<button class="formatbutton" onclick="Close" cancelkey=true style="margin-left:150px;">Cancel</button>
 		</form>
 	</div>
 </body>

@@ -24,7 +24,7 @@
 #include "../timemeasure.h"
 #include "Error.h"
 
-MainUserInterface::MainUserInterface() : fRocketContext(0), fDocument(0) {
+MainUserInterface::MainUserInterface() : fRocketContext(0), fDocument(0), fShowGUI(false) {
 }
 
 MainUserInterface::~MainUserInterface() {
@@ -52,7 +52,8 @@ void MainUserInterface::Init() {
 	// LoadDocument will add one to reference already.
 	if (fDocument == 0)
 		ErrorDialog("MainUserInterface::Init: Failed to load user interface");
-	fDocument->Show();
+	if (fShowGUI)
+		fDocument->Show();
 }
 
 void MainUserInterface::Resize(int w, int h) {
@@ -60,7 +61,15 @@ void MainUserInterface::Resize(int w, int h) {
 		fRocketContext->SetDimensions(Rocket::Core::Vector2i(w, h));
 }
 
-void MainUserInterface::Draw(void) {
+void MainUserInterface::Draw(bool showGUI) {
+	if (fShowGUI != showGUI) {
+		// Remember the previous state, to avoid repeated calls
+		if (showGUI)
+			fDocument->Show();
+		else
+			fDocument->Hide();
+		fShowGUI = showGUI;
+	}
 	static TimeMeasure tmr("MainUI");
 	tmr.Start();
 	fRocketContext->Update();
