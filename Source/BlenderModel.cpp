@@ -25,9 +25,16 @@
 // See http://ephenationopengl.blogspot.de/2012/06/doing-animations-in-opengl.html
 //
 
-#include <assimp/assimp.hpp>      // C++ importer interface
-#include <assimp/aiScene.h>       // Output data structure
-#include <assimp/aiPostProcess.h> // Post processing flags
+#ifdef ASSIMP3
+    #include <assimp/Importer.hpp>
+    #include <assimp/scene.h>       // Output data structure
+    #include <assimp/postprocess.h>
+#else
+    #include <assimp/assimp.hpp>      // C++ importer interface
+    #include <assimp/aiScene.h>       // Output data structure
+    #include <assimp/aiPostProcess.h> // Post processing flags
+#endif
+
 #include <stdio.h>
 #include <GL/glew.h>
 #include <map>
@@ -380,7 +387,7 @@ void BlenderModel::Init(const char *filename, float xRotateCorrection, bool norm
 	// check data size in VBO is same as input array, if not return 0 and delete VBO
 	int tst = 0;
 	glGetBufferParameteriv(GL_ARRAY_BUFFER, GL_BUFFER_SIZE, &tst);
-	if ((unsigned)tst != bufferSize) {
+	if (tst != bufferSize) {
 		glDeleteBuffers(1, &fBufferId);
 		fBufferId = 0;
 		ErrorDialog("BlenderModel::Init: Data size is mismatch with input array\n");
