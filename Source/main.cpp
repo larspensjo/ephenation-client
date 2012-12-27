@@ -316,6 +316,10 @@ int main(int argc, char** argv) {
 	//printf("Game Path: %s\n", dataDir);
 
 	gOptions.Init(optionsFilename); // This one should come early, as it is used to initalize things.
+
+	// If there was a saved position, use it for imnitialization.
+	if (gOptions.fPlayerX != 0 || gOptions.fPlayerY != 0 || gOptions.fPlayerZ != 0)
+		gPlayer.SetPosition(gOptions.fPlayerX, gOptions.fPlayerY, gOptions.fPlayerZ);
 	unsigned maxThreads = gOptions.fNumThreads;
 	if (sSingleThread) {
 		maxThreads = 1; // Override this number
@@ -469,6 +473,9 @@ int main(int argc, char** argv) {
 
 	// The options will be saved by the destructor.
 	Options::sfSave.fViewingDistance = maxRenderDistance;
+	Options::sfSave.fPlayerX = gPlayer.x;
+	Options::sfSave.fPlayerY = gPlayer.y;
+	Options::sfSave.fPlayerZ = gPlayer.z;
 	gMode.Set(GameMode::EXIT);
 	Options::sfSave.Save();
 	return 0;

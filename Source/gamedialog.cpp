@@ -586,7 +586,7 @@ void gameDialog::HandleKeyPress(int key) {
 		} else {
 			gMode.Set(GameMode::CONSTRUCT);
 		}
-		if (gPlayer.fKnownPosition) {
+		if (gPlayer.KnownPosition()) {
 			ChunkCoord player_cc;
 			// Force the current chunk to be redrawn, adapted for construction mode
 			gPlayer.GetChunkCoord(&player_cc);

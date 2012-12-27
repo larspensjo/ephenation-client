@@ -22,6 +22,9 @@ Manage the main user interface when gaming. That includes:
 * The player level and other stats
 * The input field for /-commands
 * FPS statistics
+
+TODO: There are also other Rocket documents associated with the Context that will be drawn implicitly. These should
+	be managed in a separate context.
 */
 
 #pragma once
@@ -45,11 +48,14 @@ public:
 	~MainUserInterface();
 	void Resize(int w, int h);
 	void Init(void);
-	void Draw(void);
-	Rocket::Core::Context *GetRocketContext(void);
+
+	// Draw the complete context. The main UI, managed from this class, can be explicitely enabled with 'showGUI'.
+	void Draw(bool showGUI);
+	Rocket::Core::Context *GetRocketContext(void); // TODO: Ugly, I know.
 
 	Rocket::Core::Element *GetElement(string);
 private:
 	Rocket::Core::Context *fRocketContext;
 	Rocket::Core::ElementDocument *fDocument;
+	bool fShowGUI;
 };

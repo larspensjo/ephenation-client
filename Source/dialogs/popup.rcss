@@ -1,5 +1,4 @@
-body
-{
+body {
 	font-family: Gabriola;
 	font-size: 48px;
 	width: 100%; /* The document will use the whole display */
@@ -47,7 +46,7 @@ div {
 	margin-top: 15px;
 }
 
-/* A big display that will show graphical representations of player data */
+/* Main formatting for dialogs */
 .messagedialog
 {
 	width: 800px;
@@ -58,7 +57,7 @@ div {
 	padding-top: 30px; /* Leave space on top of pergament background */
 	padding-left: 70px;
 	padding-right: 50px;
-	z-index: -1; /* Should be behind evrything else */
+	z-index: -1; /* Should be behind everything else */
 }
 
 .menuitem {

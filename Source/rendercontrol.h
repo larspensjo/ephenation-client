@@ -82,7 +82,6 @@ private:
 	AnimationModels fAnimationModels;
 
 	void ComputeShadowMap(void);
-	float ComputeAverageLuminance(void);
 
 	void drawClearFBO(void); // Initialize all images in the FBO
 	void drawClear(void); // Clear the main window

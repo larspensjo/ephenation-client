@@ -22,23 +22,44 @@
 	<link type="text/rcss" href="ephenation.rcss"/>
 	<link type="text/rcss" href="popup.rcss"/>
 	<style>
+	.screencenter /* Use this to find the center of the screen at top left for an element */
+	{
+		width: 290px;
+		font-size: 22px;
+		margin-top: 50%;
+		margin-left: 50%;
+		z-index: -1; /* Should be behind everything else */
+	}
+	.inputdialog {
+		margin-top: -250px;
+		margin-left: -250px;
+		background-color: rgba(209,195,174,60%);
+		padding: 15px;
+	}
+	.overrideinput {
+		width:270px;
+	}
 	</style>
 </head>
 <body id="body">
-	<div class="messagedialog">
-		<form onsubmit="login">
-			<div class="header" id="header">
-				Ephenation login
-			</div>
-			<div style="height:65%;">
-				License key: <input class="onelineinput" type=text name="Login.licensekey" /> <br/>
-				Email: <input class="onelineinput" type=text name="Login.email" /> <br/>
-				Password: <input class="onelineinput" type=password name="Login.password"/> <br/>
-				<p name="client.availableversion"></p>
-			</div>
-			<input class="formatbutton firstbuttonpos" type="submit" value="ok" enterkey=true>Ok</input>
-			<button class="formatbutton secondbuttonpos" onclick="Close" cancelkey=true>Cancel</button>
-		</form>
+	<div class="screencenter">
+		<div class="inputdialog">
+			<form onsubmit="login">
+				<div class="header" id="header">
+					Ephenation login
+				</div>
+				<br />
+				<div>
+					License key: <input class="onelineinput overrideinput" type=text name="Login.licensekey" style="margin-left: 0px;"/> <br/>
+					Email: <input class="onelineinput overrideinput" type=text name="Login.email" style="margin-left: 38px;" /> <br/>
+					Password: <input class="onelineinput overrideinput" type=password name="Login.password" style="margin-left: 14px;" /> <br/>
+					<p name="client.availableversion"></p>
+				</div>
+				<br />
+				<input class="formatbutton" type="submit" value="ok" enterkey=true style="margin-left:10px;">Ok</input>
+				<button class="formatbutton" onclick="Close" cancelkey=true style="margin-left:150px;">Cancel</button>
+			</form>
+		</div>
 	</div>
 </body>
 </rml>

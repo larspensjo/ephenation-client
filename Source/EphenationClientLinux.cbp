@@ -138,7 +138,6 @@
 		<Unit filename="player.h" />
 		<Unit filename="primitives.cpp" />
 		<Unit filename="primitives.h" />
-		<Unit filename="readme.txt" />
 		<Unit filename="render.cpp" />
 		<Unit filename="render.h" />
 		<Unit filename="rendercontrol.cpp" />

@@ -207,7 +207,7 @@ void RenderControl::Draw(Object *selectedObject, bool underWater, bool thirdPers
 	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE); // Replace bits when something is drawn
 	gDrawObjectList.clear();
 	drawNonTransparentLandscape();
-	if (thirdPersonView)
+	if (thirdPersonView && gMode.Get() != GameMode::LOGIN)
 		drawPlayer(); // Draw self, but not if camera is too close
 	drawOtherPlayers();
 	drawMonsters();
@@ -552,7 +552,7 @@ void RenderControl::drawUI(MainUserInterface *ui) {
 	tm.Start();
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	ui->Draw();
+	ui->Draw(gMode.Get() != GameMode::LOGIN);
 	glDisable(GL_BLEND);
 	tm.Stop();
 }
@@ -571,31 +571,4 @@ void RenderControl::drawMap(int mapWidth) {
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 	glBindTexture(GL_TEXTURE_2D, fDiffuseTexture); // Override
 	map->Draw(0.6f);
-}
-
-float RenderControl::ComputeAverageLuminance(void) {
-	const int NUM = NELEM(gPoissonDisk);
-	float lightSamples[NUM];
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, fboName);
-	glReadBuffer(GL_COLOR_ATTACHMENT4); // The light map
-	for (unsigned i=0; i<NELEM(gPoissonDisk); i++) {
-		GLint x = fWidth * (1.0f + gPoissonDisk[i].x) / 2.0f;
-		GLint y = fHeight * (1.0f + gPoissonDisk[i].y) / 2.0f;
-		glReadPixels(x, y, 1, 1, GL_RED, GL_FLOAT, &lightSamples[i]);
-	}
-
-	glReadBuffer(GL_COLOR_ATTACHMENT0); // The diffuse map
-	float sum = 0.0f;
-	float weight = 0.0f;
-	for (unsigned i=0; i<NELEM(gPoissonDisk); i++) {
-		GLint x = fWidth * (1.0f + gPoissonDisk[i].x) / 2.0f;
-		GLint y = fHeight * (1.0f + gPoissonDisk[i].y) / 2.0f;
-		glm::vec3 diffuse;
-		glReadPixels(x, y, 1, 1, GL_RGB, GL_FLOAT, &diffuse);
-		float luminance = 0.2126f*diffuse.r + 0.7152f*diffuse.g + 0.0722*diffuse.b;
-		sum += luminance * lightSamples[i];
-		weight += 1.0f;
-	}
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
-	return sum / weight;
 }
