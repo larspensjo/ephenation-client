@@ -6,7 +6,21 @@
 	<link type="text/rcss" href="ephenation.rcss"/>
 	<link type="text/rcss" href="popup.rcss"/>
 	<style>
-		/* Definition of the complete document */
+
+	.field10
+	{
+		width: 10%;
+	}
+
+	.field
+	{
+		width: 25%;
+	}
+
+	.field35
+	{
+		width: 35%;
+	}
 	</style>
 </head>
 <body id="body">
@@ -14,28 +28,101 @@
 		<div class="header">
 			Ephenation credits
 		</div>
+		<br />
 		<div  id="content" class="content">
-			Lead programmer:
-			<div style="margin-left:50px; max-height:40px;">Lars Pensjo</div>
-			Assistant programmer:
-			<div style="margin-left:50px; max-height:40px;">Mikael Grah</div>
-			Level design and testing: Andreas Andersson
-			Music: Kevin MacLeod, http://incompetech.com
-			Sound effects: Home made and http://www.mediacollege.com/
-			Graphics support: Jonas Pensjö, David Condon
-
-			Libraries:
-			<div style="margin-left:50px;">glm: G-Truc Creation (www.g-truc.net)</div>
-			<div style="margin-left:50px;">glfw: http://www.glfw.org/</div>
-			<div style="margin-left:50px;">tinyxml: Lee Thomason, www.sourceforge.net/projects/tinyxml</div>
-			<div style="margin-left:50px;">glew: http://glew.sourceforge.net/</div>
-			<div style="margin-left:50px;">assimp: http://assimp.sourceforge.net/</div>
-			<div style="margin-left:50px;">fltk: http://www.fltk.org/</div>
-			<div style="margin-left:50px;">openal: http://connect.creativelabs.com/openal/default.aspx</div>
-			<div style="margin-left:50px;">ogg: http://xiph.org/ogg/</div>
-			<div style="margin-left:50px;">vorbis: http://www.vorbis.com/</div>
-			<div style="margin-left:50px;">libRocket: http://librocket.com/</div>
-			<div style="margin-left:50px;">glsw: http://prideout.net/blog/?p=11</div>
+			<table>
+				<tr>
+					<td class="field">Lead programmer:</td>
+					<td class="field35">Lars Pensjo</td>
+				</tr>
+				<tr>
+					<td class="field">Assistant programmer:</td>
+					<td class="field35">Mikael Grah</td>
+				</tr>
+				<tr>
+					<td class="field">Level design and testing:</td>
+					<td class="field35">Andreas Andersson</td>
+				</tr>
+				<tr>
+					<td class="field">Music:</td>
+					<td class="field35">Kevin MacLeod, incompetech.com</td>
+				</tr>
+				<tr>
+					<td class="field">Sound effects:</td>
+					<td class="field35">www.mediacollege.com</td>
+				</tr>
+				<tr>
+					<td class="field">Graphics support:</td>
+					<td class="field35">Jonas Pensjo, David Condon</td>
+				</tr>
+				<tr>
+					<td class="field">Animations:</td>
+					<td class="field35">Lev Grunberg</td>
+				</tr>
+			</table>
+			<table>
+				<tr>
+					<td class="field10"><br /></td>
+				</tr>
+				<tr>
+					<td class="field10"><div style="font-size: 36px;">Libraries:</div></td>
+				</tr>
+				<tr>
+					<td class="field10">glm</td>
+					<td class="field35">www.g-truc.net</td>
+					<td class="field35">G-Truc Creation</td>
+				</tr>
+				<tr>
+					<td class="field10">glfw</td>
+					<td class="field35">www.glfw.org</td>
+					<td class="field35"> </td>
+				</tr>
+				<tr>
+					<td class="field10">tinyxml</td>
+					<td class="field35">www.sourceforge.net/projects/tinyxml</td>
+					<td class="field35">Lee Thomason</td>
+				</tr>
+				<tr>
+					<td class="field10">glew</td>
+					<td class="field35">glew.sourceforge.net</td>
+					<td class="field35"></td>
+				</tr>
+				<tr>
+					<td class="field10">assimp</td>
+					<td class="field35">assimp.sourceforge.net</td>
+					<td class="field35"></td>
+				</tr>
+				<tr>
+					<td class="field10">fltk</td>
+					<td class="field35">www.fltk.org</td>
+					<td class="field35"></td>
+				</tr>
+				<tr>
+					<td class="field10">openal</td>
+					<td class="field35">connect.creativelabs.com/openal</td>
+					<td class="field35"></td>
+				</tr>
+				<tr>
+					<td class="field10">ogg</td>
+					<td class="field35">xiph.org/ogg</td>
+					<td class="field35"></td>
+				</tr>
+				<tr>
+					<td class="field10">vorbis</td>
+					<td class="field35">www.vorbis.com</td>
+					<td class="field35"></td>
+				</tr>
+				<tr>
+					<td class="field10">libRocket</td>
+					<td class="field35">librocket.com</td>
+					<td class="field35"></td>
+				</tr>
+				<tr>
+					<td class="field10">glsw</td>
+					<td class="field35">prideout.net/blog/?p=11</td>
+					<td class="field35"></td>
+				</tr>
+			</table>
 		</div>
 		<button class="formatbutton firstbuttonpos" onclick="Close" cancelkey=true enterkey=true>Close</button>
 	</div> </div>
