@@ -10,6 +10,16 @@ div {
 	display: block;
 }
 
+td
+{
+	float: left;
+}
+
+td:first-child
+{
+	clear: left;
+}
+
 .header {
 	font-size: 48px;
 	text-align:center;

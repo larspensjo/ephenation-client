@@ -37,7 +37,18 @@
 		padding: 15px;
 	}
 	.overrideinput {
-		width:270px;
+		width:100%;
+	}
+
+	.label
+	{
+		padding-top: 12px;
+		width: 20%;
+	}
+
+	.field
+	{
+		width: 80%;
 	}
 	</style>
 </head>
@@ -46,12 +57,23 @@
 		<div class="header" id="header">
 			Ephenation login
 		</div>
+		<table>
+			<tr>
+				<td class="label">License key:</td>
+				<td class="field"><input class="onelineinput overrideinput" type=text name="Login.licensekey" style="margin-left: 0px;"/></td>
+			</tr>
+			<tr>
+				<td class="label">Email:</td>
+				<td class="field"><input class="onelineinput overrideinput" type=text name="Login.email" /></td>
+			</tr>
+			<tr>
+				<td class="label">Password:</td>
+				<td class="field"><input class="onelineinput overrideinput" type=password name="Login.password" /></td>
+			</tr>
+		</table>
 		<br />
 		<div>
-			License key: <input class="onelineinput overrideinput" type=text name="Login.licensekey" style="margin-left: 0px;"/> <br/>
-			Email: <input class="onelineinput overrideinput" type=text name="Login.email" style="margin-left: 38px;" /> <br/>
-			Password: <input class="onelineinput overrideinput" type=password name="Login.password" style="margin-left: 14px;" /> <br/>
-			<p name="client.availableversion"></p>
+			<p name="client.availableversion" style="margin-left:30%;"></p>
 		</div>
 		<br />
 		<input class="formatbutton" type="submit" value="ok" enterkey=true style="margin-left:10px;">Ok</input>
