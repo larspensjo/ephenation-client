@@ -25,7 +25,7 @@
 	</style>
 </head>
 <body id="body">
-	<div class="messagedialog">
+	<div class="screencenter"> <div class="pergament">
 		<form onsubmit="options">
 			<div class="header" id="header">
 				Options
@@ -65,6 +65,6 @@
 			<input class="formatbutton firstbuttonpos" type="submit" value="ok" enterkey=true>Ok</input>
 			<button class="formatbutton secondbuttonpos" onclick="Close" cancelkey=true>Cancel</button>
 		</form>
-	</div>
+	</div>	</div>
 </body>
 </rml>

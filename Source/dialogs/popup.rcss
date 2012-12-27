@@ -47,7 +47,7 @@ div {
 }
 
 /* Main formatting for dialogs */
-.messagedialog
+.pergament
 {
 	width: 800px;
 	height: 700px;
@@ -57,6 +57,16 @@ div {
 	padding-top: 30px; /* Leave space on top of pergament background */
 	padding-left: 70px;
 	padding-right: 50px;
+	margin-top: -370px;
+	margin-left: -460px;
+	z-index: -1; /* Should be behind everything else */
+}
+
+/* Use this to find the center of the screen at top left for an element */
+.screencenter
+{
+	margin-top: 50%;
+	margin-left: 50%;
 	z-index: -1; /* Should be behind everything else */
 }
 

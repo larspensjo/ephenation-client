@@ -25,7 +25,7 @@
 	</style>
 </head>
 <body id="body">
-	<div class="messagedialog">
+	<div class="screencenter">	<div class="pergament">
 		<div class="header" id="header">
 			Ephenation
 		</div>
@@ -33,9 +33,10 @@
 			<button class="menuitem" onclick="Form topoptions.rml">Options...</button>
 			<button class="menuitem" onclick="Popup help.rml">Help...</button>
 			<button class="menuitem" onclick="Popup credits.rml">Credits...</button>
+			<button class="menuitem" onclick="Form activator.rml">Test...</button>
 		</div>
 		<button class="formatbutton firstbuttonpos" onclick="Close" enterkey=true cancelkey=true>Play</button>
 		<button class="formatbutton secondbuttonpos" onclick="Quit">Quit</button>
-	</div>
+	</div> </div>
 </body>
 </rml>

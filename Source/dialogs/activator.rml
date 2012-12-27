@@ -25,7 +25,7 @@
 	</style>
 </head>
 <body id="body">
-	<div class="messagedialog">
+	<div class="screencenter"> <div class="pergament">
 		<form onsubmit="activator">
 			<div class="header" id="header">
 				Configure activator
@@ -96,6 +96,6 @@
 			</tabset>
 			<input class="formatbutton firstbuttonpos" type="submit" value="ok" enterkey=true>Ok</input>
 		</form>
-	</div>
+	</div> </div>
 </body>
 </rml>

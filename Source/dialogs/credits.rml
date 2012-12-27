@@ -10,7 +10,7 @@
 	</style>
 </head>
 <body id="body">
-	<div class="messagedialog">
+	<div class="screencenter"> <div class="pergament">
 		<div class="header">
 			Ephenation credits
 		</div>
@@ -38,6 +38,6 @@
 			<div style="margin-left:50px;">glsw: http://prideout.net/blog/?p=11</div>
 		</div>
 		<button class="formatbutton firstbuttonpos" onclick="Close" cancelkey=true enterkey=true>Close</button>
-	</div>
+	</div> </div>
 </body>
 </rml>

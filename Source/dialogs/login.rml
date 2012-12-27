@@ -41,25 +41,21 @@
 	}
 	</style>
 </head>
-<body id="body">
-	<div class="screencenter">
-		<div class="inputdialog">
-			<form onsubmit="login">
-				<div class="header" id="header">
-					Ephenation login
-				</div>
-				<br />
-				<div>
-					License key: <input class="onelineinput overrideinput" type=text name="Login.licensekey" style="margin-left: 0px;"/> <br/>
-					Email: <input class="onelineinput overrideinput" type=text name="Login.email" style="margin-left: 38px;" /> <br/>
-					Password: <input class="onelineinput overrideinput" type=password name="Login.password" style="margin-left: 14px;" /> <br/>
-					<p name="client.availableversion"></p>
-				</div>
-				<br />
-				<input class="formatbutton" type="submit" value="ok" enterkey=true style="margin-left:10px;">Ok</input>
-				<button class="formatbutton" onclick="Close" cancelkey=true style="margin-left:150px;">Cancel</button>
-			</form>
+<body id="body"> <div class="screencenter"> <div class="inputdialog">
+	<form onsubmit="login">
+		<div class="header" id="header">
+			Ephenation login
 		</div>
-	</div>
-</body>
+		<br />
+		<div>
+			License key: <input class="onelineinput overrideinput" type=text name="Login.licensekey" style="margin-left: 0px;"/> <br/>
+			Email: <input class="onelineinput overrideinput" type=text name="Login.email" style="margin-left: 38px;" /> <br/>
+			Password: <input class="onelineinput overrideinput" type=password name="Login.password" style="margin-left: 14px;" /> <br/>
+			<p name="client.availableversion"></p>
+		</div>
+		<br />
+		<input class="formatbutton" type="submit" value="ok" enterkey=true style="margin-left:10px;">Ok</input>
+		<button class="formatbutton" onclick="Close" cancelkey=true style="margin-left:150px;">Cancel</button>
+	</form>
+</div> </div> </body>
 </rml>
