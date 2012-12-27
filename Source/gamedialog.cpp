@@ -911,7 +911,6 @@ void gameDialog::render() {
 	//=========================================================================
 
 	if (!fDrawMap) {
-		this->DrawPlayerStats();
 		if (fShowWeapon && gMode.Get() != GameMode::CONSTRUCT && !fShowInventory && !this->ThirdPersonView())
 			this->DrawWeapon();
 		static bool wasDead = false;
@@ -933,7 +932,6 @@ void gameDialog::render() {
 
 		if (!gPlayer.IsDead())
 			wasDead = false;
-		DrawCompassRose();
 	}
 
 	if (fDrawMap && gDebugOpenGL) {
@@ -1199,24 +1197,6 @@ void gameDialog::SetMessage(const char *str) {
 	gMsgWindow.Add(str);
 }
 
-void gameDialog::DrawPlayerStats(void) const {
-	// The coordinates and sizes used here are measured from the graphical UI. No view or projection matrix is used,
-	// which means the screen is from -1.0 to +1.0 in both x and y.
-	glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(-0.69157f, -0.81982f, 0.0f));
-	model = glm::scale(model, glm::vec3(0.43802f, 0.03804f, 1.0f));
-	float dmg = gPlayer.fPreviousHp - gPlayer.fHp;
-	static const glm::mat4 id(1.0f); // No need to create a new one every time.
-	fHealthBar->DrawHealth(id, model, gPlayer.fHp, dmg, false);
-
-	model = glm::translate(glm::mat4(1.0f), glm::vec3(-0.69194f, -0.85735f, 0.0f));
-	model = glm::scale(model, glm::vec3(0.38361f, 0.01788f, 1.0f));
-	fHealthBar->DrawMana(model, gPlayer.fMana);
-
-	model = glm::translate(glm::mat4(1.0f), glm::vec3(-1.0f, -1.0f, 0.0f));
-	model = glm::scale(model, glm::vec3(2.0f, 0.02856f, 1.0f));
-	fHealthBar->DrawExp(model, gPlayer.fExp);
-}
-
 void gameDialog::DrawWeapon(void) const {
 	GLuint text = GameTexture::WEP1;
 	switch(gPlayer.fWeaponType) {
@@ -1263,34 +1243,6 @@ void gameDialog::DrawHealingAnimation(bool restart) const {
 	glBindTexture(GL_TEXTURE_2D, GameTexture::LightBallsHeal);
 	fDrawTexture->Draw(id, model);
 	glBindTexture(GL_TEXTURE_2D, 0);
-}
-
-void gameDialog::DrawCompassRose(void) const {
-	static const glm::mat4 id(1.0f); // No need to create a new one every time.
-
-	// Move compass to lower left corner.
-	glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(-0.85f, -0.80f, 0.0f));
-
-	// Scale it down, and remove dependency of screen width/height ratio
-	float scale = 0.2f;
-	float screenRatio = gViewport[2] / gViewport[3];
-	model = glm::scale(model, glm::vec3(scale/screenRatio, scale, scale));
-
-	// Rotate according to vertical viewing direction
-	model = glm::rotate(model, gPlayer.fAngleVert, glm::vec3(1.0f, 0.0f, 0.0f));
-
-	// Rotate according to horisontal viewing direction
-	model = glm::rotate(model, gPlayer.fAngleHor, glm::vec3(0.0f, 0.0f, 1.0f));
-
-	// Move the center of the compass, so rotation is done around the center, not the lower left corner of the bitmap.
-	model = glm::translate(model, glm::vec3(-0.5f, -0.5f, 0.0f));
-
-	glBindTexture(GL_TEXTURE_2D, GameTexture::CompassRose);
-	fDrawTexture->Draw(id, model);
-	// glBindTexture(GL_TEXTURE_2D, 0);  // Deprecated
-
-	gMonsters.RenderMinimap(model, fHealthBar);
-	gOtherPlayers.RenderMinimap(model, fHealthBar);
 }
 
 void gameDialog::UpdateCameraPosition(void) {

@@ -58,4 +58,7 @@ private:
 	Rocket::Core::Context *fRocketContext;
 	Rocket::Core::ElementDocument *fDocument;
 	bool fShowGUI;
+
+	void DrawCompassRose(void) const;
+	void DrawPlayerStats(void) const;
 };
