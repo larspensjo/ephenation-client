@@ -22,16 +22,19 @@
 	<link type="text/rcss" href="ephenation.rcss"/>
 	<link type="text/rcss" href="popup.rcss"/>
 	<style>
-	.logindialog
+	.screencenter /* Use this to find the center of the screen at top left for an element */
 	{
-		width: 500px;
-		height: 500px;
+		width: 290px;
 		font-size: 22px;
-		background-color: rgba(209,195,174,50%); /* Semi transparent black background */
-		padding-top: 30px; /* Leave space on top of pergament background */
-		padding-left: 70px;
-		padding-right: 50px;
+		margin-top: 50%;
+		margin-left: 50%;
 		z-index: -1; /* Should be behind everything else */
+	}
+	.inputdialog {
+		margin-top: -250px;
+		margin-left: -250px;
+		background-color: rgba(209,195,174,60%);
+		padding: 15px;
 	}
 	.overrideinput {
 		width:270px;
@@ -39,22 +42,24 @@
 	</style>
 </head>
 <body id="body">
-	<div class="logindialog">
-		<form onsubmit="login">
-			<div class="header" id="header">
-				Ephenation login
-			</div>
-			<br />
-			<div>
-				License key: <input class="onelineinput overrideinput" type=text name="Login.licensekey" /> <br/>
-				Email: <input class="onelineinput overrideinput" type=text name="Login.email"  /> <br/>
-				Password: <input class="onelineinput overrideinput" type=password name="Login.password" /> <br/>
-				<p name="client.availableversion"></p>
-			</div>
-			<br />
-			<input class="formatbutton" type="submit" value="ok" enterkey=true style="margin-left:10px;">Ok</input>
-			<button class="formatbutton" onclick="Close" cancelkey=true style="margin-left:150px;">Cancel</button>
-		</form>
+	<div class="screencenter">
+		<div class="inputdialog">
+			<form onsubmit="login">
+				<div class="header" id="header">
+					Ephenation login
+				</div>
+				<br />
+				<div>
+					License key: <input class="onelineinput overrideinput" type=text name="Login.licensekey" style="margin-left: 0px;"/> <br/>
+					Email: <input class="onelineinput overrideinput" type=text name="Login.email" style="margin-left: 38px;" /> <br/>
+					Password: <input class="onelineinput overrideinput" type=password name="Login.password" style="margin-left: 14px;" /> <br/>
+					<p name="client.availableversion"></p>
+				</div>
+				<br />
+				<input class="formatbutton" type="submit" value="ok" enterkey=true style="margin-left:10px;">Ok</input>
+				<button class="formatbutton" onclick="Close" cancelkey=true style="margin-left:150px;">Cancel</button>
+			</form>
+		</div>
 	</div>
 </body>
 </rml>
