@@ -70,12 +70,10 @@
 			<Add library="contrib\win32\libRocket\libRocketControls.a" />
 			<Add library="contrib\win32\libRocket\libRocketDebugger.a" />
 			<Add library="contrib\win32\libRocket\libfreetype.dll.a" />
-			<Add library="contrib\win32\lloyd-yajl-17b1790\src\lib\yajl_s.lib" />
 			<Add directory="C:\MinGW\msys\1.0\lib" />
 			<Add directory="C:\MinGW\msys\1.0\local\lib" />
 			<Add directory="C:\MinGW\msys\1.0\bin\assimp\lib" />
 		</Linker>
-		<Unit filename="..\readme.txt" />
 		<Unit filename="BlenderModel.cpp" />
 		<Unit filename="BlenderModel.h" />
 		<Unit filename="BuildingBlocks.cpp" />
@@ -127,6 +125,14 @@
 		<Unit filename="client_prot.h" />
 		<Unit filename="connection.cpp" />
 		<Unit filename="connection.h" />
+		<Unit filename="contrib\bstrlib.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="contrib\bstrlib.h" />
+		<Unit filename="contrib\glsw.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="contrib\glsw.h" />
 		<Unit filename="contrib\win32\lloyd-yajl-17b1790\src\yajl.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -221,11 +227,19 @@
 		<Unit filename="shaders\addpointshadow.h" />
 		<Unit filename="shaders\addssao.cpp" />
 		<Unit filename="shaders\addssao.h" />
+		<Unit filename="shaders\animationshader.glsl" />
+		<Unit filename="shaders\chunkshader.glsl" />
+		<Unit filename="shaders\chunkshaderpicking.glsl" />
+		<Unit filename="shaders\colorshader.glsl" />
+		<Unit filename="shaders\common.glsl" />
+		<Unit filename="shaders\deferredlighting.glsl" />
+		<Unit filename="shaders\dynamicshadow.glsl" />
 		<Unit filename="shaders\modulatedtextureshader.cpp" />
 		<Unit filename="shaders\modulatedtextureshader.h" />
 		<Unit filename="shaders\shader.cpp" />
 		<Unit filename="shaders\shader.h" />
 		<Unit filename="shaders\shadowmapshader.cpp" />
+		<Unit filename="shaders\shadowmapshader.glsl" />
 		<Unit filename="shaders\shadowmapshader.h" />
 		<Unit filename="shaders\skybox.cpp" />
 		<Unit filename="shaders\skybox.h" />

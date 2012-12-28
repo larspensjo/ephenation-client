@@ -7,10 +7,6 @@
 #include "bstrlib.h"
 #include "glsw.h"
 
-#ifdef WIN32
-#pragma warning(disable:4996) // allow "fopen"
-#endif
-
 ///////////////////////////////////////////////////////////////////////////////
 // PRIVATE TYPES
 

@@ -19,10 +19,6 @@
 #include <ctype.h>
 #include "bstrlib.h"
 
-#ifdef WIN32
-#pragma warning(disable:4996)
-#endif
-
 /* Optionally include a mechanism for debugging memory */
 
 #if defined(MEMORY_DEBUG) || defined(BSTRLIB_MEMORY_DEBUG)
