@@ -22,6 +22,8 @@
 	<link type="text/rcss" href="ephenation.rcss"/>
 	<link type="text/rcss" href="popup.rcss"/>
 	<style>
+	.longlabel { width: 20%; }
+	.description { width: 80%; }
 	</style>
 </head>
 <body id="body">
@@ -33,33 +35,36 @@
 			<tabset>
 				<tab>Basic</tab>
 				<panel>
-					<div class="menulist">
-						<input type="checkbox" name="Audio.musicon" value="1"/> Enable music<br/>
-						<input type="checkbox" name="ping" value="1"/> Enable ping<br/>
-						<input type="checkbox" name="Graphics.fullscreen" value="1"/> Use full screen<br/>
-						<select name="Options.graphicalmode">
-						</select>Graphical mode<br/>
-						<select name="Graphics.performance">
-							<option name="Graphics.performance" value="1">Low</option>
-							<option name="Graphics.performance" value="2">Medium</option>
-							<option name="Graphics.performance" value="3">High</option>
-							<option name="Graphics.performance" value="4">Super</option>
-						</select> System performance<br/>
-					</div>
+					<table>
+						<tr><td class="longlabel">Enable music:</td><td class="description"><input type="checkbox" name="Audio.musicon" value="1"/></td></tr>
+						<tr><td class="longlabel">Enable ping:</td><td class="description"><input type="checkbox" name="ping" value="1"/></td></tr>
+						<tr><td class="longlabel">Use full screen:</td><td class="description"><input type="checkbox" name="Graphics.fullscreen" value="1"/></td></tr>
+						<tr><td class="longlabel">Graphical mode:</td><td class="description"><select name="Options.graphicalmode" /></td></tr>
+						<tr><td class="longlabel">System performance:</td><td class="description">
+							<select name="Graphics.performance">
+								<option name="Graphics.performance" value="1">Low</option>
+								<option name="Graphics.performance" value="2">Medium</option>
+								<option name="Graphics.performance" value="3">High</option>
+								<option name="Graphics.performance" value="4">Super</option>
+							</select>
+						</td></tr>
+					</table>
 				</panel>
 				<tab>Advanced</tab>
 				<panel>
-					<div class="menulist">
-						<input type="checkbox" name="Display.vsync" value="1"/> VSYNC<br/>
-						<input type="checkbox" name="Graphics.SmoothTerrain" value="1"/> Smooth terrain<br/>
-						<input type="checkbox" name="Graphics.MergeNormals" value="1"/> Merge normals<br/>
-						<input type="checkbox" name="Graphics.AddNoise" value="1"/> Add random height noise<br/>
+					<table>
+						<tr><td class="longlabel">VSYNC:</td><td class="description"><input type="checkbox" name="Display.vsync" value="1"/></td></tr>
+						<tr><td class="longlabel">Smooth terrain:</td><td class="description"><input type="checkbox" name="Graphics.SmoothTerrain" value="1"/></td></tr>
+						<tr><td class="longlabel">Merge normals:</td><td class="description"><input type="checkbox" name="Graphics.MergeNormals" value="1"/></td></tr>
+						<tr><td class="longlabel">Random height noise:</td><td class="description"><input type="checkbox" name="Graphics.AddNoise" value="1"/></td></tr>
+						<tr><td class="longlabel">Shadows:</td><td class="description">
 						<select name="Options.shadows">
 							<option name="Options.shadows" value="1">Precomputed</option>
 							<option name="Options.shadows" value="2">Static</option>
 							<option name="Options.shadows" value="3">Dynamic</option>
-						</select> Shadows<br/>
-					</div>
+						</select>
+						</td></tr>
+					</table>
 				</panel>
 			</tabset>
 			<input class="formatbutton firstbuttonpos" type="submit" value="ok" enterkey=true>Ok</input>

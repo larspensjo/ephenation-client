@@ -250,6 +250,8 @@ tabset panels panel
 	height: 70%;
 	margin-top: -8px;
 	margin-left: -6px;
+	padding-left: 20px;
+	padding-top: 20px;
 	background-decorator: tiled-box;
 	background-top-left-image: brass_theme_1a.bmp 80px 80px 95px 95px;
 	background-top-right-image: brass_theme_1a.bmp 376px 80px 391px 95px;
