@@ -1,3 +1,19 @@
+<!-- Copyright 2012 The Ephenation Authors -->
+
+<!-- This file is part of Ephenation. -->
+
+<!-- Ephenation is free software: you can redistribute it and/or modify -->
+<!-- it under the terms of the GNU General Public License as published by -->
+<!-- the Free Software Foundation, version 3. -->
+
+<!-- Ephenation is distributed in the hope that it will be useful, -->
+<!-- but WITHOUT ANY WARRANTY; without even the implied warranty of -->
+<!-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the -->
+<!-- GNU General Public License for more details. -->
+
+<!-- You should have received a copy of the GNU General Public License -->
+<!-- along with Ephenation.  If not, see <http://www.gnu.org/licenses/>. -->
+
 <!--A pop-up window used to help information. -->
 
 <rml>
@@ -6,13 +22,12 @@
 	<link type="text/rcss" href="ephenation.rcss"/>
 	<link type="text/rcss" href="popup.rcss"/>
 	<style>
-
 	.field10
 	{
 		width: 10%;
 	}
 
-	.field
+	.longlabel
 	{
 		width: 25%;
 	}
@@ -32,35 +47,37 @@
 		<div  id="content" class="content">
 			<table>
 				<tr>
-					<td class="field">Lead programmer:</td>
+					<td class="longlabel">Lead programmer:</td>
 					<td class="field35">Lars Pensjo</td>
 				</tr>
 				<tr>
-					<td class="field">Assistant programmer:</td>
+					<td class="longlabel">Assistant programmer:</td>
 					<td class="field35">Mikael Grah</td>
 				</tr>
 				<tr>
-					<td class="field">Level design and testing:</td>
+					<td class="longlabel">Level design and testing:</td>
 					<td class="field35">Andreas Andersson</td>
 				</tr>
 				<tr>
-					<td class="field">Music:</td>
+					<td class="longlabel">Music:</td>
 					<td class="field35">Kevin MacLeod, incompetech.com</td>
 				</tr>
 				<tr>
-					<td class="field">Sound effects:</td>
+					<td class="longlabel">Sound effects:</td>
 					<td class="field35">www.mediacollege.com</td>
 				</tr>
 				<tr>
-					<td class="field">Graphics support:</td>
+					<td class="longlabel">Graphics support:</td>
 					<td class="field35">Jonas Pensjo, David Condon</td>
 				</tr>
 				<tr>
-					<td class="field">Animations:</td>
+					<td class="longlabel">Animations:</td>
 					<td class="field35">Lev Grunberg</td>
 				</tr>
-			</table>
-			<table>
+				<tr>
+					<td class="longlabel">Design proposals:</td>
+					<td class="field35">Kamil Niechajewicz</td>
+				</tr>
 				<tr>
 					<td class="field10"><br /></td>
 				</tr>

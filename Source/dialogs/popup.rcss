@@ -28,7 +28,7 @@ td:first-child
 
 /* Used for a multi line block of text */
 .content {
-	height: 65%;
+	height: 70%;
 	white-space: pre-wrap; /* Preserve newlines, but wrap when needed */
 	overflow: auto; /* Text flowing outside the area is not shown */
 	line-height: 1em; /* Default is 1.2em */
