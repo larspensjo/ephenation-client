@@ -40,10 +40,9 @@ struct GameTexture {
 	static GLuint TreeBarkId, Hedge, Window, Snow, Branch;
 	static GLuint Sky1Id, Sky2Id, Sky3Id, Sky4Id, SkyupId;
 	static GLuint RedScalesId, Morran;
-	static GLuint Fur1Id, MonsterFace1;
+	static GLuint Fur1Id;
 	static GLuint LanternSideId, Teleport;
 	static GLuint LightBallsHeal, InventoryId, EquipmentId;
-	static GLuint PlayerFace[5];
 	static GLuint RedColor, GreenColor, BlueColor, DarkGray;
 	static GLuint RedChunkBorder, BlueChunkBorder, GreenChunkBorder;
 	static GLuint CompassRose, DamageIndication;

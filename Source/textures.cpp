@@ -98,7 +98,7 @@ GLuint GameTexture::LeafTextureId;
 GLuint GameTexture::StoneTexture2Id;
 GLuint GameTexture::TreeBarkId, GameTexture::Hedge, GameTexture::Window, GameTexture::Snow, GameTexture::Branch;
 GLuint GameTexture::Sky1Id, GameTexture::Sky2Id, GameTexture::Sky3Id, GameTexture::Sky4Id, GameTexture::SkyupId;
-GLuint GameTexture::RedScalesId, GameTexture::Fur1Id, GameTexture::MonsterFace1, GameTexture::PlayerFace[5], GameTexture::Morran;
+GLuint GameTexture::RedScalesId, GameTexture::Fur1Id, GameTexture::Morran;
 GLuint GameTexture::LanternSideId, GameTexture::Teleport;
 GLuint GameTexture::LightBallsHeal, GameTexture::InventoryId, GameTexture::EquipmentId;
 GLuint GameTexture::RedColor, GameTexture::GreenColor, GameTexture::BlueColor, GameTexture::DarkGray;
@@ -363,31 +363,7 @@ void GameTexture::Init(void) {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-	MonsterFace1 = loadTexture(loadBMP("textures/MonsterFace1.bmp"));
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
 	LightBallsHeal = loadTexture(loadBMP("textures/LightBallsHeal.bmp"), TF_NOMIPMAP);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-	PlayerFace[0] = loadTexture(loadBMP("textures/narrowhouse_ugly_kid.bmp"));
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-	PlayerFace[1] = loadTexture(loadBMP("textures/ugly_kid_02.bmp"));
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-	PlayerFace[2] = loadTexture(loadBMP("textures/ugly_kid_03.bmp"));
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-	PlayerFace[3] = loadTexture(loadBMP("textures/ugly_kid_04.bmp"));
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-	PlayerFace[4] = loadTexture(loadBMP("textures/ugly_kid_05.bmp"));
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
