@@ -17,8 +17,11 @@
 
 #pragma once
 
+#include <map>
+#include <string>
+
 //
-// This is a class that manages other players that we know of. The client will only know of
+// Manages other players that we know of. The client will only know of
 // near players, which may need to be drawn.
 //
 
@@ -27,19 +30,17 @@ class AnimationShader;
 
 class OtherPlayers {
 private:
-	enum { MAXPLAYERS = 1000 };
 	struct OneOtherPlayer : public Object {
 		unsigned long id;
 		signed long long x;
 		signed long long y;
 		signed long long z;
 		bool ingame;
-		bool slotFree; // If this slot is free
 		unsigned char hp;
 		unsigned int level;
 		float fDir; // The direction the player is facing, in degrees
 		double fUpdateTime; // The last time when this player was updated from the server.
-		char *playerName;
+		std::string playerName;
 		virtual unsigned long GetId() const { return this->id; }
 		virtual int GetType() const { return ObjTypePlayer; }
 		virtual int GetLevel() const { return this->level; }
@@ -50,11 +51,8 @@ private:
 		virtual void RenderHealthBar(HealthBar *, float angle) const;
 		virtual bool InGame(void) const { return ingame;}
 	};
-	OneOtherPlayer fPlayers[MAXPLAYERS];
-	int fMaxIndex; // index+1 of last in-game player
-	int FindPlayer(unsigned long uid) const;
+	std::map<unsigned long, OneOtherPlayer> fPlayers;
 public:
-	OtherPlayers();
 	void Cleanup(void);
 	void SetPlayer(unsigned long id, unsigned char hp, unsigned int level, signed long long x, signed long long y, signed long long z, float dir);
 	void SetPlayerName(unsigned long uid, const char *name, int n, int adminLevel);

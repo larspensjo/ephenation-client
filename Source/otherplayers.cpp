@@ -46,12 +46,6 @@ using std::endl;
 
 OtherPlayers gOtherPlayers;
 
-OtherPlayers::OtherPlayers() : fMaxIndex(0) {
-	for (int i=0; i<MAXPLAYERS; i++) {
-		fPlayers[i].slotFree = true;
-	}
-}
-
 glm::vec3 OtherPlayers::OneOtherPlayer::GetSelectionColor() const {
 	return glm::vec3(-0.2f, 0.2f, -0.2f);
 }
@@ -66,77 +60,40 @@ glm::vec3 OtherPlayers::OneOtherPlayer::GetPosition() const {
 	return glm::vec3(dx, dz-4.0f, -dy);
 }
 
+#if 0
 OtherPlayers::OneOtherPlayer *OtherPlayers::GetSelection(unsigned char R, unsigned char G, unsigned char B) {
 	return &fPlayers[G*256+B];
 }
-
-int OtherPlayers::FindPlayer(unsigned long uid) const {
-	for (int i=0; i < fMaxIndex; i++) {
-		if (!fPlayers[i].slotFree && fPlayers[i].id == uid) {
-			return i;
-		}
-	}
-	return -1;
-}
+#endif
 
 void OtherPlayers::SetPlayer(unsigned long id, unsigned char hp, unsigned int level, signed long long x, signed long long y, signed long long z, float dir) {
-	// Find the player, or an empty slot
-	int i;
-	int firstFree = -1;
-	int max = fMaxIndex+1;
-	if (max > MAXPLAYERS)
-		max = MAXPLAYERS;
-	for (i=0; i < max; i++) {
-		if (fPlayers[i].slotFree) {
-			if (firstFree == -1)
-				firstFree = i;
-		} else if (fPlayers[i].id == id) {
-			break;
-		}
-	}
+	OneOtherPlayer *pl = &fPlayers[id];
 
-	// Either use the slot found, or the first free slot
-
-	if (i == max) { // Id was not already stored
-		i = firstFree;
-		fPlayers[i].slotFree = true;
-	}
-
-	if (fPlayers[i].slotFree) {
+	if (pl->id == 0) {
 		unsigned char b[7];
 		b[0] = sizeof b;
 		b[1] = 0;
 		b[2] = CMD_REQ_PLAYER_INFO;
 		EncodeUint32(b+3, id);
 		SendMsg(b, sizeof b);
-		fPlayers[i].playerName = 0;
-		fPlayers[i].id = id;
-		fPlayers[i].slotFree = false;
-		fPlayers[i].ingame = true;
+		pl->id = id;
 	}
-
-	if (i != MAXPLAYERS) {
-		// printf("Store info for player %d in slot %d (max: %d, fMaxIndex %d)\n", id, i, max, fMaxIndex);
-		fPlayers[i].x = x;
-		fPlayers[i].y = y;
-		fPlayers[i].z = z;
-		fPlayers[i].hp = hp;
-		fPlayers[i].level = level;
-		fPlayers[i].fDir = dir;
-		fPlayers[i].fUpdateTime = gCurrentFrameTime;
-
-		if (i == fMaxIndex)
-			fMaxIndex = i+1;
-	}
+	// printf("Store info for player %d in slot %d (max: %d, fMaxIndex %d)\n", id, i, max, fMaxIndex);
+	pl->ingame = true;
+	pl->x = x;
+	pl->y = y;
+	pl->z = z;
+	pl->hp = hp;
+	pl->level = level;
+	pl->fDir = dir;
+	pl->fUpdateTime = gCurrentFrameTime;
 }
 
 void OtherPlayers::SetPlayerName(unsigned long uid, const char *name, int n, int adminLevel) {
-	int ind = this->FindPlayer(uid);
-	if (ind == -1)
+	auto it = fPlayers.find(uid);
+	if (it == fPlayers.end())
 		return; // Give it up. Should not happen
-	fPlayers[ind].playerName = new char[n+1];
-	strncpy(fPlayers[ind].playerName, name, n);
-	fPlayers[ind].playerName[n] = 0; // null-terminate string
+	it->second.playerName = name;
 	// printf("Player %d got name %s and admin level %d\n", uid, fPlayers[ind].playerName, adminLevel);
 }
 
@@ -150,14 +107,15 @@ void OtherPlayers::RenderPlayers(AnimationShader *animShader, bool selectionMode
 	}
 	glBindTexture(GL_TEXTURE_2D, GameTexture::RedColor);
 	animShader->EnableProgram();
-	for (int i=0; i<fMaxIndex; i++) {
-		if (fPlayers[i].ingame) {
-			float dx = (fPlayers[i].x - (signed long long)cc.x*BLOCK_COORD_RES * CHUNK_SIZE)/(float)BLOCK_COORD_RES;
-			float dy = (fPlayers[i].y - (signed long long)cc.y*BLOCK_COORD_RES * CHUNK_SIZE)/(float)BLOCK_COORD_RES;
-			float dz = (fPlayers[i].z - (signed long long)cc.z*BLOCK_COORD_RES * CHUNK_SIZE)/(float)BLOCK_COORD_RES;
+	for (const auto &pl : fPlayers) {
+		if (pl.second.ingame) {
+			float dx = (pl.second.x - (signed long long)cc.x*BLOCK_COORD_RES * CHUNK_SIZE)/(float)BLOCK_COORD_RES;
+			float dy = (pl.second.y - (signed long long)cc.y*BLOCK_COORD_RES * CHUNK_SIZE)/(float)BLOCK_COORD_RES;
+			float dz = (pl.second.z - (signed long long)cc.z*BLOCK_COORD_RES * CHUNK_SIZE)/(float)BLOCK_COORD_RES;
 
 			glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(dx, dz-PLAYER_HEIGHT*2.0f, -dy));
-			model = glm::rotate(model, -fPlayers[i].fDir, glm::vec3(0.0f, 1.0f, 0.0f));
+			model = glm::rotate(model, -pl.second.fDir, glm::vec3(0.0f, 1.0f, 0.0f));
+			model = glm::scale(model, glm::vec3(PLAYER_HEIGHT, PLAYER_HEIGHT, PLAYER_HEIGHT));
 
 			double tm = gCurrentFrameTime-0.22; // Offset in time where model is not in a stride.
 #if 0
@@ -173,19 +131,19 @@ void OtherPlayers::RenderPlayers(AnimationShader *animShader, bool selectionMode
 }
 
 void OtherPlayers::RenderPlayerStats(HealthBar *hb, float angle) const {
-	for (int i=0; i<fMaxIndex; i++) {
-		if (fPlayers[i].ingame) {
-			fPlayers[i].RenderHealthBar(hb, angle);
+	for (const auto &pl : fPlayers) {
+		if (pl.second.ingame) {
+			pl.second.RenderHealthBar(hb, angle);
 		}
 	}
 }
 
 void OtherPlayers::RenderMinimap(const glm::mat4 &miniMap, HealthBar *hb) const {
-	for (int i=0; i<fMaxIndex; i++) {
-		if (fPlayers[i].ingame && !fPlayers[i].IsDead()) {
-			float dx = float(gPlayer.x - fPlayers[i].x)/CHUNK_SIZE/BLOCK_COORD_RES/2;
-			float dy = float(gPlayer.y - fPlayers[i].y)/CHUNK_SIZE/BLOCK_COORD_RES/2;
-			float dz = float(gPlayer.z - fPlayers[i].z)/CHUNK_SIZE/BLOCK_COORD_RES/2;
+	for (const auto &pl : fPlayers) {
+		if (pl.second.ingame && !pl.second.IsDead()) {
+			float dx = float(gPlayer.x - pl.second.x)/CHUNK_SIZE/BLOCK_COORD_RES/2;
+			float dy = float(gPlayer.y - pl.second.y)/CHUNK_SIZE/BLOCK_COORD_RES/2;
+			float dz = float(gPlayer.z - pl.second.z)/CHUNK_SIZE/BLOCK_COORD_RES/2;
 			if (dx > 1.0f || dx < -1.0f || dy > 1.0f || dy < -1.0f || dz > 1.0f || dz < -1.0f)
 				continue; // To far away on the radar
 			// printf("OtherPlayers::RenderMinimap (%f, %f, %f)\n", dx, dy, dz);
@@ -218,7 +176,7 @@ void OtherPlayers::OneOtherPlayer::RenderHealthBar(HealthBar *hb, float angle) c
 	gDrawFont.UpdateProjection();
 	gDrawFont.SetOffset(gViewport[2] * (screen.x+1)/2, gViewport[3] * (1-screen.y)/2);
 	stringstream ss;
-	if (this->playerName)
+	if (this->playerName == "")
 		ss << this->playerName << " ";
 	ss << "level " << this->level << endl;
 	glm::vec3 offs(0.0f, -0.8f, -0.8f);
@@ -236,18 +194,15 @@ void OtherPlayers::OneOtherPlayer::RenderHealthBar(HealthBar *hb, float angle) c
 // least every 4s. So players that have not had any update in 5s are stale, and should be removed.
 void OtherPlayers::Cleanup(void) {
 	double now = gCurrentFrameTime;
-	for (int i=0; i<fMaxIndex; i++) {
-		if (!fPlayers[i].ingame)
+	for (auto &pl : fPlayers) {
+		if (!pl.second.ingame)
 			continue;
-		if (now - fPlayers[i].fUpdateTime < 5.0)
+		if (now - pl.second.fUpdateTime < 5.0)
 			continue;
-		// printf("Found stale player: index %d, id %ld\n", i, fPlayers[i].id);
-		fPlayers[i].ingame = false;
-		fPlayers[i].slotFree = true;
-		delete []fPlayers[i].playerName;
-		fPlayers[i].playerName = 0;
+		// printf("Found stale player: index %d, id %ld\n", i, pl.second.id);
+		pl.second.ingame = false;
 
 		// Remove this players as a creature in SoundControl
-		gSoundControl.RemoveCreatureSound(SoundControl::SOtherPlayer,fPlayers[i].id);
+		gSoundControl.RemoveCreatureSound(SoundControl::SOtherPlayer,pl.second.id);
 	}
 }

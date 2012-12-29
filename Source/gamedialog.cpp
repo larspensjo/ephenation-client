@@ -144,7 +144,7 @@ Object *gameDialog::FindSelectedObject(int x, int y) {
 		obj = gMonsters.GetSelection(pixel[0], pixel[1], pixel[2]);
 		break;
 	case 2:
-		obj = gOtherPlayers.GetSelection(pixel[0], pixel[1], pixel[2]);
+		// obj = gOtherPlayers.GetSelection(pixel[0], pixel[1], pixel[2]);
 		break;
 	}
 	return obj;
