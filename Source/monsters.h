@@ -20,6 +20,10 @@
 //
 // This is a class that manages other monsters that we know of.
 //
+// TODO: The OtherPlayers class is very similar, with too much duplication
+//
+#include <map>
+#include <memory>
 
 #include "object.h"
 
@@ -28,14 +32,12 @@ class AnimationModels;
 
 class Monsters {
 private:
-	enum { MAXMONSTERS=1000 }; // This is the max number of monsters that the player knows about, not the total number in the server
 	struct OneMonster : public Object {
 		unsigned long id; // The server unique ID of the monster.
+		// The coordinate in the server system.
 		signed long long x;
 		signed long long y;
 		signed long long z;
-		bool ingame;
-		bool slotFree; // If this slot is free
 		unsigned int level;
 		unsigned char hp;
 		unsigned char prevHp; // Used to measure delta hp for presentation
@@ -45,24 +47,25 @@ private:
 		virtual unsigned long GetId() const { return this->id; }
 		virtual int GetType() const { return ObjTypeMonster; }
 		virtual int GetLevel() const { return this->level; }
-		virtual glm::vec3 GetPosition() const; // Get relative coordinate compared to player chunk
+		virtual glm::vec3 GetPosition() const; // Get relative coordinate compared to player chunk, in OpenGL coordinates
 		virtual glm::vec3 GetSelectionColor() const; // The color to draw on the ground when object selected
-		bool IsDead(void) const { return hp == 0; }
+		virtual bool IsDead(void) const { return hp == 0; }
 		virtual void RenderHealthBar(HealthBar *, float angle) const;
-		virtual bool InGame(void) const { return ingame;}
+		virtual bool InGame(void) const { return true;}
 	};
-	OneMonster fMonsters[MAXMONSTERS];
-	int fMaxIndex; // index+1 of last in game monster
+	std::map<unsigned long, std::shared_ptr<OneMonster> > fMonsters;
 public:
-	Monsters();
+	void Cleanup(void); // Throw away "old" monsters
+
+	// Monster information, identified by 'id'. The coordinates are absolute world coordinates.
 	void SetMonster(unsigned long id, unsigned char hp, unsigned int level, signed long long x, signed long long y, signed long long z, float dir);
-	Object *Find(unsigned long id); // Get a pointer to a monster, or 0 if not found.
+	std::shared_ptr<const Object> Find(unsigned long id) const; // Get a pointer to a monster, or 0 if not found.
 	void RenderMonsters(bool forShadows, bool selectionMode, const AnimationModels *animationModels) const; // draw all near monsters
 	void RenderMinimap(const glm::mat4 &model, HealthBar *hb) const; // draw all near monsters
-	OneMonster *GetSelection(unsigned char R, unsigned char G, unsigned char B);
-	void Cleanup(void); // Throw away "old" monsters
+	std::shared_ptr<const Object> GetSelection(unsigned char R, unsigned char G, unsigned char B);
+
 	// Find the next monster after 'current', based on distance from player.
-	Object *GetNext(Object *current);
+	std::shared_ptr<const Object> GetNext(std::shared_ptr<const Object> current) const;
 
 	// All monsters for a given level has the same size, a value from 1 to 5.
 	static float Size(unsigned int level);

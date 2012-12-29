@@ -193,7 +193,7 @@ void RenderControl::Resize(GLsizei width, GLsizei height) {
 
 enum { STENCIL_NOSKY = 1 };
 
-void RenderControl::Draw(Object *selectedObject, bool underWater, bool thirdPersonView, Object *fSelectedObject, bool showMap, int mapWidth, MainUserInterface *ui) {
+void RenderControl::Draw(bool underWater, bool thirdPersonView, shared_ptr<const Object> selectedObject, bool showMap, int mapWidth, MainUserInterface *ui) {
 	if (!gPlayer.BelowGround())
 		this->ComputeShadowMap();
 
@@ -241,8 +241,8 @@ void RenderControl::Draw(Object *selectedObject, bool underWater, bool thirdPers
 	// Do some post processing
 	if (!underWater)
 		drawPointShadows();
-	if (fSelectedObject)
-		drawSelection(fSelectedObject->GetPosition());
+	if (selectedObject)
+		drawSelection(selectedObject->GetPosition());
 	if (!underWater)
 		drawLocalFog();
 	drawUI(ui);

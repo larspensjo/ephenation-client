@@ -59,7 +59,7 @@ public:
 	void ShadowMapMatrix(const glm::mat4 &) const;
 
 	GLuint Debug(void);
-	void Draw(Object *selectedObject, bool underWater, bool thirdPersonView, Object *fSelectedObject, bool showMap, int mapWidth, MainUserInterface *ui);
+	void Draw(bool underWater, bool thirdPersonView, std::shared_ptr<const Object> selectedObject, bool showMap, int mapWidth, MainUserInterface *ui);
 private:
 
 	// Free the buffers. Also needed to reinitialize for a new size.

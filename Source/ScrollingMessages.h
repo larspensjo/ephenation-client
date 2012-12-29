@@ -39,8 +39,10 @@ public:
 	virtual ~ScrollingMessages();
 	void Init(std::shared_ptr<DrawFont> font);
 	void Update(void);
-	// Add a message originating at n object
-	void AddMessage(Object *, const std::string &, glm::vec3 colorOffset = glm::vec3(0,0,0));
+	// Add a message originating at an object
+	void AddMessage(std::shared_ptr<const Object>, const std::string &, glm::vec3 colorOffset = glm::vec3(0,0,0));
+	// Add a message originating at the player
+	void AddMessagePlayer(const std::string &, glm::vec3 colorOffset = glm::vec3(0,0,0));
 	// Add a message originating at a screen position. If there is another message active already,
 	// it will be moved along to the new position.
 	void AddMessage(float x, float y, const std::string &, glm::vec3 colorOffset = glm::vec3(0,0,0));

@@ -139,7 +139,7 @@ void Inventory::SetAmount(const char *code, int n, unsigned lvl) {
 		if (n > prevAmount && gMode.Get() != GameMode::WAIT_ACK) {
 			gSoundControl.RequestSound(fItemList[i].fInfo->song);
 			if (gGameDialog.ThirdPersonView()) {
-				gScrollingMessages.AddMessage(&gPlayer, fItemList[i].fInfo->descr);
+				gScrollingMessages.AddMessagePlayer(fItemList[i].fInfo->descr);
 			}
 		}
 		// printf("Inventory::SetAmount code '%s': count %d descr '%s' level %d\n", code, n, fsObjectMap[i].descr, lvl);
@@ -163,7 +163,7 @@ void Inventory::SetAmount(const char *code, int n, unsigned lvl) {
 	if (gMode.Get() != GameMode::WAIT_ACK) {
 		gSoundControl.RequestSound(fItemList[fNumItems].fInfo->song);
 		if (gGameDialog.ThirdPersonView()) {
-			gScrollingMessages.AddMessage(&gPlayer, fItemList[fNumItems].fInfo->descr);
+			gScrollingMessages.AddMessagePlayer(fItemList[fNumItems].fInfo->descr);
 		}
 	}
 	fNumItems++;

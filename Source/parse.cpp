@@ -371,7 +371,7 @@ void Parse(const unsigned char *b, int n) {
 			if (gGameDialog.ThirdPersonView()) {
 				std::stringstream ss;
 				ss << dmg*100/255;
-				gScrollingMessages.AddMessage(&gPlayer, ss.str(), glm::vec3(0, -1, -1)); // Use red color for player
+				gScrollingMessages.AddMessagePlayer(ss.str(), glm::vec3(0, -1, -1)); // Use red color for player
 			} else {
 				gMsgWindow.Add("Monster hit you with %d%% damage", dmg*100/255);
 			}
@@ -384,8 +384,8 @@ void Parse(const unsigned char *b, int n) {
 			unsigned long dmg = b[i+4];
 			// gMsgWindow.Add("You hit monster %d by %d%% damage", id, dmg*100/255);
 			gSoundControl.RequestSound(SoundControl::SPlayerHits);
-			Object *m = gMonsters.Find(id);
-			if (m != 0) {
+			auto m = gMonsters.Find(id);
+			if (m != nullptr) {
 				std::stringstream ss;
 				ss << dmg*100/255;
 				gScrollingMessages.AddMessage(m, ss.str(), glm::vec3(0, 0, -1)); // Use yellow color for monster

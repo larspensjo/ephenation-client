@@ -22,13 +22,15 @@
 #include "primitives.h"
 #include "object.h"
 #include "DrawText.h"
+#include "player.h"
 
 using std::list;
+using std::shared_ptr;
 
 ScrollingMessages gScrollingMessages;
 
 // This is used as a special object to denote a screen coordinate instead of a world position
-static class  : public Object {
+class ScreenObject : public Object {
 public:
 	virtual unsigned long GetId() const { return 0; }
 	virtual int GetType() const { return -1; } // -1 is used to identify this unique object
@@ -39,14 +41,14 @@ public:
 	virtual void RenderHealthBar(HealthBar *, float angle) const {}
 	virtual bool InGame(void) const { return true; }
 	glm::vec3 fScreen; // Only x and y will be used
-} sgSpecial;
+};
 
 struct ScrollingMessages::Message {
-	const Object *o; // A reference that is allocated and deallocated elsewhere
+	shared_ptr<const Object> o; // A reference that is allocated and deallocated elsewhere
 	GLuint id;
 	double startTime;
 	glm::vec3 colorOffset;
-	std::shared_ptr<DrawFont> fFont;
+	shared_ptr<DrawFont> fFont;
 	~Message() {
 		fFont->vsfl.deleteSentence(id);
 	}
@@ -61,7 +63,7 @@ ScrollingMessages::~ScrollingMessages() {
 	// TODO Auto-generated destructor stub
 }
 
-void ScrollingMessages::AddMessage(Object *o, const std::string &str, glm::vec3 colorOffset) {
+void ScrollingMessages::AddMessage(shared_ptr<const Object> o, const std::string &str, glm::vec3 colorOffset) {
 	unique_ptr<Message> m(new Message);
 	m->o = o;
 	m->id = fFont->vsfl.genSentence();
@@ -72,11 +74,19 @@ void ScrollingMessages::AddMessage(Object *o, const std::string &str, glm::vec3 
 	fMessageList.push_back(std::move(m));
 }
 
+void ScrollingMessages::AddMessagePlayer(const std::string &str, glm::vec3 colorOffset) {
+	// Some tricks are used here. A shared_ptr to an object is required, but gPlayer is a global variable.
+	auto DummyDelete = [](player*) {}; // This is a deleter function that will do nothing.
+	auto pl = shared_ptr<player>(&gPlayer, DummyDelete); // Create a shared_ptr to gPlayer, which must not be deleted
+	this->AddMessage(pl, str, colorOffset);
+}
+
 void ScrollingMessages::AddMessage(float x, float y, const std::string &str, glm::vec3 colorOffset) {
-	sgSpecial.fScreen.x = x;
-	sgSpecial.fScreen.y = y;
+	auto so = std::make_shared<ScreenObject>();
+	so->fScreen.x = x;
+	so->fScreen.y = y;
 	unique_ptr<Message> m(new Message);
-	m->o = &sgSpecial;
+	m->o = so;
 	m->id = fFont->vsfl.genSentence();
 	m->startTime = gCurrentFrameTime;
 	m->colorOffset = colorOffset;
@@ -116,6 +126,6 @@ void ScrollingMessages::Update(void) {
 	fFont->Disable();
 }
 
-void ScrollingMessages::Init(std::shared_ptr<DrawFont> font) {
+void ScrollingMessages::Init(shared_ptr<DrawFont> font) {
 	fFont = font;
 }

@@ -17,8 +17,6 @@
 
 #include <GL/glew.h>
 #include <GL/glfw.h>
-#include <string.h>
-#include <string>
 #include <sstream>
 
 #include <glm/glm.hpp>
@@ -40,7 +38,6 @@
 #include "shaders/AnimationShader.h"
 #include "BlenderModel.h"
 
-using std::string;
 using std::stringstream;
 using std::endl;
 
@@ -57,7 +54,7 @@ glm::vec3 OtherPlayers::OneOtherPlayer::GetPosition() const {
 	float dy = (this->y - (signed long long)cc.y*BLOCK_COORD_RES * CHUNK_SIZE)/(float)BLOCK_COORD_RES;
 	float dz = (this->z - (signed long long)cc.z*BLOCK_COORD_RES * CHUNK_SIZE)/(float)BLOCK_COORD_RES;
 	// Add some corrections to get the coordinate of the feet.
-	return glm::vec3(dx, dz-4.0f, -dy);
+	return glm::vec3(dx, dz-PLAYER_HEIGHT*2.0f, -dy);
 }
 
 #if 0
@@ -80,9 +77,15 @@ void OtherPlayers::SetPlayer(unsigned long id, unsigned char hp, unsigned int le
 	}
 	// printf("Store info for player %d in slot %d (max: %d, fMaxIndex %d)\n", id, i, max, fMaxIndex);
 	pl->ingame = true;
-	pl->x = x;
-	pl->y = y;
-	pl->z = z;
+	if (pl->x != x || pl->y != y || pl->z != z) {
+		if (!pl->IsDead()) {
+			// TODO: There is a server bug that will make dead monsters move.
+			pl->x = x;
+			pl->y = y;
+			pl->z = z;
+			pl->lastTimeMoved = gCurrentFrameTime;
+		}
+	}
 	pl->hp = hp;
 	pl->level = level;
 	pl->fDir = dir;
@@ -98,8 +101,6 @@ void OtherPlayers::SetPlayerName(unsigned long uid, const char *name, int n, int
 }
 
 void OtherPlayers::RenderPlayers(AnimationShader *animShader, bool selectionMode) const {
-	ChunkCoord cc;
-	gPlayer.GetChunkCoord(&cc);
 	float sun = 1.0f;
 	if (gPlayer.BelowGround()) {
 		// A gross simplification. If underground, disable all sun.
@@ -108,24 +109,23 @@ void OtherPlayers::RenderPlayers(AnimationShader *animShader, bool selectionMode
 	glBindTexture(GL_TEXTURE_2D, GameTexture::RedColor);
 	animShader->EnableProgram();
 	for (const auto &pl : fPlayers) {
-		if (pl.second.ingame) {
-			float dx = (pl.second.x - (signed long long)cc.x*BLOCK_COORD_RES * CHUNK_SIZE)/(float)BLOCK_COORD_RES;
-			float dy = (pl.second.y - (signed long long)cc.y*BLOCK_COORD_RES * CHUNK_SIZE)/(float)BLOCK_COORD_RES;
-			float dz = (pl.second.z - (signed long long)cc.z*BLOCK_COORD_RES * CHUNK_SIZE)/(float)BLOCK_COORD_RES;
+		if (!pl.second.ingame)
+			continue;
+		glm::vec3 pos = pl.second.GetPosition();
 
-			glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(dx, dz-PLAYER_HEIGHT*2.0f, -dy));
-			model = glm::rotate(model, -pl.second.fDir, glm::vec3(0.0f, 1.0f, 0.0f));
-			model = glm::scale(model, glm::vec3(PLAYER_HEIGHT, PLAYER_HEIGHT, PLAYER_HEIGHT));
+		glm::mat4 model = glm::translate(glm::mat4(1.0f), pos);
+		model = glm::rotate(model, -pl.second.fDir, glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(PLAYER_HEIGHT, PLAYER_HEIGHT, PLAYER_HEIGHT));
 
-			double tm = gCurrentFrameTime-0.22; // Offset in time where model is not in a stride.
-#if 0
-			if (fMoving)
-				tm = 0.0;
-#endif
-			gFrog.DrawAnimation(animShader, model, tm, false, 0);
-			if (!gOptions.fDynamicShadows || sun == 0)
-				gShadows.Add(dx, dz-PLAYER_HEIGHT*2.0f, -dy, 1.5f);
-		}
+		if (pl.second.IsDead())
+			gFrog.DrawAnimation(animShader, model, pl.second.lastTimeMoved, true, 0);
+		else if (pl.second.lastTimeMoved + 0.2 > gCurrentFrameTime)
+			gFrog.DrawAnimation(animShader, model, 0.0, false, 0);
+		else
+			gFrog.DrawAnimation(animShader, model, gCurrentFrameTime-0.22, false, 0); // Offset in time where model is not in a stride.
+
+		if (!gOptions.fDynamicShadows || sun == 0)
+			gShadows.Add(pos.x, pos.y, pos.z, 1.5f);
 	}
 	animShader->DisableProgram();
 }
@@ -140,33 +140,27 @@ void OtherPlayers::RenderPlayerStats(HealthBar *hb, float angle) const {
 
 void OtherPlayers::RenderMinimap(const glm::mat4 &miniMap, HealthBar *hb) const {
 	for (const auto &pl : fPlayers) {
-		if (pl.second.ingame && !pl.second.IsDead()) {
-			float dx = float(gPlayer.x - pl.second.x)/CHUNK_SIZE/BLOCK_COORD_RES/2;
-			float dy = float(gPlayer.y - pl.second.y)/CHUNK_SIZE/BLOCK_COORD_RES/2;
-			float dz = float(gPlayer.z - pl.second.z)/CHUNK_SIZE/BLOCK_COORD_RES/2;
-			if (dx > 1.0f || dx < -1.0f || dy > 1.0f || dy < -1.0f || dz > 1.0f || dz < -1.0f)
-				continue; // To far away on the radar
-			// printf("OtherPlayers::RenderMinimap (%f, %f, %f)\n", dx, dy, dz);
-			glm::mat4 model = glm::translate(miniMap, glm::vec3(0.5f-dx, 0.5f-dy, 0.0f));
-			model = glm::scale(model, glm::vec3(0.05f, 0.05f, 0.05f));
-			// model = glm::rotate(model, 180.0f-fMonsters[i].fDir, glm::vec3(0.0f, 1.0f, 0.0f));
-			hb->DrawSquare(model, 0.0f, 1.0f, 1.0f, 1.0f);
-		}
+		if (!pl.second.ingame || pl.second.IsDead())
+			continue;
+		auto pos = pl.second.GetPosition()/2.0f/float(CHUNK_SIZE);
+		if (pos.x > 1.0f || pos.x < -1.0f || pos.y > 1.0f || pos.y < -1.0f || pos.z > 1.0f || pos.z < -1.0f)
+			continue; // To far away on the radar
+		// printf("OtherPlayers::RenderMinimap (%f, %f, %f)\n", pos.x, pos.y, pos.z);
+		glm::mat4 model = glm::translate(miniMap, 0.5f-pos);
+		model = glm::scale(model, glm::vec3(0.05f, 0.05f, 0.05f));
+		hb->DrawSquare(model, 0.0f, 1.0f, 1.0f, 1.0f);
 	}
 }
 
 void OtherPlayers::OneOtherPlayer::RenderHealthBar(HealthBar *hb, float angle) const {
-	ChunkCoord cc;
-	gPlayer.GetChunkCoord(&cc);
-	float dx = (this->x - (signed long long)cc.x*BLOCK_COORD_RES * CHUNK_SIZE)/(float)BLOCK_COORD_RES;
-	float dy = (this->y - (signed long long)cc.y*BLOCK_COORD_RES * CHUNK_SIZE)/(float)BLOCK_COORD_RES;
-	float dz = (this->z - (signed long long)cc.z*BLOCK_COORD_RES * CHUNK_SIZE)/(float)BLOCK_COORD_RES;
-	glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(dx, dz+1.0f, -dy));
+	auto pos = this->GetPosition() + glm::vec3(0.0f, 1.0f, 0.0f);
+	glm::mat4 model = glm::translate(glm::mat4(1.0f), pos);
 	model = glm::rotate(model, -angle, glm::vec3(0.0f, 1.0f, 0.0f)); // Need to counter the rotation from the view matrix
 	model = glm::scale(model, glm::vec3(2.0f, 0.2f, 1.0f));
 	hb->DrawHealth(gProjectionMatrix, gViewMatrix * model, this->hp/255.0f, 0.0f, true);
 
-	glm::vec4 v = glm::vec4(dx, dz+2.0f, -dy, 1.0f);
+	glm::vec4 v = glm::vec4(pos, 1.0f);
+	v.y += 2.0f; // Just above
 	glm::vec4 screen = gProjectionMatrix * gViewMatrix * v;
 	screen = screen / screen.w;
 	// printf("Selected: (%f,%f,%f,%f)\n", screen.x, screen.y, screen.z, screen.w);
@@ -203,6 +197,6 @@ void OtherPlayers::Cleanup(void) {
 		pl.second.ingame = false;
 
 		// Remove this players as a creature in SoundControl
-		gSoundControl.RemoveCreatureSound(SoundControl::SOtherPlayer,pl.second.id);
+		gSoundControl.RemoveCreatureSound(SoundControl::SOtherPlayer, pl.second.id);
 	}
 }

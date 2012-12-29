@@ -30,5 +30,6 @@ public:
 	virtual bool IsDead(void) const = 0;
 	virtual void RenderHealthBar(HealthBar *, float angle) const = 0;
 	virtual bool InGame(void) const = 0; // Return true if this object is still i the game.
+	virtual ~Object() {} // Virtual destructor needed for inherited classes
 private:
 };

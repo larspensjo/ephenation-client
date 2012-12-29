@@ -15,10 +15,8 @@
 // along with Ephenation.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include <stdio.h>
 #include <GL/glew.h>
 #include <GL/glfw.h>
-#include <string>
 #include <sstream>
 
 #include <glm/glm.hpp>
@@ -38,16 +36,10 @@
 #include "Options.h"
 #include "animationmodels.h"
 
-using std::string;
 using std::stringstream;
+using std::shared_ptr;
 
 Monsters gMonsters;
-
-Monsters::Monsters() : fMaxIndex(0) {
-	for (int i=0; i<MAXMONSTERS; i++) {
-		fMonsters[i].slotFree = true;
-	}
-}
 
 glm::vec3 Monsters::OneMonster::GetSelectionColor() const {
 	return glm::vec3(0.2f, -0.2f, -0.2f);
@@ -56,149 +48,119 @@ glm::vec3 Monsters::OneMonster::GetSelectionColor() const {
 glm::vec3 Monsters::OneMonster::GetPosition() const {
 	ChunkCoord cc;
 	gPlayer.GetChunkCoord(&cc);
-	float dx = (this->x - (signed long long)cc.x*BLOCK_COORD_RES * CHUNK_SIZE)/(float)BLOCK_COORD_RES;
-	float dy = (this->y - (signed long long)cc.y*BLOCK_COORD_RES * CHUNK_SIZE)/(float)BLOCK_COORD_RES;
-	float dz = (this->z - (signed long long)cc.z*BLOCK_COORD_RES * CHUNK_SIZE)/(float)BLOCK_COORD_RES;
+	float dx = (this->x - (signed long long)cc.x*BLOCK_COORD_RES * CHUNK_SIZE)/float(BLOCK_COORD_RES);
+	float dy = (this->y - (signed long long)cc.y*BLOCK_COORD_RES * CHUNK_SIZE)/float(BLOCK_COORD_RES);
+	float dz = (this->z - (signed long long)cc.z*BLOCK_COORD_RES * CHUNK_SIZE)/float(BLOCK_COORD_RES);
 	return glm::vec3(dx, dz, -dy);
 }
 
-Monsters::OneMonster *Monsters::GetSelection(unsigned char R, unsigned char G, unsigned char B) {
-	return &fMonsters[G*256+B];
+shared_ptr<const Object> Monsters::GetSelection(unsigned char R, unsigned char G, unsigned char B) {
+	return fMonsters[G*256+B];
 }
 
 void Monsters::SetMonster(unsigned long id, unsigned char hp, unsigned int level, signed long long x, signed long long y, signed long long z, float dir) {
-	// Find the monster, or an empty slot
-	int i;
-	int firstFree = -1;
-	int max = fMaxIndex+1;
-	if (max > MAXMONSTERS)
-		max = MAXMONSTERS;
-	for (i=0; i < max; i++) {
-		if (fMonsters[i].slotFree) {
-			if (firstFree == -1)
-				firstFree = i;
-		} else if (fMonsters[i].id == id) {
-			break;
+	if (fMonsters.find(id) == fMonsters.end()) {
+		fMonsters[id] = std::make_shared<OneMonster>();
+	}
+	auto mon = fMonsters[id];
+
+	// printf("Store info for monster %d in slot %d (max: %d, fMaxIndex %d)\n", id, i, max, fMaxIndex);
+	if (hp != mon->hp)
+		mon->prevHp = mon->hp; // New hp value, remember the old
+	if (mon->prevHp < hp)
+		mon->prevHp = hp;			   // The hp was increasing, only remember old if it was bigger
+	if (mon->x != x || mon->y != y || mon->z != z) {
+		if (!mon->IsDead()) {
+			// TODO: There is a server bug that will make dead monsters move.
+			mon->x = x;
+			mon->y = y;
+			mon->z = z;
+			mon->lastTimeMoved = gCurrentFrameTime;
 		}
 	}
-
-	// Either use the slot found, or the first free slot
-
-	if (i == max) // Id was not already stored
-		i = firstFree;
-
-	if (i != MAXMONSTERS) {
-		// printf("Store info for player %d in slot %d (max: %d, fMaxIndex %d)\n", id, i, max, fMaxIndex);
-		if (hp != fMonsters[i].hp)
-			fMonsters[i].prevHp = fMonsters[i].hp; // New hp value, remember the old
-		if (fMonsters[i].prevHp < hp)
-			fMonsters[i].prevHp = hp;			   // The hp was increasing, only remember old if it was bigger
-		fMonsters[i].id = id;
-		fMonsters[i].hp = hp;
-		if (fMonsters[i].x != x || fMonsters[i].y != y || fMonsters[i].z != z) {
-			if (!fMonsters[i].IsDead()) {
-				// TODO: There is a server bug that will make dead monsters move.
-				fMonsters[i].x = x;
-				fMonsters[i].y = y;
-				fMonsters[i].z = z;
-				fMonsters[i].lastTimeMoved = gCurrentFrameTime;
-			}
-		}
-		fMonsters[i].slotFree = false;
-		fMonsters[i].ingame = true;
-		fMonsters[i].level = level;
-		fMonsters[i].fDir = dir;
-		fMonsters[i].fUpdateTime = gCurrentFrameTime;
-
-		if (i == fMaxIndex)
-			fMaxIndex = i+1;
-	}
+	mon->id = id;
+	mon->hp = hp;
+	mon->level = level;
+	mon->fDir = dir;
+	mon->fUpdateTime = gCurrentFrameTime;
 }
 
-// This is a linear search that can turn costly if there are any monsters.
-Object *Monsters::Find(unsigned long id) {
-	for (int i=0; i<MAXMONSTERS; i++) {
-		if (fMonsters[i].id == id)
-			return &fMonsters[i];
-	}
-	return 0;
+shared_ptr<const Object> Monsters::Find(unsigned long id) const {
+	auto it = fMonsters.find(id);
+	if (it == fMonsters.end())
+		return nullptr;
+	return it->second;
 }
 
 void Monsters::RenderMonsters(bool forShadows, bool selectionMode, const AnimationModels *animationModels) const {
-	// The monsters triangles are drawn CW, which is not the default for culling
 	float sun = 1.0f;
 	if (gPlayer.BelowGround()) {
 		// A gross simplification. If underground, disable all sun.
 		sun = 0.0f;
 	}
-	for (int i=0; i<fMaxIndex; i++) {
-		if (fMonsters[i].ingame) {
-			unsigned int level = fMonsters[i].level;
-			glm::vec3 pos = fMonsters[i].GetPosition();
-			float size = this->Size(level);
-			glm::mat4 model = glm::translate(glm::mat4(1.0f), pos);
-			AnimationModels::AnimationModelId anim;
-			// Choose a monster model, depending on the level.
-			switch(level % 3) {
-			case 2:
-				anim = AnimationModels::AnimationModelId::Alien;
-				break;
-			case 1:
-				anim = AnimationModels::AnimationModelId::Frog;
-				break;
-			case 0:
-				anim = AnimationModels::AnimationModelId::Morran;
-				break;
-			}
-			model = glm::rotate(model, -fMonsters[i].fDir, glm::vec3(0.0f, 1.0f, 0.0f));
-			model = glm::translate(model, glm::vec3(-size/3, 0.0f, size/3));
+	for (const auto &mon : fMonsters) {
+		unsigned int level = mon.second->level;
+		glm::vec3 pos = mon.second->GetPosition();
+		float size = this->Size(level);
 
-			if (fMonsters[i].IsDead())
-				animationModels->Draw(anim, model, fMonsters[i].lastTimeMoved, true);
-			else if (fMonsters[i].lastTimeMoved + 0.2 > gCurrentFrameTime)
-				animationModels->Draw(anim, model, 0.0, false);
-			else
-				animationModels->Draw(anim, model, gCurrentFrameTime-0.22, false); // Offset in time where model is not in a stride.
+		glm::mat4 model = glm::translate(glm::mat4(1.0f), pos);
+		model = glm::rotate(model, -mon.second->fDir, glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::translate(model, glm::vec3(-size/3, 0.0f, size/3));
 
-			if (forShadows)
-				continue;
-			if (!gOptions.fDynamicShadows || sun == 0)
-				gShadows.Add(pos.x, pos.y, pos.z, size);
+		AnimationModels::AnimationModelId anim;
+		// Choose a monster model, depending on the level.
+		switch(level % 3) {
+		case 2:
+			anim = AnimationModels::AnimationModelId::Alien;
+			break;
+		case 1:
+			anim = AnimationModels::AnimationModelId::Frog;
+			break;
+		case 0:
+			anim = AnimationModels::AnimationModelId::Morran;
+			break;
 		}
+
+		if (mon.second->IsDead())
+			animationModels->Draw(anim, model, mon.second->lastTimeMoved, true);
+		else if (mon.second->lastTimeMoved + 0.2 > gCurrentFrameTime)
+			animationModels->Draw(anim, model, 0.0, false);
+		else
+			animationModels->Draw(anim, model, gCurrentFrameTime-0.22, false); // Offset in time where model is not in a stride.
+
+		if (forShadows)
+			continue;
+		if (!gOptions.fDynamicShadows || sun == 0)
+			gShadows.Add(pos.x, pos.y, pos.z, size);
 	}
-	checkError("Monsters::RenderMonsters");
 }
 
 void Monsters::RenderMinimap(const glm::mat4 &miniMap, HealthBar *hb) const {
-	for (int i=0; i<fMaxIndex; i++) {
-		if (fMonsters[i].ingame && !fMonsters[i].IsDead()) {
-			float dx = float(gPlayer.x - fMonsters[i].x)/CHUNK_SIZE/BLOCK_COORD_RES/2;
-			float dy = float(gPlayer.y - fMonsters[i].y)/CHUNK_SIZE/BLOCK_COORD_RES/2;
-			float dz = float(gPlayer.z - fMonsters[i].z)/CHUNK_SIZE/BLOCK_COORD_RES/2;
-			// printf("Monsters::RenderMinimap (%f, %f)\n", dx, dy);
-			if (dx > 1.0f || dx < -1.0f || dy > 1.0f || dy < -1.0f || dz > 1.0f || dz < -1.0f)
-				continue; // To far away on the radar
-			glm::mat4 model = glm::translate(miniMap, glm::vec3(0.5f-dx, 0.5f-dy, 0.0f));
-			model = glm::scale(model, glm::vec3(0.05f, 0.05f, 0.05f));
-			// model = glm::rotate(model, 180.0f-fMonsters[i].fDir, glm::vec3(0.0f, 1.0f, 0.0f));
-			hb->DrawSquare(model, 1.0f, 0.4f, 0.4f, 1.0f);
-		}
+	for (const auto &mon : fMonsters) {
+		if (mon.second->IsDead())
+			continue;
+		float dx = float(gPlayer.x - mon.second->x)/CHUNK_SIZE/BLOCK_COORD_RES/2;
+		float dy = float(gPlayer.y - mon.second->y)/CHUNK_SIZE/BLOCK_COORD_RES/2;
+		float dz = float(gPlayer.z - mon.second->z)/CHUNK_SIZE/BLOCK_COORD_RES/2;
+		if (dx > 1.0f || dx < -1.0f || dy > 1.0f || dy < -1.0f || dz > 1.0f || dz < -1.0f)
+			continue; // To far away on the radar
+		// printf("Monsters::RenderMinimap (%.2f, %.2f, %.2f)\n", dx, dy, dz);
+		glm::mat4 model = glm::translate(miniMap, glm::vec3(0.5f-dx, 0.5f-dy, 0.0f));
+		model = glm::scale(model, glm::vec3(0.05f, 0.05f, 0.05f));
+		hb->DrawSquare(model, 1.0f, 0.4f, 0.4f, 1.0f);
 	}
 }
 
 void Monsters::OneMonster::RenderHealthBar(HealthBar *hb, float angle) const {
-	ChunkCoord cc;
-	gPlayer.GetChunkCoord(&cc);
-	float dx = (this->x - (signed long long)cc.x*BLOCK_COORD_RES * CHUNK_SIZE)/(float)BLOCK_COORD_RES;
-	float dy = (this->y - (signed long long)cc.y*BLOCK_COORD_RES * CHUNK_SIZE)/(float)BLOCK_COORD_RES;
-	float dz = (this->z - (signed long long)cc.z*BLOCK_COORD_RES * CHUNK_SIZE)/(float)BLOCK_COORD_RES;
-	glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(dx, dz+3.0f, -dy));
+	auto pos = this->GetPosition() + glm::vec3(0.0f, 3.0f, 0.0f);
+	glm::mat4 model = glm::translate(glm::mat4(1.0f), pos);
 	model = glm::rotate(model, -angle, glm::vec3(0.0f, 1.0f, 0.0f)); // Need to counter the rotation from the view matrix
 	model = glm::scale(model, glm::vec3(2.0f, 0.2f, 1.0f));
 	float dmg = (this->prevHp - this->hp)/255.0f;
 	hb->DrawHealth(gProjectionMatrix, gViewMatrix * model, this->hp/255.0f, dmg, true);
 
-	glm::vec4 v = glm::vec4(dx, dz+4, -dy, 1.0f);
+	glm::vec4 v = glm::vec4(pos, 1.0f);
+	v.y += 4.0f; // Just above
 	glm::vec4 screen = gProjectionMatrix * gViewMatrix * v;
 	screen = screen / screen.w;
 	// printf("Selected: (%f,%f,%f,%f)\n", screen.x, screen.y, screen.z, screen.w);
@@ -217,18 +179,18 @@ void Monsters::OneMonster::RenderHealthBar(HealthBar *hb, float angle) const {
 	gDrawFont.vsfl.renderAndDiscard(ss.str(), offs);
 }
 
-Object *Monsters::GetNext(Object *current) {
+shared_ptr<const Object> Monsters::GetNext(shared_ptr<const Object> current) const {
 	float curr_z = 0.0f;
 	if (current)
 		curr_z = glm::project(current->GetPosition(), gViewMatrix, gProjectionMatrix, gViewport).z;
-	Object *best = 0, *first = 0;
+	shared_ptr<const Object> best, first;
 	float best_z = 1.0f, first_z = 1.0f;
-	for (int i=0; i < this->fMaxIndex; i++) {
-		OneMonster *mp = &fMonsters[i];
-		if (mp->slotFree || current == mp || mp->IsDead())
+	for (const auto mon : fMonsters) {
+		auto mp = mon.second;
+		if (current == mp || mon.second->IsDead())
 			continue; // No monster at this slot, or it was the one already selected
 		// Transform monster coordinates into projection coordinates
-		glm::vec3 pos = mp->GetPosition();
+		glm::vec3 pos = mon.second->GetPosition();
 		glm::vec3 screen = glm::project(pos, gViewMatrix, gProjectionMatrix, gViewport);
 		if (screen.z < 0.0f || screen.z > 1.0f)
 			continue;
@@ -262,17 +224,16 @@ Object *Monsters::GetNext(Object *current) {
 // least every 4s. So monsters that have not had any update in 5s are stale, and should be removed.
 void Monsters::Cleanup(void) {
 	double now = gCurrentFrameTime;
-	for (int i=0; i<fMaxIndex; i++) {
-		if (!fMonsters[i].ingame)
-			continue;
-		if (now - fMonsters[i].fUpdateTime < 5.0)
-			continue;
-		// printf("Found stale monster: index %d, id %ld\n", i, fMonsters[i].id);
-		fMonsters[i].ingame = false;
-		fMonsters[i].slotFree = true;
-
-		// Remove this monster as a creature in SoundControl
-		gSoundControl.RemoveCreatureSound(SoundControl::SMonster,fMonsters[i].id);
+	auto it = fMonsters.begin();
+	while (it != fMonsters.end()) {
+		if (now - it->second->fUpdateTime < 5.0) {
+			it++;
+		} else {
+			// Remove this monster as a creature in SoundControl
+			// printf("Remove monster %d\n", it->second->id);
+			gSoundControl.RemoveCreatureSound(SoundControl::SMonster, it->second->id);
+			fMonsters.erase(it++);
+		}
 	}
 }
 

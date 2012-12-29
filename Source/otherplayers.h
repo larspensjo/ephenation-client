@@ -17,13 +17,15 @@
 
 #pragma once
 
-#include <map>
-#include <string>
-
 //
 // Manages other players that we know of. The client will only know of
 // near players, which may need to be drawn.
 //
+// TODO: The Monsters class is very similar, with too much duplication
+//
+
+#include <map>
+#include <string>
 
 class HealthBar;
 class AnimationShader;
@@ -40,13 +42,13 @@ private:
 		unsigned int level;
 		float fDir; // The direction the player is facing, in degrees
 		double fUpdateTime; // The last time when this player was updated from the server.
+		double lastTimeMoved; // The time when the monster last moved
 		std::string playerName;
 		virtual unsigned long GetId() const { return this->id; }
 		virtual int GetType() const { return ObjTypePlayer; }
 		virtual int GetLevel() const { return this->level; }
 		virtual glm::vec3 GetPosition() const;
 		virtual glm::vec3 GetSelectionColor() const; // The color to draw on the ground when object selected
-
 		virtual bool IsDead(void) const { return hp == 0; }
 		virtual void RenderHealthBar(HealthBar *, float angle) const;
 		virtual bool InGame(void) const { return ingame;}

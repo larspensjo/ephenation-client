@@ -69,7 +69,7 @@ public:
 	void ClickOnObject(int x, int y);
 	void AttachBlockToSurface(int row, int col);
 	void ClearSelection(void); // Clear the selected object
-	void AggroFrom(Object *); // The player now has aggro from this monster
+	void AggroFrom(std::shared_ptr<const Object>); // The player now has aggro from this monster
 	enum Calibration { CALIB_EXPOSURE, CALIB_WHITE_POINT, CALIB_AMBIENT, CALIB_NONE };
 	void CalibrateMode(Calibration);
 
@@ -112,7 +112,7 @@ private:
 	unsigned char fDebugText[1000]; // TODO: use std::string
 	unsigned int fDebugTextLength;
 	chunk *FindSelectedSurface(int x, int y, ChunkOffsetCoord *, int *surfaceDir);
-	Object *FindSelectedObject(int x, int y);
+	std::shared_ptr<const Object> FindSelectedObject(int x, int y);
 	void DrawPlayerStats(void) const;
 	void DrawWeapon(void) const;
 	void DrawHealingAnimation(bool restart) const; // Draw a healing animation
@@ -121,7 +121,7 @@ private:
 	// Call this when a dialog will be showed, to stop movement, etc. All key presses will be
 	// henceforth be forwarded to the dialog, and the player can't stop moving.
 	void ClearForDialog(void);
-	Object *fSelectedObject; // Pointer to the object (monster, player, ...) that is selected
+	std::shared_ptr<const Object> fSelectedObject; // Pointer to the object (monster, player, ...) that is selected
 	ChunkShader *fShader;
 	BuildingBlocks *fBuildingBlocks;
 	HealthBar *fHealthBar;

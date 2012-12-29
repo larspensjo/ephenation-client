@@ -103,7 +103,6 @@ gameDialog::gameDialog() {
 	fDrawMap = false;
 	fShowInventory = false;
 	fShowWeapon = true;
-	fSelectedObject = 0;
 	fShader = 0;
 	fBuildingBlocks = 0;
 	fHealthBar = 0;
@@ -130,7 +129,7 @@ gameDialog::~gameDialog() {
 
 // In game mode, find the object that the player clicked on.
 // TODO: should also draw landscape so as not to allow free sight and selecting monsters behind walls.
-Object *gameDialog::FindSelectedObject(int x, int y) {
+shared_ptr<const Object> gameDialog::FindSelectedObject(int x, int y) {
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f); // Use black sky for picking
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	// gMonsters.RenderMonsters(true); // Selecting monsters not supported for now
@@ -138,7 +137,7 @@ Object *gameDialog::FindSelectedObject(int x, int y) {
 	unsigned char pixel[3];
 	glReadPixels(x, gViewport[3] - y, 1, 1, GL_RGB, GL_UNSIGNED_BYTE, pixel);
 	// printf("gameDialog::FindSelectedObject: %d,%d,%d\n", pixel[0], pixel[1], pixel[2]);
-	Object *obj = 0;
+	shared_ptr<const Object> obj;
 	switch(pixel[0]) {
 	case 1:
 		obj = gMonsters.GetSelection(pixel[0], pixel[1], pixel[2]);
@@ -281,8 +280,7 @@ void gameDialog::AttachBlockToSurface(int row, int col) {
 // The player clicked on an object. Depending on mode, we either
 // allow for rebuilding the environment, or attack monsters.
 void gameDialog::ClickOnObject(int x, int y) {
-	Object *op = this->FindSelectedObject(x, y);
-	fSelectedObject = op;
+	fSelectedObject = this->FindSelectedObject(x, y);
 }
 
 // The player clicked one something. Depending on mode, we either
@@ -625,7 +623,7 @@ void gameDialog::HandleKeyPress(int key) {
 	case '1': // Autoattack
 		if (!fSelectedObject) {
 			// Find next monster after the selected one.
-			fSelectedObject = gMonsters.GetNext(fSelectedObject);
+			fSelectedObject = gMonsters.GetNext(nullptr);
 		}
 		if (fSelectedObject) { // Initiate attack on a monster, if any.
 			unsigned char b[] = { 7, 0, CMD_ATTACK_MONSTER, 0, 0, 0, 0 };
@@ -844,13 +842,13 @@ void gameDialog::HandleKeyRelease(int key) {
 }
 
 void gameDialog::ClearSelection(void) {
-	fSelectedObject = 0;
+	fSelectedObject = nullptr;
 }
 
 // This function is called every time the player gets aggro
-void gameDialog::AggroFrom(Object *o) {
+void gameDialog::AggroFrom(shared_ptr<const Object> o) {
 	// It may be called from more than one monster. For now, use the information to set a selection for the first monster.
-	if (fSelectedObject == 0)
+	if (fSelectedObject == nullptr)
 		fSelectedObject = o;
 }
 
@@ -879,7 +877,7 @@ void gameDialog::render() {
 	gPlayer.UpdatePositionSmooth();
 
 	// Can't select objects that are dead
-	if (fSelectedObject && (fSelectedObject->IsDead() || !fSelectedObject->InGame()))
+	if (fSelectedObject && fSelectedObject->IsDead())
 		ClearSelection();
 	glm::vec3 playerOffset = gPlayer.GetOffsetToChunk();
 
@@ -904,7 +902,7 @@ void gameDialog::render() {
 		gBillboard.InitializeTextures(fShader);
 	}
 
-	fRenderControl.Draw(fSelectedObject, fUnderWater, this->ThirdPersonView(), fSelectedObject, fDrawMap && !gDebugOpenGL, fMapWidth, &fMainUserInterface);
+	fRenderControl.Draw(fUnderWater, this->ThirdPersonView(), fSelectedObject, fDrawMap && !gDebugOpenGL, fMapWidth, &fMainUserInterface);
 
 	//=========================================================================
 	// Various effects drawn after the deferred shader
@@ -1344,7 +1342,7 @@ void gameDialog::ClearForDialog(void) {
 		gAdminTP = false;
 	}
 	gGameDialog.UpdateRunningStatus(false);
-	fSelectedObject = 0;
+	fSelectedObject = nullptr;
 }
 
 // Manage the running status of the player

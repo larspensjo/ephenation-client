@@ -29,6 +29,7 @@ class AnimationModels;
 class player : public Object {
 public:
 	// TODO: These should be private. It is the position of the head of the player.
+	// Coordinate in the server system ('z' is height).
 	signed long long x;
 	signed long long y;
 	signed long long z;
@@ -76,6 +77,7 @@ public:
 	bool BelowGround(void) const;
 
 	// Update with a new position. The argument is the feet of the player.
+	// Coordinates are given in the server system.
 	void SetPosition(signed long long newx, signed long long newy, signed long long newz);
 
 	// Extrapolate new coordinates, guess from time.
