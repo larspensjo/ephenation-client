@@ -112,7 +112,6 @@ private:
 	unsigned char fDebugText[1000]; // TODO: use std::string
 	unsigned int fDebugTextLength;
 	chunk *FindSelectedSurface(int x, int y, ChunkOffsetCoord *, int *surfaceDir);
-	std::shared_ptr<const Object> FindSelectedObject(int x, int y);
 	void DrawPlayerStats(void) const;
 	void DrawWeapon(void) const;
 	void DrawHealingAnimation(bool restart) const; // Draw a healing animation

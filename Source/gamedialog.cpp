@@ -127,28 +127,6 @@ gameDialog::~gameDialog() {
 		fInputLine->RemoveReference();
 }
 
-// In game mode, find the object that the player clicked on.
-// TODO: should also draw landscape so as not to allow free sight and selecting monsters behind walls.
-shared_ptr<const Object> gameDialog::FindSelectedObject(int x, int y) {
-	glClearColor(0.0f, 0.0f, 0.0f, 0.0f); // Use black sky for picking
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	// gMonsters.RenderMonsters(true); // Selecting monsters not supported for now
-	// gOtherPlayers.RenderPlayers(true); // selecting players not supported for now
-	unsigned char pixel[3];
-	glReadPixels(x, gViewport[3] - y, 1, 1, GL_RGB, GL_UNSIGNED_BYTE, pixel);
-	// printf("gameDialog::FindSelectedObject: %d,%d,%d\n", pixel[0], pixel[1], pixel[2]);
-	shared_ptr<const Object> obj;
-	switch(pixel[0]) {
-	case 1:
-		obj = gMonsters.GetSelection(pixel[0], pixel[1], pixel[2]);
-		break;
-	case 2:
-		// obj = gOtherPlayers.GetSelection(pixel[0], pixel[1], pixel[2]);
-		break;
-	}
-	return obj;
-}
-
 // In build mode, find the block at the given screen position. Return the chunk and the
 // data about it to the pointers.
 chunk *gameDialog::FindSelectedSurface(int x, int y, ChunkOffsetCoord *coc, int *surfaceDir) {
@@ -279,8 +257,9 @@ void gameDialog::AttachBlockToSurface(int row, int col) {
 
 // The player clicked on an object. Depending on mode, we either
 // allow for rebuilding the environment, or attack monsters.
+// TODO: For now, can only use TAB to select objects
 void gameDialog::ClickOnObject(int x, int y) {
-	fSelectedObject = this->FindSelectedObject(x, y);
+	fSelectedObject = nullptr;
 }
 
 // The player clicked one something. Depending on mode, we either

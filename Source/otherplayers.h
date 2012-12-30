@@ -64,7 +64,6 @@ public:
 	// Render the stats of players. This has to be done after the deferred shader.
 	// 'angle' is the viewing angle, used to draw player data rotated correctly to the camera.
 	void RenderPlayerStats(HealthBar *hb, float angle) const;
-	OneOtherPlayer *GetSelection(unsigned char R, unsigned char G, unsigned char B);
 	void RenderMinimap(const glm::mat4 &miniMap, HealthBar *hb) const;
 };
 

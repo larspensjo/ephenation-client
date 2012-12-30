@@ -57,12 +57,6 @@ glm::vec3 OtherPlayers::OneOtherPlayer::GetPosition() const {
 	return glm::vec3(dx, dz-PLAYER_HEIGHT*2.0f, -dy);
 }
 
-#if 0
-OtherPlayers::OneOtherPlayer *OtherPlayers::GetSelection(unsigned char R, unsigned char G, unsigned char B) {
-	return &fPlayers[G*256+B];
-}
-#endif
-
 void OtherPlayers::SetPlayer(unsigned long id, unsigned char hp, unsigned int level, signed long long x, signed long long y, signed long long z, float dir) {
 	OneOtherPlayer *pl = &fPlayers[id];
 
