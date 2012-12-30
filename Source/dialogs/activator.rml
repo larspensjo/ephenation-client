@@ -85,7 +85,7 @@
 								<td class="longlabel">Broadcast:</td>
 								<td class="short"><input type="checkbox" name="Activator.broadcast" value="1"/></td>
 								<td class="short">Blocks:</td>
-								<td class="mediumdescr"><input type="text" name="Activator.boradcastdist" class="onelineinput" /></td>
+								<td class="mediumdescr"><input type="text" name="Activator.boradcastdist" class="onelineinput" style="width: 70px;" /></td>
 							</tr>
 							<tr> <td class="separator" /> </tr>
 							<tr>
@@ -94,7 +94,7 @@
 								<td class="short">Descr:</td>
 								<td class="mediumdescr"><input type="text" name="Activator.addkey.text" class="onelineinput" /></td>
 								<td class="short">Id:</td>
-								<td class="mediumdescr"><input type="text" name="Activator.addkey.id" class="onelineinput" /></td>
+								<td class="mediumdescr"><input type="text" name="Activator.addkey.id" class="onelineinput" style="width: 70px;" /></td>
 							</tr>
 							<tr> <td class="separator" /> </tr>
 							<tr>
@@ -107,20 +107,37 @@
 				<tab>Conditions</tab>
 				<panel>
 					<div class="controls">
-						Conditional key:
-						<input type="checkbox" name="Activator.condkey" value="1"/>
-						Key:
-						<input type="text" name="Activator.condkey.key" class="onelineinput" />
-						Message:
-						<input type="text" name="Activator.condkey.message" class="onelineinput" />
-						Owner:
-						<input type="text" name="Activator.condkey.owner" class="onelineinput" /> <br/>
-						Inhibit retrigger:
-						<input type="text" name="Activator.condkey.inhbit" class="onelineinput" /> <br/>
-						maximum player level:
-						<input type="text" name="Activator.condkey.player.level.max" class="onelineinput" /> <br/>
-						Minimum player level:
-						<input type="text" name="Activator.condkey.player.level.min" class="onelineinput" /> <br/>
+						<table>
+							<tr>
+								<td class="longlabel">Conditional key:</td>
+								<td class="short"><input type="checkbox" name="Activator.condkey" value="1"/></td>
+								<td class="short">Key #:</td>
+								<td class="mediumdescr"><input type="text" name="Activator.condkey.key" class="onelineinput" style="width: 70px;" /></td>
+							</tr>
+							<tr>
+								<td class="short">&nbsp;</td>
+								<td class="longlabel">Owner:</td>
+								<td class="mediumdescr"><input type="text" name="Activator.condkey.owner" class="onelineinput" style="width: 70px;" /></td>
+							</tr>
+							<tr>
+								<td class="short">&nbsp;</td>
+								<td class="longlabel">Message:</td>
+								<td style="width:70%;"><input type="text" name="Activator.condkey.message" class="onelineinput" style="witdh:100%;"/></td>
+							</tr>
+							<tr> <td class="separator" /> </tr>
+							<tr>
+								<td class="mediumdescr">Inhibit retrigger:</td>
+								<td class="mediumdescr"><input type="text" name="Activator.inhbit" class="onelineinput" style="width: 70px;" /></td>
+							</tr>
+							<tr>
+								<td class="mediumdescr">Maximum player level:</td>
+								<td class="mediumdescr"><input type="text" name="Activator.player.level.max" class="onelineinput" style="width: 70px;" /></td>
+							</tr>
+							<tr>
+								<td class="mediumdescr">Minimum player level:</td>
+								<td class="mediumdescr"><input type="text" name="Activator.player.level.min" class="onelineinput" style="width: 70px;" /></td>
+							</tr>
+						</table>
 					</div>
 				</panel>
 			</tabset>
