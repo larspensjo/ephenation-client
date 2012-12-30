@@ -21,6 +21,7 @@
 #include <deque>
 #include <utility>
 #include <map>
+#include <functional>
 
 // This class manages in-game dialog messages. It is based on the libRocket library.
 // The actual dialog content is defined in external files in dialogs/*.rml (Rocket Markup Language),
@@ -28,13 +29,14 @@
 #include <Rocket/Core.h>
 
 using std::string;
+class ChunkCoord;
 
 class MessageDialog : public Rocket::Core::EventListener {
 public:
 	MessageDialog();
 	~MessageDialog();
 
-	// Define what Rocket context shall be used for the documents.
+	// Define what Rocket context shall be used for the documents. TODO: Should use a private context, instead of a copy of a global one.
 	void Init(Rocket::Core::Context *context);
 
 	// Load a special dialog that onlhy shows a title and a message.
@@ -45,6 +47,8 @@ public:
 
 	// Like LoadDialog, but a form that accepts input
 	void LoadForm(const string &file);
+
+	void LoadActivatorDialog(int dx, int dy, int dz, const ChunkCoord &cc);
 
 	// Generate a click event on the default button
 	void DefaultButton(void);
@@ -84,11 +88,12 @@ private:
 	bool Pop(void);
 
 	// Walk through the tree and upate all nodes.
-	void Treewalk(Rocket::Core::Element *, void (MessageDialog::*)(Rocket::Core::Element *));
+	void Treewalk(Rocket::Core::Element *, std::function<void(Rocket::Core::Element *)>);
 
-	// Update inputs of this specific element (if there is any).
+	// Update inputs of this specific element (if there are any).
 	void UpdateInput(Rocket::Core::Element *);
 
-	// Find default buttons
+	// Find default buttons, and save them to make it possible to
+	// dispatch events.
 	void DetectDefaultButton(Rocket::Core::Element *);
 };

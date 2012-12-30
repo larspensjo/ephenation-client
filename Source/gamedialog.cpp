@@ -255,6 +255,17 @@ void gameDialog::AttachBlockToSurface(int row, int col) {
 	}
 }
 
+void gameDialog::CreateActivatorMessage(int dx, int dy, int dz, const ChunkCoord &cc) {
+	if (dx == gRequestActivatorX && dy == gRequestActivatorY && dz == gRequestActivatorZ &&
+			cc.x == gRequestActivatorChunk.x &&
+			cc.y == gRequestActivatorChunk.y &&
+			cc.z == gRequestActivatorChunk.z)
+	{
+		fMessageDialog.LoadActivatorDialog(dx, dy, dz, cc);
+		gRequestActivatorX = -1; // Ensure it will not match by accident
+	}
+}
+
 // The player clicked on an object. Depending on mode, we either
 // allow for rebuilding the environment, or attack monsters.
 // TODO: For now, can only use TAB to select objects

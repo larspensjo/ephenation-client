@@ -21,12 +21,14 @@
 #include <Rocket/Controls.h>
 
 #include "messagedialog.h"
+#include "Activator.h"
 #include "../gamedialog.h"
 #include "../Splitter.h"
 #include "../Options.h"
 #include "../primitives.h"
 #include "../connection.h"
 #include "../SoundControl.h"
+#include "../Inventory.h"
 #include "Error.h"
 
 using std::string;
@@ -46,7 +48,8 @@ struct MessageDialog::PushedDialog {
 	}
 };
 
-MessageDialog::MessageDialog() : fRocketContext(0), fDocument(0), fCurrentDefaultButton(0), fCurrentCloseButton(0), fCallback(0) {
+MessageDialog::MessageDialog() : fRocketContext(0), fDocument(0), fCurrentDefaultButton(0),
+	fCurrentCloseButton(0), fCallback(0) {
 }
 
 MessageDialog::~MessageDialog() {
@@ -71,7 +74,8 @@ void MessageDialog::LoadDialog(const string &file) {
 	// Document is owned by the caller, which means reference count has already been incremented.
 	fDocument->AddEventListener("click", this);
 	fCallback = 0;
-	this->Treewalk(fDocument, &MessageDialog::DetectDefaultButton);
+
+	this->Treewalk(fDocument, [this](Rocket::Core::Element *e) {this->DetectDefaultButton(e); });
 	fDocument->Show();
 }
 
@@ -79,11 +83,24 @@ void MessageDialog::LoadForm(const string &file) {
 	// This is like "Popup", but a form with updated inputs will be shown.
 	fDocument = fRocketContext->LoadDocument(("dialogs/" + file).c_str());
 	fFormResultValues.clear(); // Restart with an empty list
-	this->Treewalk(fDocument, &MessageDialog::UpdateInput); // Fill default parameters in the document
-	this->Treewalk(fDocument, &MessageDialog::DetectDefaultButton);
+	this->Treewalk(fDocument, [this](Rocket::Core::Element *e) {this->UpdateInput(e); }); // Fill default parameters in the document
+	this->Treewalk(fDocument, [this](Rocket::Core::Element *e) {this->DetectDefaultButton(e); });
 	fDocument->AddEventListener("click", this);
 	fDocument->AddEventListener("submit", this);
 	fCallback = 0;
+	fDocument->Show();
+}
+
+void MessageDialog::LoadActivatorDialog(int dx, int dy, int dz, const ChunkCoord &cc) {
+	// This is like "LoadForm", but with some special support for activators.
+	ActivatorDialog ad(dx, dy, dz, cc);
+	fCallback = 0;
+	fDocument = fRocketContext->LoadDocument("dialogs/activator.rml");
+	fFormResultValues.clear(); // Restart with an empty list
+	this->Treewalk(fDocument, [&ad](Rocket::Core::Element *e){ ad.UpdateInput(e);} ); // Fill default parameters in the document
+	this->Treewalk(fDocument, [this](Rocket::Core::Element *e) {this->DetectDefaultButton(e); }); // This can be done by the local callback
+	fDocument->AddEventListener("click", this);
+	fDocument->AddEventListener("submit", this);
 	fDocument->Show();
 }
 
@@ -104,7 +121,7 @@ void MessageDialog::Set(const string &title, const string &body, void (*callback
 		content->SetInnerRML(body.c_str());
 	fDocument->AddEventListener("click", this);
 	fCallback = callback;
-	this->Treewalk(fDocument, &MessageDialog::DetectDefaultButton);
+	this->Treewalk(fDocument, [this](Rocket::Core::Element *e) {this->DetectDefaultButton(e); });
 	fDocument->Show();
 }
 
@@ -136,7 +153,7 @@ void MessageDialog::ClickEvent(Rocket::Core::Event& event, const string &action)
 		this->Push();
 		fDocument = fRocketContext->LoadDocument(("dialogs/" + split[1]).c_str());
 		fDocument->AddEventListener("click", this);
-		this->Treewalk(fDocument, &MessageDialog::DetectDefaultButton);
+		this->Treewalk(fDocument, [this](Rocket::Core::Element *e) {this->DetectDefaultButton(e); });
 		fCallback = 0;
 		fDocument->Show();
 	} else if (split[0] == "Form" && split.size() == 2) {
@@ -241,12 +258,12 @@ bool MessageDialog::Pop(void) {
 	return true;
 }
 
-void MessageDialog::Treewalk(Rocket::Core::Element *e, void (MessageDialog::*func)(Rocket::Core::Element *)) {
+void MessageDialog::Treewalk(Rocket::Core::Element *e, std::function<void(Rocket::Core::Element *)> func) {
 	int numChildren = e->GetNumChildren();
 	for (int i=0; i<numChildren; i++) {
 		Rocket::Core::Element *child = e->GetChild(i);
 		this->Treewalk(child, func);
-		(this->*func)(child);
+		func(child);
 	}
 }
 
@@ -331,6 +348,7 @@ void MessageDialog::UpdateInput(Rocket::Core::Element *e) {
 			}
 		}
 	} else if (tag == "p") {
+		// There are some empty special 'p' tags, to be filled
 		if (name == "client.availableversion") {
 			stringstream ss;
 			if (gClientAvailMajor != CLIENT_MAJOR_VERSION || gClientAvailMinor != CLIENT_MINOR_VERSION)
@@ -341,18 +359,10 @@ void MessageDialog::UpdateInput(Rocket::Core::Element *e) {
 		}
 	} else if (tag == "select") {
 		auto *element= dynamic_cast<Rocket::Controls::ElementFormControlSelect*>(e);
-		if (element && name == "Options.graphicalmode") {
+		if (element == 0)
+			return;
+		if (name == "Options.graphicalmode") {
 			gOptions.ListGraphicModes(element);
-		} else if (name == "Activator.soundeffect") {
-			for (size_t i=0; i < gSoundControl.fNumTrigSounds; i++) {
-				const char *descr = gSoundControl.fTrigSoundList[i].description;
-				// A null pointer indicates that the rest are "private" sounds that may not be used in construction mode
-				if (descr == 0)
-					break;
-				stringstream ss;
-				ss << i;
-				element->Add(descr, ss.str().c_str());
-			}
 		}
 	}
 }

@@ -309,6 +309,9 @@ void Parse(const unsigned char *b, int n) {
 				gSoundControl.RequestSound(SoundControl::SRemoveBlock);
 			else
 				gSoundControl.RequestSound(SoundControl::SBuildBlock);
+			if (type == BT_Text) {
+				gGameDialog.CreateActivatorMessage(dx, dy, dz, cc);
+			}
 		}
 		cp->SetDirty(true);
 		break;

@@ -36,12 +36,12 @@
 					<div class="controls">
 						Spawn monster:
 						<select name="Activator.spawnmonster">
-							<option name="Activator.spawnmonster" value="1" selected>None</option>
-							<option name="Activator.spawnmonster" value="2">Level-2</option>
-							<option name="Activator.spawnmonster" value="3">Level-1</option>
-							<option name="Activator.spawnmonster" value="4">Level+0</option>
-							<option name="Activator.spawnmonster" value="5">Level+1</option>
-							<option name="Activator.spawnmonster" value="6">Level+2</option>
+							<option name="Activator.spawnmonster" value="" selected>None</option>
+							<option name="Activator.spawnmonster" value="-2">Level-2</option>
+							<option name="Activator.spawnmonster" value="-1">Level-1</option>
+							<option name="Activator.spawnmonster" value="0">Level+0</option>
+							<option name="Activator.spawnmonster" value="1">Level+1</option>
+							<option name="Activator.spawnmonster" value="2">Level+2</option>
 						</select><br/>
 						Sound effect:
 						<select name="Activator.soundeffect" onchange="soundeffect">
@@ -49,13 +49,9 @@
 						<button class="formatbutton" onclick="testsound" name="apa">Test</button><br/>
 						Reward:
 						<select name="Activator.reward">
-							<option name="Activator.reward" value="1">AAA</option>
-							<option name="Activator.reward" value="2">BBB</option>
 						</select><br/>
 						Jelly block:
 						<select name="Activator.jellyblock">
-							<option name="Activator.jellyblock" value="1">AAA</option>
-							<option name="Activator.jellyblock" value="2">BBB</option>
 						</select><br/>
 						Broadcast:
 						<input type="checkbox" name="Activator.broadcast" value="1"/>

@@ -68,6 +68,7 @@ public:
 	void ClickOnBlock(int x, int y);
 	void ClickOnObject(int x, int y);
 	void AttachBlockToSurface(int row, int col);
+	void CreateActivatorMessage(int dx, int dy, int dz, const ChunkCoord &cc);
 	void ClearSelection(void); // Clear the selected object
 	void AggroFrom(std::shared_ptr<const Object>); // The player now has aggro from this monster
 	enum Calibration { CALIB_EXPOSURE, CALIB_WHITE_POINT, CALIB_AMBIENT, CALIB_NONE };
