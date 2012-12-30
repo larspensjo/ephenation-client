@@ -16,20 +16,22 @@
 //
 
 #include <string>
+#include <Rocket/Controls.h>
 
 #include "Activator.h"
 #include "../client_prot.h"
 #include "../connection.h"
+#include "../SoundControl.h"
+#include "../Inventory.h"
+
+#define NELEM(x) (sizeof(x) / sizeof (x[0]))
 
 ActivatorDialog::ActivatorDialog(int dx, int dy, int dz, const ChunkCoord &cc) :
 	fDx(dx), fDy(dy), fDz(dz), fCC(cc)
 {
 }
 
-void ActivatorDialog::UpdateInput(Rocket::Core::Element *e) {
-}
-
-static struct {
+static const struct {
 	const char *descr;
 	const char *code;
 	int dx, dy, dz;
@@ -56,6 +58,44 @@ static bool validJellyDir(const chunk *cp, int dir, int dx, int dy, int dz) {
 		return true; // Safe guard, should not happen
 	int bl = cp->GetBlock(dx, dy, dz);
 	return bl != BT_Air && bl != BT_Trigger && bl != BT_Text && bl != BT_Link;
+}
+
+void ActivatorDialog::UpdateInput(Rocket::Core::Element *e) {
+	Rocket::Core::String def = "";
+	auto tag = e->GetTagName();
+	auto type = e->GetAttribute("type", def);
+	string name = e->GetAttribute("name", def).CString();
+	auto value = e->GetAttribute("value", def);
+
+	if (tag == "select") {
+		auto *element= dynamic_cast<Rocket::Controls::ElementFormControlSelect*>(e);
+		if (element == 0)
+			return;
+		if (name == "Activator.soundeffect") {
+			element->RemoveAll();
+			for (unsigned i=0; i < gSoundControl.fNumTrigSounds; i++) {
+				const SoundControl::TrigSoundItem *s = &SoundControl::fTrigSoundList[i];
+				if (s->description == 0)
+					break;
+				element->Add(s->description, s->id);
+			}
+		} else if (name == "Activator.reward") {
+			element->RemoveAll();
+			for (unsigned i=0; i < Inventory::fsObjectMapSize; i++) {
+				if (Inventory::fsObjectMap[i].code == 0)
+					continue; // There are NULL objects that shall be ignored.
+				element->Add(Inventory::fsObjectMap[i].descr, Inventory::fsObjectMap[i].code);
+			}
+		} else if (name == "Activator.jellyblock") {
+			element->RemoveAll();
+			chunk *cp = ChunkFind(&fCC, false);
+			for (unsigned i=0; i<NELEM(jellyList); i++) {
+				if (!validJellyDir(cp, i, fDx, fDy, fDz))
+					continue;
+				element->Add(jellyList[i].descr, jellyList[i].code);
+			}
+		}
+	}
 }
 
 // Send a string to the server

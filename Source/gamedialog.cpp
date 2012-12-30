@@ -254,6 +254,7 @@ void gameDialog::CreateActivatorMessage(int dx, int dy, int dz, const ChunkCoord
 			cc.z == fRequestActivatorChunk.z)
 	{
 		fMessageDialog.LoadActivatorDialog(dx, dy, dz, cc);
+		fCurrentRocketContextInput = fMainUserInterface.GetRocketContext();
 		fRequestActivatorX = -1; // Ensure it will not match by accident
 	}
 }
