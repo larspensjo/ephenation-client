@@ -23,6 +23,7 @@
 #include "ui/messagedialog.h"
 #include "ui/RocketGui.h"
 #include "rendercontrol.h"
+#include "chunk.h"
 
 using std::string;
 
@@ -137,14 +138,14 @@ private:
 	Rocket::Core::Element *fFPS_Element, *fPlayerStatsOneLiner_Element, *fInputLine;
 
 	MessageDialog fMessageDialog;
+
+	// Save the place where a text activator was requested.
+	ChunkCoord fRequestActivatorChunk;
+	int fRequestActivatorX, fRequestActivatorY, fRequestActivatorZ;
 };
 
 extern gameDialog gGameDialog;
 extern float renderViewAngle;
-
-// Save the place where a text activator was requested.
-extern ChunkCoord gRequestActivatorChunk;
-extern int gRequestActivatorX, gRequestActivatorY, gRequestActivatorZ;
 
 // A string that automatically will be shown in a pop up window.
 extern string sgPopup;

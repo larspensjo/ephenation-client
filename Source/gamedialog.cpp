@@ -24,21 +24,18 @@
 #include <GL/glfw.h>
 #include <math.h>
 #include <Rocket/Debugger.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 #ifndef M_PI
 #define M_PI		3.14159265358979323846
 #endif
 
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
 #include "primitives.h"
-#include "object.h"
 #include "player.h"
 #include "gamedialog.h"
 #include "connection.h"
 #include "client_prot.h"
-#include "render.h"
-#include "chunk.h"
 #include "msgwindow.h"
 #include "parse.h"
 #include "textures.h"
@@ -62,9 +59,7 @@
 #include "ui/messagedialog.h"
 #include "ui/RocketGui.h"
 #include "ui/Error.h"
-#include "shadowrender.h"
 #include "uniformbuffer.h"
-#include "shadowconfig.h"
 #include "billboard.h"
 #include "rendercontrol.h"
 #include "timemeasure.h"
@@ -169,9 +164,6 @@ chunk *gameDialog::FindSelectedSurface(int x, int y, ChunkOffsetCoord *coc, int 
 	return cp;
 }
 
-ChunkCoord gRequestActivatorChunk;
-int gRequestActivatorX, gRequestActivatorY, gRequestActivatorZ;
-
 void gameDialog::AttachBlockToSurface(int row, int col) {
 	ChunkOffsetCoord coc;
 	int surfaceDir = 0;
@@ -248,21 +240,21 @@ void gameDialog::AttachBlockToSurface(int row, int col) {
 	b[18] = fBuildingBlocks->CurrentBlockType();
 	SendMsg(b, sizeof b);
 	if (fBuildingBlocks->CurrentBlockType() == BT_Text) {
-		gRequestActivatorChunk = cc;
-		gRequestActivatorX = x;
-		gRequestActivatorY = y;
-		gRequestActivatorZ = z;
+		fRequestActivatorChunk = cc;
+		fRequestActivatorX = x;
+		fRequestActivatorY = y;
+		fRequestActivatorZ = z;
 	}
 }
 
 void gameDialog::CreateActivatorMessage(int dx, int dy, int dz, const ChunkCoord &cc) {
-	if (dx == gRequestActivatorX && dy == gRequestActivatorY && dz == gRequestActivatorZ &&
-			cc.x == gRequestActivatorChunk.x &&
-			cc.y == gRequestActivatorChunk.y &&
-			cc.z == gRequestActivatorChunk.z)
+	if (dx == fRequestActivatorX && dy == fRequestActivatorY && dz == fRequestActivatorZ &&
+			cc.x == fRequestActivatorChunk.x &&
+			cc.y == fRequestActivatorChunk.y &&
+			cc.z == fRequestActivatorChunk.z)
 	{
 		fMessageDialog.LoadActivatorDialog(dx, dy, dz, cc);
-		gRequestActivatorX = -1; // Ensure it will not match by accident
+		fRequestActivatorX = -1; // Ensure it will not match by accident
 	}
 }
 
