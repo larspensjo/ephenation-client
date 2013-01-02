@@ -19,7 +19,10 @@
 
 //
 // This class encapsulates a shader that will add a local shadow beneath an object.
-// It is done by multiplying the float output with the light map.
+// It is done by multiplying the float output with a factor approaching almost zero.
+// The same factor is used for all 3 channels (RGB).
+// The shader can also be used to create a red marker at the feet of a monster. This is
+// a similar mechanism, but blending with red is used instead.
 //
 
 #include "shader.h"
