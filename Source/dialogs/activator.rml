@@ -46,7 +46,7 @@
 	}
 	</style>
 </head>
-<body id="body">
+<body id="body" handler="activator">
 	<div class="screencenter"> <div class="pergament">
 		<form onsubmit="activator">
 			<div class="header" id="header">

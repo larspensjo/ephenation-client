@@ -52,7 +52,7 @@
 	}
 	</style>
 </head>
-<body id="body"> <div class="screencenter"> <div class="inputdialog">
+<body id="body" handler="message"> <div class="screencenter"> <div class="inputdialog">
 	<form onsubmit="login">
 		<div class="header" id="header">
 			Ephenation login

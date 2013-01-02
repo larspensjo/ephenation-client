@@ -59,6 +59,7 @@
 #include "ui/messagedialog.h"
 #include "ui/RocketGui.h"
 #include "ui/Error.h"
+#include "ui/factory.h"
 #include "uniformbuffer.h"
 #include "billboard.h"
 #include "rendercontrol.h"
@@ -253,8 +254,9 @@ void gameDialog::CreateActivatorMessage(int dx, int dy, int dz, const ChunkCoord
 			cc.y == fRequestActivatorChunk.y &&
 			cc.z == fRequestActivatorChunk.z)
 	{
-		fMessageDialog.LoadActivatorDialog(dx, dy, dz, cc);
+		// fMessageDialog.LoadActivatorDialog(dx, dy, dz, cc);
 		fCurrentRocketContextInput = fMainUserInterface.GetRocketContext();
+		gDialogFactory.Make(fCurrentRocketContextInput, "activator.rml");
 		fRequestActivatorX = -1; // Ensure it will not match by accident
 	}
 }
@@ -558,6 +560,7 @@ void gameDialog::HandleKeyPress(int key) {
 		} else {
 			fMessageDialog.LoadDialog("dialogs/topleveldialog.rml");
 			fCurrentRocketContextInput = fMainUserInterface.GetRocketContext();
+			gDialogFactory.Make(fCurrentRocketContextInput, "login.rml");
 		}
 		break;
 	case 'C':
@@ -851,6 +854,7 @@ void gameDialog::render() {
 		// Login mode, get the login dialog.
 		fMessageDialog.LoadForm("login.rml");
 		fCurrentRocketContextInput = fMainUserInterface.GetRocketContext();
+		gDialogFactory.Make(fCurrentRocketContextInput, "login.rml");
 	}
 
 	static bool first = true; // Only true first time function is called

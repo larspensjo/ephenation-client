@@ -92,16 +92,9 @@ void MessageDialog::LoadForm(const string &file) {
 }
 
 void MessageDialog::LoadActivatorDialog(int dx, int dy, int dz, const ChunkCoord &cc) {
+#if 0
 	// This is like "LoadForm", but with some special support for activators.
-	ActivatorDialog ad(dx, dy, dz, cc);
-	fCallback = 0;
-	fDocument = fRocketContext->LoadDocument("dialogs/activator.rml");
-	fFormResultValues.clear(); // Restart with an empty list
-	this->Treewalk(fDocument, [&ad](Rocket::Core::Element *e){ ad.UpdateInput(e);} ); // Fill default parameters in the document
-	this->Treewalk(fDocument, [this](Rocket::Core::Element *e) {this->DetectDefaultButton(e); }); // This can be done by the local callback
-	fDocument->AddEventListener("click", this);
-	fDocument->AddEventListener("submit", this);
-	fDocument->Show();
+#endif
 }
 
 void MessageDialog::Set(const string &title, const string &body, void (*callback)(void)) {

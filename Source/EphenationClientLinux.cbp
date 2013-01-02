@@ -211,6 +211,10 @@
 		<Unit filename="ui/RocketRenderInterface.h" />
 		<Unit filename="ui/RocketSystemInterface.cpp" />
 		<Unit filename="ui/RocketSystemInterface.h" />
+		<Unit filename="ui/base.cpp" />
+		<Unit filename="ui/base.h" />
+		<Unit filename="ui/factory.cpp" />
+		<Unit filename="ui/factory.h" />
 		<Unit filename="ui/mainuserinterface.cpp" />
 		<Unit filename="ui/mainuserinterface.h" />
 		<Unit filename="ui/messagedialog.cpp" />

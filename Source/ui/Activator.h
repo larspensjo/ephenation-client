@@ -21,6 +21,7 @@
 // This is data used by the activator dialog
 //
 
+#include "base.h"
 #include "../chunk.h"
 
 namespace Rocket {
@@ -29,13 +30,16 @@ namespace Rocket {
 	}
 };
 
-class ActivatorDialog {
+class ActivatorDialog : public BaseDialog {
 public:
-	ActivatorDialog(int dx, int dy, int dz, const ChunkCoord &cc);
-
-	// Update inputs of this specific element (if there are any).
-	void UpdateInput(Rocket::Core::Element *);
+	ActivatorDialog();
+	// Update inputs of a specific element (if there are any).
+	virtual void UpdateInput(Rocket::Core::Element *);
+protected:
+	virtual void UseDocument(Rocket::Core::ElementDocument *);
 private:
 	int fDx, fDy, fDz;
 	ChunkCoord fCC;
 };
+
+extern ActivatorDialog gActivatorDialog;
