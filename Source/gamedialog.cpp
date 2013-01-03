@@ -261,6 +261,14 @@ void gameDialog::CreateActivatorMessage(int dx, int dy, int dz, const ChunkCoord
 	}
 }
 
+// TODO: It is a sign of bad design when there is both a getter and a setter for the same data.
+void gameDialog::GetActivator(int &dx, int &dy, int &dz, ChunkCoord &cc) {
+	dx = fRequestActivatorX;
+	dy = fRequestActivatorY;
+	dz = fRequestActivatorZ;
+	cc = fRequestActivatorChunk;
+}
+
 // The player clicked on an object. Depending on mode, we either
 // allow for rebuilding the environment, or attack monsters.
 // TODO: For now, can only use TAB to select objects

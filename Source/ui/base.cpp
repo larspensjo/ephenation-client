@@ -47,7 +47,7 @@ struct BaseDialog::PushedDialog {
 	}
 };
 
-BaseDialog::BaseDialog(const string &handler) : fRocketContext(0), fDocument(0), fCurrentDefaultButton(0),
+BaseDialog::BaseDialog(const string &handler) : fDocument(0), fRocketContext(0), fCurrentDefaultButton(0),
 	fCurrentCloseButton(0)
 {
 	gDialogFactory.Register(handler, this);

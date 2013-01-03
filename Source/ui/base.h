@@ -31,7 +31,7 @@
 using std::string;
 class ChunkCoord;
 
-class BaseDialog : private Rocket::Core::EventListener {
+class BaseDialog : public Rocket::Core::EventListener {
 public:
 	// Define a handler name to use for registering in the factory
 	BaseDialog(const string &handler);
@@ -50,6 +50,12 @@ public:
 	// The function has to be overrided to add proper event listeners.
 	virtual void UseDocument(Rocket::Core::ElementDocument *) = 0;
 protected:
+	// When the document is a form, remember what input parameters are used
+	// and what values they are mapped to.
+	std::map<string, string> fFormResultValues;
+
+	Rocket::Core::ElementDocument *fDocument; // The currently active document, if any
+
 	// Process the submit event on a form. Override this function if event is expected, but call this function first.
 	virtual void FormEvent(Rocket::Core::Event& event, const string &action);
 
@@ -58,20 +64,18 @@ protected:
 	// Override this function as needed, but call this first.
 	virtual bool ClickEvent(Rocket::Core::Event& event, const string &action);
 
-	// Update inputs of a specific element (if there are any).
-	virtual void UpdateInput(Rocket::Core::Element *) = 0;
-
 	// Push the current dialog.
 	void Push(void);
 
+	// Walk through the tree and upate all nodes.
+	void Treewalk(Rocket::Core::Element *, std::function<void(Rocket::Core::Element *)>);
+
+	// Find default buttons, and save them to make it possible to
+	// dispatch events.
+	void DetectDefaultButton(Rocket::Core::Element *);
+
 private:
-	// When the document is a form, remember what input parameters are used
-	// and what values they are mapped to.
-	std::map<string, string> fFormResultValues;
-
 	Rocket::Core::Context *fRocketContext; // Remember the Rocket context.
-
-	Rocket::Core::ElementDocument *fDocument; // The currently active document, if any
 	Rocket::Core::Element *fCurrentDefaultButton, *fCurrentCloseButton;
 
 	struct PushedDialog;
@@ -85,11 +89,4 @@ private:
 
 	// Pop back the previous dialog. Return true if there was something to pop
 	bool Pop(void);
-
-	// Walk through the tree and upate all nodes.
-	void Treewalk(Rocket::Core::Element *, std::function<void(Rocket::Core::Element *)>);
-
-	// Find default buttons, and save them to make it possible to
-	// dispatch events.
-	void DetectDefaultButton(Rocket::Core::Element *);
 };

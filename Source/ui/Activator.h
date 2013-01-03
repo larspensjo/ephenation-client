@@ -33,11 +33,13 @@ namespace Rocket {
 class ActivatorDialog : public BaseDialog {
 public:
 	ActivatorDialog();
-	// Update inputs of a specific element (if there are any).
-	virtual void UpdateInput(Rocket::Core::Element *);
+
 protected:
 	virtual void UseDocument(Rocket::Core::ElementDocument *);
 private:
+	// Update inputs of a specific element (if there are any).
+	void UpdateInput(Rocket::Core::Element *);
+
 	int fDx, fDy, fDz;
 	ChunkCoord fCC;
 };

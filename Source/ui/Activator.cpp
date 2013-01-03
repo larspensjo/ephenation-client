@@ -23,6 +23,7 @@
 #include "../connection.h"
 #include "../SoundControl.h"
 #include "../Inventory.h"
+#include "../gamedialog.h"
 
 #define NELEM(x) (sizeof(x) / sizeof (x[0]))
 
@@ -33,10 +34,10 @@ ActivatorDialog::ActivatorDialog() : BaseDialog("activator") {
 
 void ActivatorDialog::UseDocument(Rocket::Core::ElementDocument *doc) {
 	this->Push(); // Allways push the previous document first
-	ActivatorDialog ad(dx, dy, dz, cc);
-	fDocument = fRocketContext->LoadDocument("dialogs/activator.rml");
+	gGameDialog.GetActivator(fDx, fDy, fDz, fCC);
+	fDocument = doc;
 	fFormResultValues.clear(); // Restart with an empty list
-	this->Treewalk(fDocument, [&ad](Rocket::Core::Element *e){ ad.UpdateInput(e);} ); // Fill default parameters in the document
+	this->Treewalk(fDocument, [this](Rocket::Core::Element *e){ this->UpdateInput(e);} ); // Fill default parameters in the document
 	this->Treewalk(fDocument, [this](Rocket::Core::Element *e) {this->DetectDefaultButton(e); }); // This can be done by the local callback
 	fDocument->AddEventListener("click", this);
 	fDocument->AddEventListener("submit", this);
