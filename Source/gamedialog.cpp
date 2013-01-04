@@ -568,7 +568,6 @@ void gameDialog::HandleKeyPress(int key) {
 		} else {
 			fMessageDialog.LoadDialog("dialogs/topleveldialog.rml");
 			fCurrentRocketContextInput = fMainUserInterface.GetRocketContext();
-			gDialogFactory.Make(fCurrentRocketContextInput, "login.rml");
 		}
 		break;
 	case 'C':
@@ -862,7 +861,7 @@ void gameDialog::render() {
 		// Login mode, get the login dialog.
 		fMessageDialog.LoadForm("login.rml");
 		fCurrentRocketContextInput = fMainUserInterface.GetRocketContext();
-		gDialogFactory.Make(fCurrentRocketContextInput, "login.rml");
+		// gDialogFactory.Make(fCurrentRocketContextInput, "login.rml");
 	}
 
 	static bool first = true; // Only true first time function is called

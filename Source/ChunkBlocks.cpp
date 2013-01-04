@@ -25,8 +25,6 @@
 #include "assert.h"
 #include "primitives.h"
 #include "gamedialog.h"
-#include "ui/Activator.h"
-#include "FL/Fl_Text_Buffer.H"
 #include "Inventory.h"
 #include "client_prot.h"
 #include "connection.h"

@@ -21,7 +21,6 @@
 #include <Rocket/Controls.h>
 
 #include "messagedialog.h"
-#include "Activator.h"
 #include "../gamedialog.h"
 #include "../Splitter.h"
 #include "../Options.h"

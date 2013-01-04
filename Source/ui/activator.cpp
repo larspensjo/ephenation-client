@@ -18,7 +18,7 @@
 #include <string>
 #include <Rocket/Controls.h>
 
-#include "Activator.h"
+#include "activator.h"
 #include "../client_prot.h"
 #include "../connection.h"
 #include "../SoundControl.h"
