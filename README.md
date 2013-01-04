@@ -2,7 +2,8 @@ ephenation-client
 =================
 
 Ephenation is a MMORPG client-server game.
-The purpose of the game is to allow adventures in an unlimited world and to their your own adventures.
+The purpose of the game is to allow adventures in an unlimited world and to create their your own adventures
+for others to play.
 The server is designed to handle large amount (~10000) of players.
 
 The server is designed to run on a Linux platform, and the client is design to run on both Windows and Linux
