@@ -19,6 +19,7 @@
 
 #include <string>
 #include <map>
+#include "memory"
 
 namespace Rocket {
 	namespace Core {
@@ -31,10 +32,10 @@ class BaseDialog;
 class DialogFactory
 {
 public:
-	BaseDialog *Make(Rocket::Core::Context *context, const std::string &file);
-	void Register(const std::string &name, BaseDialog *base);
+	DialogFactory();
+	void Make(Rocket::Core::Context *context, const std::string &file);
 private:
-	std::map<std::string, BaseDialog *> fMap;
+	std::map<std::string, std::unique_ptr<BaseDialog> > fMap;
 };
 
 extern DialogFactory gDialogFactory;

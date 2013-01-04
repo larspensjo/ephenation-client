@@ -16,30 +16,31 @@
 //
 
 #include <Rocket/Core.h>
+#include <GL/glew.h> // Used by chunk.h in Activator.h
 
 #include "factory.h"
 #include "base.h"
 #include "Error.h"
+#include "Activator.h"
 
 DialogFactory gDialogFactory;
 
-BaseDialog *DialogFactory::Make(Rocket::Core::Context *context, const std::string &file) {
+DialogFactory::DialogFactory() {
+	fMap["activator"] = std::unique_ptr<BaseDialog> (new ActivatorDialog);
+}
+
+void DialogFactory::Make(Rocket::Core::Context *context, const std::string &file) {
 	Rocket::Core::ElementDocument *document = context->LoadDocument(("dialogs/" + file).c_str());
 	Rocket::Core::String def = "";
 	auto tag = document->GetTagName();
-	auto type = document->GetAttribute("type", def);
+	// auto type = document->GetAttribute("type", def);
 	string handler = document->GetAttribute("handler", def).CString();
 	if (handler == "") {
 		ErrorDialog("DialogFactory::Make: No handler defined for body of %s", file.c_str());
 	}
-	BaseDialog *base = fMap[handler];
-	if (base == 0) {
+	auto it = fMap.find(handler);
+	if (it == fMap.end()) {
 		ErrorDialog("DialogFactory::Make: No handler registered for %s", handler.c_str());
 	}
-	base->UseDocument(document);
-	return base;
-}
-
-void DialogFactory::Register(const std::string &name, BaseDialog *base) {
-	fMap[name] = base;
+	it->second->UseDocument(document);
 }

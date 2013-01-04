@@ -31,6 +31,7 @@
 using std::string;
 class ChunkCoord;
 
+// Inherit from Rocket::Core::EventListener to make it possible to register class for Rocket event callbacks.
 class BaseDialog : public Rocket::Core::EventListener {
 public:
 	// Define a handler name to use for registering in the factory

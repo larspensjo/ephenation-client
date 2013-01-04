@@ -21,7 +21,8 @@
 #include <Rocket/Controls.h>
 
 #include "base.h"
-#include "Activator.h"
+#include "Error.h"
+#include "factory.h"
 #include "../gamedialog.h"
 #include "../Splitter.h"
 #include "../Options.h"
@@ -29,8 +30,6 @@
 #include "../connection.h"
 #include "../SoundControl.h"
 #include "../Inventory.h"
-#include "Error.h"
-#include "factory.h"
 
 using std::string;
 using std::stringstream;
@@ -50,7 +49,6 @@ struct BaseDialog::PushedDialog {
 BaseDialog::BaseDialog(const string &handler) : fDocument(0), fRocketContext(0), fCurrentDefaultButton(0),
 	fCurrentCloseButton(0)
 {
-	gDialogFactory.Register(handler, this);
 }
 
 BaseDialog::~BaseDialog() {
@@ -89,7 +87,7 @@ bool BaseDialog::ClickEvent(Rocket::Core::Event& event, const string &action) {
 			gGameDialog.ClearInputRedirect();
 		return true;
 	} else if (split[0] == "Popup" && split.size() == 2) {
-		BaseDialog *base = gDialogFactory.Make(fRocketContext, split[1]);
+		gDialogFactory.Make(fRocketContext, split[1]);
 		this->Push();
 		fDocument = fRocketContext->LoadDocument(("dialogs/" + split[1]).c_str());
 		fDocument->AddEventListener("click", this);
@@ -138,7 +136,8 @@ void BaseDialog::CloseCurrentDocument(void) {
 }
 
 void BaseDialog::Push() {
-	fDocument->Hide();
+	if (fDocument)
+		fDocument->Hide();
 	fStack.push_back(PushedDialog(fDocument, fCurrentDefaultButton, fCurrentCloseButton));
 	fDocument = 0;
 	fCurrentCloseButton = 0;
@@ -147,13 +146,13 @@ void BaseDialog::Push() {
 
 bool BaseDialog::Pop(void) {
 	this->CloseCurrentDocument();
-	if (fStack.size() == 0)
-		return false;
+	ASSERT (fStack.size() > 0);
 	fDocument = fStack.back().fDocument;
 	fCurrentDefaultButton = fStack.back().fDefaultButton;
 	fCurrentCloseButton = fStack.back().fCancelButton;
 	fStack.pop_back();
-	fDocument->Show();
+	if (fDocument)
+		fDocument->Show();
 	return true;
 }
 
