@@ -32,7 +32,6 @@ namespace Rocket {
 
 class ActivatorDialog : public BaseDialog {
 public:
-	ActivatorDialog();
 
 protected:
 	virtual void UseDocument(Rocket::Core::ElementDocument *);

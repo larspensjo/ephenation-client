@@ -30,7 +30,7 @@ namespace Rocket {
 	}
 };
 
-class LoginDialog : public BaseDialog {
+class SimpleDialog : public BaseDialog {
 public:
 
 protected:

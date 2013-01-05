@@ -46,7 +46,7 @@ struct BaseDialog::PushedDialog {
 	}
 };
 
-BaseDialog::BaseDialog(const string &handler) : fDocument(0), fRocketContext(0), fCurrentDefaultButton(0),
+BaseDialog::BaseDialog() : fDocument(0), fRocketContext(0), fCurrentDefaultButton(0),
 	fCurrentCloseButton(0)
 {
 }

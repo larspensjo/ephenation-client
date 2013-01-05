@@ -23,12 +23,14 @@
 #include "Error.h"
 #include "activator.h"
 #include "login.h"
+#include "simple.h"
 
 DialogFactory gDialogFactory;
 
 DialogFactory::DialogFactory() {
 	fMap["activator"] = std::unique_ptr<BaseDialog> (new ActivatorDialog);
 	fMap["login"] = std::unique_ptr<BaseDialog> (new LoginDialog);
+	fMap["simple"] = std::unique_ptr<BaseDialog> (new SimpleDialog);
 }
 
 void DialogFactory::Make(Rocket::Core::Context *context, const std::string &file) {

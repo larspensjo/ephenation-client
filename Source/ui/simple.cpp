@@ -19,14 +19,14 @@
 #include <Rocket/Controls.h>
 #include <sstream>
 
-#include "login.h"
+#include "simple.h"
 #include "../Options.h"
 #include "../connection.h"
 #include "../gamedialog.h"
 
 #define NELEM(x) (sizeof(x) / sizeof (x[0]))
 
-void LoginDialog::UseDocument(Rocket::Core::ElementDocument *doc) {
+void SimpleDialog::UseDocument(Rocket::Core::ElementDocument *doc) {
 	this->Push(); // Allways push the previous document first
 	fDocument = doc;
 	fFormResultValues.clear(); // Restart with an empty list
@@ -37,7 +37,7 @@ void LoginDialog::UseDocument(Rocket::Core::ElementDocument *doc) {
 	fDocument->Show();
 }
 
-void LoginDialog::UpdateInput(Rocket::Core::Element *e) {
+void SimpleDialog::UpdateInput(Rocket::Core::Element *e) {
 	Rocket::Core::String def = "";
 	auto tag = e->GetTagName();
 	auto type = e->GetAttribute("type", def);
@@ -66,7 +66,7 @@ void LoginDialog::UpdateInput(Rocket::Core::Element *e) {
 	}
 }
 
-void LoginDialog::FormEvent(Rocket::Core::Event& event, const string &action) {
+void SimpleDialog::FormEvent(Rocket::Core::Event& event, const string &action) {
 	BaseDialog::FormEvent(event, action); // Needed to perform some common preparations
 
 	if (action == "login") {

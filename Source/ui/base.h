@@ -35,7 +35,7 @@ class ChunkCoord;
 class BaseDialog : public Rocket::Core::EventListener {
 public:
 	// Define a handler name to use for registering in the factory
-	BaseDialog(const string &handler);
+	BaseDialog();
 	~BaseDialog();
 
 	// Define what Rocket context shall be used for the documents. TODO: Should use a private context, instead of a copy of a global one.

@@ -27,9 +27,6 @@
 
 #define NELEM(x) (sizeof(x) / sizeof (x[0]))
 
-ActivatorDialog::ActivatorDialog() : BaseDialog("activator") {
-}
-
 void ActivatorDialog::UseDocument(Rocket::Core::ElementDocument *doc) {
 	this->Push(); // Allways push the previous document first
 	gGameDialog.GetActivator(fDx, fDy, fDz, fCC);
