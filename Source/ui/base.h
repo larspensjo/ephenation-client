@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012, 2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -68,6 +68,9 @@ protected:
 	// Push the current dialog.
 	void Push(void);
 
+	// Pop back the previous dialog. Return true if there is still an active document
+	bool Pop(void);
+
 	// Walk through the tree and upate all nodes.
 	void Treewalk(Rocket::Core::Element *, std::function<void(Rocket::Core::Element *)>);
 
@@ -87,7 +90,4 @@ private:
 
 	// Close the current document and free resources.
 	void CloseCurrentDocument(void);
-
-	// Pop back the previous dialog. Return true if there was something to pop
-	bool Pop(void);
 };

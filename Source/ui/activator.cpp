@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012,2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -26,8 +26,6 @@
 #include "../gamedialog.h"
 
 #define NELEM(x) (sizeof(x) / sizeof (x[0]))
-
-ActivatorDialog gActivatorDialog;
 
 ActivatorDialog::ActivatorDialog() : BaseDialog("activator") {
 }

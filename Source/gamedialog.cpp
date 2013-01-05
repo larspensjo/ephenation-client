@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012,2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -254,7 +254,6 @@ void gameDialog::CreateActivatorMessage(int dx, int dy, int dz, const ChunkCoord
 			cc.y == fRequestActivatorChunk.y &&
 			cc.z == fRequestActivatorChunk.z)
 	{
-		// fMessageDialog.LoadActivatorDialog(dx, dy, dz, cc);
 		fCurrentRocketContextInput = fMainUserInterface.GetRocketContext();
 		gDialogFactory.Make(fCurrentRocketContextInput, "activator.rml");
 		fRequestActivatorX = -1; // Ensure it will not match by accident
@@ -859,9 +858,8 @@ glm::mat4 gViewMatrix; // Store the view matrix
 void gameDialog::render() {
 	if (fCurrentRocketContextInput == 0 && gMode.Get() == GameMode::LOGIN) {
 		// Login mode, get the login dialog.
-		fMessageDialog.LoadForm("login.rml");
 		fCurrentRocketContextInput = fMainUserInterface.GetRocketContext();
-		// gDialogFactory.Make(fCurrentRocketContextInput, "login.rml");
+		gDialogFactory.Make(fCurrentRocketContextInput, "login.rml");
 	}
 
 	static bool first = true; // Only true first time function is called

@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012,2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -124,6 +124,7 @@ void BaseDialog::FormEvent(Rocket::Core::Event& event, const string &action) {
 		// printf("\tKey (%d): %s, value %s\n", pos, key.CString(), value.CString());
 		fFormResultValues[key.CString()] = value.CString();
 	}
+	// The resulting list in fFormResultValues now contains all the requested values.
 }
 
 void BaseDialog::CloseCurrentDocument(void) {
@@ -151,9 +152,11 @@ bool BaseDialog::Pop(void) {
 	fCurrentDefaultButton = fStack.back().fDefaultButton;
 	fCurrentCloseButton = fStack.back().fCancelButton;
 	fStack.pop_back();
-	if (fDocument)
+	if (fDocument) {
 		fDocument->Show();
-	return true;
+		return true;
+	}
+	return false;
 }
 
 void BaseDialog::Treewalk(Rocket::Core::Element *e, std::function<void(Rocket::Core::Element *)> func) {

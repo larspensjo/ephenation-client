@@ -1,4 +1,4 @@
-// Copyright 2012,2013 The Ephenation Authors
+// Copyright 2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -18,7 +18,7 @@
 #pragma once
 
 //
-// This is data used by the activator dialog
+// Data used by the login dialog
 //
 
 #include "base.h"
@@ -30,16 +30,14 @@ namespace Rocket {
 	}
 };
 
-class ActivatorDialog : public BaseDialog {
+class LoginDialog : public BaseDialog {
 public:
-	ActivatorDialog();
+	LoginDialog();
 
 protected:
 	virtual void UseDocument(Rocket::Core::ElementDocument *);
+	virtual void FormEvent(Rocket::Core::Event& event, const string &action);
 private:
 	// Update inputs of a specific element (if there are any).
 	void UpdateInput(Rocket::Core::Element *);
-
-	int fDx, fDy, fDz;
-	ChunkCoord fCC;
 };

@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012,2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -180,38 +180,32 @@ void MessageDialog::FormEvent(Rocket::Core::Event& event, const string &action) 
 		fFormResultValues[key.CString()] = value.CString();
 	}
 
-	if (action == "login") {
-		PerformLoginProcedure(fFormResultValues["Login.email"], fFormResultValues["Login.licensekey"], fFormResultValues["Login.password"], false);
-		// printf("Login %s, %s, %s\n", fFormResultValues["Login.licensekey"].c_str(), fFormResultValues["Login.email"].c_str(), fFormResultValues["Login.password"].c_str());
-	} else {
-		// The resulting list in fFormResultValues now contains all the requested values.
-		for (auto it = fFormResultValues.begin(); it != fFormResultValues.end(); it++) {
-			// printf("\t%s:%s\n", it->first.c_str(), it->second.c_str());
-			// First try the standard options and see if they match
-			if (Options::sfSave.ParseOneOption(it->first, it->second)) {
-				// Nothing just now
-			} else if (it->first == "Options.shadows") {
-				// Map the three alternativs to the two flags
-				switch(atoi(it->second.c_str())) {
-				case 1:
-					Options::sfSave.fDynamicShadows = 0;
-					Options::sfSave.fStaticShadows = 0;
-					break;
-				case 2:
-					Options::sfSave.fDynamicShadows = 0;
-					Options::sfSave.fStaticShadows = 1;
-					break;
-				case 3:
-					Options::sfSave.fDynamicShadows = 1;
-					Options::sfSave.fStaticShadows = 0;
-					break;
-				}
-			} else if (it->first == "ping") {
-				gShowPing = atoi(it->second.c_str());
-			} else if (it->first == "Options.graphicalmode") {
-				int mode = atoi(it->second.c_str());
-				Options::sfSave.SetGraphicsMode(mode);
+	for (auto it = fFormResultValues.begin(); it != fFormResultValues.end(); it++) {
+		// printf("\t%s:%s\n", it->first.c_str(), it->second.c_str());
+		// First try the standard options and see if they match
+		if (Options::sfSave.ParseOneOption(it->first, it->second)) {
+			// Nothing just now
+		} else if (it->first == "Options.shadows") {
+			// Map the three alternativs to the two flags
+			switch(atoi(it->second.c_str())) {
+			case 1:
+				Options::sfSave.fDynamicShadows = 0;
+				Options::sfSave.fStaticShadows = 0;
+				break;
+			case 2:
+				Options::sfSave.fDynamicShadows = 0;
+				Options::sfSave.fStaticShadows = 1;
+				break;
+			case 3:
+				Options::sfSave.fDynamicShadows = 1;
+				Options::sfSave.fStaticShadows = 0;
+				break;
 			}
+		} else if (it->first == "ping") {
+			gShowPing = atoi(it->second.c_str());
+		} else if (it->first == "Options.graphicalmode") {
+			int mode = atoi(it->second.c_str());
+			Options::sfSave.SetGraphicsMode(mode);
 		}
 	}
 
@@ -273,13 +267,6 @@ void MessageDialog::UpdateInput(Rocket::Core::Element *e) {
 			e->SetAttribute("checked", 1);
 		}
 
-		if (name == "Login.licensekey") {
-			e->SetAttribute("value", Options::sfSave.fLicenseKey.c_str());
-		}
-		if (name == "Login.email") {
-			e->SetAttribute("value", Options::sfSave.fEmail.c_str());
-		}
-
 		if (name == "Display.vsync" && Options::sfSave.fVSYNC) {
 			e->SetAttribute("checked", 1);
 		}
@@ -338,16 +325,6 @@ void MessageDialog::UpdateInput(Rocket::Core::Element *e) {
 					e->SetAttribute("selected", 1);
 				break;
 			}
-		}
-	} else if (tag == "p") {
-		// There are some empty special 'p' tags, to be filled
-		if (name == "client.availableversion") {
-			stringstream ss;
-			if (gClientAvailMajor != CLIENT_MAJOR_VERSION || gClientAvailMinor != CLIENT_MINOR_VERSION)
-				ss << "<p style=\"color:red;\">New client version available: " << gClientAvailMajor << "." << gClientAvailMinor << "</p>";
-			else
-				ss << "Client version: " << gClientAvailMajor << "." << gClientAvailMinor;
-			e->SetInnerRML(ss.str().c_str());
 		}
 	} else if (tag == "select") {
 		auto *element= dynamic_cast<Rocket::Controls::ElementFormControlSelect*>(e);

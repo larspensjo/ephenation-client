@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012,2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -19,6 +19,7 @@
 
 #include <string>
 #include <map>
+
 #include "memory"
 
 namespace Rocket {

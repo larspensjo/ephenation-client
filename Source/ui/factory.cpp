@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012,2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -22,11 +22,13 @@
 #include "base.h"
 #include "Error.h"
 #include "activator.h"
+#include "login.h"
 
 DialogFactory gDialogFactory;
 
 DialogFactory::DialogFactory() {
 	fMap["activator"] = std::unique_ptr<BaseDialog> (new ActivatorDialog);
+	fMap["login"] = std::unique_ptr<BaseDialog> (new LoginDialog);
 }
 
 void DialogFactory::Make(Rocket::Core::Context *context, const std::string &file) {

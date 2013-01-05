@@ -1,4 +1,4 @@
-<!-- Copyright 2012 The Ephenation Authors -->
+<!-- Copyright 2012,2013 The Ephenation Authors -->
 
 <!-- This file is part of Ephenation. -->
 
@@ -52,7 +52,7 @@
 	}
 	</style>
 </head>
-<body id="body" handler="message"> <div class="screencenter"> <div class="inputdialog">
+<body id="body" handler="login"> <div class="screencenter"> <div class="inputdialog">
 	<form onsubmit="login">
 		<div class="header" id="header">
 			Ephenation login
