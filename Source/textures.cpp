@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -72,6 +72,9 @@ static GameTexture gameTextures[] = {
 	{ BT_Flowers,       0, "textures/RedFlowers.bmp", "Flowers", TF_NOMIPMAP|TF_NEAREST|TF_BOOLAPHA },
 	{ BT_SmallFog,      0, "textures/SmallFog.bmp", "Small fog", TF_SRGB },
 	{ BT_BigFog,        0, "textures/BigFog.bmp", "Big fog", TF_SRGB },
+	{ BT_RedLight,      0, "textures/RedLight.bmp", "Red light", TF_SRGB },
+	{ BT_GreenLight,    0, "textures/GreenLight.bmp", "Green light", TF_SRGB },
+	{ BT_BlueLight,     0, "textures/BlueLight.bmp", "Blue light", TF_SRGB },
 	{ BT_Hedge,         0, "textures/hedge.bmp", "Hedge", TF_SRGB },
 	{ BT_CobbleStone,   0, "textures/CobbleStone.bmp", "Cobblestone", TF_SRGB|TF_MIPMAP2 },
 	{ BT_DeTrigger,     0, 0, "Detrigger" },

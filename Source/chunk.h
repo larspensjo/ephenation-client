@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -62,6 +62,9 @@
 #define BT_Tuft     28
 #define BT_Flowers  29
 #define BT_Bark     30
+#define BT_RedLight      31 // Add red light
+#define BT_GreenLight    32 // Add green light
+#define BT_BlueLight     33 // Add blue light
 
 #define BT_Stone2	127 // Use a free block type
 #define BT_TopSoil	128

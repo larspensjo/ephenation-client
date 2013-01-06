@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -359,6 +359,9 @@ static const struct { unsigned char block; unsigned char flag; } propertybase[] 
 	{ BT_Link,          BLT_TRANSP|               BLT_PLASTIC           },
 	{ BT_Trigger,       BLT_TRANSP|               BLT_PLASTIC           },
 	{ BT_Teleport,      BLT_TRANSP                                      },
+	{ BT_RedLight,      BLT_TRANSP                                      },
+	{ BT_GreenLight,    BLT_TRANSP                                      },
+	{ BT_BlueLight,     BLT_TRANSP                                      },
 };
 
 unsigned char property[256];
