@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -62,7 +62,7 @@ static const GLchar *fragmentShaderSource[] = {
 	"uniform sampler2D posTex;\n",     // World position
 	"uniform sampler2D normalTex;\n",  // Normals
 	"uniform vec4 Upoint;\n",          // A point source. .xyz is the coordinate, and .w is the radius of the shadow
-	"uniform bool Uselection = false;" // Special case, use a selection color instead of a shadow
+	"uniform int Umode = 0;"           // Special case, use a selection color instead of a shadow
 	"in vec2 screen;\n",               // The screen position
 	"layout (location = 0) out vec4 colorChange;\n",
 
@@ -72,21 +72,37 @@ static const GLchar *fragmentShaderSource[] = {
 	"	if (normal.xyz == vec3(0,0,0)) { discard; return;}\n",   // No normal, which means sky
 	"	vec4 worldPos = texture(posTex, screen);\n",
 	"	float dist = distance(worldPos.xyz, Upoint.xyz);\n",     // Distance to the player or monster
-	"	if (worldPos.y - Upoint.y > 0.3) { discard; return; }"   // Don't draw shadow too high on the object itself.
+	"	if (worldPos.y - Upoint.y > 0.3 && Umode < 2) { discard; return; }"   // Don't draw shadow too high on the object itself.
 	"	float radius = Upoint.w;\n",                             // The maximum distance (radius of the shadow) is coded in the w channel
 	"	if (dist >= radius) {discard; return; }",                // Is the pixel near, below the player/monster?
-	"	if (Uselection) {"
+	"	float f;"
+	"	switch(Umode) {"
+	"	case 4:"
+	"		f = (1 - dist/radius)/2;\n",                         // 'f' goes from 0.09 to 1.0, depending on distance.
+	"		colorChange = vec4(0, 0, 1, f);"                     // Will be used as a multiplicative component, making center almost black.
+	"		break;"
+	"	case 3:"
+	"		f = (1 - dist/radius)/2;\n",                         // 'f' goes from 0.09 to 1.0, depending on distance.
+	"		colorChange = vec4(0, 1, 0, f);"                     // Will be used as a multiplicative component, making center almost black.
+	"		break;"
+	"	case 2:"
+	"		f = (1 - dist/radius)/2;\n",                         // 'f' goes from 0.09 to 1.0, depending on distance.
+	"		colorChange = vec4(1, 0, 0, f);"                     // Will be used as a multiplicative component, making center almost black.
+	"		break;"
+	"	case 1:"
 	"		colorChange = vec4(1, 0, 0, 0.3);"                   // Shall be used as a blending component, adding a red marker at the feet of a monster.
-	"	} else {"
-	"		float f = 1 - (1 - dist/radius)/1.1;\n",             // 'f' goes from 0.09 to 1.0, depending on distance.
+	"		break;"
+	"	case 0:"
+	"		f = 1 - (1 - dist/radius)/1.1;\n",                   // 'f' goes from 0.09 to 1.0, depending on distance.
 	"		colorChange = vec4(f, f, f, 1);"                     // Will be used as a multiplicative component, making center almost black.
+	"		break;"
 	"	}"
 	"}\n",
 };
 
 AddPointShadow::AddPointShadow() {
 	fPointIdx = -1; fSelectionIdx = -1;
-	fPreviousForSelection = false;
+	fPreviousMode = 0;
 }
 
 void AddPointShadow::Init(void) {
@@ -98,7 +114,7 @@ void AddPointShadow::Init(void) {
 
 void AddPointShadow::GetLocations(void) {
 	fPointIdx = this->GetUniformLocation("Upoint");
-	fSelectionIdx = this->GetUniformLocation("Uselection");
+	fSelectionIdx = this->GetUniformLocation("Umode");
 
 	glUniform1i(this->GetUniformLocation("normalTex"), 2);
 	glUniform1i(this->GetUniformLocation("posTex"), 1);
@@ -106,12 +122,60 @@ void AddPointShadow::GetLocations(void) {
 	checkError("AddPointShadow::GetLocations");
 }
 
-void AddPointShadow::Draw(const glm::vec4 &pos, bool forSelection) {
+void AddPointShadow::DrawBlueLight(const glm::vec4 &pos) {
 	glUseProgram(this->Program());
-	if (forSelection != fPreviousForSelection) {
+	if (fPreviousMode != 4) {
 		// Remember which was the previous state, to minimize updates
-		fPreviousForSelection = forSelection;
-		glUniform1i(fSelectionIdx, forSelection);
+		fPreviousMode = 4;
+		glUniform1i(fSelectionIdx, fPreviousMode);
+	}
+	glUniform4fv(fPointIdx, 1, &pos.x);
+	gQuad.Draw();
+	glUseProgram(0);
+}
+
+void AddPointShadow::DrawGreenLight(const glm::vec4 &pos) {
+	glUseProgram(this->Program());
+	if (fPreviousMode != 3) {
+		// Remember which was the previous state, to minimize updates
+		fPreviousMode = 3;
+		glUniform1i(fSelectionIdx, fPreviousMode);
+	}
+	glUniform4fv(fPointIdx, 1, &pos.x);
+	gQuad.Draw();
+	glUseProgram(0);
+}
+
+void AddPointShadow::DrawRedLight(const glm::vec4 &pos) {
+	glUseProgram(this->Program());
+	if (fPreviousMode != 2) {
+		// Remember which was the previous state, to minimize updates
+		fPreviousMode = 2;
+		glUniform1i(fSelectionIdx, fPreviousMode);
+	}
+	glUniform4fv(fPointIdx, 1, &pos.x);
+	gQuad.Draw();
+	glUseProgram(0);
+}
+
+void AddPointShadow::DrawMonsterSelection(const glm::vec4 &pos) {
+	glUseProgram(this->Program());
+	if (fPreviousMode != 1) {
+		// Remember which was the previous state, to minimize updates
+		fPreviousMode = 1;
+		glUniform1i(fSelectionIdx, fPreviousMode);
+	}
+	glUniform4fv(fPointIdx, 1, &pos.x);
+	gQuad.Draw();
+	glUseProgram(0);
+}
+
+void AddPointShadow::DrawPointShadow(const glm::vec4 &pos) {
+	glUseProgram(this->Program());
+	if (fPreviousMode != 0) {
+		// Remember which was the previous state, to minimize updates
+		fPreviousMode = 0;
+		glUniform1i(fSelectionIdx, fPreviousMode);
 	}
 	glUniform4fv(fPointIdx, 1, &pos.x);
 	gQuad.Draw();

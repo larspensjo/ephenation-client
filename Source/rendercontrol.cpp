@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -446,7 +446,7 @@ void RenderControl::drawPointShadows(void) {
 	glDepthMask(GL_FALSE);
 	glDisable(GL_DEPTH_TEST);
 	for (int i=0; i < count; i++) {
-		fAddPointShadow->Draw(list[i]);
+		fAddPointShadow->DrawPointShadow(list[i]);
 	}
 	glEnable(GL_DEPTH_TEST);
 	glDepthMask(GL_TRUE);
@@ -521,7 +521,7 @@ void RenderControl::drawSelection(const glm::vec3 &coord) {
 	glDepthMask(GL_FALSE);
 	glDisable(GL_DEPTH_TEST);
 	glm::vec4 point = glm::vec4(coord, 2.0f); // 2 blocks wide selection circle
-	fAddPointShadow->Draw(point, true);
+	fAddPointShadow->DrawMonsterSelection(point);
 	glEnable(GL_DEPTH_TEST);
 	glDepthMask(GL_TRUE);
 	glEnable(GL_CULL_FACE);

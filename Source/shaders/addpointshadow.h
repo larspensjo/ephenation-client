@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -33,11 +33,22 @@ public:
 
 	void Init();
 	// point.xyz is the world cordinate, adn point.w is the strength of the shadow.
-	void Draw(const glm::vec4 &point, bool forSelection=false);
+	void DrawPointShadow(const glm::vec4 &point);
+	void DrawMonsterSelection(const glm::vec4 &point);
+	void DrawRedLight(const glm::vec4 &point);
+	void DrawGreenLight(const glm::vec4 &point);
+	void DrawBlueLight(const glm::vec4 &point);
 private:
 	// Callback that defines all uniform and attribute indices.
 	virtual void GetLocations(void);
 
 	GLint fPointIdx, fSelectionIdx;
-	bool fPreviousForSelection;
+
+	// Save the mode used for the shader.
+	// 0: Point shadow
+	// 1: Monster selection marker
+	// 2: General red light blended
+	// 3: General green light blended
+	// 4: General blue light blended
+	int fPreviousMode;
 };
