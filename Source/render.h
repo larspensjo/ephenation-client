@@ -62,41 +62,37 @@ struct DrawObjectList {
 
 extern std::vector<DrawObjectList> gDrawObjectList;
 
+class BaseObject {
+public:
+	// Clear the list
+	void Clear() { fItems.clear(); }
+	int GetCount(void) const { return fItems.size(); }
+	glm::vec4 *GetList(void) {
+		if (fItems.size() == 0)
+			return 0;
+		return &fItems[0];
+	}
+protected:
+	std::vector<glm::vec4> fItems;
+};
+
 #define MAX_RENDER_SHADOWS 200
 #define MAX_RENDER_FOGS 100
 
 // A class that manage shadows beneath monsters and players.
-class Shadows {
+class Shadows : public BaseObject {
 public:
-	void Clear(void); // Clear the list
 	// Add another light source to the list. Optional 'limit' will limit how much of the maximal buffer that is used.
 	void Add(float x, float y, float z, float radius, float limit = 1.0);
-	Shadows() { this->Clear(); }
-	int GetCount(void) const { return fNumShadows; }
-	glm::vec4 *GetList(void) {
-		return &fShadows[0];
-	}
-private:
-	int fNumShadows;
-	glm::vec4 fShadows[MAX_RENDER_SHADOWS];
 };
 
 extern Shadows gShadows;
 
 // A class that manage shadows beneath monsters and players.
-class Fogs {
+class Fogs : public BaseObject {
 public:
-	void Clear(void); // Clear the list
 	// Add another light source to the list. Optional 'limit' will limit how much of the maximal buffer that is used.
 	void Add(float x, float y, float z, int radius, float ambient);
-	Fogs() { this->Clear(); }
-	int GetCount(void) const { return fNumFogs; }
-	glm::vec4 *GetList(void) {
-		return &fFogs[0];
-	}
-private:
-	int fNumFogs;
-	glm::vec4 fFogs[MAX_RENDER_SHADOWS];
 };
 
 extern Fogs gFogs;

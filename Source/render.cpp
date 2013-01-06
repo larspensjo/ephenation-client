@@ -533,29 +533,19 @@ void DrawLandscapeForShadows(StageOneShader *shader) {
 
 Shadows gShadows;
 
-void Shadows::Clear() {
-	fNumShadows = 0;
-}
-
 void Shadows::Add(float x, float y, float z, float radius, float limit) {
-	if (fNumShadows < gOptions.fMaxShadows*limit) {
-		fShadows[fNumShadows] = glm::vec4(x, y, z, radius);
-		fNumShadows++;
+	if (fItems.size() < gOptions.fMaxShadows*limit) {
+		fItems.push_back(glm::vec4(x, y, z, radius));
 	}
 }
 
 Fogs gFogs;
 
-void Fogs::Clear() {
-	fNumFogs = 0;
-}
-
 void Fogs::Add(float x, float y, float z, int radius, float ambient) {
-	if (fNumFogs < MAX_RENDER_FOGS) {
+	if (fItems.size() < MAX_RENDER_FOGS) {
 		// Add ambient fraction as decimals to the radius.
 		if (ambient > 0.99f) ambient = 0.99f;
-		fFogs[fNumFogs] = glm::vec4(x, y, z, radius + ambient);
-		fNumFogs++;
+		fItems.push_back(glm::vec4(x, y, z, radius + ambient));
 	}
 }
 std::vector<DrawObjectList> gDrawObjectList;
