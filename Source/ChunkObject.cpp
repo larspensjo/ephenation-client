@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -711,6 +711,7 @@ void ChunkObject::FindTriangles(const chunk *cp, bool pickingMode, int pdx, int 
 }
 
 void ChunkObject::FindSpecialObjects(const chunk *cp) {
+	fSpecialObject.clear();
 	// First count, then allocate
 	fNumTree = 0;
 	fNumLamps = 0;
@@ -792,6 +793,16 @@ void ChunkObject::FindSpecialObjects(const chunk *cp) {
 					fTreasureList[treasureInd].ambient = cp->ComputeAmbientLight(x, y, z) + cp->InSunLight(x, y, z) * 0.15; // TODO: Not used
 					treasureInd++;
 					break;
+				case BT_RedLight:
+				case BT_BlueLight:
+				case BT_GreenLight:
+					SpecialObject so;
+					so.x = x;
+					so.y = y;
+					so.z = z;
+					so.type = bl;
+					so.ambient = 0.0f;  // Not used for colored lights
+					fSpecialObject.push_back(so);
 				}
 			}
 }

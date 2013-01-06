@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -67,6 +67,7 @@ public:
 	unique_ptr<SpecialObject[]> fLampList; int fNumLamps;
 	unique_ptr<SpecialObject[]> fFogList; int fNumFogs;
 	unique_ptr<SpecialObject[]> fTreasureList; int fNumTreasures;
+	std::vector<SpecialObject> fSpecialObject; // The list of all special objects found in this chunk.
 
 	// Cyclic pointer back to the chunk the data belongs to. TODO: can this be avoided?
 	chunk *fChunk;
