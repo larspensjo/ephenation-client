@@ -590,11 +590,10 @@ void BlenderModel::DrawAnimation(AnimationShader *shader, const glm::mat4 &model
 		Mesh *mesh = &fMeshData[i];
 		if (mesh->numFaces == 0)
 			continue; // Not normally the case, but can happen for funny models.
-		unsigned numBonesInMesh = mesh->bones.size();
-		for (unsigned int i=0; i<numBonesInMesh; i++) {
-			unsigned joint = mesh->bones[i].jointIndex;
+		for (const auto &bone : mesh->bones) {
+			unsigned joint = bone.jointIndex;
 			m[joint] = fAnimations[a].bones[joint].frameMatrix[key] * (1-w) + fAnimations[a].bones[joint].frameMatrix[keyNext] * w;
-			m[joint] *= mesh->bones[i].offset;
+			m[joint] *= bone.offset;
 			if (dead) {
 				// Work-around for dying animation.
 				m[joint][3][0] *= deathTransform;
