@@ -53,7 +53,7 @@ namespace Rocket {
 class gameDialog {
 public:
 	gameDialog();
-	void render();
+	void render(bool hideGUI);
 	void init();
 	~gameDialog();
 	void handleMouse(int button, int action);

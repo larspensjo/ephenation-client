@@ -230,12 +230,16 @@ static int sSingleThread = 0;
 // Log in automatically as a test user
 static int sTestUser = 0;
 
+// True if the game GUI shall be hidden
+static int sHideGUI = 0;
+
 static struct option long_options[] = {
 	/* These options set a flag. */
 	{"verbose", no_argument,       &gVerbose, 1},
 	{"debug",   no_argument,       &gDebugOpenGL, 1},
 	{"singlethread", no_argument,  &sSingleThread, 1},
 	{"testuser", no_argument,      &sTestUser, 1},
+	{"hidegui", no_argument,       &sHideGUI, 1},
 	{0, 0, 0, 0}
 };
 
@@ -442,7 +446,7 @@ int main(int argc, char** argv) {
 		}
 
 		gGameDialog.Update();
-		gGameDialog.render();
+		gGameDialog.render(sHideGUI);
 
 		glfwSwapBuffers();
 

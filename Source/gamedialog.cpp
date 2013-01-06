@@ -842,7 +842,7 @@ static void revive(void) {
 
 glm::mat4 gViewMatrix; // Store the view matrix
 
-void gameDialog::render() {
+void gameDialog::render(bool hideGUI) {
 	if (fCurrentRocketContextInput == 0 && gMode.Get() == GameMode::LOGIN) {
 		// Login mode, get the login dialog.
 		fMessageDialog.LoadForm("login.rml");
@@ -881,14 +881,14 @@ void gameDialog::render() {
 		gBillboard.InitializeTextures(fShader);
 	}
 
-	fRenderControl.Draw(fUnderWater, this->ThirdPersonView(), fSelectedObject, fDrawMap && !gDebugOpenGL, fMapWidth, &fMainUserInterface);
+	fRenderControl.Draw(fUnderWater, this->ThirdPersonView(), fSelectedObject, fDrawMap && !gDebugOpenGL, fMapWidth, (hideGUI && fCurrentRocketContextInput == 0) ? 0 : &fMainUserInterface);
 
 	//=========================================================================
 	// Various effects drawn after the deferred shader
 	//=========================================================================
 
 	if (!fDrawMap) {
-		if (fShowWeapon && gMode.Get() != GameMode::CONSTRUCT && !fShowInventory && !this->ThirdPersonView())
+		if (fShowWeapon && gMode.Get() != GameMode::CONSTRUCT && !fShowInventory && !this->ThirdPersonView() && !hideGUI)
 			this->DrawWeapon();
 		static bool wasDead = false;
 		if (gPlayer.IsDead() && !wasDead) {

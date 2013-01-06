@@ -245,7 +245,8 @@ void RenderControl::Draw(bool underWater, bool thirdPersonView, shared_ptr<const
 		drawSelection(selectedObject->GetPosition());
 	if (!underWater)
 		drawLocalFog();
-	drawUI(ui);
+	if (ui)
+		drawUI(ui);
 	if (showMap)
 		drawMap(mapWidth);
 }
