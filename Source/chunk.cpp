@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -403,6 +403,23 @@ void chunk::DrawObjects(StageOneShader *shader, int dx, int dy, int dz, bool for
 
 	if (forShadows)
 		return; // Skip the rest of the objects
+
+	for (const auto &item : fChunkObject->fSpecialObject) {
+		float x = (float)item.x + dx*CHUNK_SIZE + 0.5f;
+		float y = (float)item.z + dz*CHUNK_SIZE;
+		float z = -(float)item.y - dy*CHUNK_SIZE - 0.5f;
+		switch (item.type) {
+		case BT_RedLight:
+			gLightSources.AddRed(x, y, z, 8);
+			break;
+		case BT_BlueLight:
+			gLightSources.AddBlue(x, y, z, 8);
+			break;
+		case BT_GreenLight:
+			gLightSources.AddGreen(x, y, z, 8);
+			break;
+		}
+	}
 
 	// Find all fogs.
 	for (int i=0; i<fChunkObject->fNumFogs; i++) {

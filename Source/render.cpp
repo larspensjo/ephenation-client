@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -529,6 +529,19 @@ void DrawLandscapeForShadows(StageOneShader *shader) {
 		cp->Draw(shader, 0, DL_NoTransparent);
 		cp->DrawObjects(shader, dx, dy, dz, true);
 	}
+}
+
+LightSources gLightSources;
+void LightSources::AddRed(float x, float y, float z, float radius) {
+	fItems.push_back(glm::vec4(x, y, z, radius+RedOffset));
+}
+
+void LightSources::AddGreen(float x, float y, float z, float radius) {
+	fItems.push_back(glm::vec4(x, y, z, radius+GreenOffset));
+}
+
+void LightSources::AddBlue(float x, float y, float z, float radius) {
+	fItems.push_back(glm::vec4(x, y, z, radius+BlueOffset));
 }
 
 Shadows gShadows;

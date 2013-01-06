@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -78,6 +78,20 @@ protected:
 
 #define MAX_RENDER_SHADOWS 200
 #define MAX_RENDER_FOGS 100
+
+// A class that manage special lights.
+class LightSources : public BaseObject {
+public:
+	// Add another light source to the list.
+	void AddRed(float x, float y, float z, float radius);
+	void AddGreen(float x, float y, float z, float radius);
+	void AddBlue(float x, float y, float z, float radius);
+private:
+	// Add an offset to the radius, coded in the 4:th component, to identify what color it is
+	enum { RedOffset = 100, GreenOffset = 200, BlueOffset = 300 };
+};
+
+extern LightSources gLightSources;
 
 // A class that manage shadows beneath monsters and players.
 class Shadows : public BaseObject {
