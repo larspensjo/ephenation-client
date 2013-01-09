@@ -1,0 +1,107 @@
+\hypertarget{classSplitter}{\section{\-Splitter \-Class \-Reference}
+\label{classSplitter}\index{\-Splitter@{\-Splitter}}
+}
+
+
+{\ttfamily \#include $<$\-Splitter.\-h$>$}
+
+\subsection*{\-Public \-Types}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classSplitter_a24341275a00c0b617655258f5372a42c}{typedef std\-::vector\*
+$<$ std\-::string $>$\-::\hyperlink{classSplitter_a24341275a00c0b617655258f5372a42c}{size\-\_\-type} \hyperlink{classSplitter_a24341275a00c0b617655258f5372a42c}{size\-\_\-type}}\label{classSplitter_a24341275a00c0b617655258f5372a42c}
+
+\begin{DoxyCompactList}\small\item\em \-Subscript type for use with operator\mbox{[}\mbox{]}. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{\-Public \-Member \-Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classSplitter_a41eddab681f5186c74c23c4e22666a36}{\-Splitter} (const std\-::string \&src, const std\-::string \&delim)
+\item 
+std\-::string \& \hyperlink{classSplitter_a2023627ffc281f4adc668251141715cc}{operator\mbox{[}$\,$\mbox{]}} (\hyperlink{classSplitter_a24341275a00c0b617655258f5372a42c}{size\-\_\-type} i)
+\item 
+\hyperlink{classSplitter_a24341275a00c0b617655258f5372a42c}{size\-\_\-type} \hyperlink{classSplitter_acc58917adcf1da6e6dbab05354a02276}{size} () const 
+\item 
+void \hyperlink{classSplitter_aadcb25576bce2a54423a17a63365848f}{reset} (const std\-::string \&src, const std\-::string \&delim)
+\end{DoxyCompactItemize}
+
+
+\subsection{\-Detailed \-Description}
+\-Maintains a collection of substrings that are delimited by a string of one or more characters 
+
+\subsection{\-Constructor \& \-Destructor \-Documentation}
+\hypertarget{classSplitter_a41eddab681f5186c74c23c4e22666a36}{\index{\-Splitter@{\-Splitter}!\-Splitter@{\-Splitter}}
+\index{\-Splitter@{\-Splitter}!Splitter@{\-Splitter}}
+\subsubsection[{\-Splitter}]{\setlength{\rightskip}{0pt plus 5cm}{\bf \-Splitter\-::\-Splitter} (
+\begin{DoxyParamCaption}
+\item[{const std\-::string \&}]{src, }
+\item[{const std\-::string \&}]{delim}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}\label{classSplitter_a41eddab681f5186c74c23c4e22666a36}
+\-Create and initialize a new \hyperlink{classSplitter}{\-Splitter}
+
+
+\begin{DoxyParams}[1]{\-Parameters}
+\mbox{\tt in}  & {\em src} & \-The string to split \\
+\hline
+\mbox{\tt in}  & {\em delim} & \-The delimiter to split the string around \\
+\hline
+\end{DoxyParams}
+
+
+\subsection{\-Member \-Function \-Documentation}
+\hypertarget{classSplitter_a2023627ffc281f4adc668251141715cc}{\index{\-Splitter@{\-Splitter}!operator\mbox{[}$\,$\mbox{]}@{operator[]}}
+\index{operator\mbox{[}$\,$\mbox{]}@{operator[]}!Splitter@{\-Splitter}}
+\subsubsection[{operator[]}]{\setlength{\rightskip}{0pt plus 5cm}std\-::string\& \-Splitter\-::operator\mbox{[}$\,$\mbox{]} (
+\begin{DoxyParamCaption}
+\item[{{\bf size\-\_\-type}}]{i}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}\label{classSplitter_a2023627ffc281f4adc668251141715cc}
+\-Retrieve a split token at the specified index
+
+
+\begin{DoxyParams}[1]{\-Parameters}
+\mbox{\tt in}  & {\em i} & \-The index to search for a token \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{\-Returns}
+\-The token at the specified index 
+\end{DoxyReturn}
+
+\begin{DoxyExceptions}{\-Exceptions}
+{\em std\-::out\-\_\-of\-\_\-range} & \-If the index is invalid \\
+\hline
+\end{DoxyExceptions}
+\hypertarget{classSplitter_aadcb25576bce2a54423a17a63365848f}{\index{\-Splitter@{\-Splitter}!reset@{reset}}
+\index{reset@{reset}!Splitter@{\-Splitter}}
+\subsubsection[{reset}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf \-Splitter\-::reset} (
+\begin{DoxyParamCaption}
+\item[{const std\-::string \&}]{src, }
+\item[{const std\-::string \&}]{delim}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}\label{classSplitter_aadcb25576bce2a54423a17a63365848f}
+\-Re-\/initialize with a new soruce and delimiter
+
+
+\begin{DoxyParams}[1]{\-Parameters}
+\mbox{\tt in}  & {\em src} & \-The string to split \\
+\hline
+\mbox{\tt in}  & {\em delim} & \-The delimiter to split the string around \\
+\hline
+\end{DoxyParams}
+\hypertarget{classSplitter_acc58917adcf1da6e6dbab05354a02276}{\index{\-Splitter@{\-Splitter}!size@{size}}
+\index{size@{size}!Splitter@{\-Splitter}}
+\subsubsection[{size}]{\setlength{\rightskip}{0pt plus 5cm}{\bf size\-\_\-type} {\bf \-Splitter\-::size} (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}\label{classSplitter_acc58917adcf1da6e6dbab05354a02276}
+\-Retrieve the number of split tokens
+
+\begin{DoxyReturn}{\-Returns}
+\-The number of split tokesn 
+\end{DoxyReturn}
+
+
+\-The documentation for this class was generated from the following file\-:\begin{DoxyCompactItemize}
+\item 
+\-Splitter.\-h\end{DoxyCompactItemize}

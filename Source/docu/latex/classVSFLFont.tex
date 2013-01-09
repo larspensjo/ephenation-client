@@ -1,0 +1,197 @@
+\hypertarget{classVSFLFont}{\section{\-V\-S\-F\-L\-Font \-Class \-Reference}
+\label{classVSFLFont}\index{\-V\-S\-F\-L\-Font@{\-V\-S\-F\-L\-Font}}
+}
+
+
+{\ttfamily \#include $<$vsfl.\-h$>$}
+
+\subsection*{\-Classes}
+\begin{DoxyCompactItemize}
+\item 
+class {\bfseries \-V\-S\-F\-L\-Char}
+\item 
+class {\bfseries \-V\-S\-F\-L\-Sentence}
+\begin{DoxyCompactList}\small\item\em \-Stores the information to render a string. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{\-Public \-Member \-Functions}
+\begin{DoxyCompactItemize}
+\item 
+bool \hyperlink{classVSFLFont_a918c08943cf561baae9a781448f2a3ac}{load\-Font} (const std\-::string \&font\-Name, bool fixed\-Size=false)
+\item 
+void \hyperlink{classVSFLFont_a92b032cec5dc73f48287b5a82638e477}{set\-Shader} (\hyperlink{classSimpleTextureShader}{\-Simple\-Texture\-Shader} $\ast$)
+\item 
+unsigned int \hyperlink{classVSFLFont_aa4a3bea012d09d362d49dce044a9ea95}{gen\-Sentence} ()
+\item 
+void \hyperlink{classVSFLFont_a303bd95c5195c3a68c645bec0cac6be4}{delete\-Sentence} (unsigned int index)
+\item 
+unsigned \hyperlink{classVSFLFont_a639bbdc4da72e4a92368e78fc8c5a4a7}{number\-Of\-Characters} (const std\-::string \&sentence, float width)
+\item 
+int \hyperlink{classVSFLFont_a57de3f16c3486b8ff461cc318e4283f7}{number\-Of\-Pixels} (const std\-::string \&sentence)
+\item 
+int \hyperlink{classVSFLFont_a611e6cdd03357bcf7dd22c0ef8152c21}{height} (void) const 
+\item 
+void \hyperlink{classVSFLFont_acd7f7a89c3c92a1ec207b67297b2d2de}{prepare\-Sentence} (unsigned int index, const std\-::string \&sentence)
+\item 
+void \hyperlink{classVSFLFont_a4eb92452acd85597d8e7f538de17c772}{render\-Sentence} (unsigned int index, const glm\-::vec3 \&offs=glm\-::vec3(0, 0, 0), float alpha=1.\-0f)
+\item 
+void \hyperlink{classVSFLFont_aaf5b3fe1115327e318c3caba119fb92f}{render\-And\-Discard} (const std\-::string \&sentence, const glm\-::vec3 \&offs=glm\-::vec3(0, 0, 0), float alpha=1.\-0f)
+\end{DoxyCompactItemize}
+
+
+\subsection{\-Detailed \-Description}
+-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/
+
+\-Lighthouse3\-D
+
+\-V\-S\-F\-L -\/ \-Very \-Simple \-Font \-Library
+
+\-Full documentation at \href{http://www.lighthouse3d.com/very-simple-libs}{\tt http\-://www.\-lighthouse3d.\-com/very-\/simple-\/libs}
+
+\-This class aims at displaying text strings using bitmap fonts for core versions of \-Open\-G\-L.
+
+\-This lib requires\-:
+
+\-V\-S\-M\-L (\href{http://www.lighthouse3d.com/very-simple-libs}{\tt http\-://www.\-lighthouse3d.\-com/very-\/simple-\/libs})
+
+and the following third party libs\-:
+
+\-G\-L\-E\-W (\href{http://glew.sourceforge.net/}{\tt http\-://glew.\-sourceforge.\-net/}), \-Tiny\-X\-M\-L (\href{http://sourceforge.net/projects/tinyxml/}{\tt http\-://sourceforge.\-net/projects/tinyxml/}), and \-Dev\-I\-L (\href{http://openil.sourceforge.net/}{\tt http\-://openil.\-sourceforge.\-net/})
+
+\-Note\-: \-The font files (xml and tga) are produced by an old software called \-Font\-Studio by \-Michael \-Pote from \-Nitrogen -\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/ 
+
+\subsection{\-Member \-Function \-Documentation}
+\hypertarget{classVSFLFont_a303bd95c5195c3a68c645bec0cac6be4}{\index{\-V\-S\-F\-L\-Font@{\-V\-S\-F\-L\-Font}!delete\-Sentence@{delete\-Sentence}}
+\index{delete\-Sentence@{delete\-Sentence}!VSFLFont@{\-V\-S\-F\-L\-Font}}
+\subsubsection[{delete\-Sentence}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf \-V\-S\-F\-L\-Font\-::delete\-Sentence} (
+\begin{DoxyParamCaption}
+\item[{unsigned int}]{index}
+\end{DoxyParamCaption}
+)}}\label{classVSFLFont_a303bd95c5195c3a68c645bec0cac6be4}
+\-Clear a slot 
+\begin{DoxyParams}{\-Parameters}
+{\em index} & a previously allocated slot index \\
+\hline
+\end{DoxyParams}
+\hypertarget{classVSFLFont_aa4a3bea012d09d362d49dce044a9ea95}{\index{\-V\-S\-F\-L\-Font@{\-V\-S\-F\-L\-Font}!gen\-Sentence@{gen\-Sentence}}
+\index{gen\-Sentence@{gen\-Sentence}!VSFLFont@{\-V\-S\-F\-L\-Font}}
+\subsubsection[{gen\-Sentence}]{\setlength{\rightskip}{0pt plus 5cm}unsigned int {\bf \-V\-S\-F\-L\-Font\-::gen\-Sentence} (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{classVSFLFont_aa4a3bea012d09d362d49dce044a9ea95}
+\-Allocate a slot for a sentence \begin{DoxyReturn}{\-Returns}
+a slot index 
+\end{DoxyReturn}
+\hypertarget{classVSFLFont_a611e6cdd03357bcf7dd22c0ef8152c21}{\index{\-V\-S\-F\-L\-Font@{\-V\-S\-F\-L\-Font}!height@{height}}
+\index{height@{height}!VSFLFont@{\-V\-S\-F\-L\-Font}}
+\subsubsection[{height}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf \-V\-S\-F\-L\-Font\-::height} (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+) const\hspace{0.3cm}{\ttfamily  \mbox{[}inline\mbox{]}}}}\label{classVSFLFont_a611e6cdd03357bcf7dd22c0ef8152c21}
+\-Get the height of the font in pixels \hypertarget{classVSFLFont_a918c08943cf561baae9a781448f2a3ac}{\index{\-V\-S\-F\-L\-Font@{\-V\-S\-F\-L\-Font}!load\-Font@{load\-Font}}
+\index{load\-Font@{load\-Font}!VSFLFont@{\-V\-S\-F\-L\-Font}}
+\subsubsection[{load\-Font}]{\setlength{\rightskip}{0pt plus 5cm}bool {\bf \-V\-S\-F\-L\-Font\-::load\-Font} (
+\begin{DoxyParamCaption}
+\item[{const std\-::string \&}]{font\-Name, }
+\item[{bool}]{fixed\-Size = {\ttfamily false}}
+\end{DoxyParamCaption}
+)}}\label{classVSFLFont_a918c08943cf561baae9a781448f2a3ac}
+\-Loads the font data. \-It assumes that there is a file font\-Name.\-xml with the font data and a font\-Name.\-tga with the font image 
+\begin{DoxyParams}{\-Parameters}
+{\em font\-Name} & the file name without extension \\
+\hline
+{\em fixed\-Size} & indicates if the font is to be displayed with all chars having the same length \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{\-Returns}
+true if successfull, false otherwise 
+\end{DoxyReturn}
+\hypertarget{classVSFLFont_a639bbdc4da72e4a92368e78fc8c5a4a7}{\index{\-V\-S\-F\-L\-Font@{\-V\-S\-F\-L\-Font}!number\-Of\-Characters@{number\-Of\-Characters}}
+\index{number\-Of\-Characters@{number\-Of\-Characters}!VSFLFont@{\-V\-S\-F\-L\-Font}}
+\subsubsection[{number\-Of\-Characters}]{\setlength{\rightskip}{0pt plus 5cm}unsigned {\bf \-V\-S\-F\-L\-Font\-::number\-Of\-Characters} (
+\begin{DoxyParamCaption}
+\item[{const std\-::string \&}]{sentence, }
+\item[{float}]{width}
+\end{DoxyParamCaption}
+)}}\label{classVSFLFont_a639bbdc4da72e4a92368e78fc8c5a4a7}
+\-Compute the number of characters that will fit 
+\begin{DoxyParams}{\-Parameters}
+{\em sentence} & the string to test \\
+\hline
+{\em width} & the width, in pixels, of the screen that is allowed to use \\
+\hline
+\end{DoxyParams}
+\hypertarget{classVSFLFont_a57de3f16c3486b8ff461cc318e4283f7}{\index{\-V\-S\-F\-L\-Font@{\-V\-S\-F\-L\-Font}!number\-Of\-Pixels@{number\-Of\-Pixels}}
+\index{number\-Of\-Pixels@{number\-Of\-Pixels}!VSFLFont@{\-V\-S\-F\-L\-Font}}
+\subsubsection[{number\-Of\-Pixels}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf \-V\-S\-F\-L\-Font\-::number\-Of\-Pixels} (
+\begin{DoxyParamCaption}
+\item[{const std\-::string \&}]{sentence}
+\end{DoxyParamCaption}
+)}}\label{classVSFLFont_a57de3f16c3486b8ff461cc318e4283f7}
+\-Compute the number of pixels needed 
+\begin{DoxyParams}{\-Parameters}
+{\em sentence} & the string to test \\
+\hline
+\end{DoxyParams}
+\hypertarget{classVSFLFont_acd7f7a89c3c92a1ec207b67297b2d2de}{\index{\-V\-S\-F\-L\-Font@{\-V\-S\-F\-L\-Font}!prepare\-Sentence@{prepare\-Sentence}}
+\index{prepare\-Sentence@{prepare\-Sentence}!VSFLFont@{\-V\-S\-F\-L\-Font}}
+\subsubsection[{prepare\-Sentence}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf \-V\-S\-F\-L\-Font\-::prepare\-Sentence} (
+\begin{DoxyParamCaption}
+\item[{unsigned int}]{index, }
+\item[{const std\-::string \&}]{sentence}
+\end{DoxyParamCaption}
+)}}\label{classVSFLFont_acd7f7a89c3c92a1ec207b67297b2d2de}
+\-Prepares a sentence in a given slot index 
+\begin{DoxyParams}{\-Parameters}
+{\em index} & the index where the sentence will be stored \\
+\hline
+{\em sentence} & the string to be displayed \\
+\hline
+\end{DoxyParams}
+\hypertarget{classVSFLFont_aaf5b3fe1115327e318c3caba119fb92f}{\index{\-V\-S\-F\-L\-Font@{\-V\-S\-F\-L\-Font}!render\-And\-Discard@{render\-And\-Discard}}
+\index{render\-And\-Discard@{render\-And\-Discard}!VSFLFont@{\-V\-S\-F\-L\-Font}}
+\subsubsection[{render\-And\-Discard}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf \-V\-S\-F\-L\-Font\-::render\-And\-Discard} (
+\begin{DoxyParamCaption}
+\item[{const std\-::string \&}]{sentence, }
+\item[{const glm\-::vec3 \&}]{offs = {\ttfamily glm\-:\-:vec3(0,0,0)}, }
+\item[{float}]{alpha = {\ttfamily 1.0f}}
+\end{DoxyParamCaption}
+)}}\label{classVSFLFont_aaf5b3fe1115327e318c3caba119fb92f}
+\-Shortcut to render a string with a single function call \-This is equivalent to calling gen\-Sentence, prepare\-Sentence, render\-Sentence, and finally delete\-Sentence \hypertarget{classVSFLFont_a4eb92452acd85597d8e7f538de17c772}{\index{\-V\-S\-F\-L\-Font@{\-V\-S\-F\-L\-Font}!render\-Sentence@{render\-Sentence}}
+\index{render\-Sentence@{render\-Sentence}!VSFLFont@{\-V\-S\-F\-L\-Font}}
+\subsubsection[{render\-Sentence}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf \-V\-S\-F\-L\-Font\-::render\-Sentence} (
+\begin{DoxyParamCaption}
+\item[{unsigned int}]{index, }
+\item[{const glm\-::vec3 \&}]{offs = {\ttfamily glm\-:\-:vec3(0,0,0)}, }
+\item[{float}]{alpha = {\ttfamily 1.0f}}
+\end{DoxyParamCaption}
+)}}\label{classVSFLFont_a4eb92452acd85597d8e7f538de17c772}
+\-Render a sentence. \-Note that screen coordinates (x,y), have (0,0) as the top left of the screen 
+\begin{DoxyParams}{\-Parameters}
+{\em x} & the x screen cordinate \\
+\hline
+{\em y} & the y screen coordinate \\
+\hline
+{\em index} & a previously allocated slot index \\
+\hline
+\end{DoxyParams}
+\hypertarget{classVSFLFont_a92b032cec5dc73f48287b5a82638e477}{\index{\-V\-S\-F\-L\-Font@{\-V\-S\-F\-L\-Font}!set\-Shader@{set\-Shader}}
+\index{set\-Shader@{set\-Shader}!VSFLFont@{\-V\-S\-F\-L\-Font}}
+\subsubsection[{set\-Shader}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf \-V\-S\-F\-L\-Font\-::set\-Shader} (
+\begin{DoxyParamCaption}
+\item[{{\bf \-Simple\-Texture\-Shader} $\ast$}]{sh}
+\end{DoxyParamCaption}
+)}}\label{classVSFLFont_a92b032cec5dc73f48287b5a82638e477}
+\-Set attribute locations for vertices and texture coords 
+\begin{DoxyParams}{\-Parameters}
+{\em vertex\-Loc} & the vertex coordinates attribute location \\
+\hline
+{\em tex\-Coord\-Loc} & the texture coordinates attribute location \\
+\hline
+\end{DoxyParams}
+
+
+\-The documentation for this class was generated from the following files\-:\begin{DoxyCompactItemize}
+\item 
+vsfl/vsfl.\-h\item 
+vsfl/vsfl.\-cpp\end{DoxyCompactItemize}

@@ -29,10 +29,20 @@
 #include "../player.h"
 #include "../textures.h"
 
-// This vertex shader will only draw two triangles, limited to the part of the screen
-// that can be affected.
-// The vertex input is 0,0 in one corner and 1,1 in the other. Draw the quad at z -1, with x and y
-// going from -1 to 1 (and then transformed with the model matrix).
+// ====================================================================================================================
+/**
+ * @file
+ * @link
+ * @brief vertexShaderSource is the vertex shader for the skybox
+ *
+ * This vertex shader will only draw two triangles, limited to the part of the screen
+ * that can be affected.
+ * The vertex input is 0,0 in one corner and 1,1 in the other. Draw the quad at z -1, with x and y
+ * going from -1 to 1 (and then transformed with the model matrix).
+ *
+ * @todo [position = pos*10000]
+ */
+// ====================================================================================================================
 static const GLchar *vertexShaderSource[] = {
 	"#version 330\n", // This corresponds to OpenGL 3.3
 	UNIFORMBUFFER
@@ -73,6 +83,12 @@ SkyBox::SkyBox() {
 	fModelMatrixIdx = -1;
 }
 
+// ====================================================================================================================
+/**
+ * @brief Initialisation for Skybox shaders.
+ */
+// ====================================================================================================================
+
 void SkyBox::Init(void) {
 	const GLsizei vertexShaderLines = sizeof(vertexShaderSource) / sizeof(GLchar*);
 	const GLsizei fragmentShaderLines = sizeof(fragmentShaderSource) / sizeof(GLchar*);
@@ -89,6 +105,17 @@ void SkyBox::GetLocations(void) {
 	checkError("SkyBox::GetLocations");
 }
 
+// ====================================================================================================================
+/**
+ * @brief This is the Draw method for the Skybox
+ *
+ * The skybox is created using 4 quads, each going from -1.0 to 1.0. The quads are rotated
+ * and a box is formed. The model transformations(the four rotations) are done on the CPU as shown
+ * below. The view transform is then applied within the shader.
+ *
+ * @todo Move the model transforms to shader?
+ */
+// ====================================================================================================================
 void SkyBox::Draw() {
 	bool belowGround = false;
 	if (gPlayer.BelowGround()) // If a number of blocks below ground, use a dark gray texture instead

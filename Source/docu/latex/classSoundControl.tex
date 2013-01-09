@@ -1,0 +1,130 @@
+\hypertarget{classSoundControl}{\section{\-Sound\-Control \-Class \-Reference}
+\label{classSoundControl}\index{\-Sound\-Control@{\-Sound\-Control}}
+}
+\subsection*{\-Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct {\bfseries \-Music\-List}
+\item 
+struct {\bfseries \-Sound\-Buffer}
+\item 
+struct {\bfseries \-Sound\-Creature}
+\item 
+struct {\bfseries \-Sound\-Environment}
+\item 
+struct \hyperlink{structSoundControl_1_1TrigSoundItem}{\-Trig\-Sound\-Item}
+\end{DoxyCompactItemize}
+\subsection*{\-Public \-Types}
+\begin{DoxyCompactItemize}
+\item 
+enum \{ \*
+{\bfseries \-S\-None} =  0, 
+{\bfseries \-S\-Terminate} =  1$<$$<$0, 
+{\bfseries \-S\-T\-S\-Exec} =  1$<$$<$1, 
+{\bfseries \-S\-Growl} =  1$<$$<$2, 
+\*
+{\bfseries \-S\-Player\-Hits} =  1$<$$<$3, 
+{\bfseries \-S\-Monster\-Hits} =  1$<$$<$4, 
+{\bfseries \-S\-Healing\-Self} =  1$<$$<$5, 
+{\bfseries \-S\-Player\-Jump} =  1$<$$<$6, 
+\*
+{\bfseries \-S\-Player\-Land} =  1$<$$<$7, 
+{\bfseries \-S\-Level\-Up} =  1$<$$<$8, 
+{\bfseries \-S\-Interface\-Ping} =  1$<$$<$9, 
+{\bfseries \-S\-Build\-Block} =  1$<$$<$10, 
+\*
+{\bfseries \-S\-Remove\-Block} =  1$<$$<$11, 
+{\bfseries \-S\-Drop\-Potion} =  1$<$$<$12, 
+{\bfseries \-S\-Drop\-Weapon} =  1$<$$<$13, 
+{\bfseries \-S\-Drop\-Armor} =  1$<$$<$14, 
+\*
+{\bfseries \-S\-Drop\-Scroll} =  1$<$$<$15
+ \}
+\item 
+enum {\bfseries \-Sound\-Fx\-Status} \{ \*
+{\bfseries \-S\-Player\-Running}, 
+{\bfseries \-S\-Player\-Walking}, 
+{\bfseries \-S\-Player\-Feet\-In\-Water}, 
+{\bfseries \-S\-Player\-Swimming}, 
+\*
+{\bfseries \-S\-Player\-In\-Air}, 
+{\bfseries \-S\-Environment\-Echo}, 
+{\bfseries \-S\-Environment\-Under\-Water}
+ \}
+\item 
+enum {\bfseries \-Music\-Mode} \{ \*
+{\bfseries \-S\-Music\-Mode\-None}, 
+{\bfseries \-S\-Music\-Mode\-Silence}, 
+{\bfseries \-S\-Music\-Mode\-Tourist}, 
+{\bfseries \-S\-Music\-Mode\-Combat}, 
+\*
+{\bfseries \-S\-Music\-Mode\-Menu}, 
+{\bfseries \-S\-Num\-Music\-Modes}
+ \}
+\item 
+enum {\bfseries \-Sound\-Object} \{ \*
+{\bfseries \-S\-No\-Creature}, 
+{\bfseries \-S\-To\-Be\-Removed}, 
+{\bfseries \-S\-Other\-Player}, 
+{\bfseries \-S\-Monster}, 
+\*
+{\bfseries \-S\-Teleport}
+ \}
+\item 
+\hypertarget{classSoundControl_af69a989ea5ea79299d9f05cf5ca53fe9}{typedef unsigned long {\bfseries \-Sound}}\label{classSoundControl_af69a989ea5ea79299d9f05cf5ca53fe9}
+
+\item 
+\hypertarget{classSoundControl_a12ae80d6698edc774909032635995884}{typedef int {\bfseries \-Sound\-Control\-Object}}\label{classSoundControl_a12ae80d6698edc774909032635995884}
+
+\end{DoxyCompactItemize}
+\subsection*{\-Public \-Member \-Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classSoundControl_ae1a682985df01f0168d0caa2b3720ad1}{void {\bfseries \-Init} (void)}\label{classSoundControl_ae1a682985df01f0168d0caa2b3720ad1}
+
+\item 
+\hypertarget{classSoundControl_adca6d26b1b2ab21c6e32bd4fdeeadc19}{void {\bfseries \-Request\-Sound} (\-Sound, bool force=false)}\label{classSoundControl_adca6d26b1b2ab21c6e32bd4fdeeadc19}
+
+\item 
+\hypertarget{classSoundControl_a985abbcd6b9da230de73ebef2246b9cc}{void {\bfseries \-Request\-Trig\-Sound} (const char $\ast$)}\label{classSoundControl_a985abbcd6b9da230de73ebef2246b9cc}
+
+\item 
+\hypertarget{classSoundControl_abf99429f897755f6ce4e9e11fb99a0a1}{void {\bfseries \-Set\-Sound\-Fx\-Status} (\-Sound\-Fx\-Status, bool)}\label{classSoundControl_abf99429f897755f6ce4e9e11fb99a0a1}
+
+\item 
+\hypertarget{classSoundControl_a87de9f20ec5cf1610884d11426bf74b1}{void {\bfseries \-Set\-Creature\-Sound} (\-Sound\-Object creature\-Type, unsigned long id, float dx, float dy, float dz, bool dead, float size)}\label{classSoundControl_a87de9f20ec5cf1610884d11426bf74b1}
+
+\item 
+\hypertarget{classSoundControl_ad497e8f68a196b808bacb8f10b500c80}{void {\bfseries \-Set\-Environment\-Sound} (\-Sound\-Object sound\-Type, unsigned long id, float dx, float dy, float dz)}\label{classSoundControl_ad497e8f68a196b808bacb8f10b500c80}
+
+\item 
+\hypertarget{classSoundControl_a7c8e1e1194ba512938b61b349051c4ea}{void {\bfseries \-Remove\-Environment\-Sound} (\-Sound\-Object, unsigned long)}\label{classSoundControl_a7c8e1e1194ba512938b61b349051c4ea}
+
+\item 
+\hypertarget{classSoundControl_a96cbb50216b7e97eafac670d4077652f}{void {\bfseries \-Remove\-Creature\-Sound} (\-Sound\-Object, unsigned long)}\label{classSoundControl_a96cbb50216b7e97eafac670d4077652f}
+
+\item 
+\hypertarget{classSoundControl_ae6ee9c713ab7dd729cfd6dff33ac044f}{void {\bfseries \-Request\-Music\-Mode} (\-Music\-Mode)}\label{classSoundControl_ae6ee9c713ab7dd729cfd6dff33ac044f}
+
+\item 
+\hypertarget{classSoundControl_ae964016f7953bd952e25fc1ab8263dfc}{void {\bfseries \-Switch\-Music\-Status} (void)}\label{classSoundControl_ae964016f7953bd952e25fc1ab8263dfc}
+
+\end{DoxyCompactItemize}
+\subsection*{\-Public \-Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classSoundControl_ac30f11cd91fc72225d1d7912e566e81e}{unsigned int {\bfseries f\-Num\-Trig\-Sounds}}\label{classSoundControl_ac30f11cd91fc72225d1d7912e566e81e}
+
+\end{DoxyCompactItemize}
+\subsection*{\-Static \-Public \-Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classSoundControl_aca5aba7cd50812e21ad562f5b9069339}{static \hyperlink{structSoundControl_1_1TrigSoundItem}{\-Trig\-Sound\-Item} {\bfseries f\-Trig\-Sound\-List} \mbox{[}$\,$\mbox{]}}\label{classSoundControl_aca5aba7cd50812e21ad562f5b9069339}
+
+\end{DoxyCompactItemize}
+
+
+\-The documentation for this class was generated from the following files\-:\begin{DoxyCompactItemize}
+\item 
+\-Sound\-Control.\-h\item 
+\-Sound\-Control.\-cpp\end{DoxyCompactItemize}

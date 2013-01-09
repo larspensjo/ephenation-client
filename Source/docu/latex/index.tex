@@ -1,0 +1,12 @@
+\hypertarget{index_Matrices}{}\section{used}\label{index_Matrices}
+\-Some general info about how matrices are used in \-Ephenation. \-The most important transformation matrices\-:
+
+o \-Umodel\-Matrix o g\-View\-Matrix(in the shader\-: mat U\-B\-O\-View\-Matrix) o g\-Projection\-Matrix(in the shader\-: mat4 U\-B\-O\-Projection\-Matrix)
+
+\-In \-Ephenation, the \-Model and \-View matrices are maintained separately as opposed to say the general convention of concatenated \-Model\-View matrix typically used in \-Open\-G\-L.
+
+1) \-Umodel\-Matrix\-: \-The model matrix, used for the model transformations, i.\-e. from the model space of the individual \-Game elements like sky, player, etc. to the world space.
+
+2) \-U\-B\-O\-View\-Matrix\-:\-The \-View matrix, used to transform from the world space to the camera(or eye) space. \-In this space, the camera(or eye) is at the origin, facing negative \-Z.
+
+3) \-U\-B\-O\-Projection\-Matrix\-: \-The projection matrix. 

@@ -1,0 +1,80 @@
+\hypertarget{structChunkBlocks}{\section{\-Chunk\-Blocks \-Struct \-Reference}
+\label{structChunkBlocks}\index{\-Chunk\-Blocks@{\-Chunk\-Blocks}}
+}
+\subsection*{\-Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{structChunkBlocks_1_1JellyBlock}{\-Jelly\-Block}
+\end{DoxyCompactItemize}
+\subsection*{\-Public \-Member \-Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{structChunkBlocks_aa1c7b35454e63e1fe2e4d36f3bc8b43b}{void {\bfseries \-Uncompress} (void)}\label{structChunkBlocks_aa1c7b35454e63e1fe2e4d36f3bc8b43b}
+
+\item 
+\hypertarget{structChunkBlocks_a368d3c0aa49ddbca5f049280f36c1436}{void {\bfseries \-Add\-Timer\-Jelly\-Block} (unsigned char dx, unsigned char dy, unsigned char dz, double delta\-Time)}\label{structChunkBlocks_a368d3c0aa49ddbca5f049280f36c1436}
+
+\item 
+\hypertarget{structChunkBlocks_a7a89d2f96506d7239a3f40c43fe5221e}{void {\bfseries \-Test\-Jelly\-Block\-Timeout} (bool unconditionally=false)}\label{structChunkBlocks_a7a89d2f96506d7239a3f40c43fe5221e}
+
+\item 
+\hypertarget{structChunkBlocks_af1e1e0891ad48b303439103dd2cec9f4}{void {\bfseries \-Command\-Block\-Update} (const \hyperlink{structChunkCoord}{\-Chunk\-Coord} \&cc, int dx, int dy, int dz, int type)}\label{structChunkBlocks_af1e1e0891ad48b303439103dd2cec9f4}
+
+\item 
+\hypertarget{structChunkBlocks_acf35144625684f0cdaef487a4fbab29c}{void {\bfseries \-Set\-Teleport} (int x, int y, int z)}\label{structChunkBlocks_acf35144625684f0cdaef487a4fbab29c}
+
+\item 
+\hypertarget{structChunkBlocks_a71df5c97bb349fe1a730592c8aeabb76}{bool {\bfseries block\-Is\-Compl\-Transp} (unsigned char bl) const }\label{structChunkBlocks_a71df5c97bb349fe1a730592c8aeabb76}
+
+\end{DoxyCompactItemize}
+\subsection*{\-Static \-Public \-Member \-Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{structChunkBlocks_ad7f0d73cb7a7ac9b9a0e9adbd78b1895}{static void {\bfseries \-Init\-Static} (void)}\label{structChunkBlocks_ad7f0d73cb7a7ac9b9a0e9adbd78b1895}
+
+\item 
+\hypertarget{structChunkBlocks_a15714b8cfd908d16ae64d2207d3abe75}{static bool {\bfseries block\-Is\-Semi\-Transp} (unsigned char bl)}\label{structChunkBlocks_a15714b8cfd908d16ae64d2207d3abe75}
+
+\item 
+\hypertarget{structChunkBlocks_a573e6f9e5c01366283ea2dbe4ce43914}{static bool {\bfseries rigid} (unsigned char bl)}\label{structChunkBlocks_a573e6f9e5c01366283ea2dbe4ce43914}
+
+\item 
+\hypertarget{structChunkBlocks_a33b837566d8159b2141e0310e15024a9}{static bool {\bfseries plastic} (unsigned char bl)}\label{structChunkBlocks_a33b837566d8159b2141e0310e15024a9}
+
+\end{DoxyCompactItemize}
+\subsection*{\-Public \-Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{structChunkBlocks_ae1f57a236b339a0615ae340a3444659c}{unsigned long {\bfseries flag}}\label{structChunkBlocks_ae1f57a236b339a0615ae340a3444659c}
+
+\item 
+\hypertarget{structChunkBlocks_a24f6ef161d980e4451674aa1077b00ca}{unsigned int {\bfseries f\-Checksum}}\label{structChunkBlocks_a24f6ef161d980e4451674aa1077b00ca}
+
+\item 
+\hypertarget{structChunkBlocks_a7eb91bd11b29bc7a293ebb34a19b8023}{unsigned long {\bfseries f\-Owner}}\label{structChunkBlocks_a7eb91bd11b29bc7a293ebb34a19b8023}
+
+\item 
+\hypertarget{structChunkBlocks_a8e97b341e859cda581caefcf15e03705}{\hyperlink{structchunk}{chunk} $\ast$ {\bfseries f\-Chunk}}\label{structChunkBlocks_a8e97b341e859cda581caefcf15e03705}
+
+\item 
+\hypertarget{structChunkBlocks_a29da89a4fba0f0fc56217a6d0944beac}{double {\bfseries f\-Checksum\-Timeout}}\label{structChunkBlocks_a29da89a4fba0f0fc56217a6d0944beac}
+
+\item 
+\hypertarget{structChunkBlocks_a16aa1c3dbb8143c7654051ce40bddcdd}{std\-::unique\-\_\-ptr$<$ unsigned char\mbox{[}$\,$\mbox{]}$>$ {\bfseries f\-Compressed\-Chunk}}\label{structChunkBlocks_a16aa1c3dbb8143c7654051ce40bddcdd}
+
+\item 
+\hypertarget{structChunkBlocks_ab276a22dfcfe671bf9a0bfcb548fa5fb}{int {\bfseries compress\-Size}}\label{structChunkBlocks_ab276a22dfcfe671bf9a0bfcb548fa5fb}
+
+\item 
+\hypertarget{structChunkBlocks_a305279bad2806c9d75a78fa0ae762428}{std\-::unique\-\_\-ptr$<$ unsigned char\mbox{[}$\,$\mbox{]}$>$ {\bfseries f\-Chunk\-Data}}\label{structChunkBlocks_a305279bad2806c9d75a78fa0ae762428}
+
+\item 
+\hypertarget{structChunkBlocks_afa1dd96d29ae5f8e587efe93572497f1}{bool {\bfseries f\-Checksum\-Test\-Needed}}\label{structChunkBlocks_afa1dd96d29ae5f8e587efe93572497f1}
+
+\end{DoxyCompactItemize}
+
+
+\-The documentation for this struct was generated from the following files\-:\begin{DoxyCompactItemize}
+\item 
+\-Chunk\-Blocks.\-h\item 
+\-Chunk\-Blocks.\-cpp\end{DoxyCompactItemize}

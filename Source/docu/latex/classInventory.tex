@@ -1,0 +1,93 @@
+\hypertarget{classInventory}{\section{\-Inventory \-Class \-Reference}
+\label{classInventory}\index{\-Inventory@{\-Inventory}}
+}
+\subsection*{\-Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{structInventory_1_1Item}{\-Item}
+\item 
+struct \hyperlink{structInventory_1_1ObjectMap}{\-Object\-Map}
+\end{DoxyCompactItemize}
+\subsection*{\-Public \-Types}
+\begin{DoxyCompactItemize}
+\item 
+enum {\bfseries \-Inventory\-Category} \{ \*
+{\bfseries \-I\-C\-Weapon}, 
+{\bfseries \-I\-C\-Armor}, 
+{\bfseries \-I\-C\-Head}, 
+{\bfseries \-I\-C\-Potion}, 
+\*
+{\bfseries \-I\-C\-Scroll}
+ \}
+\end{DoxyCompactItemize}
+\subsection*{\-Public \-Member \-Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classInventory_ae1fb50b13e7c77c013a5e5d33c25dc7b}{void {\bfseries \-Set\-Amount} (const char $\ast$code, int n, unsigned int level)}\label{classInventory_ae1fb50b13e7c77c013a5e5d33c25dc7b}
+
+\item 
+\hypertarget{classInventory_a05086afa8036eba693188c24427a22cb}{void {\bfseries \-Use\-Object\-Function\-Key} (int key)}\label{classInventory_a05086afa8036eba693188c24427a22cb}
+
+\item 
+\hypertarget{classInventory_a5b0e6e05d4772c5dd59dde03e501ac6c}{void {\bfseries \-Draw\-Inventory} (\hyperlink{classDrawTexture}{\-Draw\-Texture} $\ast$)}\label{classInventory_a5b0e6e05d4772c5dd59dde03e501ac6c}
+
+\item 
+\hypertarget{classInventory_a325c821071b811851c0cbdb92f35eafa}{bool {\bfseries \-Handle\-Mouse\-Click} (int button, int action, int x, int y)}\label{classInventory_a325c821071b811851c0cbdb92f35eafa}
+
+\end{DoxyCompactItemize}
+\subsection*{\-Static \-Public \-Attributes}
+\begin{DoxyCompactItemize}
+\item 
+static struct \hyperlink{structInventory_1_1ObjectMap}{\-Object\-Map} {\bfseries fs\-Object\-Map} \mbox{[}$\,$\mbox{]}
+\item 
+\hypertarget{classInventory_a26d8eba242fc0182016aed67811ddb9d}{static size\-\_\-t {\bfseries fs\-Object\-Map\-Size} = \-N\-U\-M\-\_\-\-O\-B\-J\-E\-C\-T\-S}\label{classInventory_a26d8eba242fc0182016aed67811ddb9d}
+
+\end{DoxyCompactItemize}
+
+
+\subsection{\-Member \-Data \-Documentation}
+\hypertarget{classInventory_a128ae8d2e2b6e1a88f257891917c1cbf}{\index{\-Inventory@{\-Inventory}!fs\-Object\-Map@{fs\-Object\-Map}}
+\index{fs\-Object\-Map@{fs\-Object\-Map}!Inventory@{\-Inventory}}
+\subsubsection[{fs\-Object\-Map}]{\setlength{\rightskip}{0pt plus 5cm}{\bf \-Inventory\-::\-Object\-Map} \-Inventory\-::fs\-Object\-Map\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{classInventory_a128ae8d2e2b6e1a88f257891917c1cbf}
+{\bfseries \-Initial value\-:}
+\begin{DoxyCode}
+ {
+        { " ", 0, 0, 3/IS,  4/IS}, 
+        { "healing potion",                        "POTH", 
+      SoundControl::SDropPotion, 0/IS, 6/IS, false, ICPotion },
+        { "mana potion",                           "POTM", 
+      SoundControl::SDropPotion, 1/IS, 6/IS, false, ICPotion },
+        { "scroll of resurrection point",          "S001", 
+      SoundControl::SDropScroll, 0/IS, 4/IS, true, ICScroll },
+        { "sword",                                 "WEP1", 
+      SoundControl::SDropWeapon, 0/IS, 7/IS, true, ICWeapon },
+        { "fine sword",                            "WEP2", 
+      SoundControl::SDropWeapon, 1/IS, 7/IS, true, ICWeapon },
+        { "mighty sword",                          "WEP3", 
+      SoundControl::SDropWeapon, 2/IS, 7/IS, true, ICWeapon },
+        { "shining blue sword with engraved gems", "WEP4", 
+      SoundControl::SDropWeapon, 3/IS, 7/IS, true, ICWeapon },
+        { "shirt",                                 "ARM1", 
+      SoundControl::SDropArmor,  0/IS, 5/IS, true, ICArmor },
+        { "armor",                                 "ARM2", 
+      SoundControl::SDropArmor,  1/IS, 5/IS, true, ICArmor },
+        { "shiny armor",                           "ARM3", 
+      SoundControl::SDropArmor,  2/IS, 5/IS, true, ICArmor },
+        { "plate mail with magic reinforcement",   "ARM4", 
+      SoundControl::SDropArmor,  3/IS, 5/IS, true, ICArmor },
+        { "straw hat",                             "HLM1", 
+      SoundControl::SDropArmor,  0/IS, 0/IS, true, ICHead },
+        { "helmet",                                "HLM2", 
+      SoundControl::SDropArmor,  1/IS, 0/IS, true, ICHead },
+        { "shiny helmet",                          "HLM3", 
+      SoundControl::SDropArmor,  2/IS, 0/IS, true, ICHead },
+        { "dragon helmet",                         "HLM4", 
+      SoundControl::SDropArmor,  3/IS, 0/IS, true, ICHead },
+}
+\end{DoxyCode}
+
+
+\-The documentation for this class was generated from the following files\-:\begin{DoxyCompactItemize}
+\item 
+\-Inventory.\-h\item 
+\-Inventory.\-cpp\end{DoxyCompactItemize}
