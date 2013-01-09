@@ -1,0 +1,48 @@
+\hypertarget{classRocketRenderInterface}{\section{\-Rocket\-Render\-Interface \-Class \-Reference}
+\label{classRocketRenderInterface}\index{\-Rocket\-Render\-Interface@{\-Rocket\-Render\-Interface}}
+}
+\subsection*{\-Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct {\bfseries \-Geometry}
+\end{DoxyCompactItemize}
+\subsection*{\-Public \-Member \-Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classRocketRenderInterface_afdde193e6932386acde6f16ecc4d625f}{void {\bfseries \-Init} ()}\label{classRocketRenderInterface_afdde193e6932386acde6f16ecc4d625f}
+
+\item 
+\hypertarget{classRocketRenderInterface_ac4b6342fe7756264b3982ac5a6d7b911}{virtual void {\bfseries \-Render\-Geometry} (\-Rocket\-::\-Core\-::\-Vertex $\ast$vertices, int num\-\_\-vertices, int $\ast$indices, int num\-\_\-indices, \-Rocket\-::\-Core\-::\-Texture\-Handle texture, const \-Rocket\-::\-Core\-::\-Vector2f \&translation)}\label{classRocketRenderInterface_ac4b6342fe7756264b3982ac5a6d7b911}
+
+\item 
+\hypertarget{classRocketRenderInterface_a17e65e48bb5cd5fe151f9a2b4fa0e842}{virtual \*
+\-Rocket\-::\-Core\-::\-Compiled\-Geometry\-Handle {\bfseries \-Compile\-Geometry} (\-Rocket\-::\-Core\-::\-Vertex $\ast$vertices, int num\-\_\-vertices, int $\ast$indices, int num\-\_\-indices, \-Rocket\-::\-Core\-::\-Texture\-Handle texture)}\label{classRocketRenderInterface_a17e65e48bb5cd5fe151f9a2b4fa0e842}
+
+\item 
+\hypertarget{classRocketRenderInterface_a152c0ccbe1817c1d009916b0cda5b539}{virtual void {\bfseries \-Render\-Compiled\-Geometry} (\-Rocket\-::\-Core\-::\-Compiled\-Geometry\-Handle geometry, const \-Rocket\-::\-Core\-::\-Vector2f \&translation)}\label{classRocketRenderInterface_a152c0ccbe1817c1d009916b0cda5b539}
+
+\item 
+\hypertarget{classRocketRenderInterface_a321b48fdf97bec9ccbb2060ffb0efa7b}{virtual void {\bfseries \-Release\-Compiled\-Geometry} (\-Rocket\-::\-Core\-::\-Compiled\-Geometry\-Handle geometry)}\label{classRocketRenderInterface_a321b48fdf97bec9ccbb2060ffb0efa7b}
+
+\item 
+\hypertarget{classRocketRenderInterface_a577eb5b0caf206a2abb30768e74d2471}{virtual void {\bfseries \-Enable\-Scissor\-Region} (bool enable)}\label{classRocketRenderInterface_a577eb5b0caf206a2abb30768e74d2471}
+
+\item 
+\hypertarget{classRocketRenderInterface_a6f30811d0e20fd2321b8dd46ee1aa97e}{virtual void {\bfseries \-Set\-Scissor\-Region} (int x, int y, int width, int height)}\label{classRocketRenderInterface_a6f30811d0e20fd2321b8dd46ee1aa97e}
+
+\item 
+\hypertarget{classRocketRenderInterface_ae0fbd11756f2149e7b36fbc8b50cc530}{virtual bool {\bfseries \-Load\-Texture} (\-Rocket\-::\-Core\-::\-Texture\-Handle \&texture\-\_\-handle, \-Rocket\-::\-Core\-::\-Vector2i \&texture\-\_\-dimensions, const \-Rocket\-::\-Core\-::\-String \&source)}\label{classRocketRenderInterface_ae0fbd11756f2149e7b36fbc8b50cc530}
+
+\item 
+\hypertarget{classRocketRenderInterface_a6cc6d32f575fe35d40b34e9c65700b3b}{virtual bool {\bfseries \-Generate\-Texture} (\-Rocket\-::\-Core\-::\-Texture\-Handle \&texture\-\_\-handle, const \-Rocket\-::\-Core\-::byte $\ast$source, const \-Rocket\-::\-Core\-::\-Vector2i \&source\-\_\-dimensions)}\label{classRocketRenderInterface_a6cc6d32f575fe35d40b34e9c65700b3b}
+
+\item 
+\hypertarget{classRocketRenderInterface_a2d2ba55df298a56d95992d4314651966}{virtual void {\bfseries \-Release\-Texture} (\-Rocket\-::\-Core\-::\-Texture\-Handle texture\-\_\-handle)}\label{classRocketRenderInterface_a2d2ba55df298a56d95992d4314651966}
+
+\end{DoxyCompactItemize}
+
+
+\-The documentation for this class was generated from the following files\-:\begin{DoxyCompactItemize}
+\item 
+ui/\-Rocket\-Render\-Interface.\-h\item 
+ui/\-Rocket\-Render\-Interface.\-cpp\end{DoxyCompactItemize}

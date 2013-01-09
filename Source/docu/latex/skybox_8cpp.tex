@@ -1,0 +1,24 @@
+\hypertarget{skybox_8cpp}{\section{shaders/skybox.cpp \-File \-Reference}
+\label{skybox_8cpp}\index{shaders/skybox.\-cpp@{shaders/skybox.\-cpp}}
+}
+
+
+vertex\-Shader\-Source is the vertex shader for the skybox  
+
+
+{\ttfamily \#include $<$\-G\-L/glew.\-h$>$}\*
+{\ttfamily \#include $<$stdio.\-h$>$}\*
+{\ttfamily \#include $<$stdlib.\-h$>$}\*
+{\ttfamily \#include $<$glm/glm.\-hpp$>$}\*
+{\ttfamily \#include $<$glm/gtc/matrix\-\_\-transform.\-hpp$>$}\*
+{\ttfamily \#include \char`\"{}../primitives.\-h\char`\"{}}\*
+{\ttfamily \#include \char`\"{}skybox.\-h\char`\"{}}\*
+{\ttfamily \#include \char`\"{}../ui/\-Error.\-h\char`\"{}}\*
+{\ttfamily \#include \char`\"{}../uniformbuffer.\-h\char`\"{}}\*
+{\ttfamily \#include \char`\"{}../shapes/quad.\-h\char`\"{}}\*
+{\ttfamily \#include \char`\"{}../player.\-h\char`\"{}}\*
+{\ttfamily \#include \char`\"{}../textures.\-h\char`\"{}}\*
+
+
+\subsection{\-Detailed \-Description}
+vertex\-Shader\-Source is the vertex shader for the skybox \hyperlink{}{vertex shader will only draw two triangles, limited to the part of the screen that can be affected. \-The vertex input is 0,0 in one corner and 1,1 in the other. \-Draw the quad at z -\/1, with x and y going from -\/1 to 1 (and then transformed with the model matrix).  todo 2. }

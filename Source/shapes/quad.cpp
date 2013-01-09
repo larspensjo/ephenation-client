@@ -31,7 +31,11 @@ struct vertex {
 	float v[2];
 };
 
-// A square defined as two triangles.
+// =====================================================
+/**
+ * @brief Every quad defined as two triangles
+ */
+// =====================================================
 static const vertex vertexData[] = {
 	{{  1,  1 }},
 	{{  0,  0 }},

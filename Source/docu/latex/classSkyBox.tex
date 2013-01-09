@@ -1,0 +1,61 @@
+\hypertarget{classSkyBox}{\section{\-Sky\-Box \-Class \-Reference}
+\label{classSkyBox}\index{\-Sky\-Box@{\-Sky\-Box}}
+}
+
+
+\-Implementation of the \-Skybox used in \-Ephenation.  
+
+
+
+
+{\ttfamily \#include $<$skybox.\-h$>$}
+
+\-Inheritance diagram for \-Sky\-Box\-:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{classSkyBox}
+\end{center}
+\end{figure}
+\subsection*{\-Public \-Member \-Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classSkyBox_a250406233a0f644319952fa693bd5b80}{void \hyperlink{classSkyBox_a250406233a0f644319952fa693bd5b80}{\-Init} ()}\label{classSkyBox_a250406233a0f644319952fa693bd5b80}
+
+\begin{DoxyCompactList}\small\item\em \-Initialisation for \-Skybox shaders. \end{DoxyCompactList}\item 
+void \hyperlink{classSkyBox_ab9db46f2e34683cae517ba97a44aee9e}{\-Draw} ()
+\begin{DoxyCompactList}\small\item\em \-This is the \-Draw method for the \-Skybox. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{\-Detailed \-Description}
+\-Implementation of the \-Skybox used in \-Ephenation. 
+
+\-Vertex \-Shader\-: \-This vertex shader will only draw two triangles, limited to the part of the screen that can be affected.\-The vertex input is 0,0 in one corner and 1,1 in the other. \-Draw the quad at z -\/1, with x and y going from -\/1 to 1(and then transformed with the model matrix).
+
+\char`\"{}pos\char`\"{} is the eye space coordinate of the vertices. \char`\"{}position\char`\"{} is the eye space value, multiplied by a large number. \-Done so that a large value is stored in the \-G-\/\-Buffer. \begin{DoxyRefDesc}{\-Todo}
+\item[\hyperlink{todo__todo000004}{\-Todo}]\-: explain above better.\end{DoxyRefDesc}
+
+
+\-Fragment \-Shader\-: \-Output to the \-G-\/\-Buffer 
+
+\subsection{\-Member \-Function \-Documentation}
+\hypertarget{classSkyBox_ab9db46f2e34683cae517ba97a44aee9e}{\index{\-Sky\-Box@{\-Sky\-Box}!\-Draw@{\-Draw}}
+\index{\-Draw@{\-Draw}!SkyBox@{\-Sky\-Box}}
+\subsubsection[{\-Draw}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf \-Sky\-Box\-::\-Draw} (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}}\label{classSkyBox_ab9db46f2e34683cae517ba97a44aee9e}
+
+
+\-This is the \-Draw method for the \-Skybox. 
+
+\-The skybox is created using 4 quads, each going from -\/1.\-0 to 1.\-0. \-The quads are rotated and a box is formed. \-The model transformations(the four rotations) are done on the \-C\-P\-U as shown below. \-The view transform is then applied within the shader.
+
+\begin{DoxyRefDesc}{\-Todo}
+\item[\hyperlink{todo__todo000003}{\-Todo}]\-Move the model transforms to shader? \end{DoxyRefDesc}
+
+
+\-The documentation for this class was generated from the following files\-:\begin{DoxyCompactItemize}
+\item 
+shaders/skybox.\-h\item 
+shaders/\hyperlink{skybox_8cpp}{skybox.\-cpp}\end{DoxyCompactItemize}

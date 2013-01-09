@@ -1,0 +1,73 @@
+\hypertarget{classShaderBase}{\section{\-Shader\-Base \-Class \-Reference}
+\label{classShaderBase}\index{\-Shader\-Base@{\-Shader\-Base}}
+}
+
+
+\-Matrices used \-Some general info about how matrices are used in \-Ephenation. \-The most important transformation matrices\-:  
+
+
+
+
+{\ttfamily \#include $<$shader.\-h$>$}
+
+\-Inheritance diagram for \-Shader\-Base\-:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=12.000000cm]{classShaderBase}
+\end{center}
+\end{figure}
+\subsection*{\-Public \-Member \-Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classShaderBase_a9dd2a538a1760b1b8744e2e0a8075d27}{void {\bfseries \-Init} (const char $\ast$debug, int vertex\-Shader\-Lines, const char $\ast$$\ast$vertex\-Shader\-Source, int fragment\-Shader\-Lines, const char $\ast$$\ast$fragment\-Shader\-Source)}\label{classShaderBase_a9dd2a538a1760b1b8744e2e0a8075d27}
+
+\item 
+\hypertarget{classShaderBase_a12ba43f4f4228bb1b759f53f9e0d9e38}{void {\bfseries \-Initglsw} (const char $\ast$debug, int vertex\-Shader\-Lines, const char $\ast$$\ast$vertex\-Shader\-Source, int fragment\-Shader\-Lines, const char $\ast$$\ast$fragment\-Shader\-Source)}\label{classShaderBase_a12ba43f4f4228bb1b759f53f9e0d9e38}
+
+\end{DoxyCompactItemize}
+\subsection*{\-Protected \-Member \-Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classShaderBase_a43c4aeb651eaa7d12ffa45c65cb86cc5}{\-G\-Luint {\bfseries \-Program} (void) const }\label{classShaderBase_a43c4aeb651eaa7d12ffa45c65cb86cc5}
+
+\item 
+\hypertarget{classShaderBase_abd2bd3d01dce1e25aa10d1f62216ee57}{virtual void {\bfseries \-Get\-Locations} (void)=0}\label{classShaderBase_abd2bd3d01dce1e25aa10d1f62216ee57}
+
+\item 
+\hypertarget{classShaderBase_aba35258b10e57c65fb07e3b134f1977e}{virtual void {\bfseries \-Pre\-Link\-Callback} (\-G\-Luint prg)}\label{classShaderBase_aba35258b10e57c65fb07e3b134f1977e}
+
+\item 
+\hypertarget{classShaderBase_a09935c4d278aaacbf0a0300e15ee8901}{\-G\-Lint {\bfseries \-Get\-Uniform\-Location} (const char $\ast$) const }\label{classShaderBase_a09935c4d278aaacbf0a0300e15ee8901}
+
+\item 
+\hypertarget{classShaderBase_a23ff68011100d7ccbf7beba7c898eed0}{\-G\-Lint {\bfseries \-Get\-Attrib\-Location} (const char $\ast$) const }\label{classShaderBase_a23ff68011100d7ccbf7beba7c898eed0}
+
+\item 
+\hypertarget{classShaderBase_a380d68d5caddef1507c81ea9ef83e173}{\-G\-Luint {\bfseries \-Get\-Uniform\-Block\-Index} (const char $\ast$) const }\label{classShaderBase_a380d68d5caddef1507c81ea9ef83e173}
+
+\end{DoxyCompactItemize}
+
+
+\subsection{\-Detailed \-Description}
+\-Matrices used \-Some general info about how matrices are used in \-Ephenation. \-The most important transformation matrices\-: 
+
+o \-Umodel\-Matrix o g\-View\-Matrix(in the shader\-: mat U\-B\-O\-View\-Matrix) o g\-Projection\-Matrix(in the shader\-: mat4 U\-B\-O\-Projection\-Matrix)
+
+\-In \-Ephenation, the \-Model and \-View matrices are maintained separately as opposed to say the general convention of concatenated \-Model\-View matrix typically used in \-Open\-G\-L.
+
+1) \-Umodel\-Matrix\-: \-The model matrix, used for the model transformations, i.\-e. from the model space of the individual \-Game elements like sky, player, etc. to the world space.
+
+2) \-U\-B\-O\-View\-Matrix\-:\-The \-View matrix, used to transform from the world space to the camera(or eye) space. \-In this space, the camera(or eye) is at the origin, facing negative \-Z.
+
+3) \-U\-B\-O\-Projection\-Matrix\-: \-The projection matrix.
+
+\begin{DoxyRefDesc}{\-Todo}
+\item[\hyperlink{todo__todo000001}{\-Todo}]use link, link from main page? \end{DoxyRefDesc}
+
+
+\-This is an abstract shader class. \-Inherit it to create new shader programs. 
+
+\-The documentation for this class was generated from the following files\-:\begin{DoxyCompactItemize}
+\item 
+shaders/shader.\-h\item 
+shaders/shader.\-cpp\end{DoxyCompactItemize}
