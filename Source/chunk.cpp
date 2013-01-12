@@ -404,19 +404,21 @@ void chunk::DrawObjects(StageOneShader *shader, int dx, int dy, int dz, bool for
 	if (forShadows)
 		return; // Skip the rest of the objects
 
+#define LIGHT_EFFECT_RADIUS 12
+
 	for (const auto &item : fChunkObject->fSpecialObject) {
 		float x = (float)item.x + dx*CHUNK_SIZE + 0.5f;
 		float y = (float)item.z + dz*CHUNK_SIZE;
 		float z = -(float)item.y - dy*CHUNK_SIZE - 0.5f;
 		switch (item.type) {
 		case BT_RedLight:
-			gLightSources.AddRed(x, y, z, 8);
+			gLightSources.AddRed(x, y, z, LIGHT_EFFECT_RADIUS);
 			break;
 		case BT_BlueLight:
-			gLightSources.AddBlue(x, y, z, 8);
+			gLightSources.AddBlue(x, y, z, LIGHT_EFFECT_RADIUS);
 			break;
 		case BT_GreenLight:
-			gLightSources.AddGreen(x, y, z, 8);
+			gLightSources.AddGreen(x, y, z, LIGHT_EFFECT_RADIUS);
 			break;
 		}
 	}

@@ -538,7 +538,7 @@ void RenderControl::drawColoredLights() const {
 	glBindTexture(GL_TEXTURE_2D, fPositionTexture);
 	glActiveTexture(GL_TEXTURE0); // Need to restore it or everything will break.
 	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glBlendFunc(GL_DST_COLOR, GL_ZERO); // Multiply the old color with a new factor
 	glDisable(GL_CULL_FACE);
 	glDepthMask(GL_FALSE);
 	glDisable(GL_DEPTH_TEST);

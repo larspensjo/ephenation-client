@@ -75,19 +75,20 @@ static const GLchar *fragmentShaderSource[] = {
 	"	if (worldPos.y - Upoint.y > 0.3 && Umode < 2) { discard; return; }"   // Don't draw shadow too high on the object itself.
 	"	float radius = Upoint.w;\n",                             // The maximum distance (radius of the shadow) is coded in the w channel
 	"	if (dist >= radius) {discard; return; }",                // Is the pixel near, below the player/monster?
-	"	float f;"
+	"	float f, upper, lower;"
+	"	if (Umode >= 2) {"
+	"		upper = 1.0 + (1.0 - dist/radius) * 0.8;"
+	"		lower = 1.0 - (upper-1.0)/2;"
+	"	}"
 	"	switch(Umode) {"
 	"	case 4:"
-	"		f = (1 - dist/radius)/2;\n",                         // 'f' goes from 0.09 to 1.0, depending on distance.
-	"		colorChange = vec4(0, 0, 1, f);"                     // Will be used as a multiplicative component, making center almost black.
+	"		colorChange = vec4(lower, lower, upper, 1);"
 	"		break;"
 	"	case 3:"
-	"		f = (1 - dist/radius)/2;\n",                         // 'f' goes from 0.09 to 1.0, depending on distance.
-	"		colorChange = vec4(0, 1, 0, f);"                     // Will be used as a multiplicative component, making center almost black.
+	"		colorChange = vec4(lower, upper, lower, 1);"
 	"		break;"
 	"	case 2:"
-	"		f = (1 - dist/radius)/2;\n",                         // 'f' goes from 0.09 to 1.0, depending on distance.
-	"		colorChange = vec4(1, 0, 0, f);"                     // Will be used as a multiplicative component, making center almost black.
+	"		colorChange = vec4(upper, lower, lower, 1);"
 	"		break;"
 	"	case 1:"
 	"		colorChange = vec4(1, 0, 0, 0.3);"                   // Shall be used as a blending component, adding a red marker at the feet of a monster.
