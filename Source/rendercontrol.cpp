@@ -243,8 +243,9 @@ void RenderControl::Draw(bool underWater, bool thirdPersonView, shared_ptr<const
 		drawPointShadows();
 	if (selectedObject)
 		drawSelection(selectedObject->GetPosition());
+	drawColoredLights();
 	if (!underWater)
-		drawLocalFog();
+		drawLocalFog(); // This should come late in the drawing process, as we don't want light effects added to fog
 	if (ui)
 		drawUI(ui);
 	if (showMap)
@@ -526,6 +527,46 @@ void RenderControl::drawSelection(const glm::vec3 &coord) {
 	glDepthMask(GL_TRUE);
 	glEnable(GL_CULL_FACE);
 	glDisable(GL_BLEND);
+}
+
+void RenderControl::drawColoredLights() const {
+	static TimeMeasure tm("Clrlght");
+	tm.Start();
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, fNormalsTexture);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, fPositionTexture);
+	glActiveTexture(GL_TEXTURE0); // Need to restore it or everything will break.
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glDisable(GL_CULL_FACE);
+	glDepthMask(GL_FALSE);
+	glDisable(GL_DEPTH_TEST);
+	glm::vec4 *list = gLightSources.GetList();
+	int count = gLightSources.GetCount();
+	for (int i=0; i < count; i++) {
+		// The 'w' component contains both the radius and the type of color.
+		int composite = int(list[i].w);
+		int radius = composite % 100;
+		int type = composite - radius;
+		list[i].w = radius; // Only radius shall be sent to the renderer.
+		switch (type) {
+		case LightSources::RedOffset:
+			fAddPointShadow->DrawRedLight(list[i]);
+			break;
+		case LightSources::GreenOffset:
+			fAddPointShadow->DrawGreenLight(list[i]);
+			break;
+		case LightSources::BlueOffset:
+			fAddPointShadow->DrawBlueLight(list[i]);
+			break;
+		}
+	}
+	glEnable(GL_DEPTH_TEST);
+	glDepthMask(GL_TRUE);
+	glEnable(GL_CULL_FACE);
+	glDisable(GL_BLEND);
+	tm.Stop();
 }
 
 void RenderControl::drawSkyBox(void) {

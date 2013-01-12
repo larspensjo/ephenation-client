@@ -17,14 +17,6 @@
 
 #pragma once
 
-//
-// A class to manage buffers and shaders for the various render passes.
-// The class is used for several stages:
-// 1. A Frame Buffer Object to use as a target for the first rendering.
-// 2. Call the functions that update the images in the FBO
-// 3. Project the final result to the screen.
-//
-
 #include <memory>
 // This is a kludge.
 // Sometimes, primitives.h will be included after FL.h, and FL.h will include fl_utf8.h that will define
@@ -47,6 +39,14 @@ class AddLocalFog;
 class AddSSAO;
 class MainUserInterface;
 
+/**
+ * @brief Manage buffers and shaders for the various render passes
+ *
+ * All drawing stages are controlled from this class. The main activities are:
+ * 1. A Frame Buffer Object to use as a target for the first rendering.
+ * 2. Call the functions that update the images in the FBO
+ * 3. Project the final result to the screen.
+ */
 class RenderControl {
 public:
 	RenderControl();
@@ -100,4 +100,5 @@ private:
 	void drawUI(MainUserInterface *ui);
 	void drawMap(int mapWidth);
 	void drawSSAO(void);
+	void drawColoredLights() const;
 };

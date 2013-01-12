@@ -17,29 +17,58 @@
 
 #pragma once
 
-//
-// This class encapsulates a shader that will add a local shadow beneath an object.
-// It is done by multiplying the float output with a factor approaching almost zero.
-// The same factor is used for all 3 channels (RGB).
-// The shader can also be used to create a red marker at the feet of a monster. This is
-// a similar mechanism, but blending with red is used instead.
-//
-
 #include "shader.h"
 
+/**
+ * @brief A shader that will add a local shadow or other lighting effects
+ *
+ * Proper blending mode has to be configured.
+ * It is done by multiplying the float output with a factor approaching almost zero.
+ * The same factor is used for all 3 channels (RGB).
+ * The shader can also be used to create a red marker at the feet of a monster or lighting effects.
+ * This is a similar mechanism, but blending with red is used instead.
+ */
 class AddPointShadow : public ShaderBase {
 public:
 	AddPointShadow();
 
 	void Init();
-	// point.xyz is the world cordinate, adn point.w is the strength of the shadow.
+
+	/** @brief Draw a dark circular point shadow at the feet of a monster.
+	 *  @param point.xyz The the world cordinate.
+	 *  @param point.w The radius of the shadow.
+	 *
+	 * The shadow will decrease with the distance.
+	 */
 	void DrawPointShadow(const glm::vec4 &point);
+
+	/** @brief Draw a red circular point shadow at the feet of a monster.
+	 *  @param point.xyz The the world cordinate.
+	 *  @param point.w The radius of the shadow.
+	 */
 	void DrawMonsterSelection(const glm::vec4 &point);
+
+	/** @brief Add a sphere of red light effect.
+	 *  @param point.xyz The the world cordinate.
+	 *  @param point.w The radius of the sphere.
+	 */
 	void DrawRedLight(const glm::vec4 &point);
+
+	/** @brief Add a sphere of green light effect.
+	 *  @param point.xyz The the world cordinate.
+	 *  @param point.w The radius of the sphere.
+	 */
 	void DrawGreenLight(const glm::vec4 &point);
+
+	/** @brief Add a sphere of blue light effect.
+	 *  @param point.xyz The the world cordinate.
+	 *  @param point.w The radius of the sphere.
+	 */
 	void DrawBlueLight(const glm::vec4 &point);
 private:
-	// Callback that defines all uniform and attribute indices.
+
+	/** @brief Callback that defines all uniform and attribute indices.
+	 */
 	virtual void GetLocations(void);
 
 	GLint fPointIdx, fSelectionIdx;

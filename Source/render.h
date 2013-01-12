@@ -86,7 +86,6 @@ public:
 	void AddRed(float x, float y, float z, float radius);
 	void AddGreen(float x, float y, float z, float radius);
 	void AddBlue(float x, float y, float z, float radius);
-private:
 	// Add an offset to the radius, coded in the 4:th component, to identify what color it is
 	enum { RedOffset = 100, GreenOffset = 200, BlueOffset = 300 };
 };

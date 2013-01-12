@@ -109,7 +109,6 @@ void AddPointShadow::Init(void) {
 	const GLsizei vertexShaderLines = sizeof(vertexShaderSource) / sizeof(GLchar*);
 	const GLsizei fragmentShaderLines = sizeof(fragmentShaderSource) / sizeof(GLchar*);
 	ShaderBase::Init("DeferredLigting", vertexShaderLines, vertexShaderSource, fragmentShaderLines, fragmentShaderSource);
-	checkError("AddPointShadow::Init");
 }
 
 void AddPointShadow::GetLocations(void) {
@@ -118,8 +117,6 @@ void AddPointShadow::GetLocations(void) {
 
 	glUniform1i(this->GetUniformLocation("normalTex"), 2);
 	glUniform1i(this->GetUniformLocation("posTex"), 1);
-
-	checkError("AddPointShadow::GetLocations");
 }
 
 void AddPointShadow::DrawBlueLight(const glm::vec4 &pos) {
