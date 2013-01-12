@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -17,27 +17,50 @@
 
 #pragma once
 
-//
-// This is an abstract shader class. Inherit it to create new shader programs.
-//
-
+/**
+ * @class ShaderBase
+ * @brief An abstract shader class. Inherit it to create new shader programs.
+ */
 class ShaderBase {
 public:
 	ShaderBase();
 
-	// Initialize the shader program, and call back to setup uniform and attribute indices.
+	/**
+	 * @brief Initialize the shader program, and call back to setup uniform and attribute indices.
+	 */
 	void Init(const char *debug, int vertexShaderLines, const char **vertexShaderSource, int fragmentShaderLines, const char **fragmentShaderSource);
 
-	// Same as Init(), but process all lines with the glsw shader wrangler.
+	/**
+	 * @brief Same as Init(), but process all lines with the glsw shader wrangler.
+	 */
 	void Initglsw(const char *debug, int vertexShaderLines, const char **vertexShaderSource, int fragmentShaderLines, const char **fragmentShaderSource);
 protected:
 	GLuint Program(void) const { return this->fProgram; }
-	// Define all uniform and attribute indices. This function must be overridden.
-	virtual void GetLocations(void) = 0; // Every support class must override this
-	virtual void PreLinkCallback(GLuint prg) {};  // A callback called before linkage, that can optionally be overrided
-	GLint GetUniformLocation(const char *) const;
-	GLint GetAttribLocation(const char *) const;
-	GLuint GetUniformBlockIndex(const char *) const;
+
+	/**
+	 * @brief Define all uniform and attribute indices. This function must always be overridden.
+	 */
+	virtual void GetLocations(void) = 0;
+
+	/**
+	 * @brief A callback called before linkage, that can optionally be overrided.
+	 */
+	virtual void PreLinkCallback(GLuint prg) {};
+
+	/**
+	 * @brief A helper function for uniform locations
+	 * @param name Name of a uniform
+	 * @return Location in the shader program
+	 */
+	GLint GetUniformLocation(const char *name) const;
+
+	/**
+	 * @brief A helper function for attrib locations
+	 * @param name Name of a attribute
+	 * @return Index of the generic vertex attribute
+	 */
+	GLint GetAttribLocation(const char *name) const;
+	GLuint GetUniformBlockIndex(const char *name) const;
 private:
 	GLuint fProgram;
 

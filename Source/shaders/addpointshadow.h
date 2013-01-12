@@ -73,11 +73,13 @@ private:
 
 	GLint fPointIdx, fSelectionIdx;
 
-	// Save the mode used for the shader.
-	// 0: Point shadow
-	// 1: Monster selection marker
-	// 2: General red light blended
-	// 3: General green light blended
-	// 4: General blue light blended
+	/**
+	 * @brief Save the mode used for the shader.
+	 * 0: Point shadow
+	 * 1: Monster selection marker
+	 * 2: General red light blended
+	 * 3: General green light blended
+	 * 4: General blue light blended
+	 */
 	int fPreviousMode;
 };

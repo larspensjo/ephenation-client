@@ -1,0 +1,7 @@
+/**
+ * @mainpage Main page documentation
+ * This is the client side of Ephenation.
+ * To run this client, a server is needed. There is a public instance, see http://www.ephenation.net.
+ * The source code can be found at https://github.com/larspensjo/ephenation-client.
+ * There is a wiki at https://github.com/larspensjo/ephenation-client/wiki.
+ */
