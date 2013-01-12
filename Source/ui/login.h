@@ -26,10 +26,15 @@
 
 namespace Rocket {
 	namespace Core {
-		class Element;
+		class Element; // Forward declaration
+		class ElementDocument;
 	}
 };
 
+/**
+ * @class LoginDialog
+ * @brief Manage the login dialog
+ */
 class LoginDialog : public BaseDialog {
 public:
 
@@ -37,6 +42,8 @@ protected:
 	virtual void UseDocument(Rocket::Core::ElementDocument *);
 	virtual void FormEvent(Rocket::Core::Event& event, const string &action);
 private:
-	// Update inputs of a specific element (if there are any).
+	/**
+	 * @brief Update inputs of a specific element (if there are any).
+	 */
 	void UpdateInput(Rocket::Core::Element *);
 };

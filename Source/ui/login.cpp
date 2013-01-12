@@ -23,6 +23,7 @@
 #include "../Options.h"
 #include "../connection.h"
 #include "../gamedialog.h"
+#include "../parse.h"
 
 #define NELEM(x) (sizeof(x) / sizeof (x[0]))
 
@@ -61,6 +62,8 @@ void LoginDialog::UpdateInput(Rocket::Core::Element *e) {
 				ss << "<p style=\"color:red;\">New client version available: " << gClientAvailMajor << "." << gClientAvailMinor << "</p>";
 			else
 				ss << "Client version: " << gClientAvailMajor << "." << gClientAvailMinor;
+			if (gParseMessageAtLogin != "")
+				ss << "<br /><p style=\"color:red;\">" << gParseMessageAtLogin << "</p>";
 			e->SetInnerRML(ss.str().c_str());
 		}
 	}

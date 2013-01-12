@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -221,22 +221,21 @@ static void LoginMessage(const char *id) {
 	SendMsg(b, totLength);
 }
 
-unsigned char *gLoginChallenge = 0;
-int gLoginChallengeLength = 0;
+std::vector<unsigned char> gLoginChallenge;
 
 static void Password(const char *pass, const char *key) {
-	int keylen = strlen(key);
-	int passlen = strlen(pass);
+	size_t keylen = strlen(key);
+	size_t passlen = strlen(pass);
 	// Create a new key, which is the XOR of the "key" and the challenge that
 	// was received from the server. If the vectors are of unequal length,
 	// the end is padded with values from the longest.
-	int newLength = keylen;
-	if (gLoginChallengeLength > newLength)
-		newLength = gLoginChallengeLength;
+	size_t newLength = keylen;
+	if (gLoginChallenge.size() > newLength)
+		newLength = gLoginChallenge.size();
 	unsigned char newkey[newLength];
-	for (int i=0; i<newLength; i++) newkey[i] = 0;
-	for (int i=0; i<keylen; i++) newkey[i] = key[i];
-	for (int i=0; i<gLoginChallengeLength; i++) newkey[i] ^= gLoginChallenge[i];
+	for (size_t i=0; i<newLength; i++) newkey[i] = 0;
+	for (size_t i=0; i<keylen; i++) newkey[i] = key[i];
+	for (size_t i=0; i<gLoginChallenge.size(); i++) newkey[i] ^= gLoginChallenge[i];
 #if 0
 	printf("Password: Key (len %d): ", newLength);
 	for (int i=0; i<newLength; i++) printf("%d ", newkey[i]);

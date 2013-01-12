@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -15,18 +15,49 @@
 // along with Ephenation.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+/**
+ * @file parse
+ * @brief Manage parsing of the communication protocol
+ * @todo Old inheritance from C, should be managed with a class
+ */
+
+#include <string>
+#include <vector>
+
+/**
+ * @brief Parse a message from the server
+ */
 void Parse(const unsigned char *, int);
 
-// Parse a 16-bit unsigned from two bytes. LSB first.
+/**
+ * @brief Parse a 16-bit unsigned from two bytes. LSB first.
+ */
 unsigned short Parseuint16(const unsigned char *);
 
-// Encode a 32 bit unsigned number as 4 bytes, LSB first.
+/**
+ * @brief Encode a 32 bit unsigned number as 4 bytes, LSB first.
+ */
 void EncodeUint32(unsigned char *b, unsigned int val);
+
+/**
+ * @brief Encode a 16 bit unsigned number as 4 bytes, LSB first.
+ */
 void EncodeUint16(unsigned char *b, unsigned short val);
-// Encode a 64 bit unsigned number as 5 bytes, LSB first.
+
+/**
+ * @brief Encode a 64 bit unsigned number as 5 bytes, LSB first.
+ */
 void EncodeUint40(unsigned char *b, unsigned long long val);
 
 void DumpBytes(const unsigned char *b, int n);
 
-extern unsigned char *gLoginChallenge; // Used for the key in the encryption
-extern int gLoginChallengeLength;
+/**
+ * @brief Used for the key in the encryption
+ */
+extern std::vector<unsigned char> gLoginChallenge;
+
+/**
+ * @brief The parser may save a message to be displayed at login.
+ * This is typically used for information about mismatch in protocols, etc.
+ */
+extern std::string gParseMessageAtLogin;
