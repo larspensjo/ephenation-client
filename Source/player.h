@@ -38,6 +38,7 @@ public:
 	float fAngleVert;
 	bool loginOk;
 	bool fStatsAvailable; // True when player stats are available.
+	bool fTestPlayer; // Running as a test player, not logged in.
 	float fHp; // Hit points, going from 0-1
 	float fPreviousHp; // The Previous HP, used to display delta.
 	float fExp; // Experience points, going from 0-1
@@ -60,7 +61,7 @@ public:
 
 	player() {
 		fHp = 1.0f; fPreviousHp = 1.0f; fMana = 1.0f; fWeaponType = 0; fWeaponLevel = 0; fArmorType = 0; fArmorLevel = 0;
-		fHelmetLevel = 0; fHelmetType = 0;
+		fHelmetLevel = 0; fHelmetType = 0; fTestPlayer = 0;
 	}
 
 	// Functions needed to fulfill the Object interface

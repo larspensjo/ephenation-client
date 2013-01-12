@@ -412,9 +412,11 @@ int main(int argc, char** argv) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
 	glfwSwapBuffers();
 
+	if (sTestUser)
+		gPlayer.fTestPlayer = true;
+
 	// Last thing before starting the game, update the save copy of the options.
 	Options::sfSave = gOptions;
-	// double prevTime = 0.0;
 	while(glfwGetWindowParam(GLFW_OPENED)) {
 		while (ListenForServerMessages())
 			continue;
