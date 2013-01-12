@@ -68,7 +68,7 @@
 #define CMD_TELEPORT          46 // Teleport the player to the specified chunk
 
 #define PROT_VER_MAJOR 5 // What major version of the protocol is supported
-#define PROT_VER_MINOR 1 // What minor version of the protocol is supported
+#define PROT_VER_MINOR 2 // What minor version of the protocol is supported
 
 // These are the types used by CMD_OBJECT_LIST
 #define ObjTypePlayer 			0
