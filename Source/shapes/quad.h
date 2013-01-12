@@ -17,17 +17,35 @@
 
 #pragma once
 
-//
-// A very minimal shape, drawing a quad from 0 to 1 in x and y.
-//
-
+// =====================================================
+/**
+ * @class Quad
+ *
+ * @brief
+ *  A very minimal shape, drawing a quad from 0 to 1 in x and y.
+ *  A simple quad drawn using VAO and VBO
+ */
+ // =====================================================
 class Quad {
 public:
 	Quad();
 	~Quad();
+
+        // =====================================================
+        /**
+         * @brief The draw routine
+         */
+        // =====================================================
 	void Draw(void);
 private:
-	void Init(); // Managed internally
+
+        // =====================================================
+        /**
+         * @brief Creation of the VAO and VBO
+         * @param void
+         */
+        // =====================================================
+	void Init();
 	GLuint fBufferId, fVao;
 };
 

@@ -17,12 +17,28 @@
 
 #pragma once
 
-//
-// This class encapsulates a shader that will add lighting from a point light.
-//
-
 #include "shader.h"
 
+// ==========================================================================================================
+/**
+ * @class SkyBox
+ *
+ * @brief Implementation of the Skybox used in Ephenation.
+ *
+ * Vertex Shader:
+ *      This vertex shader will only draw two triangles, limited to the part of the screen that
+ * can be affected.The vertex input is 0,0 in one corner and 1,1 in the other.
+ * Draw the quad at z -1, with x and y going from -1 to 1(and then transformed with the model matrix).
+ *
+ * "pos" is the eye space coordinate of the vertices.
+ * "position" is the eye space value, multiplied by a large number. Done so that a large value  is
+ *  stored in the G-Buffer.
+ * @todo: explain above better.
+ *
+ * Fragment Shader:
+ *      Output to the G-Buffer
+ */
+ // ==========================================================================================================
 class SkyBox : public ShaderBase {
 public:
 	SkyBox();
