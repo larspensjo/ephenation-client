@@ -377,7 +377,7 @@ bool ChunkBlocks::blockIsSemiTransp(unsigned char bl) {
 
 bool ChunkBlocks::blockIsComplTransp(unsigned char bl) const {
 	bool owner = true;
-	if (this->fOwner != gPlayer.GetId() && gPlayer.fAdmin == 0)
+	if (this->fOwner != gPlayer.GetId() && gPlayer.fAdmin == 0 && !gPlayer.fTestPlayer)
 		owner = false;
 	if (owner && gMode.Get() == GameMode::CONSTRUCT && bl != BT_Air)
 		return false;
