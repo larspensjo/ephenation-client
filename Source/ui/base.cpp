@@ -34,6 +34,8 @@
 using std::string;
 using std::stringstream;
 
+std::deque<BaseDialog::PushedDialog> BaseDialog::fStack;
+
 struct BaseDialog::PushedDialog {
 	Rocket::Core::ElementDocument *fDocument;
 	Rocket::Core::Element *fDefaultButton;

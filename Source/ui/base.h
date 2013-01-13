@@ -23,59 +23,89 @@
 #include <map>
 #include <functional>
 
-// A common base class for libRocket dialogs.
-// The actual dialog content is defined in external files in dialogs/*.rml (Rocket Markup Language),
-// in a format similar to html.
 #include <Rocket/Core.h>
 
 using std::string;
 class ChunkCoord;
 
-// Inherit from Rocket::Core::EventListener to make it possible to register class for Rocket event callbacks.
+/**
+ * @brief A common base class for libRocket dialogs
+ *
+ * The actual dialog content is defined in external files in dialogs/ *.rml (Rocket Markup Language),
+ * in a format similar to html.
+ * Inherit from Rocket::Core::EventListener to make it possible to register class for Rocket event callbacks.
+ * There is a stack of documents, to able to have more than one active document at the same time. Though
+ * only the document at the top of the stack will be shown. The stack has to be common between all
+ * managers inheriting from this class, which is why it is declared as static.
+ */
 class BaseDialog : public Rocket::Core::EventListener {
 public:
-	// Define a handler name to use for registering in the factory
 	BaseDialog();
 	~BaseDialog();
 
-	// Define what Rocket context shall be used for the documents. TODO: Should use a private context, instead of a copy of a global one.
+	/**
+	 * @brief Define what Rocket context shall be used for the documents.
+	 * @todo Should use a private context, instead of a copy of a global one.
+	 */
 	void Init(Rocket::Core::Context *context);
 
-	// Generate a click event on the default button
+	/**
+	 * @brief Generate a click event on the default button
+	 */
 	void DefaultButton(void);
 
-	// Generate a click on the Cancel or Close button
+	/**
+	 * @brief Generate a click on the Cancel or Close button
+	 */
 	void CancelButton(void);
 
-	// Use the specified document.
-	// The function has to be overrided to add proper event listeners.
+	/**
+	 * @brief Use the specified libRocket document
+	 * The function has to be overrided to add proper event listeners.
+	 */
 	virtual void UseDocument(Rocket::Core::ElementDocument *) = 0;
 protected:
-	// When the document is a form, remember what input parameters are used
-	// and what values they are mapped to.
+	/**
+	 * @brief When the document is a form, remember what input parameters are used and what values they are mapped to
+	 */
 	std::map<string, string> fFormResultValues;
 
-	Rocket::Core::ElementDocument *fDocument; // The currently active document, if any
+	/**
+	 * @brief The currently active document, if any
+	 */
+	Rocket::Core::ElementDocument *fDocument;
 
-	// Process the submit event on a form. Override this function if event is expected, but call this function first.
+	/**
+	 * @brief Process the submit event on a form. Override this function if event is expected, but call this function first.
+	 */
 	virtual void FormEvent(Rocket::Core::Event& event, const string &action);
 
-	// Process the click event on a document.
-	// Return true if the event was consumed.
-	// Override this function as needed, but call this first.
+	/**
+	 * @brief Process the click event on a document.
+	 * @return true if the event was consumed.
+	 * Override this function as needed, but call this first.
+	 */
 	virtual bool ClickEvent(Rocket::Core::Event& event, const string &action);
 
-	// Push the current dialog.
+	/**
+	 * @brief Push the current dialog.
+	 */
 	void Push(void);
 
-	// Pop back the previous dialog. Return true if there is still an active document
+	/**
+	 * @brief Pop back the previous dialog.
+	 * @return true if there is still an active document
+	 */
 	bool Pop(void);
 
-	// Walk through the tree and upate all nodes.
+	/**
+	 * @brief Walk through the tree and upate all nodes.
+	 */
 	void Treewalk(Rocket::Core::Element *, std::function<void(Rocket::Core::Element *)>);
 
-	// Find default buttons, and save them to make it possible to
-	// dispatch events.
+	/**
+	 * @brief Find default buttons, and save them to make it possible to dispatch events.
+	 */
 	void DetectDefaultButton(Rocket::Core::Element *);
 
 private:
@@ -83,11 +113,19 @@ private:
 	Rocket::Core::Element *fCurrentDefaultButton, *fCurrentCloseButton;
 
 	struct PushedDialog;
-	std::deque<PushedDialog> fStack; // Need a stack to push multiple simultaneous dialogs.
+	/**
+	 * @brief Need a stack to push multiple simultaneous dialogs.
+	 * See further explanation in the class of the rational behind and use for this stack.
+	 */
+	static std::deque<PushedDialog> fStack;
 
-	// Process all registered events from the current dialog.
+	/**
+	 * @brief Process all registered events from the current dialog.
+	 */
 	virtual void ProcessEvent(Rocket::Core::Event& event);
 
-	// Close the current document and free resources.
+	/**
+	 * @brief Close the current document and free resources.
+	 */
 	void CloseCurrentDocument(void);
 };
