@@ -71,11 +71,6 @@ protected:
 	std::map<string, string> fFormResultValues;
 
 	/**
-	 * @brief The currently active document, if any
-	 */
-	Rocket::Core::ElementDocument *fDocument;
-
-	/**
 	 * @brief Process the submit event on a form. Override this function if event is expected, but call this function first.
 	 */
 	virtual void FormEvent(Rocket::Core::Event& event, const string &action);
@@ -90,25 +85,41 @@ protected:
 	/**
 	 * @brief Push the current dialog.
 	 */
-	void Push(void);
+	void Push(Rocket::Core::ElementDocument *);
 
 	/**
 	 * @brief Pop back the previous dialog.
 	 * @return true if there is still an active document
 	 */
-	bool Pop(void);
+	bool Pop();
 
 	/**
 	 * @brief Walk through the tree and upate all nodes.
 	 */
 	void Treewalk(Rocket::Core::Element *, std::function<void(Rocket::Core::Element *)>);
 
+	// Start a treewalk on the current document.
+	void Treewalk(std::function<void(Rocket::Core::Element *)>);
+
 	/**
 	 * @brief Find default buttons, and save them to make it possible to dispatch events.
 	 */
 	void DetectDefaultButton(Rocket::Core::Element *);
 
+	/// Adds an event listener to this dialog manager.
+	/// @param event Event to attach to.
+	/// @param listener The listener object to be attached.
+	void AddEventListener(const Rocket::Core::String& event, BaseDialog* listener);
+
+	/// Show the current document
+	void Show();
+
 private:
+	/**
+	 * @brief The currently active document, if any
+	 */
+	Rocket::Core::ElementDocument *fDocument;
+
 	Rocket::Core::Context *fRocketContext; // Remember the Rocket context.
 	Rocket::Core::Element *fCurrentDefaultButton, *fCurrentCloseButton;
 

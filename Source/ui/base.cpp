@@ -94,13 +94,13 @@ bool BaseDialog::ClickEvent(Rocket::Core::Event& event, const string &action) {
 		return true;
 	} else if (split[0] == "Popup" && split.size() == 2) {
 		gDialogFactory.Make(fRocketContext, split[1]);
-		this->Push();
+		this->Push(0);
 		fDocument = fRocketContext->LoadDocument(("dialogs/" + split[1]).c_str());
 		fDocument->AddEventListener("click", this);
 		this->Treewalk(fDocument, [this](Rocket::Core::Element *e) {this->DetectDefaultButton(e); });
 		fDocument->Show();
 	} else if (split[0] == "Form" && split.size() == 2) {
-		this->Push();
+		this->Push(0);
 		// this->LoadForm(split[1]);
 	} else if (action == "Quit") {
 		// Pop all saved documents, if any.
@@ -142,11 +142,11 @@ void BaseDialog::CloseCurrentDocument(void) {
 	fDocument = 0;
 }
 
-void BaseDialog::Push() {
+void BaseDialog::Push(Rocket::Core::ElementDocument *doc) {
 	if (fDocument)
 		fDocument->Hide();
 	fStack.push_back(DialogState(fDocument, fCurrentDefaultButton, fCurrentCloseButton, this, fRocketContext));
-	fDocument = 0;
+	fDocument = doc;
 	fCurrentCloseButton = 0;
 	fCurrentDefaultButton = 0;
 }
@@ -163,6 +163,14 @@ bool BaseDialog::Pop(void) {
 		return true;
 	}
 	return false;
+}
+
+void BaseDialog::Show() {
+	fDocument->Show();
+}
+
+void BaseDialog::Treewalk(std::function<void(Rocket::Core::Element *)> func) {
+	this->Treewalk(fDocument, func);
 }
 
 void BaseDialog::Treewalk(Rocket::Core::Element *e, std::function<void(Rocket::Core::Element *)> func) {
@@ -182,6 +190,10 @@ void BaseDialog::DetectDefaultButton(Rocket::Core::Element *e) {
 		fCurrentDefaultButton = e;
 	if (cancelkey == "true")
 		fCurrentCloseButton = e;
+}
+
+void BaseDialog::AddEventListener(const Rocket::Core::String& event, BaseDialog* listener) {
+	fDocument->AddEventListener(event, listener);
 }
 
 void BaseDialog::CancelButton(void) {

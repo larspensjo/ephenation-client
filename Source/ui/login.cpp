@@ -28,14 +28,13 @@
 #define NELEM(x) (sizeof(x) / sizeof (x[0]))
 
 void LoginDialog::UseDocument(Rocket::Core::ElementDocument *doc) {
-	this->Push(); // Allways push the previous document first
-	fDocument = doc;
+	this->Push(doc); // Allways push the previous document first
 	fFormResultValues.clear(); // Restart with an empty list
-	this->Treewalk(fDocument, [this](Rocket::Core::Element *e){ this->UpdateInput(e);} ); // Fill default parameters in the document
-	this->Treewalk(fDocument, [this](Rocket::Core::Element *e) {this->DetectDefaultButton(e); }); // This can be done by the local callback
-	fDocument->AddEventListener("click", this);
-	fDocument->AddEventListener("submit", this);
-	fDocument->Show();
+	this->Treewalk([this](Rocket::Core::Element *e){ this->UpdateInput(e);} ); // Fill default parameters in the document
+	this->Treewalk([this](Rocket::Core::Element *e) {this->DetectDefaultButton(e); }); // This can be done by the local callback
+	this->AddEventListener("click", this);
+	this->AddEventListener("submit", this);
+	this->Show();
 }
 
 void LoginDialog::UpdateInput(Rocket::Core::Element *e) {
