@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -25,6 +25,7 @@
 #include "../uniformbuffer.h"
 #include "../ui/Error.h"
 
+/// Using GLSW to define shader
 static const GLchar *vertexShaderSource[] = {
 	"#version 330\n", // This corresponds to OpenGL 3.3
 	"common.UniformBuffer",
@@ -34,6 +35,7 @@ static const GLchar *vertexShaderSource[] = {
 	"chunkshader.Vertex"
 };
 
+/// Using GLSW to define shader
 static const GLchar *fragmentShaderSource[] = {
 	"#version 330\n", // This corresponds to OpenGL 3.3
 	"common.UniformBuffer",

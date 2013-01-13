@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -28,13 +28,15 @@
 #include "../shadowconfig.h"
 #include "../shapes/quad.h"
 
-// This vertex shader will only draw two triangles, giving a full screen.
-// The vertex input is 0,0 in one corner and 1,1 in the other.
+/// This vertex shader will only draw two triangles, giving a full screen.
+/// The vertex input is 0,0 in one corner and 1,1 in the other.
+/// Using GLSW to define shader
 static const GLchar *vertexShaderSource[] = {
 	"#version 330\n", // This corresponds to OpenGL 3.3
 	"deferredlighting.Vertex"
 };
 
+/// Using GLSW to define shader
 static const GLchar *fragmentShaderSource[] = {
 	"#version 330\n", // This corresponds to OpenGL 3.3
 	"common.UniformBuffer",

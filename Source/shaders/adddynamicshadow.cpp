@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -29,11 +29,13 @@
 #include "../shapes/quad.h"
 #include "../contrib/glsw.h"
 
+/// Using GLSW to define shader
 static const GLchar *vertexShaderSource[] = {
 	"#version 330\n",
 	"dynamicshadow.Vertex"
 };
 
+/// Using GLSW to define shader
 static const GLchar *fragmentShaderSource[] = {
 	"#version 330\n",
 	"common.UniformBuffer",
