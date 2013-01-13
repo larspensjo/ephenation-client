@@ -41,32 +41,17 @@ struct BaseDialog::DialogState {
 	Rocket::Core::Element *fDefaultButton;
 	Rocket::Core::Element *fCancelButton;
 	BaseDialog *fBaseDialog;
-	Rocket::Core::Context *fContext;
 
-	DialogState(Rocket::Core::ElementDocument *document, Rocket::Core::Element *enter, Rocket::Core::Element *close, BaseDialog *theBaseDialog, Rocket::Core::Context *theContext) {
+	DialogState(Rocket::Core::ElementDocument *document, BaseDialog *theBaseDialog) {
 		fDocument = document;
-		fDefaultButton = enter;
-		fCancelButton = close;
+		fDefaultButton = 0;
+		fCancelButton = 0;
 		fBaseDialog = theBaseDialog;
-		fContext = theContext;
 	}
 };
 
-BaseDialog::BaseDialog() : fDocument(0), fRocketContext(0), fCurrentDefaultButton(0),
-	fCurrentCloseButton(0)
-{
-}
-
 BaseDialog::~BaseDialog() {
-	if (fDocument)
-		fDocument->RemoveReference();
-	if (fRocketContext)
-		fRocketContext->RemoveReference();
-}
-
-void BaseDialog::Init(Rocket::Core::Context *context) {
-	fRocketContext = context;
-	fRocketContext->AddReference(); // This way, it will not be deallocated until we are done with it.
+	ASSERT(fStack.size() == 0);
 }
 
 // This event callback is generated automatically from libRocket.
@@ -87,21 +72,16 @@ void BaseDialog::ProcessEvent(Rocket::Core::Event& event) {
 }
 
 bool BaseDialog::ClickEvent(Rocket::Core::Event& event, const string &action) {
+	ASSERT(fStack.size() > 0);
 	Splitter split(action, " ");
 	if (action == "Close") {
 		if (!this->Pop())
 			gGameDialog.ClearInputRedirect();
 		return true;
 	} else if (split[0] == "Popup" && split.size() == 2) {
-		gDialogFactory.Make(fRocketContext, split[1]);
-		this->Push(0);
-		fDocument = fRocketContext->LoadDocument(("dialogs/" + split[1]).c_str());
-		fDocument->AddEventListener("click", this);
-		this->Treewalk(fDocument, [this](Rocket::Core::Element *e) {this->DetectDefaultButton(e); });
-		fDocument->Show();
+		gDialogFactory.Make(fStack.back().fDocument->GetContext(), split[1]);
 	} else if (split[0] == "Form" && split.size() == 2) {
-		this->Push(0);
-		// this->LoadForm(split[1]);
+		gDialogFactory.Make(fStack.back().fDocument->GetContext(), split[1]);
 	} else if (action == "Quit") {
 		// Pop all saved documents, if any.
 		while(this->Pop())
@@ -133,44 +113,34 @@ void BaseDialog::FormEvent(Rocket::Core::Event& event, const string &action) {
 	// The resulting list in fFormResultValues now contains all the requested values.
 }
 
-void BaseDialog::CloseCurrentDocument(void) {
-	// Don't know why, but need to remove listeners or there will be spurious events even after document has been deallocated.
-	fDocument->RemoveEventListener("click", this);
-	fDocument->RemoveEventListener("submit", this);
-	fDocument->Hide();
-	fDocument->RemoveReference();
-	fDocument = 0;
-}
-
 void BaseDialog::Push(Rocket::Core::ElementDocument *doc) {
-	if (fDocument)
-		fDocument->Hide();
-	fStack.push_back(DialogState(fDocument, fCurrentDefaultButton, fCurrentCloseButton, this, fRocketContext));
-	fDocument = doc;
-	fCurrentCloseButton = 0;
-	fCurrentDefaultButton = 0;
+	if (fStack.size() > 0)
+		fStack.back().fDocument->Hide();
+	fStack.push_back(DialogState(doc, this));
 }
 
 bool BaseDialog::Pop(void) {
-	this->CloseCurrentDocument();
 	ASSERT (fStack.size() > 0);
-	fDocument = fStack.back().fDocument;
-	fCurrentDefaultButton = fStack.back().fDefaultButton;
-	fCurrentCloseButton = fStack.back().fCancelButton;
+	auto doc = fStack.back().fDocument;
+	// Don't know why, but need to remove listeners or there will be spurious events even after document has been deallocated.
+	doc->RemoveEventListener("click", this);
+	doc->RemoveEventListener("submit", this);
+	doc->Hide();
+	doc->RemoveReference();
 	fStack.pop_back();
-	if (fDocument) {
-		fDocument->Show();
+	if (fStack.size() > 0) {
+		fStack.back().fDocument->Show();
 		return true;
 	}
 	return false;
 }
 
 void BaseDialog::Show() {
-	fDocument->Show();
+	fStack.back().fDocument->Show();
 }
 
 void BaseDialog::Treewalk(std::function<void(Rocket::Core::Element *)> func) {
-	this->Treewalk(fDocument, func);
+	this->Treewalk(fStack.back().fDocument, func);
 }
 
 void BaseDialog::Treewalk(Rocket::Core::Element *e, std::function<void(Rocket::Core::Element *)> func) {
@@ -183,29 +153,32 @@ void BaseDialog::Treewalk(Rocket::Core::Element *e, std::function<void(Rocket::C
 }
 
 void BaseDialog::DetectDefaultButton(Rocket::Core::Element *e) {
+	ASSERT(fStack.size() > 0);
 	Rocket::Core::String def = "false";
 	auto enterkey = e->GetAttribute("enterkey", def);
 	auto cancelkey = e->GetAttribute("cancelkey", def);
 	if (enterkey == "true")
-		fCurrentDefaultButton = e;
+		fStack.back().fDefaultButton = e;
 	if (cancelkey == "true")
-		fCurrentCloseButton = e;
+		fStack.back().fCancelButton = e;
 }
 
 void BaseDialog::AddEventListener(const Rocket::Core::String& event, BaseDialog* listener) {
-	fDocument->AddEventListener(event, listener);
+	fStack.back().fDocument->AddEventListener(event, listener);
 }
 
 void BaseDialog::CancelButton(void) {
-	if (!fCurrentCloseButton)
+	ASSERT(fStack.size() > 0);
+	if (!fStack.back().fCancelButton)
 		return;
 	Rocket::Core::Dictionary dic;
-	fCurrentCloseButton->DispatchEvent("click", dic);
+	fStack.back().fCancelButton->DispatchEvent("click", dic);
 }
 
 void BaseDialog::DefaultButton(void) {
-	if (!fCurrentDefaultButton)
+	ASSERT(fStack.size() > 0);
+	if (!fStack.back().fDefaultButton)
 		return;
 	Rocket::Core::Dictionary dic;
-	fCurrentDefaultButton->DispatchEvent("click", dic);
+	fStack.back().fDefaultButton->DispatchEvent("click", dic);
 }

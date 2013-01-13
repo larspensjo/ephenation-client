@@ -26,7 +26,6 @@
 #include <Rocket/Core.h>
 
 using std::string;
-class ChunkCoord;
 
 /**
  * @brief A common base class for libRocket dialogs
@@ -40,14 +39,7 @@ class ChunkCoord;
  */
 class BaseDialog : public Rocket::Core::EventListener {
 public:
-	BaseDialog();
-	~BaseDialog();
-
-	/**
-	 * @brief Define what Rocket context shall be used for the documents.
-	 * @todo Should use a private context, instead of a copy of a global one.
-	 */
-	void Init(Rocket::Core::Context *context);
+	virtual ~BaseDialog();
 
 	/**
 	 * @brief Generate a click event on the default button
@@ -82,10 +74,9 @@ protected:
 	 */
 	virtual bool ClickEvent(Rocket::Core::Event& event, const string &action);
 
-	/**
-	 * @brief Push the current dialog.
-	 */
-	void Push(Rocket::Core::ElementDocument *);
+	/// Push a new dialog to the top of the stack.
+	/// @param doc The new document.
+	void Push(Rocket::Core::ElementDocument *doc);
 
 	/**
 	 * @brief Pop back the previous dialog.
@@ -115,14 +106,6 @@ protected:
 	void Show();
 
 private:
-	/**
-	 * @brief The currently active document, if any
-	 */
-	Rocket::Core::ElementDocument *fDocument;
-
-	Rocket::Core::Context *fRocketContext; // Remember the Rocket context.
-	Rocket::Core::Element *fCurrentDefaultButton, *fCurrentCloseButton;
-
 	struct DialogState;
 	/**
 	 * @brief Need a stack to push multiple simultaneous dialogs.
@@ -134,9 +117,4 @@ private:
 	 * @brief Process all registered events from the current dialog.
 	 */
 	virtual void ProcessEvent(Rocket::Core::Event& event);
-
-	/**
-	 * @brief Close the current document and free resources.
-	 */
-	void CloseCurrentDocument(void);
 };
