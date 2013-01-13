@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -22,12 +22,14 @@
 #include "ColorShader.h"
 #include "../primitives.h"
 
-// Minimum program for drawing text
+/// Minimum program for drawing text
+/// Using GLSW to define shader
 static const GLchar *vertexShaderSource[] = {
 	"#version 330\n",
 	"colorshader.Vertex"
 };
 
+/// Using GLSW to define shader
 static const GLchar *fragmentShaderSource[] = {
 	"#version 330\n",
 	"colorshader.Fragment"

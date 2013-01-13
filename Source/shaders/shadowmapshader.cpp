@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -25,13 +25,13 @@
 #include "../uniformbuffer.h"
 #include "../shadowconfig.h"
 
-//
-// The shadowmap is based on coordinates that are transformed from infinite world to bitmap size.
-// The transformation equation is a*x/(b*x+1), which is similar to HDR. This gives a value from 0 to 'w' (bitmap size).
-// 'a' is the shadow resolution on near objects. That is, the number of pixels per block.
-// 'b' has to be set to 2a/w.
-// The formula below is based on a bitmap 128x128, which means w=128, and will scale automatically to bitmaps of other sizes.
+/// The shadowmap is based on coordinates that are transformed from infinite world to bitmap size.
+/// The transformation equation is a*x/(b*x+1), which is similar to HDR. This gives a value from 0 to 'w' (bitmap size).
+/// 'a' is the shadow resolution on near objects. That is, the number of pixels per block.
+/// 'b' has to be set to 2a/w.
+/// The formula below is based on a bitmap 128x128, which means w=128, and will scale automatically to bitmaps of other sizes.
 
+/// Using GLSW to define shader
 static const GLchar *vertexShaderSource[] = {
 	"#version 330\n", // This corresponds to OpenGL 3.3
 	"common.UniformBuffer",
@@ -41,8 +41,9 @@ static const GLchar *vertexShaderSource[] = {
 	"shadowmapshader.Vertex"
 };
 
-// Normally, the fragment shader wouldn't have to do anything, and it would still work. However, there are textures with
-// transparent areas, and these should not generate shadows. For example, the leaves on the trees are quads with leaves on.
+/// Normally, the fragment shader wouldn't have to do anything, and it would still work. However, there are textures with
+/// transparent areas, and these should not generate shadows. For example, the leaves on the trees are quads with leaves on.
+/// Using GLSW to define shader
 static const GLchar *fragmentShaderSource[] = {
 	"#version 330\n", // This corresponds to OpenGL 3.3
 	"shadowmapshader.Fragment"
