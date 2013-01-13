@@ -112,12 +112,12 @@ private:
 	Rocket::Core::Context *fRocketContext; // Remember the Rocket context.
 	Rocket::Core::Element *fCurrentDefaultButton, *fCurrentCloseButton;
 
-	struct PushedDialog;
+	struct DialogState;
 	/**
 	 * @brief Need a stack to push multiple simultaneous dialogs.
 	 * See further explanation in the class of the rational behind and use for this stack.
 	 */
-	static std::deque<PushedDialog> fStack;
+	static std::deque<DialogState> fStack;
 
 	/**
 	 * @brief Process all registered events from the current dialog.

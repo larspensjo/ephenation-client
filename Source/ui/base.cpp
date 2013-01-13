@@ -34,17 +34,21 @@
 using std::string;
 using std::stringstream;
 
-std::deque<BaseDialog::PushedDialog> BaseDialog::fStack;
+std::deque<BaseDialog::DialogState> BaseDialog::fStack;
 
-struct BaseDialog::PushedDialog {
+struct BaseDialog::DialogState {
 	Rocket::Core::ElementDocument *fDocument;
 	Rocket::Core::Element *fDefaultButton;
 	Rocket::Core::Element *fCancelButton;
+	BaseDialog *fBaseDialog;
+	Rocket::Core::Context *fContext;
 
-	PushedDialog(Rocket::Core::ElementDocument *document, Rocket::Core::Element *enter, Rocket::Core::Element *close) {
+	DialogState(Rocket::Core::ElementDocument *document, Rocket::Core::Element *enter, Rocket::Core::Element *close, BaseDialog *theBaseDialog, Rocket::Core::Context *theContext) {
 		fDocument = document;
 		fDefaultButton = enter;
 		fCancelButton = close;
+		fBaseDialog = theBaseDialog;
+		fContext = theContext;
 	}
 };
 
@@ -141,7 +145,7 @@ void BaseDialog::CloseCurrentDocument(void) {
 void BaseDialog::Push() {
 	if (fDocument)
 		fDocument->Hide();
-	fStack.push_back(PushedDialog(fDocument, fCurrentDefaultButton, fCurrentCloseButton));
+	fStack.push_back(DialogState(fDocument, fCurrentDefaultButton, fCurrentCloseButton, this, fRocketContext));
 	fDocument = 0;
 	fCurrentCloseButton = 0;
 	fCurrentDefaultButton = 0;
