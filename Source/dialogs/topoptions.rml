@@ -26,7 +26,7 @@
 	.description { width: 80%; }
 	</style>
 </head>
-<body id="body">
+<body id="body" handler="options">
 	<div class="screencenter"> <div class="pergament">
 		<form onsubmit="options">
 			<div class="header" id="header">

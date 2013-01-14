@@ -24,17 +24,20 @@
 #include "activator.h"
 #include "login.h"
 #include "simple.h"
+#include "options.h"
 
 DialogFactory gDialogFactory;
 
 static ActivatorDialog sActivatorDialog;
 static LoginDialog sLoginDialog;
 static SimpleDialog sSimpleDialog;
+static OptionsDialog sOptionsDialog;
 
 DialogFactory::DialogFactory() {
 	fMap["activator"] = &sActivatorDialog;
 	fMap["login"] = &sLoginDialog;
 	fMap["simple"] = &sSimpleDialog;
+	fMap["options"] = &sOptionsDialog;
 }
 
 BaseDialog *DialogFactory::Make(Rocket::Core::Context *context, const std::string &file, std::function<void()> callback) {
