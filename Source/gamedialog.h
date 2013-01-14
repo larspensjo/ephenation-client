@@ -20,7 +20,6 @@
 #include <memory>
 
 #include "ui/mainuserinterface.h"
-#include "ui/messagedialog.h"
 #include "ui/RocketGui.h"
 #include "rendercontrol.h"
 #include "chunk.h"
@@ -35,6 +34,7 @@ class ChunkShader;
 class BuildingBlocks;
 class HealthBar;
 class DrawTexture;
+class BaseDialog;
 
 namespace Rocket {
 	namespace Core {
@@ -138,7 +138,7 @@ private:
 	MainUserInterface fMainUserInterface;
 	Rocket::Core::Element *fFPS_Element, *fPlayerStatsOneLiner_Element, *fInputLine;
 
-	MessageDialog fMessageDialog;
+	BaseDialog *fDialogManager;
 
 	// Save the place where a text activator was requested.
 	ChunkCoord fRequestActivatorChunk;

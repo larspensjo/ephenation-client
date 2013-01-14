@@ -41,21 +41,19 @@ class BaseDialog : public Rocket::Core::EventListener {
 public:
 	virtual ~BaseDialog();
 
-	/**
-	 * @brief Generate a click event on the default button
-	 */
-	void DefaultButton(void);
+	/// Generate a click event on the default button
+	/// @return The new dialog handler
+	BaseDialog *DefaultButton();
 
-	/**
-	 * @brief Generate a click on the Cancel or Close button
-	 */
-	void CancelButton(void);
+	/// Generate a click on the Cancel or Close button
+	/// @return The new dialog handler
+	BaseDialog *CancelButton();
 
 	/**
 	 * @brief Use the specified libRocket document
 	 * The function has to be overrided to add proper event listeners.
 	 */
-	virtual void UseDocument(Rocket::Core::ElementDocument *) = 0;
+	virtual void UseDocument(Rocket::Core::ElementDocument *, std::function<void()> callback) = 0;
 protected:
 	/**
 	 * @brief When the document is a form, remember what input parameters are used and what values they are mapped to
@@ -76,7 +74,7 @@ protected:
 
 	/// Push a new dialog to the top of the stack.
 	/// @param doc The new document.
-	void Push(Rocket::Core::ElementDocument *doc);
+	void Push(Rocket::Core::ElementDocument *doc, std::function<void()> callback);
 
 	/**
 	 * @brief Pop back the previous dialog.

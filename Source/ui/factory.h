@@ -19,6 +19,7 @@
 
 #include <string>
 #include <map>
+#include <functional>
 
 #include "memory"
 
@@ -30,13 +31,24 @@ namespace Rocket {
 
 class BaseDialog;
 
+/// A factory that loads a document and returns the proper dialog handler for it
 class DialogFactory
 {
 public:
+	/// The constructor will initiate the factory
 	DialogFactory();
-	void Make(Rocket::Core::Context *context, const std::string &file);
+
+	/// Make a new dialog handler.
+	/// @param context The Rocket context to load the document into.
+	/// @param file The definition of the document, in rml format. It will be loaded from the dialog folder.
+	/// @param callback A function that will be called when dialog is closed. 'ok' is true if player did not cancel it.
+	/// @return Pointer to the dialog handler. Do never delete it.
+	/// The attribute "handler" from the body of the document is used to select the dialog
+	/// handler from the factory.
+	BaseDialog *Make(Rocket::Core::Context *context, const std::string &file, std::function<void()> callback = nullptr);
 private:
-	std::map<std::string, std::unique_ptr<BaseDialog> > fMap;
+	std::map<std::string, BaseDialog* > fMap;
 };
 
+/// A global instance of the factory
 extern DialogFactory gDialogFactory;

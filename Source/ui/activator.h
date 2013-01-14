@@ -34,7 +34,7 @@ class ActivatorDialog : public BaseDialog {
 public:
 
 protected:
-	virtual void UseDocument(Rocket::Core::ElementDocument *);
+	virtual void UseDocument(Rocket::Core::ElementDocument *, std::function<void()> callback);
 private:
 	// Update inputs of a specific element (if there are any).
 	void UpdateInput(Rocket::Core::Element *);

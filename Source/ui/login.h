@@ -39,7 +39,7 @@ class LoginDialog : public BaseDialog {
 public:
 
 protected:
-	virtual void UseDocument(Rocket::Core::ElementDocument *);
+	virtual void UseDocument(Rocket::Core::ElementDocument *, std::function<void()> callback);
 	virtual void FormEvent(Rocket::Core::Event& event, const string &action);
 private:
 	/**

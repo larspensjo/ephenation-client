@@ -41,12 +41,14 @@ struct BaseDialog::DialogState {
 	Rocket::Core::Element *fDefaultButton;
 	Rocket::Core::Element *fCancelButton;
 	BaseDialog *fBaseDialog;
+	std::function<void()> fCallback; // Optional callback function to be called when dialog is closed.
 
-	DialogState(Rocket::Core::ElementDocument *document, BaseDialog *theBaseDialog) {
+	DialogState(Rocket::Core::ElementDocument *document, BaseDialog *theBaseDialog, std::function<void()> callback) {
 		fDocument = document;
 		fDefaultButton = 0;
 		fCancelButton = 0;
 		fBaseDialog = theBaseDialog;
+		fCallback = callback;
 	}
 };
 
@@ -113,14 +115,15 @@ void BaseDialog::FormEvent(Rocket::Core::Event& event, const string &action) {
 	// The resulting list in fFormResultValues now contains all the requested values.
 }
 
-void BaseDialog::Push(Rocket::Core::ElementDocument *doc) {
+void BaseDialog::Push(Rocket::Core::ElementDocument *doc, std::function<void()> callback) {
 	if (fStack.size() > 0)
 		fStack.back().fDocument->Hide();
-	fStack.push_back(DialogState(doc, this));
+	fStack.push_back(DialogState(doc, this, callback));
 }
 
 bool BaseDialog::Pop(void) {
 	ASSERT (fStack.size() > 0);
+	auto cb = fStack.back().fCallback;
 	auto doc = fStack.back().fDocument;
 	// Don't know why, but need to remove listeners or there will be spurious events even after document has been deallocated.
 	doc->RemoveEventListener("click", this);
@@ -128,11 +131,14 @@ bool BaseDialog::Pop(void) {
 	doc->Hide();
 	doc->RemoveReference();
 	fStack.pop_back();
+	bool moreDialogs = false;
 	if (fStack.size() > 0) {
 		fStack.back().fDocument->Show();
-		return true;
+		moreDialogs = true;
 	}
-	return false;
+	if (cb != nullptr)
+		cb(); // There was a callback, call it.
+	return moreDialogs;
 }
 
 void BaseDialog::Show() {
@@ -167,18 +173,24 @@ void BaseDialog::AddEventListener(const Rocket::Core::String& event, BaseDialog*
 	fStack.back().fDocument->AddEventListener(event, listener);
 }
 
-void BaseDialog::CancelButton(void) {
+BaseDialog *BaseDialog::CancelButton() {
 	ASSERT(fStack.size() > 0);
 	if (!fStack.back().fCancelButton)
-		return;
+		return this;
 	Rocket::Core::Dictionary dic;
 	fStack.back().fCancelButton->DispatchEvent("click", dic);
+	if (fStack.size() > 0)
+		return fStack.back().fBaseDialog; // If there is an active dialoog handler, return it
+	return 0;
 }
 
-void BaseDialog::DefaultButton(void) {
+BaseDialog *BaseDialog::DefaultButton() {
 	ASSERT(fStack.size() > 0);
 	if (!fStack.back().fDefaultButton)
-		return;
+		return this;
 	Rocket::Core::Dictionary dic;
 	fStack.back().fDefaultButton->DispatchEvent("click", dic);
+	if (fStack.size() > 0)
+		return fStack.back().fBaseDialog; // If there is an active dialoog handler, return it
+	return 0;
 }

@@ -56,7 +56,7 @@
 #include "Map.h"
 #include "ScrollingMessages.h"
 #include "Teleport.h"
-#include "ui/messagedialog.h"
+#include "ui/base.h"
 #include "ui/RocketGui.h"
 #include "ui/Error.h"
 #include "ui/factory.h"
@@ -109,6 +109,7 @@ gameDialog::gameDialog() {
 	fFPS_Element = 0;
 	fPlayerStatsOneLiner_Element = 0;
 	fInputLine = 0;
+	fDialogManager = 0;
 }
 
 gameDialog::~gameDialog() {
@@ -519,9 +520,9 @@ void gameDialog::HandleKeyPress(int key) {
 
 	if (fCurrentRocketContextInput) {
 		if (key == GLFW_KEY_ENTER || key == GLFW_KEY_KP_ENTER)
-			fMessageDialog.DefaultButton();
+			fDialogManager = fDialogManager->DefaultButton();
 		else if (key == GLFW_KEY_ESC)
-			fMessageDialog.CancelButton();
+			fDialogManager = fDialogManager->CancelButton();
 		else
 			fCurrentRocketContextInput->ProcessKeyDown(RocketGui::KeyMap(key), rocketKeyModifiers);
 		return;
@@ -565,8 +566,8 @@ void gameDialog::HandleKeyPress(int key) {
 			fShowInventory = false;
 			gMsgWindow.SetAlternatePosition(0,0,false);
 		} else {
-			fMessageDialog.LoadDialog("dialogs/topleveldialog.rml");
 			fCurrentRocketContextInput = fMainUserInterface.GetRocketContext();
+			fDialogManager = gDialogFactory.Make(fCurrentRocketContextInput, "topleveldialog.rml");
 		}
 		break;
 	case 'C':
@@ -906,17 +907,17 @@ void gameDialog::render(bool hideGUI) {
 		static bool wasDead = false;
 		if (gPlayer.IsDead() && !wasDead) {
 			wasDead = true;
-			fMessageDialog.Set("Oops", "You are dead.\n\nYou will be revived, and transported back to your starting place.\n\nThe place can be changed with a scroll of resurrection point.", revive);
+			sgPopupTitle = "Oops";
+			sgPopup = "You are dead.\n\nYou will be revived, and transported back to your starting place.\n\nThe place can be changed with a scroll of resurrection point.";
 			fCurrentRocketContextInput = fMainUserInterface.GetRocketContext();
+			fDialogManager = gDialogFactory.Make(fCurrentRocketContextInput, "messagedialog.rml", revive);
 			this->ClearForDialog();
 		} else if (fShowInventory)
 			gInventory.DrawInventory(fDrawTexture);
 		else if (sgPopup.length() > 0) {
 			// There are some messages that shall be shown in a popup dialog.
-			fMessageDialog.Set(sgPopupTitle, sgPopup, 0);
 			fCurrentRocketContextInput = fMainUserInterface.GetRocketContext();
-			sgPopupTitle = "Ephenation"; // Reset to default.
-			sgPopup.clear();
+			fDialogManager = gDialogFactory.Make(fCurrentRocketContextInput, "messagedialog.rml");
 			this->ClearForDialog();
 		}
 
@@ -1081,8 +1082,6 @@ void gameDialog::init(void) {
 		ErrorDialog("Missing input line in main user interface");
 	fInputLine->AddReference();
 	fInputLine->Blur(); // Don't want a flashing cursor until player wants to input text.
-
-	fMessageDialog.Init(fMainUserInterface.GetRocketContext());
 
 	checkError("gameDialog::init");
 }

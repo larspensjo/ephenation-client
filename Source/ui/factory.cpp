@@ -27,14 +27,19 @@
 
 DialogFactory gDialogFactory;
 
+static ActivatorDialog sActivatorDialog;
+static LoginDialog sLoginDialog;
+static SimpleDialog sSimpleDialog;
+
 DialogFactory::DialogFactory() {
-	fMap["activator"] = std::unique_ptr<BaseDialog> (new ActivatorDialog);
-	fMap["login"] = std::unique_ptr<BaseDialog> (new LoginDialog);
-	fMap["simple"] = std::unique_ptr<BaseDialog> (new SimpleDialog);
+	fMap["activator"] = &sActivatorDialog;
+	fMap["login"] = &sLoginDialog;
+	fMap["simple"] = &sSimpleDialog;
 }
 
-void DialogFactory::Make(Rocket::Core::Context *context, const std::string &file) {
+BaseDialog *DialogFactory::Make(Rocket::Core::Context *context, const std::string &file, std::function<void()> callback) {
 	Rocket::Core::ElementDocument *document = context->LoadDocument(("dialogs/" + file).c_str());
+	ASSERT(document != 0);
 	Rocket::Core::String def = "";
 	auto tag = document->GetTagName();
 	// auto type = document->GetAttribute("type", def);
@@ -46,5 +51,6 @@ void DialogFactory::Make(Rocket::Core::Context *context, const std::string &file
 	if (it == fMap.end()) {
 		ErrorDialog("DialogFactory::Make: No handler registered for %s", handler.c_str());
 	}
-	it->second->UseDocument(document);
+	it->second->UseDocument(document, callback);
+	return it->second;
 }

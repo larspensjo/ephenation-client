@@ -17,10 +17,6 @@
 
 #pragma once
 
-//
-// Data used by the login dialog
-//
-
 #include "base.h"
 #include "../chunk.h"
 
@@ -30,13 +26,12 @@ namespace Rocket {
 	}
 };
 
+/// A manager for simple dialogs, with no forms
 class SimpleDialog : public BaseDialog {
 public:
-
 protected:
-	virtual void UseDocument(Rocket::Core::ElementDocument *);
-	virtual void FormEvent(Rocket::Core::Event& event, const string &action);
+	virtual void UseDocument(Rocket::Core::ElementDocument *, std::function<void()> callback);
 private:
-	// Update inputs of a specific element (if there are any).
+	/// Update inputs of a specific element (if there is any).
 	void UpdateInput(Rocket::Core::Element *);
 };

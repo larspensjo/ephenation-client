@@ -27,8 +27,8 @@
 
 #define NELEM(x) (sizeof(x) / sizeof (x[0]))
 
-void ActivatorDialog::UseDocument(Rocket::Core::ElementDocument *doc) {
-	this->Push(doc); // Allways push the previous document first
+void ActivatorDialog::UseDocument(Rocket::Core::ElementDocument *doc, std::function<void()> callback) {
+	this->Push(doc, callback); // Allways push the previous document first
 	gGameDialog.GetActivator(fDx, fDy, fDz, fCC);
 	fFormResultValues.clear(); // Restart with an empty list
 	this->Treewalk([this](Rocket::Core::Element *e){ this->UpdateInput(e);} ); // Fill default parameters in the document
