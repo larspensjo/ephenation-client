@@ -256,7 +256,7 @@ void gameDialog::CreateActivatorMessage(int dx, int dy, int dz, const ChunkCoord
 			cc.z == fRequestActivatorChunk.z)
 	{
 		fCurrentRocketContextInput = fMainUserInterface.GetRocketContext();
-		gDialogFactory.Make(fCurrentRocketContextInput, "activator.rml");
+		fDialogManager = gDialogFactory.Make(fCurrentRocketContextInput, "activator.rml");
 		fRequestActivatorX = -1; // Ensure it will not match by accident
 	}
 }
