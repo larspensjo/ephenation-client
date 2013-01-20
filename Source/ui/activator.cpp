@@ -17,6 +17,8 @@
 
 #include <string>
 #include <Rocket/Controls.h>
+#include <sstream>
+#include <iostream>
 
 #include "activator.h"
 #include "../client_prot.h"
@@ -116,113 +118,85 @@ static void SendString(const std::string &str) {
 	SendMsg((const unsigned char *)str.c_str(), len-3);
 }
 
-#if 0
-// Ask the user for an activator message
-static void CreateActivatorMessage(int dx, int dy, int dz, const ChunkCoord *cc) {
-	// Show a dialog where the player can configure the activator block.
-	Fl_Text_Buffer buf;
-	Activator act(&buf+0);
-	for (size_t i=0; i < gSoundControl.fNumTrigSounds; i++) {
-		const char *descr = gSoundControl.fTrigSoundList[i].description;
-		// A null pointer indicates that the rest are "private" sounds that may not be used in construction mode
-		if (descr == 0)
-			break;
-		act.fSoundeffect->add(descr, 0, 0);
-	}
-	for (size_t i=0; i < gInventory.fsObjectMapSize; i++) {
-		act.fObject->add(gInventory.fsObjectMap[i].descr);
-	}
-	chunk *cp = ChunkFind(cc, false);
-	for (size_t i = 0; i < 7; i++)
-		act.fJellyBlock->add(jellyList[i].descr, 0, 0, 0, !validJellyDir(cp, i, dx, dy, dz));
-	act.fJellyBlock->value(0);
-	Fl::run();
-	Fl::flush();
-	if (!act.fOk)
+void ActivatorDialog::FormEvent(Rocket::Core::Event& event, const string &action) {
+	BaseDialog::FormEvent(event, action); // Needed to perform some common preparations
+	if (action != "activator")
 		return;
 
 	// Interpret the result, constructing a string with all of it. Add the conditions first, and then the actions.
-	string s;
-	if (act.fKeyCondition->value()) {
-		// A key condition is defined. This shall come before the broadcast flag, is the test is only applied to one player.
-		// As the rest of the line is used as a description, a newline is needed.
-		s = s + "/keycond:" + act.fCondKeyId->value() + "," + act.fCondOwnerKeyId->value() + " " + act.fCondKeyDescr->value() + "\n";
+	std::stringstream ss;
+	ss << "/activator add " << fCC.x << " " << fCC.y << " " << fCC.z << " " << fDx << " " << fDy << " " << fDz << " ";
+
+	if (fFormResultValues["Activator.condkey"] == "1") {
+		// A key condition is defined. This shall come before the broadcast flag, as the test is only applied to one player.
+		// The rest of the line is used as a description, and a newline is needed.
+		ss << "/keycond:" << fFormResultValues["Activator.condkey.key"] << "," << fFormResultValues["Activator.condkey.owner"] << " " << fFormResultValues["Activator.condkey.message"] << "\n";
 	}
-	const char *p = act.fBlocks->value();
-	if (p[0] == 0)
-		p = "10";
-	if (atoi(p) > 20)
-		p = "20"; // Maximum distance limitation.
-	if (act.fBroadcast->value()) // Is the broadcast checkbox enabled?
-		s = s + "/broadcast:" + p + " ";
-	p = act.fMonsterLevel->text();
-	if (p == 0)
-		p = "0";
-	if (act.fSpawn->value())
-		s = s + "/monster:" + p + " ";
-	p = act.fInhibit->value();
-	if (p[0] != 0) {
-		s = s + "/inhibit:" + p + " ";
+
+	string blocks = fFormResultValues["Activator.boradcastdist"];
+	if (blocks == "")
+		blocks = "10";
+	if (atoi(blocks.c_str()) > 20)
+		blocks = "20"; // Maximum distance limitation.
+	if (fFormResultValues["Activator.broadcast"] != "") // Is the broadcast checkbox enabled?
+		ss << "/broadcast:" << blocks << " ";
+
+	string monsterLevel = fFormResultValues["Activator.spawnmonster"];
+	if (monsterLevel != "")
+		ss << "/monster:" << monsterLevel << " ";
+
+	string inhibit = fFormResultValues["Activator.inhbit"];
+	if (inhibit != "") {
+		ss << "/inhibit:" << inhibit << " ";
 	}
-	// TODO: Should use stringstream all the way
-	stringstream ss;
-	p = act.fMaxLevel->value();
-	if (p[0] != 0) {
-		int v = atoi(p)+1;
+
+	string maxLevel = fFormResultValues["Activator.player.level.max"];
+	if (maxLevel != "") {
+		int v = atoi(maxLevel.c_str())+1;
 		ss << "/level<" << v << " ";
 	}
-	p = act.fMinLevel->value();
-	if (p[0] != 0) {
-		int v = atoi(p)-1;
+
+	string minLevel = fFormResultValues["Activator.player.level.min"];
+	if (minLevel != "") {
+		int v = atoi(minLevel.c_str())-1;
 		ss << "/level>" << v << " ";
 	}
-	s += ss.str();
 
 	// Handle all actions
-	int v = act.fObject->value();
-	if (v != -1 && gInventory.fsObjectMap[v].code != 0)
-		s = s + "/invadd:" + gInventory.fsObjectMap[v].code + " ";
-	v = act.fJellyBlock->value();
-	if (v > 0) {
-		s = s + jellyList[v].code + " ";
+	string code = fFormResultValues["Activator.reward"];
+	if (code != "")
+		ss << "/invadd:" << code << " ";
+
+
+	string jellyblock = fFormResultValues["Activator.reward"];
+	if (jellyblock != "") {
+		ss << jellyblock << " ";
 	}
-	// The sound effect must come last, but before the other texts.
-	v = act.fSoundeffect->value();
-	if (v != -1)
-		s = s + "#" + gSoundControl.fTrigSoundList[v].id + " ";
-	if (act.fAddKey->value()) {
+
+	if (fFormResultValues["Activator.addkey"] == "1") {
 		// The key is special, as it contains a key description until end of line. Because of that,
 		// a newline is needed after the description.
-		char buff[10];
-#ifdef WIN32
-		_snprintf(buff, sizeof buff, "%d", act.fKeyPicture->value());
-#else
-		snprintf(buff, sizeof buff, "%d", act.fKeyPicture->value());
-#endif
-		s = s + "/addkey:" + act.fKeyId->value() + "," + buff + " " + act.fKeyDescr->value() + "\n";
+		/// @todo The key picture is hard coded as 0.
+		ss << "/addkey:" << fFormResultValues["Activator.addkey.id"] << ",0 " << fFormResultValues["Activator.addkey.text"] << "\n";
 	}
-	// Finally, add the message itself
-	s += buf.text();
+
+	// The sound effect must come last, but before the other texts.
+	string soundeffect = fFormResultValues["Activator.soundeffect"];
+	if (soundeffect != "")
+		ss << "#" << soundeffect << " ";
+
+	// Add the message itself
+	ss << fFormResultValues["Activator.message"];
 
 	// Strip trailing spaces, if any
+	string s = ss.str();
 	size_t end = s.find_last_not_of(' ');
 	if (end != string::npos)
 		s = s.substr(0, end+1);
-	size_t start = 0;
-	while(start < s.length()) {
-		end = s.find('\n', start);
-		if (end == s.npos) {
-			end = s.length();
-		}
-		char buff[200];
-#ifdef WIN32
-		_snprintf(buff, sizeof buff, "/activator add %d %d %d %d %d %d %s", cc->x, cc->y, cc->z, dx, dy, dz, s.substr(start, end-start).c_str());
-#else
-		snprintf(buff, sizeof buff, "/activator add %d %d %d %d %d %d %s", cc->x, cc->y, cc->z, dx, dy, dz, s.substr(start, end-start).c_str());
-#endif
-		SendString(buff);
-		start = end+1; // Skip the newline
-	}
-}
 
-#endif
+	SendString(s.c_str());
+	// std::cout << s << std::endl;
+
+	if (!this->Pop())
+		gGameDialog.ClearInputRedirect(); // Normal case
+}
