@@ -1,4 +1,4 @@
-// Copyright 2012,2013 The Ephenation Authors
+// Copyright 2012-2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -109,7 +109,6 @@ gameDialog::gameDialog() {
 	fFPS_Element = 0;
 	fPlayerStatsOneLiner_Element = 0;
 	fInputLine = 0;
-	fDialogManager = 0;
 }
 
 gameDialog::~gameDialog() {
@@ -256,7 +255,7 @@ void gameDialog::CreateActivatorMessage(int dx, int dy, int dz, const ChunkCoord
 			cc.z == fRequestActivatorChunk.z)
 	{
 		fCurrentRocketContextInput = fMainUserInterface.GetRocketContext();
-		fDialogManager = gDialogFactory.Make(fCurrentRocketContextInput, "activator.rml");
+		gDialogFactory.Make(fCurrentRocketContextInput, "activator.rml");
 		fRequestActivatorX = -1; // Ensure it will not match by accident
 	}
 }
@@ -520,9 +519,9 @@ void gameDialog::HandleKeyPress(int key) {
 
 	if (fCurrentRocketContextInput) {
 		if (key == GLFW_KEY_ENTER || key == GLFW_KEY_KP_ENTER)
-			fDialogManager = fDialogManager->DefaultButton();
+			BaseDialog::DispatchDefault();
 		else if (key == GLFW_KEY_ESC)
-			fDialogManager = fDialogManager->CancelButton();
+			BaseDialog::DispatchCancel();
 		else
 			fCurrentRocketContextInput->ProcessKeyDown(RocketGui::KeyMap(key), rocketKeyModifiers);
 		return;
@@ -567,7 +566,7 @@ void gameDialog::HandleKeyPress(int key) {
 			gMsgWindow.SetAlternatePosition(0,0,false);
 		} else {
 			fCurrentRocketContextInput = fMainUserInterface.GetRocketContext();
-			fDialogManager = gDialogFactory.Make(fCurrentRocketContextInput, "topleveldialog.rml");
+			gDialogFactory.Make(fCurrentRocketContextInput, "topleveldialog.rml");
 		}
 		break;
 	case 'C':
@@ -910,14 +909,14 @@ void gameDialog::render(bool hideGUI) {
 			sgPopupTitle = "Oops";
 			sgPopup = "You are dead.\n\nYou will be revived, and transported back to your starting place.\n\nThe place can be changed with a scroll of resurrection point.";
 			fCurrentRocketContextInput = fMainUserInterface.GetRocketContext();
-			fDialogManager = gDialogFactory.Make(fCurrentRocketContextInput, "messagedialog.rml", revive);
+			gDialogFactory.Make(fCurrentRocketContextInput, "messagedialog.rml", revive);
 			this->ClearForDialog();
 		} else if (fShowInventory)
 			gInventory.DrawInventory(fDrawTexture);
 		else if (sgPopup.length() > 0) {
 			// There are some messages that shall be shown in a popup dialog.
 			fCurrentRocketContextInput = fMainUserInterface.GetRocketContext();
-			fDialogManager = gDialogFactory.Make(fCurrentRocketContextInput, "messagedialog.rml");
+			gDialogFactory.Make(fCurrentRocketContextInput, "messagedialog.rml");
 			this->ClearForDialog();
 		}
 

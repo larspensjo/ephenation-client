@@ -40,7 +40,7 @@ DialogFactory::DialogFactory() {
 	fMap["options"] = &sOptionsDialog;
 }
 
-BaseDialog *DialogFactory::Make(Rocket::Core::Context *context, const std::string &file, std::function<void()> callback) {
+void DialogFactory::Make(Rocket::Core::Context *context, const std::string &file, std::function<void()> callback) {
 	Rocket::Core::ElementDocument *document = context->LoadDocument(("dialogs/" + file).c_str());
 	ASSERT(document != 0);
 	Rocket::Core::String def = "";
@@ -55,5 +55,4 @@ BaseDialog *DialogFactory::Make(Rocket::Core::Context *context, const std::strin
 		ErrorDialog("DialogFactory::Make: No handler registered for %s", handler.c_str());
 	}
 	it->second->UseDocument(document, callback);
-	return it->second;
 }

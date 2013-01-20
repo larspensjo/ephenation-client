@@ -39,22 +39,28 @@ using std::string;
  */
 class BaseDialog : public Rocket::Core::EventListener {
 public:
+	BaseDialog() : fFocusOnTextarea(false) {}
+
 	virtual ~BaseDialog();
-
-	/// Generate a click event on the default button
-	/// @return The new dialog handler
-	BaseDialog *DefaultButton();
-
-	/// Generate a click on the Cancel or Close button
-	/// @return The new dialog handler
-	BaseDialog *CancelButton();
 
 	/**
 	 * @brief Use the specified libRocket document
 	 * The function has to be overrided to add proper event listeners.
 	 */
 	virtual void UseDocument(Rocket::Core::ElementDocument *, std::function<void()> callback) = 0;
+
+	/// Dispatch a default action on the current dialog
+	static void DispatchDefault();
+
+	/// Dispatch a cancel action on the current dialog
+	static void DispatchCancel();
 protected:
+	/// Generate a click event on the default button
+	void DefaultButton();
+
+	/// Generate a click on the Cancel or Close button
+	void CancelButton();
+
 	/**
 	 * @brief When the document is a form, remember what input parameters are used and what values they are mapped to
 	 */
@@ -104,6 +110,9 @@ protected:
 	void Show();
 
 private:
+	/// Flag if focus is on textarea
+	bool fFocusOnTextarea;
+
 	struct DialogState;
 	/**
 	 * @brief Need a stack to push multiple simultaneous dialogs.

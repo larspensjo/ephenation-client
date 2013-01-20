@@ -37,6 +37,7 @@ void ActivatorDialog::UseDocument(Rocket::Core::ElementDocument *doc, std::funct
 	this->Treewalk([this](Rocket::Core::Element *e) {this->DetectDefaultButton(e); }); // This can be done by the local callback
 	this->AddEventListener("click", this);
 	this->AddEventListener("submit", this);
+	this->AddEventListener("focus", this); // Need this to track where the input focus is, to disable default button on textarea.
 	this->Show();
 }
 

@@ -60,16 +60,23 @@ BaseDialog::~BaseDialog() {
 // Notice that there may be "click" events for any part of the document.
 void BaseDialog::ProcessEvent(Rocket::Core::Event& event) {
 	Rocket::Core::Element *e = event.GetTargetElement(); // The element that generated the event.
+	Rocket::Core::String tagname = e->GetTagName();
 	Rocket::Core::String type = event.GetType();
-	string submit = e->GetAttribute("onsubmit", Rocket::Core::String("")).CString();
-	if (submit != "") {
+	if (type == "submit") {
 		// It was a "submit" event from a form element. The string in 'submit' is a feedback
 		// that is currently not used.
+		string submit = e->GetAttribute("onsubmit", Rocket::Core::String("")).CString();
 		this->FormEvent(event, submit);
-	} else {
+	} else if (type == "click") {
 		string attr = e->GetAttribute("onclick", Rocket::Core::String("")).CString();
 		// Use the attribute "onclick" to determine what to do.
 		this->ClickEvent(event, attr);
+	} else if (type == "focus") {
+		if (tagname == "textarea") {
+			fFocusOnTextarea = true;
+		} else {
+			fFocusOnTextarea = false;
+		}
 	}
 }
 
@@ -173,24 +180,28 @@ void BaseDialog::AddEventListener(const Rocket::Core::String& event, BaseDialog*
 	fStack.back().fDocument->AddEventListener(event, listener);
 }
 
-BaseDialog *BaseDialog::CancelButton() {
+void BaseDialog::DispatchCancel() {
 	ASSERT(fStack.size() > 0);
-	if (!fStack.back().fCancelButton)
-		return this;
-	Rocket::Core::Dictionary dic;
-	fStack.back().fCancelButton->DispatchEvent("click", dic);
-	if (fStack.size() > 0)
-		return fStack.back().fBaseDialog; // If there is an active dialoog handler, return it
-	return 0;
+	BaseDialog *d = fStack.back().fBaseDialog;
+	d->CancelButton();
 }
 
-BaseDialog *BaseDialog::DefaultButton() {
+void BaseDialog::CancelButton() {
+	if (!fStack.back().fCancelButton)
+		return;
+	Rocket::Core::Dictionary dic;
+	fStack.back().fCancelButton->DispatchEvent("click", dic);
+}
+
+void BaseDialog::DispatchDefault() {
 	ASSERT(fStack.size() > 0);
-	if (!fStack.back().fDefaultButton)
-		return this;
+	BaseDialog *d = fStack.back().fBaseDialog;
+	d->DefaultButton();
+}
+
+void BaseDialog::DefaultButton() {
+	if (!fStack.back().fDefaultButton || fFocusOnTextarea)
+		return;
 	Rocket::Core::Dictionary dic;
 	fStack.back().fDefaultButton->DispatchEvent("click", dic);
-	if (fStack.size() > 0)
-		return fStack.back().fBaseDialog; // If there is an active dialoog handler, return it
-	return 0;
 }
