@@ -269,7 +269,7 @@ tabset panels panel
 	padding: 15px 15px 0px 15px;
 	font-family: georgia;
 	height: 50;
-	width: 40%; /* TODO: Not reasonable to specify width here! */
+	width: 100%; /* Default, fill available space */
 
 	icon-background-decorator: tiled-horizontal;
 	icon-background-left-image: brass_theme_1a.bmp 296px 456px 309px 506px;

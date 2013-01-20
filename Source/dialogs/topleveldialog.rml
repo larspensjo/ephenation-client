@@ -24,7 +24,7 @@
 	<style>
 	</style>
 </head>
-<body id="body">
+<body id="body" handler="simple">
 	<div class="screencenter">	<div class="pergament">
 		<div class="header" id="header">
 			Ephenation

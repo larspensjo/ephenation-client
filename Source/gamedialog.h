@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -20,9 +20,9 @@
 #include <memory>
 
 #include "ui/mainuserinterface.h"
-#include "ui/messagedialog.h"
 #include "ui/RocketGui.h"
 #include "rendercontrol.h"
+#include "chunk.h"
 
 using std::string;
 
@@ -41,15 +41,15 @@ namespace Rocket {
 	}
 };
 
-// Put it all together. Manage, on a high level:
-// * keyboard input
-// * mouse input
-// * decide what shall be shown on the screen
-// * window resize events
-// * a few special effects (zooming)
-// * manage construction of activator blocks
-//
-// TODO: This class has grown to be rather fat. A refactoring is needed.
+/// This corresponds to the controller class in a Model/View/controller.
+/// * keyboard input
+/// * mouse input
+/// * decide what shall be shown on the screen
+/// * window resize events
+/// * a few special effects (zooming)
+/// * manage construction of activator blocks
+/// @todo This class has grown to be rather fat. A refactoring is needed.
+/// @todo Some things here remains from old, and is not really part of the controller class.
 class gameDialog {
 public:
 	gameDialog();
@@ -68,6 +68,8 @@ public:
 	void ClickOnBlock(int x, int y);
 	void ClickOnObject(int x, int y);
 	void AttachBlockToSurface(int row, int col);
+	void CreateActivatorMessage(int dx, int dy, int dz, const ChunkCoord &cc);
+	void GetActivator(int &dx, int &dy, int &dz, ChunkCoord &cc); // Get the current activator location
 	void ClearSelection(void); // Clear the selected object
 	void AggroFrom(std::shared_ptr<const Object>); // The player now has aggro from this monster
 	enum Calibration { CALIB_EXPOSURE, CALIB_WHITE_POINT, CALIB_AMBIENT, CALIB_NONE };
@@ -75,22 +77,22 @@ public:
 
 	bool ThirdPersonView(void) const { return fCameraDistance > 2.0f; }
 
-	// Manage the running status of the player
+	/// Manage the running status of the player
 	void UpdateRunningStatus(bool disable);
 
 	bool fShowInventory;
 
-	// Define possible effects that can be requested. They will all terminate automatically.
+	/// Define possible effects that can be requested. They will all terminate automatically.
 	enum Effect {
-		EFFECT_NONE,  // Normal mode, no special effects.
-		EFFECT_ZOOM1, // Zoom from normal view to half viewing angle in 0.5s
-		EFFECT_ZOOM2  // Zoom from 120 degrees viewing angle to normal angle in 0.5s
+		EFFECT_NONE,  /// Normal mode, no special effects.
+		EFFECT_ZOOM1, /// Zoom from normal view to half viewing angle in 0.5s
+		EFFECT_ZOOM2  /// Zoom from 120 degrees viewing angle to normal angle in 0.5s
 	};
 	void RequestEffect(Effect eff);
 	void CancelCurrentEffect(void);
 	void UpdateEffect(void);
 
-	// If there is a redirect of inputs to a Rocket context, then clear it.
+	/// If there is a redirect of inputs to a Rocket context, then clear it.
 	void ClearInputRedirect(void);
 
 private:
@@ -135,15 +137,13 @@ private:
 	MainUserInterface fMainUserInterface;
 	Rocket::Core::Element *fFPS_Element, *fPlayerStatsOneLiner_Element, *fInputLine;
 
-	MessageDialog fMessageDialog;
+	// Save the place where a text activator was requested.
+	ChunkCoord fRequestActivatorChunk;
+	int fRequestActivatorX, fRequestActivatorY, fRequestActivatorZ;
 };
 
 extern gameDialog gGameDialog;
 extern float renderViewAngle;
-
-// Save the place where a text activator was requested.
-extern ChunkCoord gRequestActivatorChunk;
-extern int gRequestActivatorX, gRequestActivatorY, gRequestActivatorZ;
 
 // A string that automatically will be shown in a pop up window.
 extern string sgPopup;

@@ -24,12 +24,7 @@
 #include "chunk.h"
 #include "assert.h"
 #include "primitives.h"
-#include "gamedialog.h"
-#include "ui/Activator.h"
-#include "FL/Fl_Text_Buffer.H"
-#include "Inventory.h"
 #include "client_prot.h"
-#include "connection.h"
 #include "modes.h"
 #include "player.h"
 
@@ -90,167 +85,12 @@ ChunkBlocks::ChunkBlocks() {
 ChunkBlocks::~ChunkBlocks() {
 }
 
-// Send a string to the server
-static void SendString(const char *str) {
-	unsigned int len = strlen(str)+3;
-	unsigned char buff[3];
-	buff[0] = len & 0xFF;
-	buff[1] = len >> 8;
-	buff[2] = CMD_DEBUG;
-	SendMsg(buff, 3);
-	SendMsg((const unsigned char *)str, len-3);
-}
-
-static struct {
-	const char *descr;
-	const char *code;
-	int dx, dy, dz;
-} jellyList[] = {
-	{ "None", "" },
-	{ "West", "/jelly:w",  -1,0,0 },
-	{ "North", "/jelly:n", 0,1,0 },
-	{ "East", "/jelly:e",  1,0,0 },
-	{ "South", "/jelly:s", 0,-1,0 },
-	{ "Up", "/jelly:u",    0,0,1 },
-	{ "Down", "/jelly:d",  0,0,-1 },
-};
-
-// For the given chunk, coordinate and direction, determine if the specified direction
-// is a valid jelly direction.
-static bool validJellyDir(const chunk *cp, int dir, int dx, int dy, int dz) {
-	dx += jellyList[dir].dx;
-	dy += jellyList[dir].dy;
-	dz += jellyList[dir].dz;
-	// First make sure destination block is inside current chunk.
-	if (dx < 0 || dz >= CHUNK_SIZE || dy < 0 || dy >= CHUNK_SIZE || dz < 0 || dz >= CHUNK_SIZE)
-		return false;
-	if (cp == 0)
-		return true; // Safe guard, should not happen
-	int bl = cp->GetBlock(dx, dy, dz);
-	return bl != BT_Air && bl != BT_Trigger && bl != BT_Text && bl != BT_Link;
-}
-
-// Ask the user for an activator message
-static void CreateActivatorMessage(int dx, int dy, int dz, const ChunkCoord *cc) {
-	// Show a dialog where the player can configure the activator block.
-	Fl_Text_Buffer buf;
-	Activator act(&buf+0);
-	for (size_t i=0; i < gSoundControl.fNumTrigSounds; i++) {
-		const char *descr = gSoundControl.fTrigSoundList[i].description;
-		// A null pointer indicates that the rest are "private" sounds that may not be used in construction mode
-		if (descr == 0)
-			break;
-		act.fSoundeffect->add(descr, 0, 0);
-	}
-	for (size_t i=0; i < gInventory.fsObjectMapSize; i++) {
-		act.fObject->add(gInventory.fsObjectMap[i].descr);
-	}
-	chunk *cp = ChunkFind(cc, false);
-	for (size_t i = 0; i < 7; i++)
-		act.fJellyBlock->add(jellyList[i].descr, 0, 0, 0, !validJellyDir(cp, i, dx, dy, dz));
-	act.fJellyBlock->value(0);
-	Fl::run();
-	Fl::flush();
-	if (!act.fOk)
-		return;
-
-	// Interpret the result, constructing a string with all of it. Add the conditions first, and then the actions.
-	string s;
-	if (act.fKeyCondition->value()) {
-		// A key condition is defined. This shall come before the broadcast flag, is the test is only applied to one player.
-		// As the rest of the line is used as a description, a newline is needed.
-		s = s + "/keycond:" + act.fCondKeyId->value() + "," + act.fCondOwnerKeyId->value() + " " + act.fCondKeyDescr->value() + "\n";
-	}
-	const char *p = act.fBlocks->value();
-	if (p[0] == 0)
-		p = "10";
-	if (atoi(p) > 20)
-		p = "20"; // Maximum distance limitation.
-	if (act.fBroadcast->value()) // Is the broadcast checkbox enabled?
-		s = s + "/broadcast:" + p + " ";
-	p = act.fMonsterLevel->text();
-	if (p == 0)
-		p = "0";
-	if (act.fSpawn->value())
-		s = s + "/monster:" + p + " ";
-	p = act.fInhibit->value();
-	if (p[0] != 0) {
-		s = s + "/inhibit:" + p + " ";
-	}
-	// TODO: Should use stringstream all the way
-	stringstream ss;
-	p = act.fMaxLevel->value();
-	if (p[0] != 0) {
-		int v = atoi(p)+1;
-		ss << "/level<" << v << " ";
-	}
-	p = act.fMinLevel->value();
-	if (p[0] != 0) {
-		int v = atoi(p)-1;
-		ss << "/level>" << v << " ";
-	}
-	s += ss.str();
-
-	// Handle all actions
-	int v = act.fObject->value();
-	if (v != -1 && gInventory.fsObjectMap[v].code != 0)
-		s = s + "/invadd:" + gInventory.fsObjectMap[v].code + " ";
-	v = act.fJellyBlock->value();
-	if (v > 0) {
-		s = s + jellyList[v].code + " ";
-	}
-	// The sound effect must come last, but before the other texts.
-	v = act.fSoundeffect->value();
-	if (v != -1)
-		s = s + "#" + gSoundControl.fTrigSoundList[v].id + " ";
-	if (act.fAddKey->value()) {
-		// The key is special, as it contains a key description until end of line. Because of that,
-		// a newline is needed after the description.
-		char buff[10];
-#ifdef WIN32
-		_snprintf(buff, sizeof buff, "%d", act.fKeyPicture->value());
-#else
-		snprintf(buff, sizeof buff, "%d", act.fKeyPicture->value());
-#endif
-		s = s + "/addkey:" + act.fKeyId->value() + "," + buff + " " + act.fKeyDescr->value() + "\n";
-	}
-	// Finally, add the message itself
-	s += buf.text();
-
-	// Strip trailing spaces, if any
-	size_t end = s.find_last_not_of(' ');
-	if (end != string::npos)
-		s = s.substr(0, end+1);
-	size_t start = 0;
-	while(start < s.length()) {
-		end = s.find('\n', start);
-		if (end == s.npos) {
-			end = s.length();
-		}
-		char buff[200];
-#ifdef WIN32
-		_snprintf(buff, sizeof buff, "/activator add %d %d %d %d %d %d %s", cc->x, cc->y, cc->z, dx, dy, dz, s.substr(start, end-start).c_str());
-#else
-		snprintf(buff, sizeof buff, "/activator add %d %d %d %d %d %d %s", cc->x, cc->y, cc->z, dx, dy, dz, s.substr(start, end-start).c_str());
-#endif
-		SendString(buff);
-		start = end+1; // Skip the newline
-	}
-}
-
 void ChunkBlocks::SetTeleport(int x, int y, int z) {
 	if (fChunkData[INDEX(x,y,z)] == BT_Air)
 		fChunkData[INDEX(x,y,z)] = BT_Teleport;
 }
 
 void ChunkBlocks::CommandBlockUpdate(const ChunkCoord &cc, int dx, int dy, int dz, int type) {
-	if (type == BT_Text && dx == gRequestActivatorX && dy == gRequestActivatorY && dz == gRequestActivatorZ &&
-	        cc.x == gRequestActivatorChunk.x &&
-	        cc.y == gRequestActivatorChunk.y &&
-	        cc.z == gRequestActivatorChunk.z) {
-		CreateActivatorMessage(dx, dy, dz, &cc);
-		gRequestActivatorX = -1; // Ensure it will not match by accident
-	}
 	// printf("chunk (%d,%d,%d) offset (%d,%d,%d) updated to %d from %d\n", cc.x, cc.y, cc.z, dx, dy, dz, type, this->chunkData[INDEX(dx,dy,dz)]);
 	fChunkData[INDEX(dx,dy,dz)] = type;
 	// If a block was changed near another chunk, this other chunk may have to update visible surfaces

@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -102,7 +102,6 @@ const char *FrameBufferError(unsigned error) {
 	}
 }
 
-bool vGL_3_3 = false;
 int gDebugOpenGL = false;
 int gVerbose;
 glm::vec4 gViewport; // The current viewport
@@ -111,7 +110,7 @@ bool gShowFramework;
 double gLastPing, gCurrentPing;
 bool gShowPing;
 bool gAdminTP = false;
-bool gIgnoreOpenGLErrors = false;
+int gIgnoreOpenGLErrors = 0;
 std::vector<unsigned> gDebugTextures;
 bool gToggleTesting; // Used for SW development
 float gDesktopAspectRatio;

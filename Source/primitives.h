@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -15,6 +15,10 @@
 // along with Ephenation.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+/// @file primitives
+/// Manage various global types and variables.
+/// @todo The number of global variables should be minimized.
+
 #pragma once
 
 #include <vector>
@@ -26,8 +30,8 @@
 #include <glm/glm.hpp>
 #include "assert.h"
 
-// This is a help to encode data into the three RGB bytes, The data is used in picking mode to identify
-// chunk (relative to the player), coordinates in chunk and the facing direction.
+/// Help to encode data into the three RGB bytes.
+/// The data is used in picking mode to identify chunk (relative to the player), coordinates in chunk and the facing direction.
 union PickingData {
 	unsigned char rgb[3];
 	struct {
@@ -39,25 +43,25 @@ union PickingData {
 #define NORMALSCALING 127
 #define TEXTURESCALING 100
 
-//
-// This structure defines vertex data used for the first phase of the deferred shading. A voxel based system
-// use a lot of data, so it is important to pack it well. The current implementation uses only 20 bytes,
-// which includes data for:
-// * Vertex coordinate
-// * Normal
-// * Texture coordiate
-// * Light intensity
-// * Ambient light
-// Specifically, the vertex coordinate can be packed efficiently as it is not the world absolute coordinate. It is the coordinate
-// relative to the chunk that the player is in.
+/// Vertex data used for the first phase of the deferred shading.
+/// A voxel based system
+/// use a lot of data, so it is important to pack it well. The current implementation uses only 20 bytes,
+/// which includes data for:
+/// * Vertex coordinate
+/// * Normal
+/// * Texture coordiate
+/// * Light intensity
+/// * Ambient light
+/// Specifically, the vertex coordinate can be packed efficiently as it is not the world absolute coordinate. It is the coordinate
+/// relative to the chunk that the player is in.
 struct VertexDataf {
 private:
 	static float fract(float f) { return f; }
 	static char ConvertNormal(float f) { int ret = int(floorf(f*NORMALSCALING+0.5f)); ASSERT(ret <= 127 && ret >= -128); return ret; }
 	static short ConvertVertex(float f) { int ret = short(floorf(f*VERTEXSCALING+0.5f)); /* ASSERT(ret <= 32767 && ret >= -32786);*/ return ret; }
 	static char ConvertTexture(float t) { int ret = char(floorf(fract(t)*TEXTURESCALING+0.5f)); ASSERT(ret <= 127 && ret >= -128); return ret;}
-	// The normal vector is coded into the first 3 bytes.
-	// 4:th byte is used for sun intensity and ambient light. Bit 0 to 3 is sun intensity, 4 to 7 is ambient light
+	/// The normal vector is coded into the first 3 bytes.
+	/// 4:th byte is used for sun intensity and ambient light. Bit 0 to 3 is sun intensity, 4 to 7 is ambient light
 	char fNormal[4];
 	short fVertex[3];
 	char fTexture[2];
@@ -66,13 +70,13 @@ public:
 	void SetTexture(const glm::vec2 &texture) { this->SetTexture(texture.x, texture.y); }
 	glm::vec2 GetTexture(void) const { return glm::vec2(fTexture[0]/TEXTURESCALING, fTexture[1]/TEXTURESCALING); }
 	static void *GetTextureOffset(void) { VertexDataf *p = 0; return &p->fTexture[0]; }
-	// Take a value from 0 to 255
+	/// Take a value from 0 to 255
 	void SetIntensity(unsigned char intensity) { fNormal[3] = ((intensity>>4) & 0x0F) | (unsigned(fNormal[3]) & 0xF0); }
 	static void *GetIntensityOffset(void) { VertexDataf *p = 0; return &p->fNormal[3]; }
 	unsigned char GetIntensity(void) const { return (unsigned(fNormal[3]) & 0x0F) << 4; }
-	// Take a value from 0 to 255
+	/// Take a value from 0 to 255
 	void SetAmbient(unsigned char ambient) { fNormal[3] = (unsigned(fNormal[3]) & 0x0F) | (ambient & 0xF0); }
-	// Setting normals for picking mode. We want to transfer data as it is, with no scaling.
+	/// Setting normals for picking mode. We want to transfer data as it is, with no scaling.
 	void SetNormal(PickingData data) { fNormal[0] = data.rgb[0]; fNormal[1] = data.rgb[1]; fNormal[2] = data.rgb[2]; }
 	void SetNormal(const glm::vec3 &n) { fNormal[0] = ConvertNormal(n.x); fNormal[1] = ConvertNormal(n.y); fNormal[2] = ConvertNormal(n.z); }
 	glm::vec3 GetNormal(void) const { return glm::vec3(float(fNormal[0])/NORMALSCALING, float(fNormal[1])/NORMALSCALING, float(fNormal[2])/NORMALSCALING); }
@@ -87,7 +91,8 @@ public:
 	glm::vec3 GetVertex() {
 		return glm::vec3(float(fVertex[0])/VERTEXSCALING, float(fVertex[1])/VERTEXSCALING, float(fVertex[2])/VERTEXSCALING);
 	}
-	bool LessVertex(const VertexDataf *other) { // Used to make it possible to sort, based on vertex coordinates.
+	/// Used to make it possible to sort, based on vertex coordinates.
+	bool LessVertex(const VertexDataf *other) {
 		if (fVertex[0] < other->fVertex[0])
 			return true;
 		if (fVertex[0] > other->fVertex[0])
@@ -115,35 +120,35 @@ struct TriangleSurfacef {
 	VertexDataf v[3];
 };
 
-void checkError(const char *functionName, bool ignore = true); // If 'ignore', then no check will be done to save execution time
+/// If 'ignore', then no check will be done to save execution time
+void checkError(const char *functionName, bool ignore = true);
 void dumpGraphicsMemoryStats(void);
 void DumpTriangles(TriangleSurfacef *t, int num);
 const char *FrameBufferError(unsigned error);
 
 extern glm::mat4 gProjectionMatrix;
-extern glm::mat4 gViewMatrix; // Store the view matrix
-extern glm::vec4 gViewport; // The current viewport
+extern glm::mat4 gViewMatrix; /// Store the view matrix
+extern glm::vec4 gViewport; /// The current viewport
 extern float gDesktopAspectRatio;
 extern int gDrawnQuads;
 extern int gNumDraw;
-extern bool vGL_3_3; // True if it is OpenGL version 3.3, or better.
 extern int gDebugOpenGL;
 extern int gVerbose;
 extern bool gShowFramework;
 
-// This is updated once every frame. Time accuracy will thus be lower, but it will save performance to use this instead
-// of glfwGetTime().
+/// Updated once every frame.
+///Time accuracy will thus be lower, but it will save performance to use this instead of glfwGetTime().
 extern double gCurrentFrameTime;
 extern double gLastPing, gCurrentPing;
 extern bool gShowPing;
-extern bool gAdminTP; // Admin can enter TP mode anytime.
-extern bool gIgnoreOpenGLErrors; // Don't terminate applicatin with fatal error
-extern bool gToggleTesting; // Used for SW development
+extern bool gAdminTP; /// Admin can enter TP mode anytime.
+extern int gIgnoreOpenGLErrors; /// Don't report errors
+extern bool gToggleTesting; /// Used for SW development
 
-// This is a list of textures that can be shown for debugging.
+/// List of textures that can be shown for debugging.
 extern std::vector<unsigned> gDebugTextures;
 
-// Convert an argument to a string. This two-step approach is required for #defined values,
-// or the argument name is given as a string instead of the value of the argument.
+/// Convert an argument to a string. This two-step approach is required for #defined values,
+/// or the argument name is given as a string instead of the value of the argument.
 #define STR_EXPAND(tok) #tok
 #define STR(tok) STR_EXPAND(tok)

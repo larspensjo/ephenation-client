@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -36,6 +36,8 @@
 #endif
 
 using std::string;
+
+string gParseMessageAtLogin;
 
 #include "Inventory.h"
 #include <glm/glm.hpp>
@@ -309,6 +311,9 @@ void Parse(const unsigned char *b, int n) {
 				gSoundControl.RequestSound(SoundControl::SRemoveBlock);
 			else
 				gSoundControl.RequestSound(SoundControl::SBuildBlock);
+			if (type == BT_Text) {
+				gGameDialog.CreateActivatorMessage(dx, dy, dz, cc);
+			}
 		}
 		cp->SetDirty(true);
 		break;
@@ -318,10 +323,8 @@ void Parse(const unsigned char *b, int n) {
 		break;
 	case CMD_REQ_PASSWORD:
 		if (gMode.Get() == GameMode::PASSWORD) {
-			if (gLoginChallenge != 0) delete [] gLoginChallenge;
-			gLoginChallengeLength = n-1;
-			gLoginChallenge = new unsigned char[gLoginChallengeLength];
-			memcpy(gLoginChallenge, b+1, gLoginChallengeLength); // Save the challenge bytes, to be used elsewhere
+			gLoginChallenge.resize(n-1);
+			memcpy(&gLoginChallenge[0], b+1, n-1); // Save the challenge bytes, to be used elsewhere
 			gMode.Set(GameMode::REQ_PASSWD);
 		} else if (gMode.Get() == GameMode::WAIT_ACK) {
 			gMode.Set(GameMode::LOGIN_FAILED);
@@ -353,9 +356,11 @@ void Parse(const unsigned char *b, int n) {
 			ErrorDialog("Another version of the client is required (current %d.%d, required %d.%d\n", PROT_VER_MAJOR, PROT_VER_MINOR, major, minor);
 		}
 		if (minor != PROT_VER_MINOR) {
-			char buff[100];
-			sprintf(buff, "Using wrong prot version %d.%d, the current is %d.%d", PROT_VER_MAJOR, PROT_VER_MINOR, major, minor);
-			printf("%s\n", buff);
+			std::stringstream ss;
+			ss << "Using wrong communication prot version " << PROT_VER_MAJOR << "." << PROT_VER_MINOR <<
+				"; but current is " << major << "." << minor << ".";
+			gParseMessageAtLogin = ss.str();
+			printf("%s\n", gParseMessageAtLogin.c_str());
 		}
 		gClientAvailMinor = Parseuint16(b+5);
 		gClientAvailMajor = Parseuint16(b+7);

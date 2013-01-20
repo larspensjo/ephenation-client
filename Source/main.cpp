@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -192,9 +192,7 @@ void APIENTRY DebugFunc(GLenum source, GLenum type, GLuint id, GLenum severity, 
 	case GL_DEBUG_SEVERITY_LOW_ARB: typeSeverity = "Low"; break;
 	}
 
-	printf("%s from %s,\t%s priority\nMessage: %s\n",
-	       errorType.c_str(), srcName.c_str(), typeSeverity.c_str(), message);
-	if (severity == GL_DEBUG_SEVERITY_HIGH_ARB && !gIgnoreOpenGLErrors)
+	if (severity == GL_DEBUG_SEVERITY_HIGH_ARB || !gIgnoreOpenGLErrors)
 		printf("%s from %s,\t%s priority\nMessage: %s\n", errorType.c_str(), srcName.c_str(), typeSeverity.c_str(), message); // Can't use ErrorDialog() here.
 }
 
@@ -218,9 +216,7 @@ void APIENTRY DebugFuncAMD(GLuint id, GLenum category, GLenum severity, GLsizei 
 	case GL_DEBUG_CATEGORY_OTHER_AMD: typeCategory = "Other"; break;
 	}
 
-	printf("%s,\t%s priority\nMessage: %s\n",
-	       typeCategory.c_str(), typeSeverity.c_str(), message);
-	if (severity == GL_DEBUG_SEVERITY_HIGH_ARB && !gIgnoreOpenGLErrors)
+	if (severity == GL_DEBUG_SEVERITY_HIGH_ARB || !gIgnoreOpenGLErrors)
 		printf("%s,\t%s priority\nMessage: %s\n", typeCategory.c_str(), typeSeverity.c_str(), message); // Can't use ErrorDialog() here.
 }
 
@@ -240,6 +236,7 @@ static struct option long_options[] = {
 	{"singlethread", no_argument,  &sSingleThread, 1},
 	{"testuser", no_argument,      &sTestUser, 1},
 	{"hidegui", no_argument,       &sHideGUI, 1},
+	{"ignoreerror", no_argument,   &gIgnoreOpenGLErrors, 1},
 	{0, 0, 0, 0}
 };
 
@@ -377,8 +374,6 @@ int main(int argc, char** argv) {
 	if ((major == 3 && minor < 3) || major < 3) {
 		ErrorDialog("OpenGL context version parsed by GLFW: %u.%u.%u. Version 3.3 required\n", major, minor, revision);
 	}
-	if (major > 3 || (major == 3 && minor > 2))
-		vGL_3_3 = true;
 
 	if (gDebugOpenGL) {
 		dumpInfo(major, minor, revision); // Enable this to show some version information about the OpenGL and the graphics card.

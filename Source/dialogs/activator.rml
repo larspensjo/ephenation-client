@@ -22,9 +22,31 @@
 	<link type="text/rcss" href="ephenation.rcss"/>
 	<link type="text/rcss" href="popup.rcss"/>
 	<style>
+	.short { width: 7%; }
+	.longlabel { width: 16%; }
+	.description { width: 80%; }
+	.mediumdescr { width: 30%; }
+	.separator {
+		icon-background-decorator: tiled-horizontal;
+		icon-background-left-image: brass_theme_1a.bmp 432px 272px 436px 275px;
+		icon-background-center-image: brass_theme_1a.bmp stretch 437px 272px 510px 275px;
+		icon-background-right-image: brass_theme_1a.bmp 511px 272px 512px 275px;
+		height: 4px;
+		margin-top: 5px;
+		margin-bottom: 5px;
+	}
+
+	/* Used for a multi line list of choices, one per line */
+	.controls {
+		height: 95%;
+		width: 97%; /* This will fit perfectly inside the panel */
+		overflow: auto; /* Text flowing outside the area is not shown */
+		line-height: 1em; /* Default is 1.2em */
+		display: block;
+	}
 	</style>
 </head>
-<body id="body">
+<body id="body" handler="activator">
 	<div class="screencenter"> <div class="pergament">
 		<form onsubmit="activator">
 			<div class="header" id="header">
@@ -34,63 +56,90 @@
 				<tab>Actions</tab>
 				<panel>
 					<div class="controls">
-						Spawn monster:
-						<select name="Activator.spawnmonster">
-							<option name="Activator.spawnmonster" value="1" selected>None</option>
-							<option name="Activator.spawnmonster" value="2">Level-2</option>
-							<option name="Activator.spawnmonster" value="3">Level-1</option>
-							<option name="Activator.spawnmonster" value="4">Level+0</option>
-							<option name="Activator.spawnmonster" value="5">Level+1</option>
-							<option name="Activator.spawnmonster" value="6">Level+2</option>
-						</select><br/>
-						Sound effect:
-						<select name="Activator.soundeffect" onchange="soundeffect">
-						</select>
-						<button class="formatbutton" onclick="testsound" name="apa">Test</button><br/>
-						Reward:
-						<select name="Activator.reward">
-							<option name="Activator.reward" value="1">AAA</option>
-							<option name="Activator.reward" value="2">BBB</option>
-						</select><br/>
-						Jelly block:
-						<select name="Activator.jellyblock">
-							<option name="Activator.jellyblock" value="1">AAA</option>
-							<option name="Activator.jellyblock" value="2">BBB</option>
-						</select><br/>
-						Broadcast:
-						<input type="checkbox" name="Activator.broadcast" value="1"/>
-						<input type="text" name="Activator.boradcastdist" class="onelineinput" />blocks<br/>
-						Add key:
-						<input type="checkbox" name="Activator.addkey" value="1"/>
-						Descr:
-						<input type="text" name="Activator.addkey.text" class="onelineinput" />
-						Id:
-						<input type="text" name="Activator.addkey.id" />
-						<select name="Activator.addkey.picture">
-							<option name="Activator.addkey.picture" value="1">AAA</option>
-							<option name="Activator.addkey.picture" value="2">BBB</option>
-						</select><br/>
-						Text message:
-						<textarea name="Activator.message" style="width: 400px; height: 80px; background: white; font:georgia;" />
+						<table>
+							<tr><td class="longlabel">Spawn monster:</td><td class="mediumdescr">
+								<select name="Activator.spawnmonster">
+									<option name="Activator.spawnmonster" value="" selected>None</option>
+									<option name="Activator.spawnmonster" value="-3">Level-3</option>
+									<option name="Activator.spawnmonster" value="-2">Level-2</option>
+									<option name="Activator.spawnmonster" value="-1">Level-1</option>
+									<option name="Activator.spawnmonster" value="0">Level+0</option>
+									<option name="Activator.spawnmonster" value="+1">Level+1</option>
+									<option name="Activator.spawnmonster" value="+2">Level+2</option>
+									<option name="Activator.spawnmonster" value="+3">Level+3</option>
+								</select><br/>
+							</td></tr>
+							<tr>
+								<td class="longlabel">Sound effect:</td>
+								<td class="mediumdescr"><select name="Activator.soundeffect" onchange="soundeffect"></select></td>
+								<td class="mediumdescr"><button class="formatbutton" onclick="testsound" name="apa">Test</button></td>
+							</tr>
+							<tr>
+								<td class="longlabel">Reward:</td>
+								<td class="mediumdescr"><select name="Activator.reward"></select></td>
+							</tr>
+							<tr>
+								<td class="longlabel">Jelly block:</td>
+								<td class="mediumdescr"><select name="Activator.jellyblock"></select></td>
+							</tr>
+							<tr> <td class="separator" /> </tr>
+							<tr>
+								<td class="longlabel">Broadcast:</td>
+								<td class="short"><input type="checkbox" name="Activator.broadcast" value="1"/></td>
+								<td class="short">Blocks:</td>
+								<td class="mediumdescr"><input type="text" name="Activator.boradcastdist" class="onelineinput" style="width: 70px;" /></td>
+							</tr>
+							<tr> <td class="separator" /> </tr>
+							<tr>
+								<td class="longlabel">Add key:</td>
+								<td class="short"><input type="checkbox" name="Activator.addkey" value="1"/></td>
+								<td class="short">Descr:</td>
+								<td class="mediumdescr"><input type="text" name="Activator.addkey.text" class="onelineinput" /></td>
+								<td class="short">Id:</td>
+								<td class="mediumdescr"><input type="text" name="Activator.addkey.id" class="onelineinput" style="width: 70px;" /></td>
+							</tr>
+							<tr> <td class="separator" /> </tr>
+							<tr>
+								<td class="longlabel">Text message:</td>
+								<td><textarea name="Activator.message" style="height: 88px; font:georgia; padding: 2px; border-width: 2px; border-color: gray; overflow: auto;" /></td>
+							</tr>
+						</table>
 					</div>
 				</panel>
 				<tab>Conditions</tab>
 				<panel>
 					<div class="controls">
-						Conditional key:
-						<input type="checkbox" name="Activator.condkey" value="1"/>
-						Key:
-						<input type="text" name="Activator.condkey.key" class="onelineinput" />
-						Message:
-						<input type="text" name="Activator.condkey.message" class="onelineinput" />
-						Owner:
-						<input type="text" name="Activator.condkey.owner" class="onelineinput" /> <br/>
-						Inhibit retrigger:
-						<input type="text" name="Activator.condkey.inhbit" class="onelineinput" /> <br/>
-						maximum player level:
-						<input type="text" name="Activator.condkey.player.level.max" class="onelineinput" /> <br/>
-						Minimum player level:
-						<input type="text" name="Activator.condkey.player.level.min" class="onelineinput" /> <br/>
+						<table>
+							<tr>
+								<td class="longlabel">Conditional key:</td>
+								<td class="short"><input type="checkbox" name="Activator.condkey" value="1"/></td>
+								<td class="short">Key #:</td>
+								<td class="mediumdescr"><input type="text" name="Activator.condkey.key" class="onelineinput" style="width: 70px;" /></td>
+							</tr>
+							<tr>
+								<td class="short">&nbsp;</td>
+								<td class="longlabel">Owner:</td>
+								<td class="mediumdescr"><input type="text" name="Activator.condkey.owner" class="onelineinput" style="width: 70px;" /></td>
+							</tr>
+							<tr>
+								<td class="short">&nbsp;</td>
+								<td class="longlabel">Message:</td>
+								<td style="width:70%;"><input type="text" name="Activator.condkey.message" class="onelineinput" style="witdh:100%;"/></td>
+							</tr>
+							<tr> <td class="separator" /> </tr>
+							<tr>
+								<td class="mediumdescr">Inhibit retrigger:</td>
+								<td class="mediumdescr"><input type="text" name="Activator.inhbit" class="onelineinput" style="width: 70px;" /></td>
+							</tr>
+							<tr>
+								<td class="mediumdescr">Maximum player level:</td>
+								<td class="mediumdescr"><input type="text" name="Activator.player.level.max" class="onelineinput" style="width: 70px;" /></td>
+							</tr>
+							<tr>
+								<td class="mediumdescr">Minimum player level:</td>
+								<td class="mediumdescr"><input type="text" name="Activator.player.level.min" class="onelineinput" style="width: 70px;" /></td>
+							</tr>
+						</table>
 					</div>
 				</panel>
 			</tabset>

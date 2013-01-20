@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -24,21 +24,18 @@
 #include <GL/glfw.h>
 #include <math.h>
 #include <Rocket/Debugger.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 #ifndef M_PI
 #define M_PI		3.14159265358979323846
 #endif
 
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
 #include "primitives.h"
-#include "object.h"
 #include "player.h"
 #include "gamedialog.h"
 #include "connection.h"
 #include "client_prot.h"
-#include "render.h"
-#include "chunk.h"
 #include "msgwindow.h"
 #include "parse.h"
 #include "textures.h"
@@ -59,12 +56,11 @@
 #include "Map.h"
 #include "ScrollingMessages.h"
 #include "Teleport.h"
-#include "ui/messagedialog.h"
+#include "ui/base.h"
 #include "ui/RocketGui.h"
 #include "ui/Error.h"
-#include "shadowrender.h"
+#include "ui/factory.h"
 #include "uniformbuffer.h"
-#include "shadowconfig.h"
 #include "billboard.h"
 #include "rendercontrol.h"
 #include "timemeasure.h"
@@ -169,9 +165,6 @@ chunk *gameDialog::FindSelectedSurface(int x, int y, ChunkOffsetCoord *coc, int 
 	return cp;
 }
 
-ChunkCoord gRequestActivatorChunk;
-int gRequestActivatorX, gRequestActivatorY, gRequestActivatorZ;
-
 void gameDialog::AttachBlockToSurface(int row, int col) {
 	ChunkOffsetCoord coc;
 	int surfaceDir = 0;
@@ -248,11 +241,31 @@ void gameDialog::AttachBlockToSurface(int row, int col) {
 	b[18] = fBuildingBlocks->CurrentBlockType();
 	SendMsg(b, sizeof b);
 	if (fBuildingBlocks->CurrentBlockType() == BT_Text) {
-		gRequestActivatorChunk = cc;
-		gRequestActivatorX = x;
-		gRequestActivatorY = y;
-		gRequestActivatorZ = z;
+		fRequestActivatorChunk = cc;
+		fRequestActivatorX = x;
+		fRequestActivatorY = y;
+		fRequestActivatorZ = z;
 	}
+}
+
+void gameDialog::CreateActivatorMessage(int dx, int dy, int dz, const ChunkCoord &cc) {
+	if (dx == fRequestActivatorX && dy == fRequestActivatorY && dz == fRequestActivatorZ &&
+			cc.x == fRequestActivatorChunk.x &&
+			cc.y == fRequestActivatorChunk.y &&
+			cc.z == fRequestActivatorChunk.z)
+	{
+		fCurrentRocketContextInput = fMainUserInterface.GetRocketContext();
+		gDialogFactory.Make(fCurrentRocketContextInput, "activator.rml");
+		fRequestActivatorX = -1; // Ensure it will not match by accident
+	}
+}
+
+// TODO: It is a sign of bad design when there is both a getter and a setter for the same data.
+void gameDialog::GetActivator(int &dx, int &dy, int &dz, ChunkCoord &cc) {
+	dx = fRequestActivatorX;
+	dy = fRequestActivatorY;
+	dz = fRequestActivatorZ;
+	cc = fRequestActivatorChunk;
 }
 
 // The player clicked on an object. Depending on mode, we either
@@ -506,9 +519,9 @@ void gameDialog::HandleKeyPress(int key) {
 
 	if (fCurrentRocketContextInput) {
 		if (key == GLFW_KEY_ENTER || key == GLFW_KEY_KP_ENTER)
-			fMessageDialog.DefaultButton();
+			BaseDialog::DispatchDefault();
 		else if (key == GLFW_KEY_ESC)
-			fMessageDialog.CancelButton();
+			BaseDialog::DispatchCancel();
 		else
 			fCurrentRocketContextInput->ProcessKeyDown(RocketGui::KeyMap(key), rocketKeyModifiers);
 		return;
@@ -552,8 +565,8 @@ void gameDialog::HandleKeyPress(int key) {
 			fShowInventory = false;
 			gMsgWindow.SetAlternatePosition(0,0,false);
 		} else {
-			fMessageDialog.LoadDialog("dialogs/topleveldialog.rml");
 			fCurrentRocketContextInput = fMainUserInterface.GetRocketContext();
+			gDialogFactory.Make(fCurrentRocketContextInput, "topleveldialog.rml");
 		}
 		break;
 	case 'C':
@@ -845,8 +858,8 @@ glm::mat4 gViewMatrix; // Store the view matrix
 void gameDialog::render(bool hideGUI) {
 	if (fCurrentRocketContextInput == 0 && gMode.Get() == GameMode::LOGIN) {
 		// Login mode, get the login dialog.
-		fMessageDialog.LoadForm("login.rml");
 		fCurrentRocketContextInput = fMainUserInterface.GetRocketContext();
+		gDialogFactory.Make(fCurrentRocketContextInput, "login.rml");
 	}
 
 	static bool first = true; // Only true first time function is called
@@ -893,17 +906,17 @@ void gameDialog::render(bool hideGUI) {
 		static bool wasDead = false;
 		if (gPlayer.IsDead() && !wasDead) {
 			wasDead = true;
-			fMessageDialog.Set("Oops", "You are dead.\n\nYou will be revived, and transported back to your starting place.\n\nThe place can be changed with a scroll of resurrection point.", revive);
+			sgPopupTitle = "Oops";
+			sgPopup = "You are dead.\n\nYou will be revived, and transported back to your starting place.\n\nThe place can be changed with a scroll of resurrection point.";
 			fCurrentRocketContextInput = fMainUserInterface.GetRocketContext();
+			gDialogFactory.Make(fCurrentRocketContextInput, "messagedialog.rml", revive);
 			this->ClearForDialog();
 		} else if (fShowInventory)
 			gInventory.DrawInventory(fDrawTexture);
 		else if (sgPopup.length() > 0) {
 			// There are some messages that shall be shown in a popup dialog.
-			fMessageDialog.Set(sgPopupTitle, sgPopup, 0);
 			fCurrentRocketContextInput = fMainUserInterface.GetRocketContext();
-			sgPopupTitle = "Ephenation"; // Reset to default.
-			sgPopup.clear();
+			gDialogFactory.Make(fCurrentRocketContextInput, "messagedialog.rml");
 			this->ClearForDialog();
 		}
 
@@ -1068,8 +1081,6 @@ void gameDialog::init(void) {
 		ErrorDialog("Missing input line in main user interface");
 	fInputLine->AddReference();
 	fInputLine->Blur(); // Don't want a flashing cursor until player wants to input text.
-
-	fMessageDialog.Init(fMainUserInterface.GetRocketContext());
 
 	checkError("gameDialog::init");
 }
