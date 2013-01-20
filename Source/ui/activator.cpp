@@ -169,7 +169,7 @@ void ActivatorDialog::FormEvent(Rocket::Core::Event& event, const string &action
 		ss << "/invadd:" << code << " ";
 
 
-	string jellyblock = fFormResultValues["Activator.reward"];
+	string jellyblock = fFormResultValues["Activator.jellyblock"];
 	if (jellyblock != "") {
 		ss << jellyblock << " ";
 	}
