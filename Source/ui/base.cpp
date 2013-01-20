@@ -89,8 +89,10 @@ bool BaseDialog::ClickEvent(Rocket::Core::Event& event, const string &action) {
 		return true;
 	} else if (split[0] == "Popup" && split.size() == 2) {
 		gDialogFactory.Make(fStack.back().fDocument->GetContext(), split[1]);
+		return true;
 	} else if (split[0] == "Form" && split.size() == 2) {
 		gDialogFactory.Make(fStack.back().fDocument->GetContext(), split[1]);
+		return true;
 	} else if (action == "Quit") {
 		// Pop all saved documents, if any.
 		while(this->Pop())

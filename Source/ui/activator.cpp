@@ -26,6 +26,7 @@
 #include "../SoundControl.h"
 #include "../Inventory.h"
 #include "../gamedialog.h"
+#include "../SoundControl.h"
 
 #define NELEM(x) (sizeof(x) / sizeof (x[0]))
 
@@ -82,6 +83,7 @@ void ActivatorDialog::UpdateInput(Rocket::Core::Element *e) {
 		if (element == 0)
 			return;
 		if (name == "Activator.soundeffect") {
+			fSoundSelector = element;
 			element->RemoveAll();
 			for (unsigned i=0; i < gSoundControl.fNumTrigSounds; i++) {
 				const SoundControl::TrigSoundItem *s = &SoundControl::fTrigSoundList[i];
@@ -200,4 +202,15 @@ void ActivatorDialog::FormEvent(Rocket::Core::Event& event, const string &action
 
 	if (!this->Pop())
 		gGameDialog.ClearInputRedirect(); // Normal case
+}
+
+bool ActivatorDialog::ClickEvent(Rocket::Core::Event& event, const string &action) {
+	if (BaseDialog::ClickEvent(event, action))
+		return true;
+	if (action == "testsound" && fSoundSelector != 0) {
+		// printf("ActivatorDialog::ClickEvent Current value is %s\n", fSoundSelector->GetValue().CString());
+		gSoundControl.RequestTrigSound(fSoundSelector->GetValue().CString());
+		return true;
+	}
+	return false;
 }
