@@ -20,11 +20,11 @@
 
 #include "factory.h"
 #include "base.h"
-#include "Error.h"
 #include "activator.h"
 #include "login.h"
 #include "simple.h"
 #include "options.h"
+#include "../assert.h"
 
 DialogFactory gDialogFactory;
 
@@ -47,12 +47,8 @@ void DialogFactory::Make(Rocket::Core::Context *context, const std::string &file
 	auto tag = document->GetTagName();
 	// auto type = document->GetAttribute("type", def);
 	string handler = document->GetAttribute("handler", def).CString();
-	if (handler == "") {
-		ErrorDialog("DialogFactory::Make: No handler defined for body of %s", file.c_str());
-	}
+	ASSERT (handler != "");
 	auto it = fMap.find(handler);
-	if (it == fMap.end()) {
-		ErrorDialog("DialogFactory::Make: No handler registered for %s", handler.c_str());
-	}
+	ASSERT(it != fMap.end());
 	it->second->UseDocument(document, callback);
 }

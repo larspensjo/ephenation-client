@@ -21,7 +21,6 @@
 #include <Rocket/Controls.h>
 
 #include "base.h"
-#include "Error.h"
 #include "factory.h"
 #include "../gamedialog.h"
 #include "../Splitter.h"
@@ -30,6 +29,7 @@
 #include "../connection.h"
 #include "../SoundControl.h"
 #include "../Inventory.h"
+#include "../modes.h"
 
 using std::string;
 using std::stringstream;
