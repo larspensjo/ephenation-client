@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -39,26 +39,30 @@ class AddLocalFog;
 class AddSSAO;
 class MainUserInterface;
 
-/**
- * @brief Manage buffers and shaders for the various render passes
- *
- * All drawing stages are controlled from this class. The main activities are:
- * 1. A Frame Buffer Object to use as a target for the first rendering.
- * 2. Call the functions that update the images in the FBO
- * 3. Project the final result to the screen.
- */
+/// This is the top level View of the Model/View/Controller
+/// Manage buffers and shaders for the various render passes
+/// All drawing stages are controlled from this class. The main activities are:
+/// -# A Frame Buffer Object to use as a target for the first rendering.
+/// -# Call the functions that update the images in the FBO
+/// -# Project the final result to the screen.
 class RenderControl {
 public:
 	RenderControl();
 	virtual ~RenderControl();
 
-	// Initialize the FBO to a specified size, and allocate buffers.
+	/// Initialize the FBO to a specified size, and allocate buffers.
 	void Resize(GLsizei width, GLsizei height);
 
 	void Init(void);
 	void ShadowMapMatrix(const glm::mat4 &) const;
 
-	GLuint Debug(void);
+	/// Do the actual drawing
+	/// @param underwater True if underwater effects shall be applied
+	/// @param thirdPersonView True if the drawing shall be done from a third person view
+	/// @param selectedObject This object shall be visibly marked
+	/// @param showMap True if a map shall be shown
+	/// @param mapWidth Pixels in width used when drawing a map
+	/// @param ui Pointer to the user interface
 	void Draw(bool underWater, bool thirdPersonView, std::shared_ptr<const Object> selectedObject, bool showMap, int mapWidth, MainUserInterface *ui);
 private:
 

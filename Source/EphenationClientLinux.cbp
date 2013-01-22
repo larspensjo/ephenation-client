@@ -203,12 +203,8 @@
 		<Unit filename="textures.h" />
 		<Unit filename="timemeasure.cpp" />
 		<Unit filename="timemeasure.h" />
-		<Unit filename="ui/Credits.cpp" />
-		<Unit filename="ui/Credits.h" />
 		<Unit filename="ui/Error.cpp" />
 		<Unit filename="ui/Error.h" />
-		<Unit filename="ui/HelpDialog.cpp" />
-		<Unit filename="ui/HelpDialog.h" />
 		<Unit filename="ui/RocketGui.cpp" />
 		<Unit filename="ui/RocketGui.h" />
 		<Unit filename="ui/RocketRenderInterface.cpp" />

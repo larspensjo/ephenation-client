@@ -42,21 +42,24 @@ namespace Rocket {
 };
 
 /// This corresponds to the controller class in a Model/View/controller.
-/// * keyboard input
-/// * mouse input
-/// * decide what shall be shown on the screen
-/// * window resize events
-/// * a few special effects (zooming)
-/// * manage construction of activator blocks
+/// - keyboard input
+/// - mouse input
+/// - decide what shall be shown on the screen
+/// - window resize events
+/// - a few special effects (zooming)
+/// - manage construction of activator blocks
 /// @todo This class has grown to be rather fat. A refactoring is needed.
 /// @todo Some things here remains from old, and is not really part of the controller class.
 class gameDialog {
 public:
 	gameDialog();
+	/// Render many things.
+	/// @todo Nothing should be renderred from here, it should all go into the View of the MVC.
 	void render(bool hideGUI);
 	void init();
 	~gameDialog();
 	void handleMouse(int button, int action);
+	/// Polled to update various states
 	void Update();
 	void SetMessage(const char *);
 	void HandleKeyRelease(int key); // Keyboard event
@@ -114,13 +117,23 @@ private:
 	unsigned char fDebugText[1000]; // TODO: use std::string
 	unsigned int fDebugTextLength;
 	chunk *FindSelectedSurface(int x, int y, ChunkOffsetCoord *, int *surfaceDir);
+	/// Draw the player stats in the upper right corner
+	/// @todo This should go into the View of the MVC.
 	void DrawPlayerStats(void) const;
+	/// Draw the player weapon
+	/// @todo Should go int the View of the MVC.
 	void DrawWeapon(void) const;
-	void DrawHealingAnimation(bool restart) const; // Draw a healing animation
+	/// Draw a healing self animation
+	/// @todo Should go into the View of the MVC.
+	void DrawHealingAnimation(bool restart) const;
+	/// Draw the compass rose
+	/// @todo Should go intop the View of the MVC
 	void DrawCompassRose(void) const;
-	void UpdateCameraPosition(void); // Check if camera position is inside a wall
-	// Call this when a dialog will be showed, to stop movement, etc. All key presses will be
-	// henceforth be forwarded to the dialog, and the player can't stop moving.
+	/// Check if camera position is inside a wall
+	/// @todo Should go into the View of the MVC
+	void UpdateCameraPosition(void);
+	/// Call this when a dialog will be showed, to stop movement, etc.
+	/// All key presses will henceforth be forwarded to the dialog, so the player can't stop moving.
 	void ClearForDialog(void);
 	std::shared_ptr<const Object> fSelectedObject; // Pointer to the object (monster, player, ...) that is selected
 	ChunkShader *fShader;
@@ -145,6 +158,7 @@ private:
 extern gameDialog gGameDialog;
 extern float renderViewAngle;
 
-// A string that automatically will be shown in a pop up window.
+/// A string that automatically will be shown in a pop up window.
 extern string sgPopup;
-extern string sgPopupTitle; // Use this title in the next popup message window.
+/// Use this title in the next popup message window.
+extern string sgPopupTitle;
