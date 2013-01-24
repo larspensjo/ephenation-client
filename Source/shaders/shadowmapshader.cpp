@@ -22,7 +22,6 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include "shadowmapshader.h"
 #include "../primitives.h"
-#include "../uniformbuffer.h"
 #include "../shadowconfig.h"
 
 /// The shadowmap is based on coordinates that are transformed from infinite world to bitmap size.

@@ -22,7 +22,6 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include "ChunkShader.h"
 #include "../primitives.h"
-#include "../uniformbuffer.h"
 #include "../ui/Error.h"
 
 /// Using GLSW to define shader
@@ -30,16 +29,16 @@ static const GLchar *vertexShaderSource[] = {
 	"#version 330\n", // This corresponds to OpenGL 3.3
 	"common.UniformBuffer",
 	"#define VERTEXSCALING "  STR(VERTEXSCALING) "\n", // The is the scaling factor used for vertices
-	"#define NORMALSCALING "  STR(NORMALSCALING) "\n", // The is the scaling factor used for vertices
-	"#define TEXTURESCALING "  STR(TEXTURESCALING) "\n", // The is the scaling factor used for vertices
-	"chunkshader.Vertex"
+	"#define NORMALSCALING "  STR(NORMALSCALING) "\n", // The is the scaling factor used for normals
+	"#define TEXTURESCALING "  STR(TEXTURESCALING) "\n", // The is the scaling factor used for textures
+	"chunkshader.Vertex",
 };
 
 /// Using GLSW to define shader
 static const GLchar *fragmentShaderSource[] = {
 	"#version 330\n", // This corresponds to OpenGL 3.3
 	"common.UniformBuffer",
-	"chunkshader.Fragment"
+	"chunkshader.Fragment",
 };
 
 ChunkShader *ChunkShader::Make(void) {

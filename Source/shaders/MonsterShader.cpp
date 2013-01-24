@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -22,51 +22,18 @@
 #include <glm/gtc/matrix_inverse.hpp>
 #include "MonsterShader.h"
 #include "../primitives.h"
-#include "../uniformbuffer.h"
 
-// Minimum program for drawing text
+/// Using GLSW to define shader
 static const GLchar *vertexShaderSource[] = {
 	"#version 330\n", // This corresponds to OpenGL 3.3
-	UNIFORMBUFFER
-	"uniform mat4 modelViewMatrix;\n",
-	"uniform mat3 normalMatrix;\n", // TODO: This can be computed from the model matrix
-	"uniform mat4 modelMatrix;\n",
-	"uniform int cycle;\n",
-	"in vec3 vertex;\n",
-	"in vec2 texCoord;\n",
-	"in vec3 normal;\n",
-	"out vec2 fragmentTexCoord;\n",
-	"out vec3 fragNormal;\n",
-	"out vec3 position;\n",
-	"void main(void)\n",
-	"{\n",
-	"	fragmentTexCoord = texCoord/180;\n", // This will stretch the texture over several blocks.
-	"	fragNormal = normalize(normalMatrix * normal);\n",
-	"	gl_Position = UBOProjectionMatrix * modelViewMatrix * vec4(vertex,1.0);\n",
-	"	position = vec3(modelMatrix * vec4(vertex, 1.0));\n", // Copy position to the fragment shader
-	"}\n",
+	"common.UniformBuffer",
+	"monster.Vertex",
 };
 
+/// Using GLSW to define shader
 static const GLchar *fragmentShaderSource[] = {
 	"#version 330\n", // This corresponds to OpenGL 3.3
-	"uniform sampler2D firstTexture;\n",
-	"uniform vec4 colorAddon;\n", // Allow the color to be tweaked.
-	"uniform float sunIntensity = 1;\n",
-	"uniform float ambient = 0.2;\n",
-	"in vec2 fragmentTexCoord;\n",
-	"in vec3 fragNormal;\n",
-	"in vec3 position;\n",       // The model coordinate, as given by the vertex shader
-	"out vec4 diffuseOutput;\n", // layout(location = 0)
-	"out vec4 posOutput;\n",     // layout(location = 1)
-	"out vec4 normOutput;\n",    // layout(location = 2)
-	"out vec4 blendOutput;\n",   // layout(location = 3)
-	"void main(void)\n",
-	"{\n",
-	"	diffuseOutput = texture(firstTexture, fragmentTexCoord) + colorAddon;\n",
-	"   posOutput = vec4(position,sunIntensity);\n", // Set the sun flag in the alpha channel
-	"   normOutput = vec4(fragNormal, ambient);\n", // Add some ambient in alpha channel. No normalize() needed as long as all surfaces are flat.
-	// "	gl_FragColor = vec4(fragNormal, 1);\n", // Used for debugging texture coordinates.
-	"}\n",
+	"monsters.Fragment",
 };
 
 MonsterShader::MonsterShader() {
@@ -92,7 +59,7 @@ MonsterShader *MonsterShader::Make(void) {
 	if (fgSingleton.fgVertexIndex == -1) {
 		const GLsizei vertexShaderLines = sizeof(vertexShaderSource) / sizeof(GLchar*);
 		const GLsizei fragmentShaderLines = sizeof(fragmentShaderSource) / sizeof(GLchar*);
-		fgSingleton.Init("MonsterShader", vertexShaderLines, vertexShaderSource, fragmentShaderLines, fragmentShaderSource);
+		fgSingleton.Initglsw("MonsterShader", vertexShaderLines, vertexShaderSource, fragmentShaderLines, fragmentShaderSource);
 	}
 	return &fgSingleton;
 }

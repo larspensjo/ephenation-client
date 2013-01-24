@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -21,35 +21,16 @@
 #include "modulatedtextureshader.h"
 #include "../primitives.h"
 
-// Minimum program for drawing text
+/// Using GLSW to define shader
 static const GLchar *vertexShaderSource[] = {
 	"#version 330\n",
-	"uniform mat4 UprojectionMatrix;\n",
-	"uniform mat4 UmodelViewMatrix;\n",
-	"layout (location=0) in vec3 Avertex;\n",   // Location must match VERTEX_INDEX
-	"layout (location=1) in vec2 AtexCoord;\n", // Location must match TEXTURE_INDEX
-	"layout (location=2) in vec3 AcolorFactor;" // Location must match COLOR_INDEX
-	"out vec2 fragmentTexCoord;\n",
-	"out vec3 colorFactor;"
-	"void main(void)\n",
-	"{\n",
-	"	fragmentTexCoord = AtexCoord;"
-	"	colorFactor = AcolorFactor;"
-	"	gl_Position = UprojectionMatrix * UmodelViewMatrix * vec4(Avertex,1.0);\n",
-	"}\n",
+	"modulatedtexture.Vertex"
 };
 
+/// Using GLSW to define shader
 static const GLchar *fragmentShaderSource[] = {
-	"#version 330\n"
-	"uniform sampler2D UfirstTexture;\n",
-	"in vec2 fragmentTexCoord;\n",
-	"in vec3 colorFactor;"
-	"void main(void)\n",
-	"{\n",
-	"	gl_FragColor = texture(UfirstTexture, fragmentTexCoord);"
-	"	gl_FragColor.rgb *= colorFactor;"
-	"   if (gl_FragColor.a < 0.1) discard;\n",
-	"}\n",
+	"#version 330\n",
+	"modulatedtexture.Fragment"
 };
 
 ModulatedTextureShader::ModulatedTextureShader() {
@@ -60,7 +41,7 @@ ModulatedTextureShader::ModulatedTextureShader() {
 void ModulatedTextureShader::Init(void) {
 	const GLsizei vertexShaderLines = sizeof(vertexShaderSource) / sizeof(GLchar*);
 	const GLsizei fragmentShaderLines = sizeof(fragmentShaderSource) / sizeof(GLchar*);
-	ShaderBase::Init("ModulatedTextureShader", vertexShaderLines, vertexShaderSource, fragmentShaderLines, fragmentShaderSource);
+	ShaderBase::Initglsw("ModulatedTextureShader", vertexShaderLines, vertexShaderSource, fragmentShaderLines, fragmentShaderSource);
 }
 
 void ModulatedTextureShader::GetLocations(void) {

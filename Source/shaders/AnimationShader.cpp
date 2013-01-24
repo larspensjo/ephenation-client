@@ -22,7 +22,6 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include "AnimationShader.h"
 #include "../primitives.h"
-#include "../uniformbuffer.h"
 #include "../shadowconfig.h"
 
 /// Using GLSW to define shader

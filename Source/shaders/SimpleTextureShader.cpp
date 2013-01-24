@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -22,45 +22,23 @@
 #include "SimpleTextureShader.h"
 #include "../primitives.h"
 
-// Minimum program for drawing text
+/// Using GLSW to define shader
 static const GLchar *vertexShaderSource[] = {
 	"#version 130\n", // This corresponds to OpenGL 3.0
-	"precision mediump float;\n",
-	"uniform mat4 projectionMatrix;\n",
-	"uniform mat4 modelViewMatrix;\n",
-	"uniform vec3 textOffsMulti;\n", // This contains both a offset and a multiplier
-	"in vec3 vertex;\n",
-	"in vec2 texCoord;\n",
-	"out vec2 fragmentTexCoord;\n",
-	"void main(void)\n",
-	"{\n",
-	"   float textMult = textOffsMulti.z;\n",
-	"	fragmentTexCoord = texCoord*textMult + textOffsMulti.xy;\n",
-	"	gl_Position = projectionMatrix * modelViewMatrix * vec4(vertex,1.0);\n",
-	"}\n",
+	"simpletexture.Vertex",
 };
 
+/// Using GLSW to define shader
 static const GLchar *fragmentShaderSource[] = {
 	"#version 130\n", // This corresponds to OpenGL 3.0
-	"precision mediump float;\n",
-	"uniform sampler2D firstTexture;\n",
-	"uniform float forceTransparent;\n",
-	"uniform vec3 colorOffset;\n",
-	"in vec2 fragmentTexCoord;\n",
-	"void main(void)\n",
-	"{\n",
-	"	gl_FragColor = texture(firstTexture, fragmentTexCoord) + vec4(colorOffset, 0);\n",
-	"   if (gl_FragColor.a < 0.1) discard;\n",
-	"   if (forceTransparent < 1) gl_FragColor.a = forceTransparent;\n", // The transparency isn't used unless enabled.
-	// "	gl_FragColor = vec4(1.0, 0.5, 0.25, 1.0);\n",
-	"}\n",
+	"simpletexture.Fragment",
 };
 
 SimpleTextureShader *SimpleTextureShader::Make(void) {
 	if (fgSingleton.fgProjectionMatrixIndex == -1) {
 		const GLsizei vertexShaderLines = sizeof(vertexShaderSource) / sizeof(GLchar*);
 		const GLsizei fragmentShaderLines = sizeof(fragmentShaderSource) / sizeof(GLchar*);
-		fgSingleton.Init("SimpleTextureShader", vertexShaderLines, vertexShaderSource, fragmentShaderLines, fragmentShaderSource);
+		fgSingleton.Initglsw("SimpleTextureShader", vertexShaderLines, vertexShaderSource, fragmentShaderLines, fragmentShaderSource);
 	}
 	return &fgSingleton;
 }

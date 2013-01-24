@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -24,59 +24,21 @@
 #include "../primitives.h"
 #include "skybox.h"
 #include "../ui/Error.h"
-#include "../uniformbuffer.h"
 #include "../shapes/quad.h"
 #include "../player.h"
 #include "../textures.h"
 
-// ====================================================================================================================
-/**
- * @file
- * @link
- * @brief vertexShaderSource is the vertex shader for the skybox
- *
- * This vertex shader will only draw two triangles, limited to the part of the screen
- * that can be affected.
- * The vertex input is 0,0 in one corner and 1,1 in the other. Draw the quad at z -1, with x and y
- * going from -1 to 1 (and then transformed with the model matrix).
- *
- * @todo [position = pos*10000]
- */
-// ====================================================================================================================
+/// Using GLSW to define shader
 static const GLchar *vertexShaderSource[] = {
 	"#version 330\n", // This corresponds to OpenGL 3.3
-	UNIFORMBUFFER
-	"uniform mat3 UmodelMatrix;\n",         // Only rotation needed
-	"layout (location = 0) in vec2 vertex;\n",
-	"out vec2 TexCoord;\n",
-	"out vec3 position;\n",
-	"void main(void)\n",
-	"{\n",
-	"	mat3 view = mat3(UBOViewMatrix);"   // Only rotation needed
-	"	vec3 pos = UmodelMatrix * vec3(vertex*2-1, -1);"
-	"	gl_Position = UBOProjectionMatrix * vec4(view * pos, 1);"
-	"	position = pos*10000;"               // This is the important thing. That the sky has a coordinate that is very far away.
-	"	TexCoord = vertex;"
-	"}\n",
+	"common.UniformBuffer",
+	"skybox.Vertex",
 };
 
+/// Using GLSW to define shader
 static const GLchar *fragmentShaderSource[] = {
 	"#version 330\n", // This corresponds to OpenGL 3.3
-	"uniform sampler2D UTextureSampler;\n",
-	"in vec3 position;\n",       // The model coordinate, as given by the vertex shader
-	"in vec2 TexCoord;\n",
-
-	"layout(location = 0) out vec4 diffuseOutput;\n",
-	"layout(location = 1) out vec4 posOutput;\n",
-	"layout(location = 2) out vec4 normOutput;\n",
-
-	"void main(void)\n",
-	"{\n",
-	"   vec4 color = texture(UTextureSampler, TexCoord);\n",
-	"	diffuseOutput = color;"
-	"	normOutput = vec4(0,0,0,1);"    // Last byte is ambient light
-	"	posOutput = vec4(position, 1);" // Last byte is sun intensity
-	"}\n",
+	"skybox.Fragment",
 };
 
 SkyBox::SkyBox() {
@@ -92,7 +54,7 @@ SkyBox::SkyBox() {
 void SkyBox::Init(void) {
 	const GLsizei vertexShaderLines = sizeof(vertexShaderSource) / sizeof(GLchar*);
 	const GLsizei fragmentShaderLines = sizeof(fragmentShaderSource) / sizeof(GLchar*);
-	ShaderBase::Init("Skybox", vertexShaderLines, vertexShaderSource, fragmentShaderLines, fragmentShaderSource);
+	ShaderBase::Initglsw("Skybox", vertexShaderLines, vertexShaderSource, fragmentShaderLines, fragmentShaderSource);
 	checkError("SkyBox::Init");
 }
 
