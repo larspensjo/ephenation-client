@@ -63,7 +63,7 @@ static bool validJellyDir(const chunk *cp, int dir, int dx, int dy, int dz) {
 	dy += jellyList[dir].dy;
 	dz += jellyList[dir].dz;
 	// First make sure destination block is inside current chunk.
-	if (dx < 0 || dz >= CHUNK_SIZE || dy < 0 || dy >= CHUNK_SIZE || dz < 0 || dz >= CHUNK_SIZE)
+	if (dx < 0 || dx >= CHUNK_SIZE || dy < 0 || dy >= CHUNK_SIZE || dz < 0 || dz >= CHUNK_SIZE)
 		return false;
 	if (cp == 0)
 		return true; // Safe guard, should not happen
