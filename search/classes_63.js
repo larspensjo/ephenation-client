@@ -13,7 +13,6 @@ var searchData=
   ['chunkshaderpicking',['ChunkShaderPicking',['../classChunkShaderPicking.html',1,'']]],
   ['colorshader',['ColorShader',['../classColorShader.html',1,'']]],
   ['condition_5fvariable',['condition_variable',['../classstd_1_1condition__variable.html',1,'std']]],
-  ['creditscreen',['CreditScreen',['../classCreditScreen.html',1,'']]],
   ['cube',['Cube',['../classCube.html',1,'']]],
   ['cylinder',['Cylinder',['../classCylinder.html',1,'']]]
 ];

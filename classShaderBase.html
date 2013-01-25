@@ -120,9 +120,8 @@ Public Member Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9dd2a538a1760b1b8744e2e0a8075d27"></a><!-- doxytag: member="ShaderBase::Init" ref="a9dd2a538a1760b1b8744e2e0a8075d27" args="(const char *debug, int vertexShaderLines, const char **vertexShaderSource, int fragmentShaderLines, const char **fragmentShaderSource)" -->
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classShaderBase.html#a9dd2a538a1760b1b8744e2e0a8075d27">Init</a> (const char *debug, int vertexShaderLines, const char **vertexShaderSource, int fragmentShaderLines, const char **fragmentShaderSource)</td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize the shader program, and call back to setup uniform and attribute indices. <br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a12ba43f4f4228bb1b759f53f9e0d9e38"></a><!-- doxytag: member="ShaderBase::Initglsw" ref="a12ba43f4f4228bb1b759f53f9e0d9e38" args="(const char *debug, int vertexShaderLines, const char **vertexShaderSource, int fragmentShaderLines, const char **fragmentShaderSource)" -->
-void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classShaderBase.html#a12ba43f4f4228bb1b759f53f9e0d9e38">Initglsw</a> (const char *debug, int vertexShaderLines, const char **vertexShaderSource, int fragmentShaderLines, const char **fragmentShaderSource)</td></tr>
-<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Same as <a class="el" href="classShaderBase.html#a9dd2a538a1760b1b8744e2e0a8075d27" title="Initialize the shader program, and call back to setup uniform and attribute indices.">Init()</a>, but process all lines with the glsw shader wrangler. <br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classShaderBase.html#a12ba43f4f4228bb1b759f53f9e0d9e38">Initglsw</a> (const char *debug, int vertexShaderLines, const char **vertexShaderSource, int fragmentShaderLines, const char **fragmentShaderSource)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Same as <a class="el" href="classShaderBase.html#a9dd2a538a1760b1b8744e2e0a8075d27" title="Initialize the shader program, and call back to setup uniform and attribute indices.">Init()</a>, but process all lines with the glsw shader wrangler.  <a href="#a12ba43f4f4228bb1b759f53f9e0d9e38"></a><br/></td></tr>
 <tr><td colspan="2"><h2><a name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a43c4aeb651eaa7d12ffa45c65cb86cc5"></a><!-- doxytag: member="ShaderBase::Program" ref="a43c4aeb651eaa7d12ffa45c65cb86cc5" args="(void) const " -->
@@ -195,6 +194,56 @@ GLuint&#160;</td><td class="memItemRight" valign="bottom"><b>GetUniformBlockInde
 
 </div>
 </div>
+<a class="anchor" id="a12ba43f4f4228bb1b759f53f9e0d9e38"></a><!-- doxytag: member="ShaderBase::Initglsw" ref="a12ba43f4f4228bb1b759f53f9e0d9e38" args="(const char *debug, int vertexShaderLines, const char **vertexShaderSource, int fragmentShaderLines, const char **fragmentShaderSource)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classShaderBase.html#a12ba43f4f4228bb1b759f53f9e0d9e38">ShaderBase::Initglsw</a> </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>debug</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>vertexShaderLines</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char **&#160;</td>
+          <td class="paramname"><em>vertexShaderSource</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>fragmentShaderLines</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char **&#160;</td>
+          <td class="paramname"><em>fragmentShaderSource</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Same as <a class="el" href="classShaderBase.html#a9dd2a538a1760b1b8744e2e0a8075d27" title="Initialize the shader program, and call back to setup uniform and attribute indices.">Init()</a>, but process all lines with the glsw shader wrangler. </p>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000010">Todo:</a></b></dt><dd>dealloate using glDeleteProgram() and glDeleteShader() </dd></dl>
+<p>Add the same version to every vertex shader</p>
+<p>Add the same version to every fragment shader </p>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>shaders/shader.h</li>
 <li>shaders/shader.cpp</li>
@@ -217,7 +266,7 @@ GLuint&#160;</td><td class="memItemRight" valign="bottom"><b>GetUniformBlockInde
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Sun Jan 20 2013 18:29:51 for Ephenation by &#160;<a href="http://www.doxygen.org/index.html">
+Generated by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

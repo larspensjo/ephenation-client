@@ -1,6 +1,7 @@
 var searchData=
 [
   ['cachunk',['cachunk',['../structChunkCache_1_1cachunk.html',1,'ChunkCache']]],
+  ['camera',['Camera',['../classUniformBuffer.html#a9b43415a0fea05ec45dd37c870a8f781',1,'UniformBuffer']]],
   ['cancelbutton',['CancelButton',['../classBaseDialog.html#a137903846f7a6a6e44a801bbfa7ef3aa',1,'BaseDialog']]],
   ['chunk',['chunk',['../structchunk.html',1,'']]],
   ['chunkblocks',['ChunkBlocks',['../structChunkBlocks.html',1,'']]],
@@ -16,7 +17,6 @@ var searchData=
   ['clickevent',['ClickEvent',['../classBaseDialog.html#a0e64c53aaf6dc0fd68b27709e35c8063',1,'BaseDialog']]],
   ['colorshader',['ColorShader',['../classColorShader.html',1,'']]],
   ['condition_5fvariable',['condition_variable',['../classstd_1_1condition__variable.html',1,'std']]],
-  ['creditscreen',['CreditScreen',['../classCreditScreen.html',1,'']]],
   ['cube',['Cube',['../classCube.html',1,'']]],
   ['cylinder',['Cylinder',['../classCylinder.html',1,'']]]
 ];

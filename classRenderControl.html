@@ -86,9 +86,6 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!--header-->
 <div class="contents">
 <!-- doxytag: class="RenderControl" -->
-<p>Manage buffers and shaders for the various render passes.  
- <a href="classRenderControl.html#details">More...</a></p>
-
 <p><code>#include &lt;rendercontrol.h&gt;</code></p>
 
 <p><a href="classRenderControl-members.html">List of all members.</a></p>
@@ -96,20 +93,86 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <tr><td colspan="2"><h2><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a27ff96bb3b07efb33bdd11aa24b4f4b3"></a><!-- doxytag: member="RenderControl::Resize" ref="a27ff96bb3b07efb33bdd11aa24b4f4b3" args="(GLsizei width, GLsizei height)" -->
-void&#160;</td><td class="memItemRight" valign="bottom"><b>Resize</b> (GLsizei width, GLsizei height)</td></tr>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRenderControl.html#a27ff96bb3b07efb33bdd11aa24b4f4b3">Resize</a> (GLsizei width, GLsizei height)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize the FBO to a specified size, and allocate buffers. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0107433760a1f931231d6d4396130c01"></a><!-- doxytag: member="RenderControl::Init" ref="a0107433760a1f931231d6d4396130c01" args="(void)" -->
 void&#160;</td><td class="memItemRight" valign="bottom"><b>Init</b> (void)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1c242994dfc50db2c309fe451062c0ab"></a><!-- doxytag: member="RenderControl::ShadowMapMatrix" ref="a1c242994dfc50db2c309fe451062c0ab" args="(const glm::mat4 &amp;) const " -->
 void&#160;</td><td class="memItemRight" valign="bottom"><b>ShadowMapMatrix</b> (const glm::mat4 &amp;) const </td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4ee99e452cf748a1ccffce1f2665b6c7"></a><!-- doxytag: member="RenderControl::Debug" ref="a4ee99e452cf748a1ccffce1f2665b6c7" args="(void)" -->
-GLuint&#160;</td><td class="memItemRight" valign="bottom"><b>Debug</b> (void)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="acb8bc940af5eecf871119b53166a4abb"></a><!-- doxytag: member="RenderControl::Draw" ref="acb8bc940af5eecf871119b53166a4abb" args="(bool underWater, bool thirdPersonView, std::shared_ptr&lt; const Object &gt; selectedObject, bool showMap, int mapWidth, MainUserInterface *ui)" -->
-void&#160;</td><td class="memItemRight" valign="bottom"><b>Draw</b> (bool underWater, bool thirdPersonView, std::shared_ptr&lt; const <a class="el" href="classObject.html">Object</a> &gt; selectedObject, bool showMap, int mapWidth, <a class="el" href="classMainUserInterface.html">MainUserInterface</a> *ui)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRenderControl.html#acb8bc940af5eecf871119b53166a4abb">Draw</a> (bool underWater, bool thirdPersonView, std::shared_ptr&lt; const <a class="el" href="classObject.html">Object</a> &gt; selectedObject, bool showMap, int mapWidth, <a class="el" href="classMainUserInterface.html">MainUserInterface</a> *ui)</td></tr>
 </table>
 <hr/><a name="details" id="details"></a><h2>Detailed Description</h2>
-<div class="textblock"><p>Manage buffers and shaders for the various render passes. </p>
-<p>All drawing stages are controlled from this class. The main activities are: 1. A Frame Buffer <a class="el" href="classObject.html">Object</a> to use as a target for the first rendering. 2. Call the functions that update the images in the FBO 3. Project the final result to the screen. </p>
-</div><hr/>The documentation for this class was generated from the following files:<ul>
+<div class="textblock"><p>This is the top level View of the Model/View/Controller Manage buffers and shaders for the various render passes All drawing stages are controlled from this class. The main activities are:</p>
+<ol type="1">
+<li>A Frame Buffer <a class="el" href="classObject.html">Object</a> to use as a target for the first rendering.</li>
+<li>Call the functions that update the images in the FBO</li>
+<li>Project the final result to the screen. </li>
+</ol>
+</div><hr/><h2>Member Function Documentation</h2>
+<a class="anchor" id="acb8bc940af5eecf871119b53166a4abb"></a><!-- doxytag: member="RenderControl::Draw" ref="acb8bc940af5eecf871119b53166a4abb" args="(bool underWater, bool thirdPersonView, std::shared_ptr&lt; const Object &gt; selectedObject, bool showMap, int mapWidth, MainUserInterface *ui)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classRenderControl.html#acb8bc940af5eecf871119b53166a4abb">RenderControl::Draw</a> </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>underWater</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>thirdPersonView</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::shared_ptr&lt; const <a class="el" href="classObject.html">Object</a> &gt;&#160;</td>
+          <td class="paramname"><em>selectedObject</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>showMap</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>mapWidth</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classMainUserInterface.html">MainUserInterface</a> *&#160;</td>
+          <td class="paramname"><em>ui</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Do the actual drawing </p>
+<dl class="params"><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">underwater</td><td>True if underwater effects shall be applied </td></tr>
+    <tr><td class="paramname">thirdPersonView</td><td>True if the drawing shall be done from a third person view </td></tr>
+    <tr><td class="paramname">selectedObject</td><td>This object shall be visibly marked </td></tr>
+    <tr><td class="paramname">showMap</td><td>True if a map shall be shown </td></tr>
+    <tr><td class="paramname">mapWidth</td><td>Pixels in width used when drawing a map </td></tr>
+    <tr><td class="paramname">ui</td><td>Pointer to the user interface </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
 <li>rendercontrol.h</li>
 <li>rendercontrol.cpp</li>
 </ul>
@@ -131,7 +194,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>Draw</b> (bool underW
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Sun Jan 20 2013 18:29:51 for Ephenation by &#160;<a href="http://www.doxygen.org/index.html">
+Generated by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

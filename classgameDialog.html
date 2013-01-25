@@ -106,14 +106,14 @@ Public Types</h2></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Define possible effects that can be requested. They will all terminate automatically.  <a href="classgameDialog.html#ae5e677c45a3f1e7d8d1a42b44a0bcc04">More...</a><br/></td></tr>
 <tr><td colspan="2"><h2><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1898c52340f0823e8bbe890a46007be2"></a><!-- doxytag: member="gameDialog::render" ref="a1898c52340f0823e8bbe890a46007be2" args="(bool hideGUI)" -->
-void&#160;</td><td class="memItemRight" valign="bottom"><b>render</b> (bool hideGUI)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classgameDialog.html#a1898c52340f0823e8bbe890a46007be2">render</a> (bool hideGUI)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4a83e9132cfa2201973f5e65ed0f92fc"></a><!-- doxytag: member="gameDialog::init" ref="a4a83e9132cfa2201973f5e65ed0f92fc" args="()" -->
 void&#160;</td><td class="memItemRight" valign="bottom"><b>init</b> ()</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5d6531dc2cfad024519f7725a7ee5c16"></a><!-- doxytag: member="gameDialog::handleMouse" ref="a5d6531dc2cfad024519f7725a7ee5c16" args="(int button, int action)" -->
 void&#160;</td><td class="memItemRight" valign="bottom"><b>handleMouse</b> (int button, int action)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8776daec36b7ff7115c7099dd25cd3e0"></a><!-- doxytag: member="gameDialog::Update" ref="a8776daec36b7ff7115c7099dd25cd3e0" args="()" -->
-void&#160;</td><td class="memItemRight" valign="bottom"><b>Update</b> ()</td></tr>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classgameDialog.html#a8776daec36b7ff7115c7099dd25cd3e0">Update</a> ()</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Polled to update various states. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa8d320eca21fe0eb93d7dfed918b73cf"></a><!-- doxytag: member="gameDialog::SetMessage" ref="aa8d320eca21fe0eb93d7dfed918b73cf" args="(const char *)" -->
 void&#160;</td><td class="memItemRight" valign="bottom"><b>SetMessage</b> (const char *)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a90c0dcab2347b83964aa424104b7b3bf"></a><!-- doxytag: member="gameDialog::HandleKeyRelease" ref="a90c0dcab2347b83964aa424104b7b3bf" args="(int key)" -->
@@ -162,10 +162,18 @@ Public Attributes</h2></td></tr>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>fShowInventory</b></td></tr>
 </table>
 <hr/><a name="details" id="details"></a><h2>Detailed Description</h2>
-<div class="textblock"><p>This corresponds to the controller class in a Model/View/controller. keyboard input mouse input decide what shall be shown on the screen window resize events a few special effects (zooming) manage construction of activator blocks </p>
-<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000001">Todo:</a></b></dt><dd><p class="startdd">This class has grown to be rather fat. A refactoring is needed. </p>
+<div class="textblock"><p>This corresponds to the controller class in a Model/View/controller.</p>
+<ul>
+<li>keyboard input</li>
+<li>mouse input</li>
+<li>decide what shall be shown on the screen</li>
+<li>window resize events</li>
+<li>a few special effects (zooming)</li>
+<li>manage construction of activator blocks <dl class="todo"><dt><b><a class="el" href="todo.html#_todo000001">Todo:</a></b></dt><dd><p class="startdd">This class has grown to be rather fat. A refactoring is needed. </p>
 <p class="enddd">Some things here remains from old, and is not really part of the controller class. </p>
 </dd></dl>
+</li>
+</ul>
 </div><hr/><h2>Member Enumeration Documentation</h2>
 <a class="anchor" id="ae5e677c45a3f1e7d8d1a42b44a0bcc04"></a><!-- doxytag: member="gameDialog::Effect" ref="ae5e677c45a3f1e7d8d1a42b44a0bcc04" args="" -->
 <div class="memitem">
@@ -193,6 +201,26 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>fShowInventory</b></t
 
 </div>
 </div>
+<hr/><h2>Member Function Documentation</h2>
+<a class="anchor" id="a1898c52340f0823e8bbe890a46007be2"></a><!-- doxytag: member="gameDialog::render" ref="a1898c52340f0823e8bbe890a46007be2" args="(bool hideGUI)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classgameDialog.html#a1898c52340f0823e8bbe890a46007be2">gameDialog::render</a> </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>hideGUI</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Render many things. </p>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000002">Todo:</a></b></dt><dd>Nothing should be renderred from here, it should all go into the View of the MVC. </dd></dl>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>gamedialog.h</li>
 <li>gamedialog.cpp</li>
@@ -215,7 +243,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>fShowInventory</b></t
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Sun Jan 20 2013 18:29:50 for Ephenation by &#160;<a href="http://www.doxygen.org/index.html">
+Generated by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

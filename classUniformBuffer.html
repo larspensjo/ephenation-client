@@ -86,19 +86,66 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!--header-->
 <div class="contents">
 <!-- doxytag: class="UniformBuffer" -->
+<p><code>#include &lt;uniformbuffer.h&gt;</code></p>
+
 <p><a href="classUniformBuffer-members.html">List of all members.</a></p>
 <table class="memberdecls">
 <tr><td colspan="2"><h2><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a26c694fb9e1a1e5ed89724914158290a"></a><!-- doxytag: member="UniformBuffer::UniformBuffer" ref="a26c694fb9e1a1e5ed89724914158290a" args="()" -->
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classUniformBuffer.html#a26c694fb9e1a1e5ed89724914158290a">UniformBuffer</a> ()</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear all data. <br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aed1896a3bb0033107663e860713f876e"></a><!-- doxytag: member="UniformBuffer::~UniformBuffer" ref="aed1896a3bb0033107663e860713f876e" args="()" -->
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classUniformBuffer.html#aed1896a3bb0033107663e860713f876e">~UniformBuffer</a> ()</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Free buffers. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8f747583602c1a409c86ad789a8b6c21"></a><!-- doxytag: member="UniformBuffer::Init" ref="a8f747583602c1a409c86ad789a8b6c21" args="()" -->
-void&#160;</td><td class="memItemRight" valign="bottom"><b>Init</b> ()</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6288ae976b7d0706cbbd5b5b9c2b03f0"></a><!-- doxytag: member="UniformBuffer::Update" ref="a6288ae976b7d0706cbbd5b5b9c2b03f0" args="(void)" -->
-void&#160;</td><td class="memItemRight" valign="bottom"><b>Update</b> (void)</td></tr>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classUniformBuffer.html#a8f747583602c1a409c86ad789a8b6c21">Init</a> ()</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Do the actual buffer allocation. <br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classUniformBuffer.html#a3cf608b0f832efa77f9a17d927517887">Update</a> (void) const </td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a05742920d4e64793fa42d872564cdc25"></a><!-- doxytag: member="UniformBuffer::UniformBlockBinding" ref="a05742920d4e64793fa42d872564cdc25" args="(GLuint program, GLuint idx)" -->
-void&#160;</td><td class="memItemRight" valign="bottom"><b>UniformBlockBinding</b> (GLuint program, GLuint idx)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9b43415a0fea05ec45dd37c870a8f781"></a><!-- doxytag: member="UniformBuffer::Camera" ref="a9b43415a0fea05ec45dd37c870a8f781" args="(const glm::vec4 &amp;)" -->
-void&#160;</td><td class="memItemRight" valign="bottom"><b>Camera</b> (const glm::vec4 &amp;)</td></tr>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classUniformBuffer.html#a05742920d4e64793fa42d872564cdc25">UniformBlockBinding</a> (GLuint program, GLuint idx)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Call once for each program during initialization. <br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classUniformBuffer.html#a9b43415a0fea05ec45dd37c870a8f781">Camera</a> (const glm::vec4 &amp;)</td></tr>
 </table>
+<hr/><a name="details" id="details"></a><h2>Detailed Description</h2>
+<div class="textblock"><p>Manage a uniform buffer See common.glsl, with the shader definition of the buffer </p>
+</div><hr/><h2>Member Function Documentation</h2>
+<a class="anchor" id="a9b43415a0fea05ec45dd37c870a8f781"></a><!-- doxytag: member="UniformBuffer::Camera" ref="a9b43415a0fea05ec45dd37c870a8f781" args="(const glm::vec4 &amp;)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classUniformBuffer.html#a9b43415a0fea05ec45dd37c870a8f781">UniformBuffer::Camera</a> </td>
+          <td>(</td>
+          <td class="paramtype">const glm::vec4 &amp;&#160;</td>
+          <td class="paramname"><em>c</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Set the camera data. It will not be used until <a class="el" href="classUniformBuffer.html#a3cf608b0f832efa77f9a17d927517887">Update()</a> has been called. </p>
+
+</div>
+</div>
+<a class="anchor" id="a3cf608b0f832efa77f9a17d927517887"></a><!-- doxytag: member="UniformBuffer::Update" ref="a3cf608b0f832efa77f9a17d927517887" args="(void) const " -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classUniformBuffer.html#a3cf608b0f832efa77f9a17d927517887">UniformBuffer::Update</a> </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Update all data in the uniform buffer It is a const function as no parameters in the class are changed. </p>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>uniformbuffer.h</li>
 <li>uniformbuffer.cpp</li>
@@ -121,7 +168,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>Camera</b> (const glm
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Sun Jan 20 2013 18:29:52 for Ephenation by &#160;<a href="http://www.doxygen.org/index.html">
+Generated by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>
