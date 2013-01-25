@@ -25,13 +25,11 @@
 /// Minimum program for drawing text
 /// Using GLSW to define shader
 static const GLchar *vertexShaderSource[] = {
-	"#version 330\n",
 	"colorshader.Vertex"
 };
 
 /// Using GLSW to define shader
 static const GLchar *fragmentShaderSource[] = {
-	"#version 330\n",
 	"colorshader.Fragment"
 };
 

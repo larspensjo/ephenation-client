@@ -23,13 +23,11 @@
 
 /// Using GLSW to define shader
 static const GLchar *vertexShaderSource[] = {
-	"#version 330\n",
 	"modulatedtexture.Vertex"
 };
 
 /// Using GLSW to define shader
 static const GLchar *fragmentShaderSource[] = {
-	"#version 330\n",
 	"modulatedtexture.Fragment"
 };
 

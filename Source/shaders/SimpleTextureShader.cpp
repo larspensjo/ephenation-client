@@ -24,13 +24,11 @@
 
 /// Using GLSW to define shader
 static const GLchar *vertexShaderSource[] = {
-	"#version 130\n", // This corresponds to OpenGL 3.0
 	"simpletexture.Vertex",
 };
 
 /// Using GLSW to define shader
 static const GLchar *fragmentShaderSource[] = {
-	"#version 130\n", // This corresponds to OpenGL 3.0
 	"simpletexture.Fragment",
 };
 

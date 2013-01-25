@@ -32,13 +32,11 @@
 /// The vertex input is 0,0 in one corner and 1,1 in the other.
 /// Using GLSW to define shader
 static const GLchar *vertexShaderSource[] = {
-	"#version 330\n", // This corresponds to OpenGL 3.3
 	"deferredlighting.Vertex"
 };
 
 /// Using GLSW to define shader
 static const GLchar *fragmentShaderSource[] = {
-	"#version 330\n", // This corresponds to OpenGL 3.3
 	"common.UniformBuffer",
 	"common.DoubleResolutionFunction",
 	"common.Poissondisk",
@@ -65,7 +63,7 @@ void DeferredLighting::GetLocations(void) {
 	fAverageLuminanceIdx = this->GetUniformLocation("UwhitePoint");
 
 	// The following uniforms only need to be initialized once
-	glUniform1i(this->GetUniformLocation(RANDOMVEC2POISSON_SAMPLERNAME), 6);
+	glUniform1i(this->GetUniformLocation("Upoissondisk"), 6); // Used in common.glsl
 	glUniform1i(this->GetUniformLocation("lightTex"), 5);
 	glUniform1i(this->GetUniformLocation("blendTex"), 3);
 	glUniform1i(this->GetUniformLocation("normalTex"), 2);

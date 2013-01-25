@@ -32,7 +32,6 @@
 
 /// Using GLSW to define shader
 static const GLchar *vertexShaderSource[] = {
-	"#version 330\n", // This corresponds to OpenGL 3.3
 	"common.UniformBuffer",
 	"common.DoubleResolutionFunction",
 	"#define VERTEXSCALING "  STR(VERTEXSCALING) "\n", // The is the scaling factor used for vertices
@@ -44,7 +43,6 @@ static const GLchar *vertexShaderSource[] = {
 /// transparent areas, and these should not generate shadows. For example, the leaves on the trees are quads with leaves on.
 /// Using GLSW to define shader
 static const GLchar *fragmentShaderSource[] = {
-	"#version 330\n", // This corresponds to OpenGL 3.3
 	"shadowmapshader.Fragment"
 };
 

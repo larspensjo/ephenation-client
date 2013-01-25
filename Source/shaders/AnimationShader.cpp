@@ -26,7 +26,6 @@
 
 /// Using GLSW to define shader
 static const GLchar *vertexShaderSource[] = {
-	"#version 330\n", // This corresponds to OpenGL 3.3
 	"common.UniformBuffer",
 	"common.DoubleResolutionFunction",
 	"#define VERTEXSCALING "  STR(VERTEXSCALING) "\n", // The is the scaling factor used for vertices
@@ -37,7 +36,6 @@ static const GLchar *vertexShaderSource[] = {
 
 /// Using GLSW to define shader
 static const GLchar *fragmentShaderSource[] = {
-	"#version 330\n", // This corresponds to OpenGL 3.3
 	"common.UniformBuffer",
 	"animationshader.Fragment"
 };

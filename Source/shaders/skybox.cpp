@@ -30,14 +30,12 @@
 
 /// Using GLSW to define shader
 static const GLchar *vertexShaderSource[] = {
-	"#version 330\n", // This corresponds to OpenGL 3.3
 	"common.UniformBuffer",
 	"skybox.Vertex",
 };
 
 /// Using GLSW to define shader
 static const GLchar *fragmentShaderSource[] = {
-	"#version 330\n", // This corresponds to OpenGL 3.3
 	"skybox.Fragment",
 };
 

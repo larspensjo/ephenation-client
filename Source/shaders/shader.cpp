@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -18,8 +18,8 @@
 //
 // This is a generic source for a shader. It must be inherited.
 //
-// TODO: dealloate using glDeleteProgram() and glDeleteShader()
-//
+/// @todo dealloate using glDeleteProgram() and glDeleteShader()
+
 #include <GL/glew.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -30,7 +30,8 @@
 #include "../contrib/glsw.h"
 
 void ShaderBase::Initglsw(const char *debug, int vertexShaderLines, const char **vertexShaderSource, int fragmentShaderLines, const char **fragmentShaderSource) {
-	const char *loadedVertexLines[vertexShaderLines];
+	const char *loadedVertexLines[vertexShaderLines+1];
+	loadedVertexLines[0] = "#version 330\n"; /// Add the same version to every vertex shader
 	for (int i=0; i<vertexShaderLines; i++) {
 		const char *p = vertexShaderSource[i];
 		if (p[0] != '#')
@@ -38,10 +39,11 @@ void ShaderBase::Initglsw(const char *debug, int vertexShaderLines, const char *
 		if (p == 0)
 			ErrorDialog("ShaderBase::Initglsw %s failed to load '%s'\n", debug, vertexShaderSource[i]);
 		// printf("%s", p);
-		loadedVertexLines[i] = p;
+		loadedVertexLines[i+1] = p;
 	}
 
-	const char *loadedFragmnetLines[fragmentShaderLines];
+	const char *loadedFragmnetLines[fragmentShaderLines+1];
+	loadedFragmnetLines[0] = "#version 330\n"; /// Add the same version to every fragment shader
 	for (int i=0; i<fragmentShaderLines; i++) {
 		const char *p = fragmentShaderSource[i];
 		if (p[0] != '#')
@@ -49,10 +51,10 @@ void ShaderBase::Initglsw(const char *debug, int vertexShaderLines, const char *
 		if (p == 0)
 			ErrorDialog("ShaderBase::Initglsw %s failed to load '%s'\n", debug, fragmentShaderSource[i]);
 		// printf("%s", p);
-		loadedFragmnetLines[i] = p;
+		loadedFragmnetLines[i+1] = p;
 	}
 
-	this->Init(debug, vertexShaderLines, loadedVertexLines, fragmentShaderLines, loadedFragmnetLines);
+	this->Init(debug, vertexShaderLines+1, loadedVertexLines, fragmentShaderLines+1, loadedFragmnetLines);
 }
 
 void ShaderBase::Init(const char *debug, int vertexShaderLines, const char **vertexShaderSource, int fragmentShaderLines, const char **fragmentShaderSource) {

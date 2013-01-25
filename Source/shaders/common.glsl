@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -36,7 +36,7 @@ layout(std140) uniform GlobalData {
 -- Poissondisk
 
 float seedpoisson;
-uniform sampler1D Upoissondisk; // Name must match RANDOMVEC2POISSON_SAMPLERNAME
+uniform sampler1D Upoissondisk;
 vec2 rand2(vec2 n)
 {
 	seedpoisson = fract(seedpoisson + sin(dot(n.xy, vec2(12.9898, 78.233)))* 43758.5453);

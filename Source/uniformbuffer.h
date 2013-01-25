@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -25,22 +25,31 @@
 
 #include <glm/glm.hpp>
 
+/// Manage a uniform buffer
+/// See common.glsl, with the shader definition of the buffer
 class UniformBuffer {
 public:
+	/// Clear all data
 	UniformBuffer();
+
+	/// Free buffers
 	~UniformBuffer();
 
+	/// Do the actual buffer allocation
 	void Init();
 
-	// Update all data
-	void Update(void);
+	/// Update all data in the uniform buffer
+	/// It is a const function as no parameters in the class are changed.
+	void Update(void) const;
 
-	// Call once for each program during initialization
+	/// Call once for each program during initialization
 	void UniformBlockBinding(GLuint program, GLuint idx);
 
+	/// Set the camera data.
+	/// It will not be used until Update() has been called.
 	void Camera(const glm::vec4 &);
 private:
-	void BindBufferBase(void);
+	void BindBufferBase(void) const;
 
 	GLuint fUBOBuffer;
 
@@ -48,34 +57,3 @@ private:
 };
 
 extern UniformBuffer gUniformBuffer;
-
-// The uniform buffer object is defined here, to be used by the shaders. That way,
-// it can be ensured that all shaders get the same definition.
-// By convention, all names begin with the prefix UBO.
-#define UNIFORMBUFFER \
-	"layout(std140) uniform GlobalData {"\
-	"    mat4 UBOProjectionMatrix;"\
-	"    mat4 UBOProjectionviewMatrix;"\
-	"    mat4 UBOViewMatrix;"\
-	"    vec4 UBOCamera;"\
-	"    float UBOViewingDistance;"\
-	"    int UBOPerformance;"\
-	"    int UBODynamicshadows;"\
-	"    int UBOWindowHeight;"\
-	"    int UBOToggleTesting;"\
-	"    float UBOexposure;"\
-	"    float UBOambientLight;"\
-	"};\n"
-
-// Return a vec2 of random numbers from -1 to +1.
-// The function can be called repeatedly with new numbers every time.
-// The 1D sampler has to be setup for this to work.
-#define RANDOMVEC2POISSON_SAMPLERNAME "Upoissondisk"
-#define RANDOMVEC2POISSON\
-	"float seedpoisson;"\
-	"uniform sampler1D Upoissondisk;"\
-	"vec2 rand2(vec2 n)"\
-	"{"\
-	"	seedpoisson = fract(seedpoisson + sin(dot(n.xy, vec2(12.9898, 78.233)))* 43758.5453);"\
-	"	return 2.0*texture(Upoissondisk, seedpoisson).rg-1.0;"\
-	"}"

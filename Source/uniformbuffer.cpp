@@ -60,7 +60,7 @@ void UniformBuffer::Init(void) {
 	checkError("UniformBuffer::Init");
 }
 
-void UniformBuffer::Update(void) {
+void UniformBuffer::Update(void) const {
 	Data data;
 	data.performance = gOptions.fPerformance;
 	if (gOptions.fDynamicShadows)
@@ -90,7 +90,7 @@ void UniformBuffer::UniformBlockBinding(GLuint program, GLuint idx) {
 
 // There was a call in chunk::ReleaseOpenGLBuffers of glDeleteBuffers() that destroyed
 // this binding for AMD only. It works for NVIDIA.
-void UniformBuffer::BindBufferBase(void) {
+void UniformBuffer::BindBufferBase(void) const {
 	glBindBufferBase(GL_UNIFORM_BUFFER, g_iGlobalMatricesBindingIndex, fUBOBuffer);
 }
 

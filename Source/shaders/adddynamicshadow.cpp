@@ -31,13 +31,11 @@
 
 /// Using GLSW to define shader
 static const GLchar *vertexShaderSource[] = {
-	"#version 330\n",
 	"dynamicshadow.Vertex"
 };
 
 /// Using GLSW to define shader
 static const GLchar *fragmentShaderSource[] = {
-	"#version 330\n",
 	"common.UniformBuffer",
 	"common.DoubleResolutionFunction",
 	"common.Poissondisk",
@@ -55,7 +53,6 @@ void AddDynamicShadow::Init(void) {
 	const GLsizei vertexShaderLines = sizeof(vertexShaderSource) / sizeof(GLchar*);
 	const GLsizei fragmentShaderLines = sizeof(fragmentShaderSource) / sizeof(GLchar*);
 	ShaderBase::Initglsw("AddDynamicShadow", vertexShaderLines, vertexShaderSource, fragmentShaderLines, fragmentShaderSource);
-	checkError("AddDynamicShadow::Init");
 }
 
 void AddDynamicShadow::GetLocations(void) {
@@ -65,9 +62,7 @@ void AddDynamicShadow::GetLocations(void) {
 	glUniform1i(this->GetUniformLocation("shadowmapTex"), 4); // The shadow map has to use GL_TEXTURE4
 	glUniform1i(this->GetUniformLocation("normalTex"), 2);
 	glUniform1i(this->GetUniformLocation("posTex"), 1);
-	glUniform1i(this->GetUniformLocation(RANDOMVEC2POISSON_SAMPLERNAME), 0);
-
-	checkError("AddDynamicShadow::GetLocations");
+	glUniform1i(this->GetUniformLocation("Upoissondisk"), 0); // Must match name in common.glsl
 }
 
 void AddDynamicShadow::Draw(const glm::mat4 &mat) {
