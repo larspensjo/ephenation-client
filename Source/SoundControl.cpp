@@ -166,7 +166,9 @@ SoundControl::TrigSoundItem SoundControl::fTrigSoundList[] = {
 /*
 ** INITIALIZATION
 */
-SoundControl::SoundControl() {
+SoundControl::SoundControl() : fFeetInWater(false), fFeetInAir(false), fUnderWater(false), fEcho(false), fMusicOn(false), fMusicIsPlaying(false),
+	fMusicFadeOut(false), fAudioEnabled(false), fEAXPresent(false), fALMaxSources(0), oggFile(0)
+{
 	unsigned int i;
 
 	fALinitialized=false; MusicChangeTimeOut=0; fPlayerRunning=false;
@@ -177,6 +179,10 @@ SoundControl::SoundControl() {
 		fBuffers[i] = 0;
 	for (i=0; i<NELEM(fSources); i++)
 		fSources[i] = 0;
+
+	for( unsigned idx=0; idx<4; idx++ ) {
+		fRequestedTrigSound[idx] = 0;
+	}
 
 	fNumTrigSounds = NELEM(fTrigSoundList);
 	fRequestedSound = SNone;
@@ -309,10 +315,6 @@ void SoundControl::Init(void) {
 
 	for( idx=0; idx<(int)NELEM(fSoundtrack); idx++ ) {
 		fSongCount[fSoundtrack[idx].musicType]++;
-	}
-
-	for( idx=0; idx<4; idx++ ) {
-		fRequestedTrigSound[idx] = 0;
 	}
 
 	/* For portability, explicitly create threads in a joinable state */

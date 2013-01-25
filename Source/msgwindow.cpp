@@ -33,7 +33,7 @@
 
 #define ILL_SENT 0xFFFFFFFF
 
-MsgWindow::MsgWindow(): fRocketElement(0), fActivateDropMessage(false) {
+MsgWindow::MsgWindow(): fRocketElement(0), fActivateDropMessage(false), fDropX(0), fDropY(0) {
 }
 
 void MsgWindow::Init(Rocket::Core::Element *rocketElement) {

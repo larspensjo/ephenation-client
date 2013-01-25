@@ -238,7 +238,7 @@ static void MergeNormals(std::vector<TriangleSurfacef> &b) {
 	glm::vec3 sum;
 	for (; first != sorted.end();) {
 		sum += (*last)->GetNormal();
-		last++; count++;
+		++last; ++count;
 		if (last != sorted.end()) {
 			glm::vec3 f = (*first)->GetVertex();
 			glm::vec3 l = (*last)->GetVertex();
@@ -249,7 +249,7 @@ static void MergeNormals(std::vector<TriangleSurfacef> &b) {
 			sum /= count; // Compute the average
 			sum = glm::normalize(sum);
 			// Update all vertices with the new normal
-			for (; first != last; first++) {
+			for (; first != last; ++first) {
 				(*first)->SetNormal(sum);
 			}
 		}
@@ -762,7 +762,7 @@ void ChunkObject::FindSpecialObjects(const chunk *cp) {
 					fTreeList[treeInd].y = y;
 					fTreeList[treeInd].z = z;
 					fTreeList[treeInd].type = bl;
-					fTreeList[treeInd].ambient = cp->ComputeAmbientLight(x, y, z) + cp->InSunLight(x, y, z) * 0.15; // TODO: Not used
+					// fTreeList[treeInd].ambient = cp->ComputeAmbientLight(x, y, z) + cp->InSunLight(x, y, z) * 0.15; /// @todo Not used
 					treeInd++;
 					break;
 				case BT_Lamp1:
@@ -790,7 +790,7 @@ void ChunkObject::FindSpecialObjects(const chunk *cp) {
 					fTreasureList[treasureInd].y = y;
 					fTreasureList[treasureInd].z = z;
 					fTreasureList[treasureInd].type = bl;
-					fTreasureList[treasureInd].ambient = cp->ComputeAmbientLight(x, y, z) + cp->InSunLight(x, y, z) * 0.15; // TODO: Not used
+					// fTreasureList[treasureInd].ambient = cp->ComputeAmbientLight(x, y, z) + cp->InSunLight(x, y, z) * 0.15; /// @todo Not used
 					treasureInd++;
 					break;
 				case BT_RedLight:
@@ -801,7 +801,7 @@ void ChunkObject::FindSpecialObjects(const chunk *cp) {
 					so.y = y;
 					so.z = z;
 					so.type = bl;
-					so.ambient = 0.0f;  // Not used for colored lights
+					// so.ambient = 0.0f;  // Not used for colored lights
 					fSpecialObject.push_back(so);
 				}
 			}

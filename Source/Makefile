@@ -251,6 +251,9 @@ distclean: clean
 astyle:
 	astyle --indent=tab=4 --style=java --keep-one-line-blocks --keep-one-line-statements --suffix=none $(HEADERS) $(SOURCES)
 
+cppcheck:
+	cppcheck -q --enable=all --suppress=unusedScopedObject --suppress=stlSize -i contrib $(SOURCES)
+
 valgrind:
 	$(MAKE) clean
 	$(MAKE) CXXFLAGS='-O1 -g'
@@ -263,13 +266,6 @@ pprof:
 	LD_PRELOAD='/usr/local/lib/libprofiler.so /usr/local/lib/libunwind.so' CPUPROFILE=/tmp/profile ./ephenation
 #	CPUPROFILE=/tmp/profile ./ephenation
 	pprof ./ephenation /tmp/profile
-
-distro:
-	$(MAKE) clean
-	$(MAKE) CXXFLAGS='-O3'
-	mkdir -p Output
-	tar cf Output/distro.tar ephenation readme.txt Disclaimer.html sounds textures models
-	gzip Output/distro.tar
 
 # Show help.
 help:
@@ -290,6 +286,7 @@ help:
 	@echo '  astyle    reformat source code using astyle.'
 	@echo '  valgrind  produce binary for memory profiling.'
 	@echo '  pprof     produce binary for profiling.'
+	@echo '  cppcheck  Run cppcheck on source code.'
 	@echo
 
 # Show variables (for debug use only.)

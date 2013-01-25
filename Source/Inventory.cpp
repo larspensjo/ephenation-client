@@ -183,7 +183,7 @@ void Inventory::UseObjectMessage(Item *item, unsigned char cmd) {
 
 void Inventory::UseObjectFunctionKey(int key) {
 	size_t ind = size_t(key - GLFW_KEY_F1 + 1);
-	if (ind <= 0 || ind >= NUM_OBJECTS)
+	if (ind == 0 || ind >= NUM_OBJECTS)
 		return;
 	ObjectMap *info = &fsObjectMap[ind];
 

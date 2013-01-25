@@ -26,6 +26,7 @@
 #include <Rocket/Debugger.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <limits>
 
 #ifndef M_PI
 #define M_PI		3.14159265358979323846
@@ -109,6 +110,9 @@ gameDialog::gameDialog() {
 	fFPS_Element = 0;
 	fPlayerStatsOneLiner_Element = 0;
 	fInputLine = 0;
+	// Use a value that will not match.
+	fRequestActivatorChunk.x = fRequestActivatorChunk.y = fRequestActivatorChunk.z = std::numeric_limits<int>::max();
+	fRequestActivatorX = fRequestActivatorY = fRequestActivatorZ = std::numeric_limits<int>::max();
 }
 
 gameDialog::~gameDialog() {
@@ -595,7 +599,7 @@ void gameDialog::HandleKeyPress(int key) {
 				sShowAlternateBitmap = true;
 				sTextureIterator = gDebugTextures.begin();
 			} else
-				sTextureIterator++;
+				++sTextureIterator;
 			if (sTextureIterator == gDebugTextures.end()) {
 				sShowAlternateBitmap = false;
 			}

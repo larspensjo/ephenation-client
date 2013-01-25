@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -81,7 +81,7 @@ struct BlenderModel::Animation {
 
 BlenderModel gSwordModel1, gTuftOfGrass, gFrog, gMorran, gAlien;
 
-BlenderModel::BlenderModel() {
+BlenderModel::BlenderModel() : fRotateXCorrection(0.0f), fNumMeshes(0) {
 	fBufferId = 0;
 	fVao = 0;
 	fIndexBufferId = 0;
@@ -423,7 +423,7 @@ void BlenderModel::Init(const char *filename, float xRotateCorrection, bool norm
 
 	if (gVerbose) {
 		printf("Mesh bones for '%s':\n", filename);
-		for (boneindexIT_t it = fBoneIndex.begin(); it != fBoneIndex.end(); it++) {
+		for (boneindexIT_t it = fBoneIndex.begin(); it != fBoneIndex.end(); ++it) {
 			unsigned int ind = it->second;
 			printf(" %s: joint %d\n", it->first.c_str(), ind);
 		}

@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -187,7 +187,6 @@ void ChunkCache::SaveChunkInCache(const cachunk *chunkdata) {
 
 std::shared_ptr<ChunkBlocks> ChunkCache::LoadChunkFromCache(const ChunkCoord *cc) {
 	char *fileName;
-	int size;
 
 	// Check if chunk is in cache, for safety
 	if( !IsChunkInCache(cc) )
@@ -208,7 +207,7 @@ std::shared_ptr<ChunkBlocks> ChunkCache::LoadChunkFromCache(const ChunkCoord *cc
 		return nullptr;
 	} else {
 		ReadChunk.seekg(0, ios::end);
-		size = ReadChunk.tellg();
+		int size = ReadChunk.tellg();
 		if (size == 0)
 			return nullptr; // Safety precaution, should not happen unless corrupt file
 		ReadChunk.seekg(0, ios::beg);
@@ -222,9 +221,8 @@ std::shared_ptr<ChunkBlocks> ChunkCache::LoadChunkFromCache(const ChunkCoord *cc
 
 		ReadChunk.read((char*)cachedata->fCompressedChunk.get(), cachedata->compressSize);
 		ASSERT(ReadChunk.gcount() == cachedata->compressSize);
+		// printf("Cache load: %s size (%i)\n", fileName, size);
 	}
-
-	// printf("Cache load: %s size (%i)\n", fileName, size);
 
 	ReadChunk.close();
 

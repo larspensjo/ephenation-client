@@ -114,8 +114,6 @@ private:
 	bool fDrawMap;
 	bool fShowWeapon;
 	bool fUnderWater; // True when player is below water
-	unsigned char fDebugText[1000]; // TODO: use std::string
-	unsigned int fDebugTextLength;
 	chunk *FindSelectedSurface(int x, int y, ChunkOffsetCoord *, int *surfaceDir);
 	/// Draw the player stats in the upper right corner
 	/// @todo This should go into the View of the MVC.

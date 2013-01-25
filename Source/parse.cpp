@@ -444,8 +444,7 @@ void Parse(const unsigned char *b, int n) {
 		// unsigned char flag = b[1]; // Currently unused
 		unsigned char timeout = b[2];
 		gPlayer.GetChunkCoord(&cc);
-		ChunkCoord *ret;
-		chunk *pc = ChunkFind(ret = UpdateLSB(&cc, b[3], b[4], b[5]), false);
+		chunk *pc = ChunkFind(UpdateLSB(&cc, b[3], b[4], b[5]), false);
 		if (pc == 0)
 			break; // Safety precaution
 		auto cb = pc->fChunkBlocks;
@@ -457,7 +456,6 @@ void Parse(const unsigned char *b, int n) {
 			unsigned char dz = b[i+2];
 			cb->AddTimerJellyBlock(dx, dy, dz, double(timeout));
 			cb->CommandBlockUpdate(cc, dx, dy, dz, BT_Air);
-			// gMsgWindow.Add("CMD_JELLY_BLOCKS flag 0x%x, timeout %d, chunk %d,%d,%d, block %d,%d,%d (pc %x)", flag, timeout, ret->x, ret->y, ret->z, dx, dy, dz, pc);
 		}
 		pc->SetDirty(true);
 		break;

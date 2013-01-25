@@ -28,7 +28,7 @@
 
 class WorstTime {
 public:
-	WorstTime(const std::string &title) : fIndex(0) {
+	WorstTime(const std::string &title) : fStart(0.0), fIndex(0) {
 		if (!gDebugOpenGL || fLast == MAXSIZE)
 			return; // Quietly ignore
 		fIndex = fLast++; // Allocate a slot
