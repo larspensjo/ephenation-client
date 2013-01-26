@@ -423,9 +423,8 @@ void BlenderModel::Init(const char *filename, float xRotateCorrection, bool norm
 
 	if (gVerbose) {
 		printf("Mesh bones for '%s':\n", filename);
-		for (boneindexIT_t it = fBoneIndex.begin(); it != fBoneIndex.end(); ++it) {
-			unsigned int ind = it->second;
-			printf(" %s: joint %d\n", it->first.c_str(), ind);
+		for (auto &bone : fBoneIndex) {
+			printf(" %s: joint %d\n", bone.first.c_str(), bone.second);
 		}
 	}
 
