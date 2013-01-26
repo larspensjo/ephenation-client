@@ -18,10 +18,6 @@
 #pragma once
 
 #include <memory>
-// This is a kludge.
-// Sometimes, primitives.h will be included after FL.h, and FL.h will include fl_utf8.h that will define
-// hypot as something else. That is not compatible with <cmath>, which is using ::hypot
-#undef hypot
 #include <glm/glm.hpp>
 
 #include "animationmodels.h"

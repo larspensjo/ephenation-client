@@ -22,7 +22,7 @@
 	<link type="text/rcss" href="ephenation.rcss"/>
 	<link type="text/rcss" href="popup.rcss"/>
 	<style>
-	.shortlabel { width: 12%; }
+	.shortlabel { width: 15%; }
 	.longlabel { width: 18%; }
 	.description { width: 80%; }
 

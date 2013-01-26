@@ -22,9 +22,9 @@
 	<link type="text/rcss" href="ephenation.rcss"/>
 	<link type="text/rcss" href="popup.rcss"/>
 	<style>
-	.field10
+	.shortlabel
 	{
-		width: 10%;
+		width: 15%;
 	}
 
 	.longlabel
@@ -79,63 +79,63 @@
 					<td class="field35">Kamil Niechajewicz</td>
 				</tr>
 				<tr>
-					<td class="field10"><br /></td>
+					<td class="shortlabel"><br /></td>
 				</tr>
 				<tr>
-					<td class="field10"><div style="font-size: 36px;">Libraries:</div></td>
+					<td class="shortlabel"><div style="font-size: 36px;">Libraries:</div></td>
 				</tr>
 				<tr>
-					<td class="field10">glm</td>
+					<td class="shortlabel">glm</td>
 					<td class="field35">www.g-truc.net</td>
 					<td class="field35">G-Truc Creation</td>
 				</tr>
 				<tr>
-					<td class="field10">glfw</td>
+					<td class="shortlabel">glfw</td>
 					<td class="field35">www.glfw.org</td>
 					<td class="field35"> </td>
 				</tr>
 				<tr>
-					<td class="field10">tinyxml</td>
+					<td class="shortlabel">tinyxml</td>
 					<td class="field35">www.sourceforge.net/projects/tinyxml</td>
 					<td class="field35">Lee Thomason</td>
 				</tr>
 				<tr>
-					<td class="field10">glew</td>
+					<td class="shortlabel">glew</td>
 					<td class="field35">glew.sourceforge.net</td>
 					<td class="field35"></td>
 				</tr>
 				<tr>
-					<td class="field10">assimp</td>
+					<td class="shortlabel">assimp</td>
 					<td class="field35">assimp.sourceforge.net</td>
 					<td class="field35"></td>
 				</tr>
 				<tr>
-					<td class="field10">fltk</td>
+					<td class="shortlabel">fltk</td>
 					<td class="field35">www.fltk.org</td>
 					<td class="field35"></td>
 				</tr>
 				<tr>
-					<td class="field10">openal</td>
+					<td class="shortlabel">openal</td>
 					<td class="field35">connect.creativelabs.com/openal</td>
 					<td class="field35"></td>
 				</tr>
 				<tr>
-					<td class="field10">ogg</td>
+					<td class="shortlabel">ogg</td>
 					<td class="field35">xiph.org/ogg</td>
 					<td class="field35"></td>
 				</tr>
 				<tr>
-					<td class="field10">vorbis</td>
+					<td class="shortlabel">vorbis</td>
 					<td class="field35">www.vorbis.com</td>
 					<td class="field35"></td>
 				</tr>
 				<tr>
-					<td class="field10">libRocket</td>
+					<td class="shortlabel">libRocket</td>
 					<td class="field35">librocket.com</td>
 					<td class="field35"></td>
 				</tr>
 				<tr>
-					<td class="field10">glsw</td>
+					<td class="shortlabel">glsw</td>
 					<td class="field35">prideout.net/blog/?p=11</td>
 					<td class="field35"></td>
 				</tr>
