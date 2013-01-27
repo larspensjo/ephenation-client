@@ -292,13 +292,6 @@ void DrawLandscape(StageOneShader *shader, DL_Type dlType) {
 	// should be loaded first, as they affect the lighting on the chunks below.
 	int chunkHor = (int)(maxRenderDistance / CHUNK_SIZE + 1);
 
-	// A little ugly. Change to a special shader when doing picking.
-	ChunkShaderPicking *pickShader = 0;
-
-	if (dlType == DL_Picking) {
-		pickShader = ChunkShaderPicking::Make();
-	}
-
 	// At 80m viewing distance, there are 895 chunks. Using various filters, the actual chunks that can be seen are
 	// much fewer. Save the filtered list, to speed up the drawing.
 	int listOfVisibleChunks[sMaxVolume];
@@ -381,7 +374,7 @@ void DrawLandscape(StageOneShader *shader, DL_Type dlType) {
 			// for the picking mode. These contain colour information to allow identification of cubes.
 			cp->fChunkBlocks->TestJellyBlockTimeout(true);
 			cp->PushTriangles(ChunkObject::Make(cp, true, dx, dy, dz)); // Stash away the old triangles for quick restore
-			pickShader->Model(modelMatrix);
+			gChunkShaderPicking.Model(modelMatrix);
 		} else {
 			cp->fChunkBlocks->TestJellyBlockTimeout(false);
 			shader->Model(modelMatrix);
@@ -391,7 +384,7 @@ void DrawLandscape(StageOneShader *shader, DL_Type dlType) {
 			AddChunkToShadowList(cp);
 
 		// Draw the chunk
-		cp->Draw(shader, pickShader, dlType);
+		cp->Draw(shader, &gChunkShaderPicking, dlType);
 
 		if (dlType == DL_Picking) {
 			// Picking mode. Restore the normal triangles again.

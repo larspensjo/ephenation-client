@@ -25,6 +25,7 @@
 
 /// Using GLSW to define shader
 static const GLchar *vertexShaderSource[] = {
+	"common.UniformBuffer",
 	"#define VERTEXSCALING "  STR(VERTEXSCALING) "\n", // The is the scaling factor used for vertices
 	"chunkshaderpicking.Vertex"
 };
@@ -34,23 +35,17 @@ static const GLchar *fragmentShaderSource[] = {
 	"chunkshaderpicking.Fragment"
 };
 
-ChunkShaderPicking *ChunkShaderPicking::Make(void) {
-	if (fgSingleton.fNormalIndex == -1) {
-		const GLsizei vertexShaderLines = sizeof(vertexShaderSource) / sizeof(GLchar*);
-		const GLsizei fragmentShaderLines = sizeof(fragmentShaderSource) / sizeof(GLchar*);
-		fgSingleton.Initglsw("ChunkShaderPicking", vertexShaderLines, vertexShaderSource, fragmentShaderLines, fragmentShaderSource);
-	}
-	return &fgSingleton;
+void ChunkShaderPicking::Init() {
+	const GLsizei vertexShaderLines = sizeof(vertexShaderSource) / sizeof(GLchar*);
+	const GLsizei fragmentShaderLines = sizeof(fragmentShaderSource) / sizeof(GLchar*);
+	this->Initglsw("ChunkShaderPicking", vertexShaderLines, vertexShaderSource, fragmentShaderLines, fragmentShaderSource);
 }
 
 void ChunkShaderPicking::GetLocations(void) {
-	fProjectionMatrixIndex = this->GetUniformLocation("projectionMatrix");
-	fViewMatrixIndex = this->GetUniformLocation("viewMatrix");
 	fModelMatrixIndex = this->GetUniformLocation("modelMatrix");
 
 	fVertexIndex = this->GetAttribLocation("vertex");
 	fNormalIndex = this->GetAttribLocation("normal");
-	checkError("DrawText::DrawTextInit");
 }
 
 void Projection(glm::mat4 &);
@@ -73,16 +68,6 @@ void ChunkShaderPicking::Model(const glm::mat4 &mat) {
 		glUniformMatrix4fv(fModelMatrixIndex, 1, GL_FALSE, &mat[0][0]); // Send our modelView matrix to the shader
 }
 
-void ChunkShaderPicking::View(const glm::mat4 &mat) {
-	if (fViewMatrixIndex != -1)
-		glUniformMatrix4fv(fViewMatrixIndex, 1, GL_FALSE, &mat[0][0]); // Send our modelView matrix to the shader
-}
-
-void ChunkShaderPicking::Projection(const glm::mat4 &mat) {
-	if (fProjectionMatrixIndex != -1)
-		glUniformMatrix4fv(fProjectionMatrixIndex, 1, GL_FALSE, &mat[0][0]); // Send our modelView matrix to the shader
-}
-
 void ChunkShaderPicking::VertexAttribPointer(GLenum type, GLsizei stride, const GLvoid * pointer) {
 	glVertexAttribPointer(fVertexIndex, 3, type, GL_FALSE, stride, pointer);
 }
@@ -92,16 +77,10 @@ void ChunkShaderPicking::NormalAttribPointer(GLenum type, GLsizei stride, const 
 }
 
 ChunkShaderPicking::ChunkShaderPicking() {
-	fProjectionMatrixIndex = -1;
-	fViewMatrixIndex = -1;
 	fModelMatrixIndex = -1;
 
 	fNormalIndex = -1;
 	fVertexIndex = -1;
 }
 
-ChunkShaderPicking::~ChunkShaderPicking() {
-	// TODO Auto-generated destructor stub
-}
-
-ChunkShaderPicking ChunkShaderPicking::fgSingleton;
+ChunkShaderPicking gChunkShaderPicking;

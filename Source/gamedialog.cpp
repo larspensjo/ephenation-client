@@ -130,16 +130,13 @@ gameDialog::~gameDialog() {
 // In build mode, find the block at the given screen position. Return the chunk and the
 // data about it to the pointers.
 chunk *gameDialog::FindSelectedSurface(int x, int y, ChunkOffsetCoord *coc, int *surfaceDir) {
-	ChunkShaderPicking *pickShader = ChunkShaderPicking::Make();
-	pickShader->EnableProgram();
-	pickShader->View(gViewMatrix);
-	pickShader->Projection(gProjectionMatrix);
+	gChunkShaderPicking.EnableProgram();
 
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f); // Use black sky for picking
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	DrawLandscape(0, DL_Picking);
-	pickShader->DisableProgram();
+	gChunkShaderPicking.DisableProgram();
 
 	unsigned char pixel[4];
 	glReadPixels(x,gViewport[3] - y, 1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &pixel[0]);

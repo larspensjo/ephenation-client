@@ -17,9 +17,7 @@
 
 -- Vertex
 
-uniform mat4 projectionMatrix;
 uniform mat4 modelMatrix;
-uniform mat4 viewMatrix;
 in vec3 normal;
 in vec3 vertex;
 out vec3 fragmentNormal;
@@ -28,7 +26,7 @@ void main(void)
 	vec4 vertexScaled = vec4(vec3(vertex) / VERTEXSCALING, 1);
 	// Special scaling applies for the normal in picking mode.
 	fragmentNormal = normal/255; // The normal will be coded into the color, scaled from range 0..255 to 0..1.
-	gl_Position = projectionMatrix * viewMatrix * modelMatrix * vertexScaled;
+	gl_Position = UBOProjectionviewMatrix * modelMatrix * vertexScaled;
 }
 
 -- Fragment

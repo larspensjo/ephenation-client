@@ -46,6 +46,7 @@
 #include "gamedialog.h"
 #include "DrawText.h"
 #include "shaders/ChunkShader.h"
+#include "shaders/ChunkShaderPicking.h"
 #include "primitives.h"
 #include "client_prot.h"
 #include "player.h"
@@ -399,6 +400,7 @@ int main(int argc, char** argv) {
 	GameTexture::Init();
 	gGameDialog.init();
 	ChunkShader *shader = ChunkShader::Make();
+	gChunkShaderPicking.Init();
 	Tree::InitStatic();
 	gLantern.Init(shader);
 	gQuadStage1.Init();

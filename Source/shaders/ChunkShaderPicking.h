@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -16,41 +16,45 @@
 //
 
 #pragma once
-//
-// A shader program that will draw chunks for picking.
-// This is a singleton class.
-//
 
 #include "shader.h"
 
+/// A shader program that will draw chunks for picking.
 class ChunkShaderPicking : ShaderBase {
 public:
-	static ChunkShaderPicking *Make(void);
+	ChunkShaderPicking();
+
+	/// Must be initialized before it is used.
+	void Init();
+
+	/// Enable the shader program before running it or updating variables
 	void EnableProgram(void);
 	void DisableProgram(void);
 
-	void Model(const glm::mat4 &);// Define the Model matrix
-	void View(const glm::mat4 &);// Define the View matrix
-	void Projection(const glm::mat4 &);// Define the projection matrix
+	/// Define the Model matrix
+	void Model(const glm::mat4 &);
 
-	// Define memory layout for data. A buffer must be bound to do this.
-	void VertexAttribPointer(GLenum type, GLsizei stride, const GLvoid * pointer); // Always 3 components.
-	void NormalAttribPointer(GLenum type, GLsizei stride, const GLvoid * pointer); // Always 3 components
+	/// Define memory layout for vertex data. A buffer must be bound to do this.
+	/// There are lways 3 components.
+	void VertexAttribPointer(GLenum type, GLsizei stride, const GLvoid * pointer);
 
+	/// Define memory layout for normal data. A buffer must be bound to do this.
+	/// There are lways 3 components.
+	void NormalAttribPointer(GLenum type, GLsizei stride, const GLvoid * pointer);
+
+	/// Enable the vertex attrib. This must be done when there is a VAO.
 	void EnableVertexAttribArray(void);
 private:
-	// Callback that defines all uniform and attribute indices.
+	/// Callback that defines all uniform and attribute indices.
 	virtual void GetLocations(void);
-	ChunkShaderPicking(); // Only allow access through the maker.
-	virtual ~ChunkShaderPicking(); // Don't allow destruction as this is a singleton.
-	static ChunkShaderPicking fgSingleton; // This is the singleton instance
 	static const GLchar *fVertexShaderSource[];
 	static const GLchar *fFragmentShaderSource[];
 
-	GLint fProjectionMatrixIndex;
-	GLint fViewMatrixIndex;
 	GLint fModelMatrixIndex;
 
 	GLint fNormalIndex;
 	GLint fVertexIndex;
 };
+
+/// A global instance, to be used everywhere
+extern ChunkShaderPicking gChunkShaderPicking;
