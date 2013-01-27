@@ -24,8 +24,6 @@
 #include "rendercontrol.h"
 #include "chunk.h"
 
-using std::string;
-
 struct chunk;
 struct ChunkOffsetCoord;
 struct ChunkCoord;
@@ -41,7 +39,7 @@ namespace Rocket {
 	}
 };
 
-/// This corresponds to the controller class in a Model/View/controller.
+/// This corresponds to the controller class in a Model/View/Controller.
 /// - keyboard input
 /// - mouse input
 /// - decide what shall be shown on the screen
@@ -78,8 +76,6 @@ public:
 	enum Calibration { CALIB_EXPOSURE, CALIB_WHITE_POINT, CALIB_AMBIENT, CALIB_NONE };
 	void CalibrateMode(Calibration);
 
-	bool ThirdPersonView(void) const { return fCameraDistance > 2.0f; }
-
 	/// Manage the running status of the player
 	void UpdateRunningStatus(bool disable);
 
@@ -105,8 +101,6 @@ private:
 	bool fMovingLeft;
 	bool fMovingRight;
 	bool fUsingTorch;
-	float fCameraDistance; // Actual camera distance behind the player
-	float fRequestedCameraDistance;
 	int fMapWidth;
 	Calibration fCalibrationMode;
 
@@ -115,21 +109,12 @@ private:
 	bool fShowWeapon;
 	bool fUnderWater; // True when player is below water
 	chunk *FindSelectedSurface(int x, int y, ChunkOffsetCoord *, int *surfaceDir);
-	/// Draw the player stats in the upper right corner
-	/// @todo This should go into the View of the MVC.
-	void DrawPlayerStats(void) const;
 	/// Draw the player weapon
 	/// @todo Should go int the View of the MVC.
 	void DrawWeapon(void) const;
 	/// Draw a healing self animation
 	/// @todo Should go into the View of the MVC.
 	void DrawHealingAnimation(bool restart) const;
-	/// Draw the compass rose
-	/// @todo Should go intop the View of the MVC
-	void DrawCompassRose(void) const;
-	/// Check if camera position is inside a wall
-	/// @todo Should go into the View of the MVC
-	void UpdateCameraPosition(void);
 	/// Call this when a dialog will be showed, to stop movement, etc.
 	/// All key presses will henceforth be forwarded to the dialog, so the player can't stop moving.
 	void ClearForDialog(void);

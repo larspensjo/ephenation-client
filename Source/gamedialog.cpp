@@ -68,6 +68,8 @@
 #include "worsttime.h"
 #include "ChunkProcess.h"
 
+using std::string;
+
 const float defaultRenderViewAngle = 60.0f;
 float renderViewAngle = defaultRenderViewAngle;
 
@@ -92,8 +94,6 @@ gameDialog::gameDialog() {
 	fMovingRight = false;
 	fUsingTorch = false;
 	fUnderWater = false;
-	fCameraDistance = 0.0f;
-	fRequestedCameraDistance = 0.0f;
 	fMapWidth = 600;
 
 	fEnterDebugText = false;
@@ -867,24 +867,11 @@ void gameDialog::render(bool hideGUI) {
 	// Clear list of special effects. It will be added again automatically every frame
 	gShadows.Clear();
 	gFogs.Clear();
-	gPlayer.UpdatePositionSmooth();
 
 	// Can't select objects that are dead
 	if (fSelectedObject && fSelectedObject->IsDead())
 		ClearSelection();
 	glm::vec3 playerOffset = gPlayer.GetOffsetToChunk();
-
-	gViewMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -fCameraDistance));
-	gViewMatrix = glm::rotate(gViewMatrix, _angleVert, glm::vec3(1.0f, 0.0f, 0.0f));
-	gViewMatrix = glm::rotate(gViewMatrix, _angleHor, glm::vec3(0.0f, 1.0f, 0.0f));
-	gViewMatrix = glm::translate(gViewMatrix, -playerOffset);
-
-	glm::mat4 T1 = glm::translate(glm::mat4(1), playerOffset);
-	glm::mat4 R1 = glm::rotate(glm::mat4(1), _angleVert, glm::vec3(-1.0f, 0.0f, 0.0f));
-	glm::mat4 R2 = glm::rotate(glm::mat4(1), _angleHor, glm::vec3(0.0f, -1.0f, 0.0f));
-	glm::mat4 T2 = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, fCameraDistance));
-	glm::vec4 camera = T1 * R2 * R1 * T2 * glm::vec4(0,0,0,1);
-	gUniformBuffer.Camera(camera);
 
 	gDrawnQuads = 0;
 	gNumDraw = 0;
@@ -895,14 +882,14 @@ void gameDialog::render(bool hideGUI) {
 		gBillboard.InitializeTextures(fShader);
 	}
 
-	fRenderControl.Draw(fUnderWater, this->ThirdPersonView(), fSelectedObject, fDrawMap && !gDebugOpenGL, fMapWidth, (hideGUI && fCurrentRocketContextInput == 0) ? 0 : &fMainUserInterface);
+	fRenderControl.Draw(fUnderWater, fSelectedObject, fDrawMap && !gDebugOpenGL, fMapWidth, (hideGUI && fCurrentRocketContextInput == 0) ? 0 : &fMainUserInterface);
 
 	//=========================================================================
 	// Various effects drawn after the deferred shader
 	//=========================================================================
 
 	if (!fDrawMap) {
-		if (fShowWeapon && gMode.Get() != GameMode::CONSTRUCT && !fShowInventory && !this->ThirdPersonView() && !hideGUI)
+		if (fShowWeapon && gMode.Get() != GameMode::CONSTRUCT && !fShowInventory && !fRenderControl.ThirdPersonView() && !hideGUI)
 			this->DrawWeapon();
 		static bool wasDead = false;
 		if (gPlayer.IsDead() && !wasDead) {
@@ -946,7 +933,6 @@ void gameDialog::render(bool hideGUI) {
 	}
 	this->DrawHealingAnimation(newHealing);
 
-	char buff[1000]; // TODO: Ugly way to create dynamic strings
 	static double slAverageFps = 0.0;
 	double tm = gCurrentFrameTime;
 	static double prevTime = 0.0;
@@ -956,6 +942,7 @@ void gameDialog::render(bool hideGUI) {
 	prevTime = tm;
 
 	if (gMode.Get() == GameMode::TELEPORT) {
+		// Draw the teleport mode
 		TeleportClick(fHealthBar, _angleHor, renderViewAngle, 0, 0, false);
 	}
 
@@ -963,6 +950,7 @@ void gameDialog::render(bool hideGUI) {
 	// Various text messages
 	//=========================================================================
 	{
+		char buff[1000]; // TODO: Ugly way to create dynamic strings
 		sprintf(buff, "Level %ld, Hp %d%%, Exp %d%%", gPlayer.fLevel, (int)(gPlayer.fHp * 100), (int)(gPlayer.fExp * 100));
 		static string sPrevStat;
 		if (sPrevStat != buff) {
@@ -981,11 +969,11 @@ void gameDialog::render(bool hideGUI) {
 			gPlayer.GetChunkCoord(&cc);
 			const chunk *cp = ChunkFind(&cc, false);
 			unsigned int uid = 1000000;
-			shared_ptr<ChunkBlocks> cb;
-			if (cp)
-				cb = cp->fChunkBlocks;
-			if (cb)
-				uid = cb->fOwner;
+			if (cp) {
+				auto cb = cp->fChunkBlocks;
+				if (cb != nullptr)
+					uid = cb->fOwner;
+			}
 			// This will override other the other text
 			sprintf(buff, "Construction mode, Chunk (%d,%d,%d) offset: %.1f,%.1f,%.1f, coord(%.1f,%.1f,%.1f) owner %d",
 			        cc.x, cc.y, cc.z, playerOffset.x, playerOffset.y, playerOffset.z, gPlayer.x/100.0, gPlayer.y/100.0, gPlayer.z/100.0, uid);
@@ -1035,7 +1023,6 @@ void gameDialog::init(void) {
 	gScrollingMessages.Init(gabriola18);
 	ChunkBlocks::InitStatic();
 	maxRenderDistance = (float)gOptions.fViewingDistance;
-	this->fRequestedCameraDistance = gOptions.fCameraDistance;
 	if (maxRenderDistance > MAXRENDERDISTANCE) {
 		// Someone tried to trick the program by editing the ini file.
 		// #255 long distances are not handled very well by neither server nor client
@@ -1095,6 +1082,7 @@ void gameDialog::Update() {
 
 	// Detect usage of the mouse wheel
 	int newWheel = glfwGetMouseWheel();
+	int zoomDelta = 0;
 	if (newWheel != wheel) {
 		if (fCurrentRocketContextInput) {
 			fCurrentRocketContextInput->ProcessMouseWheel(wheel-newWheel, rocketKeyModifiers);
@@ -1106,14 +1094,15 @@ void gameDialog::Update() {
 			if (fMapWidth < 100)
 				fMapWidth = 100;
 		} else {
-			this->fRequestedCameraDistance += wheel-newWheel;
-			if (this->fRequestedCameraDistance < 0.0f)
-				this->fRequestedCameraDistance = 0.0f;
-			if (this->fRequestedCameraDistance > 20.0f)
-				this->fRequestedCameraDistance = 20.0f; // Don't allow unlimited third person view distance
+			zoomDelta = wheel-newWheel;
 		}
 		wheel = newWheel;
 	}
+
+	gPlayer.UpdatePositionSmooth();
+
+	fRenderControl.UpdateCameraPosition(zoomDelta);
+
 	if (gMode.Get() == GameMode::CONSTRUCT && (glfwGetKey(GLFW_KEY_DEL) == GLFW_PRESS || glfwGetKey('V') == GLFW_PRESS) && glfwGetMouseButton(GLFW_MOUSE_BUTTON_1) == GLFW_PRESS) {
 		int x, y;
 		glfwGetMousePos(&x, &y);
@@ -1158,8 +1147,6 @@ void gameDialog::Update() {
 		gSoundControl.SetSoundFxStatus(SoundControl::SPlayerInAir,true);
 		inAir = true;
 	}
-
-	this->UpdateCameraPosition();
 	gGameDialog.UpdateRunningStatus(false);
 
 	if (gOptions.fFullScreen) {
@@ -1232,75 +1219,6 @@ void gameDialog::DrawHealingAnimation(bool restart) const {
 	glBindTexture(GL_TEXTURE_2D, GameTexture::LightBallsHeal);
 	fDrawTexture->Draw(id, model);
 	glBindTexture(GL_TEXTURE_2D, 0);
-}
-
-void gameDialog::UpdateCameraPosition(void) {
-	static double last = 0.0;
-	double delta = (gCurrentFrameTime - last)*20; // Number of blocks/s
-	last = gCurrentFrameTime;
-	if (delta > fRequestedCameraDistance - fCameraDistance)
-		delta = fRequestedCameraDistance - fCameraDistance;
-	// If the requested camera distance is bigger than the current, then slowly move out.
-	if (fRequestedCameraDistance > fCameraDistance)
-		fCameraDistance += delta;
-	else
-		fCameraDistance = fRequestedCameraDistance;
-	gOptions.fCameraDistance = fRequestedCameraDistance;
-	Options::sfSave.fCameraDistance = fRequestedCameraDistance; // Make sure it is saved
-	if (fCameraDistance == 0.0f)
-		return;
-	ChunkCoord cc;
-	gPlayer.GetChunkCoord(&cc);
-
-	glm::vec3 playerOffset = gPlayer.GetOffsetToChunk();
-	glm::vec3 pd(playerOffset.x, -playerOffset.z, playerOffset.y); // Same offset, but in Ephenation server coordinates
-
-	glm::mat4 T1 = glm::translate(glm::mat4(1), playerOffset);
-	glm::mat4 R1 = glm::rotate(glm::mat4(1), _angleVert, glm::vec3(-1.0f, 0.0f, 0.0f));
-	glm::mat4 R2 = glm::rotate(glm::mat4(1), _angleHor, glm::vec3(0.0f, -1.0f, 0.0f));
-	glm::mat4 T2 = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, fCameraDistance));
-	glm::vec4 pos = T1 * R2 * R1 * T2 * glm::vec4(0,0,0,1);
-
-	glm::vec3 cd(pos.x, -pos.z, pos.y); // Camera delta in Ephenation coordinates.
-
-	// printf("Player: %.2f, %.2f, %.2f. Camera: %.2f,%.2f,%.2f\n", pd.x, pd.y, pd.z, cd.x, cd.y, cd.z);
-	glm::vec3 norm = glm::normalize(cd-pd); // Vector from player to camera
-
-	const float step = 0.1f;
-	for (float d = step; d <= this->fCameraDistance; d = d + step) {
-		signed long long x, y, z;
-		x = gPlayer.x + (signed long long)(d * norm.x*BLOCK_COORD_RES);
-		y = gPlayer.y + (signed long long)(d * norm.y*BLOCK_COORD_RES);
-		z = gPlayer.z + (signed long long)(d * norm.z*BLOCK_COORD_RES);
-		if (chunk::GetChunkAndBlock(x, y, z) != BT_Air) {
-			this->fCameraDistance = d-step;
-			break;
-		}
-		if (chunk::GetChunkAndBlock(x+1, y, z) != BT_Air) {
-			this->fCameraDistance = d-step;
-			break;
-		}
-		if (chunk::GetChunkAndBlock(x, y+1, z) != BT_Air) {
-			this->fCameraDistance = d-step;
-			break;
-		}
-		if (chunk::GetChunkAndBlock(x, y, z+1) != BT_Air) {
-			this->fCameraDistance = d-step;
-			break;
-		}
-		if (chunk::GetChunkAndBlock(x-1, y, z) != BT_Air) {
-			this->fCameraDistance = d-step;
-			break;
-		}
-		if (chunk::GetChunkAndBlock(x, y-1, z) != BT_Air) {
-			this->fCameraDistance = d-step;
-			break;
-		}
-		if (chunk::GetChunkAndBlock(x, y, z-1) != BT_Air) {
-			this->fCameraDistance = d-step;
-			break;
-		}
-	}
 }
 
 void gameDialog::ClearForDialog(void) {

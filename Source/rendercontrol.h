@@ -54,12 +54,19 @@ public:
 
 	/// Do the actual drawing
 	/// @param underwater True if underwater effects shall be applied
-	/// @param thirdPersonView True if the drawing shall be done from a third person view
 	/// @param selectedObject This object shall be visibly marked
 	/// @param showMap True if a map shall be shown
 	/// @param mapWidth Pixels in width used when drawing a map
 	/// @param ui Pointer to the user interface
-	void Draw(bool underWater, bool thirdPersonView, std::shared_ptr<const Object> selectedObject, bool showMap, int mapWidth, MainUserInterface *ui);
+	void Draw(bool underWater, std::shared_ptr<const Object> selectedObject, bool showMap, int mapWidth, MainUserInterface *ui);
+
+	/// Update the camera position.
+	/// Check if camera position is inside a wall.
+	/// @param wheelDelta How much the player used the wheel
+	void UpdateCameraPosition(int wheelDelta);
+
+	/// Return true if the player is using third person view
+	bool ThirdPersonView() const { return fCameraDistance > 2.0f; }
 private:
 
 	// Free the buffers. Also needed to reinitialize for a new size.
@@ -80,6 +87,9 @@ private:
 	ChunkShader *fShader;
 	AnimationShader *fAnimation;
 	AnimationModels fAnimationModels;
+
+	float fCameraDistance; /// Actual camera distance behind the player
+	float fRequestedCameraDistance; /// Requested camera distance behind the player
 
 	void ComputeShadowMap(void);
 

@@ -63,6 +63,8 @@ RenderControl::RenderControl() {
 	fDiffuseTexture = 0; fPositionTexture = 0; fNormalsTexture = 0; fBlendTexture = 0; fLightsTexture = 0;
 	fAnimation = 0; fShader = 0;
 	fSkyBox = 0;
+	fCameraDistance = 0.0f;
+	fRequestedCameraDistance = 0.0f;
 }
 
 RenderControl::~RenderControl() {
@@ -102,6 +104,7 @@ void RenderControl::Init() {
 	fAddSSAO.reset(new AddSSAO);
 	fAddSSAO->Init();
 	fAnimationModels.Init();
+	fRequestedCameraDistance = gOptions.fCameraDistance;
 
 	if (gOptions.fDynamicShadows) {
 		fShadowRender.reset(new ShadowRender(DYNAMIC_SHADOW_MAP_SIZE,DYNAMIC_SHADOW_MAP_SIZE));
@@ -193,7 +196,7 @@ void RenderControl::Resize(GLsizei width, GLsizei height) {
 
 enum { STENCIL_NOSKY = 1 };
 
-void RenderControl::Draw(bool underWater, bool thirdPersonView, shared_ptr<const Object> selectedObject, bool showMap, int mapWidth, MainUserInterface *ui) {
+void RenderControl::Draw(bool underWater, shared_ptr<const Object> selectedObject, bool showMap, int mapWidth, MainUserInterface *ui) {
 	if (!gPlayer.BelowGround())
 		this->ComputeShadowMap();
 
@@ -207,7 +210,7 @@ void RenderControl::Draw(bool underWater, bool thirdPersonView, shared_ptr<const
 	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE); // Replace bits when something is drawn
 	gDrawObjectList.clear();
 	drawNonTransparentLandscape();
-	if (thirdPersonView && gMode.Get() != GameMode::LOGIN)
+	if (this->ThirdPersonView() && gMode.Get() != GameMode::LOGIN)
 		drawPlayer(); // Draw self, but not if camera is too close
 	drawOtherPlayers();
 	drawMonsters();
@@ -613,4 +616,83 @@ void RenderControl::drawMap(int mapWidth) {
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 	glBindTexture(GL_TEXTURE_2D, fDiffuseTexture); // Override
 	map->Draw(0.6f);
+}
+
+void RenderControl::UpdateCameraPosition(int wheelDelta) {
+	fRequestedCameraDistance += wheelDelta;
+	if (fRequestedCameraDistance < 0.0f)
+		fRequestedCameraDistance = 0.0f;
+	if (fRequestedCameraDistance > 20.0f)
+		fRequestedCameraDistance = 20.0f; // Don't allow unlimited third person view distance
+	static double last = 0.0;
+	double delta = (gCurrentFrameTime - last)*20; // Number of blocks/s
+	last = gCurrentFrameTime;
+	if (delta > fRequestedCameraDistance - fCameraDistance)
+		delta = fRequestedCameraDistance - fCameraDistance;
+	// If the requested camera distance is bigger than the current, then slowly move out.
+	if (fRequestedCameraDistance > fCameraDistance)
+		fCameraDistance += delta;
+	else
+		fCameraDistance = fRequestedCameraDistance;
+	gOptions.fCameraDistance = fRequestedCameraDistance;
+	Options::sfSave.fCameraDistance = fRequestedCameraDistance; // Make sure it is saved
+
+	ChunkCoord cc;
+	gPlayer.GetChunkCoord(&cc);
+
+	glm::vec3 playerOffset = gPlayer.GetOffsetToChunk();
+	glm::vec3 pd(playerOffset.x, -playerOffset.z, playerOffset.y); // Same offset, but in Ephenation server coordinates
+
+	glm::mat4 T1 = glm::translate(glm::mat4(1), playerOffset);
+	glm::mat4 R1 = glm::rotate(glm::mat4(1), _angleVert, glm::vec3(-1.0f, 0.0f, 0.0f));
+	glm::mat4 R2 = glm::rotate(glm::mat4(1), _angleHor, glm::vec3(0.0f, -1.0f, 0.0f));
+	glm::mat4 T2 = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, fCameraDistance));
+	glm::vec4 camera = T1 * R2 * R1 * T2 * glm::vec4(0,0,0,1);
+
+	gUniformBuffer.Camera(camera);
+
+	glm::vec3 cd(camera.x, -camera.z, camera.y); // Camera delta in Ephenation coordinates.
+
+	glm::vec3 norm = glm::normalize(cd-pd); // Vector from player to camera
+
+	const float step = 0.1f;
+	for (float d = step; d <= this->fCameraDistance; d = d + step) {
+		signed long long x, y, z;
+		x = gPlayer.x + (signed long long)(d * norm.x*BLOCK_COORD_RES);
+		y = gPlayer.y + (signed long long)(d * norm.y*BLOCK_COORD_RES);
+		z = gPlayer.z + (signed long long)(d * norm.z*BLOCK_COORD_RES);
+		if (chunk::GetChunkAndBlock(x, y, z) != BT_Air) {
+			this->fCameraDistance = d-step;
+			break;
+		}
+		if (chunk::GetChunkAndBlock(x+1, y, z) != BT_Air) {
+			this->fCameraDistance = d-step;
+			break;
+		}
+		if (chunk::GetChunkAndBlock(x, y+1, z) != BT_Air) {
+			this->fCameraDistance = d-step;
+			break;
+		}
+		if (chunk::GetChunkAndBlock(x, y, z+1) != BT_Air) {
+			this->fCameraDistance = d-step;
+			break;
+		}
+		if (chunk::GetChunkAndBlock(x-1, y, z) != BT_Air) {
+			this->fCameraDistance = d-step;
+			break;
+		}
+		if (chunk::GetChunkAndBlock(x, y-1, z) != BT_Air) {
+			this->fCameraDistance = d-step;
+			break;
+		}
+		if (chunk::GetChunkAndBlock(x, y, z-1) != BT_Air) {
+			this->fCameraDistance = d-step;
+			break;
+		}
+	}
+
+	gViewMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -fCameraDistance));
+	gViewMatrix = glm::rotate(gViewMatrix, _angleVert, glm::vec3(1.0f, 0.0f, 0.0f));
+	gViewMatrix = glm::rotate(gViewMatrix, _angleHor, glm::vec3(0.0f, 1.0f, 0.0f));
+	gViewMatrix = glm::translate(gViewMatrix, -playerOffset);
 }

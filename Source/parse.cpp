@@ -373,13 +373,10 @@ void Parse(const unsigned char *b, int n) {
 		for (int i=1; i<n; i += 5) {
 			// unsigned long id = ParseUint32(b+i);
 			unsigned long dmg = b[i+4];
-			if (gGameDialog.ThirdPersonView()) {
-				std::stringstream ss;
-				ss << dmg*100/255;
-				gScrollingMessages.AddMessagePlayer(ss.str(), glm::vec3(0, -1, -1)); // Use red color for player
-			} else {
-				gMsgWindow.Add("Monster hit you with %d%% damage", dmg*100/255);
-			}
+			std::stringstream ss;
+			ss << dmg*100/255;
+			gScrollingMessages.AddMessagePlayer(ss.str(), glm::vec3(0, -1, -1)); // Use red color for player
+			gMsgWindow.Add("Monster hit you with %d%% damage", dmg*100/255);
 			gSoundControl.RequestSound(SoundControl::SMonsterHits);
 		}
 		break;

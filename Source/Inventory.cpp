@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -138,9 +138,7 @@ void Inventory::SetAmount(const char *code, int n, unsigned lvl) {
 		// Give a sound feed back to the player, but not if this is the initial list sent in the login process.
 		if (n > prevAmount && gMode.Get() != GameMode::WAIT_ACK) {
 			gSoundControl.RequestSound(fItemList[i].fInfo->song);
-			if (gGameDialog.ThirdPersonView()) {
-				gScrollingMessages.AddMessagePlayer(fItemList[i].fInfo->descr);
-			}
+			gScrollingMessages.AddMessagePlayer(fItemList[i].fInfo->descr);
 		}
 		// printf("Inventory::SetAmount code '%s': count %d descr '%s' level %d\n", code, n, fsObjectMap[i].descr, lvl);
 		if (n == 0) {
@@ -162,9 +160,7 @@ void Inventory::SetAmount(const char *code, int n, unsigned lvl) {
 	fItemList[fNumItems].fInfo = info;
 	if (gMode.Get() != GameMode::WAIT_ACK) {
 		gSoundControl.RequestSound(fItemList[fNumItems].fInfo->song);
-		if (gGameDialog.ThirdPersonView()) {
-			gScrollingMessages.AddMessagePlayer(fItemList[fNumItems].fInfo->descr);
-		}
+		gScrollingMessages.AddMessagePlayer(fItemList[fNumItems].fInfo->descr);
 	}
 	fNumItems++;
 	return;
