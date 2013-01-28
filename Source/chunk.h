@@ -29,8 +29,9 @@
 #define CHUNK_VOL (CHUNK_SIZE*CHUNK_SIZE*CHUNK_SIZE)
 #define BLOCK_COORD_RES 100 // This is the scale for the player coordinate fixed point
 
-// Block types in the chunk
-// TODO Copied manually from worldDB.go, should be generated automatically
+/// @file chunk.h
+/// Block types in the chunk
+/// @todo Copied manually from worldDB.go, should be generated automatically
 #define BT_Unused	0
 #define BT_Stone	1
 #define BT_Water	2
@@ -92,9 +93,9 @@
 #define LAMP1_DIST 8 // Lamp 1 will go linearly from light to dark in this number of blocks.
 #define LAMP2_DIST 14 // Lamp 2 will go linearly from light to dark in this number of blocks.
 
-// This is a coordinate in the Ephenation system, not in the OpenGL system. The chunk
-// coordinates are numbered 0, 1, 2, etc.
-// This means that real coordinate is chunk coordinate * CHUNK_SIZE.
+/// A coordinate in the Ephenation system, not in the OpenGL system. The chunk
+/// coordinates are numbered 0, 1, 2, etc.
+/// This means that real coordinate is chunk coordinate * CHUNK_SIZE.
 struct ChunkCoord {
 	int x, y, z;
 
@@ -127,21 +128,23 @@ class ChunkBlocks;
 
 using std::shared_ptr;
 
+/// Definition of the View side of a chunk.
+/// @todo This started as a struct for data, but methods were added. The public data should be made private.
 struct chunk {
 	ChunkCoord cc;		// The chunk coordinate of this chunk
 
 	bool fScheduledForComputation;
 	bool fScheduledForLoading;
 
-	// Information about graphical objects.
-	// The referenced object is a 'const', as the content must not change asynchronosuly.
+	/// Information about graphical objects.
+	/// The referenced object is a 'const', as the content must not change asynchronosuly.
 	shared_ptr<const ChunkObject> fChunkObject;
 
-	// The actual blocks in the chunk. The content may change asynchronously, so it can't be a const.
+	/// The actual blocks in the chunk. The content may change asynchronously, so it can't be a const.
 	shared_ptr<ChunkBlocks> fChunkBlocks;
 
-	// OpenGL data. One Vertex Array Object for each block type. Usually, only a limited num ber of the block
-	// types are needed.
+	/// OpenGL data. One Vertex Array Object for each block type. Usually, only a limited num ber of the block
+	/// types are needed.
 	GLuint fBufferId[256];
 	GLuint fVao[256];
 	bool fBuffersDefined;
@@ -150,43 +153,45 @@ struct chunk {
 
 	void Uncompress();
 
-	// x is east/west, y is north/south and z is height in a chunk. The content may change asynchorously.
+	/// x is east/west, y is north/south and z is height in a chunk. The content may change asynchorously.
 	unsigned char GetBlock(int x, int y, int z) const {
 		return fChunkBlocks->fChunkData[(x*CHUNK_SIZE+y)*CHUNK_SIZE+z];
 	}
 
-	// Given a coordinate, find the chunk at this place and the block in that chunk.
+	/// Given a coordinate, find the chunk at this place and the block in that chunk.
 	static unsigned char GetChunkAndBlock(signed long long x, signed long long y, signed long long z);
 
 	~chunk();
 
-	// The outer graphical presentation of a chunk depends on the neighbor chunk blocks.
-	// This function will tell all near chunk to update.
+	/// The outer graphical presentation of a chunk depends on the neighbor chunk blocks.
+	/// This function will tell all near chunk to update.
 	void UpdateNeighborChunks(void);
 
-	// Interpret the binary chunk definition and transform it into graphical objects. OpenGL is done elsewhere.
+	/// Interpret the binary chunk definition and transform it into graphical objects. OpenGL is done elsewhere.
 	void UpdateGraphics(void);
 
-	// Draw the chunk itself
+	/// Draw the chunk itself
 	void Draw(StageOneShader *shader, ChunkShaderPicking *pickShader, DL_Type dlType);
 
-	// Draw a bounding box for a chunk. Note, 'this' pointer can be zero, in which case
-	// a rough approximation has to be used for the bounding box.
+	/// Draw a bounding box for a chunk. Note, 'this' pointer can be zero, in which case
+	/// a rough approximation has to be used for the bounding box.
 	void DrawBoundingBox(StageOneShader *shader, int dx, int dy, int dz);
 
-	// Draw all objects in the chunk. If 'forShadows' is true, skip doing things that shall not be
-	// used in the shadow map. dx, dy and dz is the relative distance to the player chunk.
+	/// Draw all objects in the chunk. If 'forShadows' is true, skip doing things that shall not be
+	/// used in the shadow map. dx, dy and dz is the relative distance to the player chunk.
 	void DrawObjects(StageOneShader *shader, int dx, int dy, int dz, bool forShadows);
 	void PrepareOpenGL(StageOneShader *shader, ChunkShaderPicking *pickShader, DL_Type dlType);
 	void ReleaseOpenGLBuffers(void);
 
-	static void DegradeBusyList_gl(void); // Unload all old chunks, and then move all chunks from the current busy list to the old busy list
+	/// Unload all old chunks, and then move all chunks from the current busy list to the old busy list
+	static void DegradeBusyList_gl(void);
 	void SetDirty(bool flag);             // Update the fDirty flag
 	bool IsDirty(void) const { return fDirty; }
 	static void MakeAllChunksDirty(void); // Force all chunk to be recomputed.
-	// Stash away the triangles to make for quick restore, and use a new one
+	/// Stash away the triangles to enable a quick restore, and use a new one list
 	void PushTriangles(shared_ptr<const ChunkObject>);
-	void PopTriangles(void);			  // Restore the pushed triangles
+	/// Restore the pushed triangles
+	void PopTriangles(void);
 
 	bool InSunLight(int ox, int oy, int oz) const;
 	float ComputeAmbientLight(int ox, int oy, int oz) const;
@@ -199,7 +204,8 @@ private:
 	shared_ptr<const ChunkObject> fPushedValues;
 };
 
-// Find an old chunk. If it doesn't exist yet and force is true, data will be requested from
-// the server. The content will be empty for a little while. If 'force' is false, a null pointer
-// will be returned if the chunk isn't found.
+/// Find an old chunk.
+/// If it doesn't exist yet and force is true, data will be requested from
+/// the server. The content will be empty for a little while. If 'force' is false, a null pointer
+/// will be returned if the chunk isn't found.
 extern chunk* ChunkFind(const ChunkCoord *coord, bool force);

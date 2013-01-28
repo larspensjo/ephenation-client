@@ -604,7 +604,7 @@ void chunk::PushTriangles(shared_ptr<const ChunkObject> co) {
 void chunk::PopTriangles(void) {
 	// printf("Pop %d,%d,%d, comp %d, loading %d\n", cc.x, cc.x, cc.z, fScheduledForComputation, fScheduledForLoading);
 	if (!fPushedValues) {
-		ErrorDialog("Illegal chunk::PopTriangles\n");
+		ErrorDialog("chunk::PopTriangles: Pop without a push first");
 	}
 	this->ReleaseOpenGLBuffers();
 	fChunkObject = fPushedValues;
