@@ -27,6 +27,8 @@ namespace View {
 
 class ChunkCoord;
 
+namespace Model {
+
 /// Manage the actual blocks inside a chunk, as well as some information about the chunk as given by the server.
 /// Chunks from the server, or from the local cache, are compressed.
 /// This is part of the Model.
@@ -38,7 +40,8 @@ class ChunkCoord;
 /// @todo Most data in ChunkBlocks is as decoded from the cache or as received from the server. It should be packaged
 /// in private structure.
 ///
-struct ChunkBlocks {
+class ChunkBlocks {
+public:
 	unsigned long flag;
 	unsigned int fChecksum;
 	unsigned long fOwner;
@@ -80,3 +83,5 @@ private:
 	struct JellyBlock;
 	std::deque<JellyBlock*> fJellyBlockList;
 };
+
+}

@@ -40,8 +40,9 @@ namespace View {
 	class ChunkObject;
 }
 
-class ChunkBlocks;
-
+namespace Model {
+	class ChunkBlocks;
+}
 
 /// Set up parallel processes (a thread pool) that will manage chunks.
 /// This is a singleton class, that manages all threads. The number of allocated threads
@@ -75,7 +76,7 @@ public:
 	void Poll(void);
 
 	// Load new chunk data into a chunk, but do not recompute it. It will replace the previous one
-	void AddTaskNewChunk(unique_ptr<ChunkBlocks>);
+	void AddTaskNewChunk(unique_ptr<Model::ChunkBlocks>);
 
 	// Request the processes to terminate
 	void RequestTerminate(void);
@@ -94,10 +95,10 @@ private:
 	//
 	bool fTerminate;               // The processes has been requested to terminate
 	std::deque<View::Chunk*> fComputeObjectsInput; // The list of chunk recomputation jobs
-	std::deque<shared_ptr<ChunkBlocks>> fNewChunksInput; // List of "new chunk" jobs.
+	std::deque<shared_ptr<Model::ChunkBlocks>> fNewChunksInput; // List of "new chunk" jobs.
 	// This is where the computed objects are saved. Use a set, to make sure every element is only ever once in it.
 	std::set<shared_ptr<View::ChunkObject>> fComputedObjectsOutput;
-	std::set<shared_ptr<ChunkBlocks>> fNewChunksOutput;
+	std::set<shared_ptr<Model::ChunkBlocks>> fNewChunksOutput;
 	//
 	// End of list of mutex protected variables.
 	// ==============================================================================================================

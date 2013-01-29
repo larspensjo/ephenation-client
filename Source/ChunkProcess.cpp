@@ -80,7 +80,7 @@ restart:
 }
 
 // Get a ChunkBlocks from the queue, but chose the one that is nearest to the player. This function is thread safe.
-static shared_ptr<ChunkBlocks> getNextChunkBlock(std::deque<shared_ptr<ChunkBlocks>> &queue) {
+static shared_ptr<Model::ChunkBlocks> getNextChunkBlock(std::deque<shared_ptr<Model::ChunkBlocks>> &queue) {
 	ChunkCoord cc;
 	double nearestDist2 = 1e10; // Anything very big
 	//  The player position may change and is not thread safe. Bu the worst that can happen is that wrong chunk is selected.
@@ -249,7 +249,7 @@ void ChunkProcess::Poll(void) {
 	fMutex.unlock();				// Unlock the mutex; this will wakeup the child thread
 }
 
-void ChunkProcess::AddTaskNewChunk(unique_ptr<ChunkBlocks> cb) {
+void ChunkProcess::AddTaskNewChunk(unique_ptr<Model::ChunkBlocks> cb) {
 	// The chunk may also have been scheduled for computation, but we can't do anything to that here.
 	fMutex.lock();				// Lock the mutex, to get access to the message variable
 	View::Chunk *cp = cb->fChunk;

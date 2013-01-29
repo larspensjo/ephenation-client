@@ -1023,7 +1023,7 @@ void gameDialog::init(void) {
 	std::shared_ptr<DrawFont> gabriola18(new DrawFont);
 	gabriola18->Init("textures/gabriola18");
 	gScrollingMessages.Init(gabriola18);
-	ChunkBlocks::InitStatic();
+	Model::ChunkBlocks::InitStatic();
 	maxRenderDistance = (float)gOptions.fViewingDistance;
 	if (maxRenderDistance > MAXRENDERDISTANCE) {
 		// Someone tried to trick the program by editing the ini file.

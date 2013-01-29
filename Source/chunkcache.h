@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -26,7 +26,10 @@
 
 #include "chunk.h"
 
-class ChunkBlocks;
+namespace Model {
+	class ChunkBlocks;
+}
+
 class ChunkCoord;
 
 class ChunkCache {
@@ -47,7 +50,7 @@ public:
 	void SetCacheDir(const char *);
 	bool IsChunkInCache(const ChunkCoord *cc);
 	void SaveChunkInCache(const cachunk *);
-	std::shared_ptr<ChunkBlocks> LoadChunkFromCache(const ChunkCoord *cc);
+	std::shared_ptr<Model::ChunkBlocks> LoadChunkFromCache(const ChunkCoord *cc);
 private:
 	ChunkCache();
 	~ChunkCache();

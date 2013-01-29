@@ -34,6 +34,8 @@ using std::stringstream;
 using std::string;
 using std::endl;
 
+using namespace Model;
+
 // Macro that converts a local block dx,dy,dz into the index to be used in the one dimensional vector.
 #define INDEX(dx,dy,dz) ((dx*CHUNK_SIZE+dy)*CHUNK_SIZE+dz)
 

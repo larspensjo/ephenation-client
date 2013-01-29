@@ -123,7 +123,10 @@ struct VertexDataf;
 struct TriangleSurfacef;
 class StageOneShader;
 class ChunkShaderPicking;
-class ChunkBlocks;
+
+namespace Model {
+	class ChunkBlocks;
+}
 
 using std::shared_ptr;
 
@@ -144,7 +147,7 @@ public:
 	shared_ptr<const ChunkObject> fChunkObject;
 
 	/// The actual blocks in the chunk. The content may change asynchronously, so it can't be a const.
-	shared_ptr<ChunkBlocks> fChunkBlocks;
+	shared_ptr<Model::ChunkBlocks> fChunkBlocks;
 
 	/// OpenGL data. One Vertex Array Object for each block type. Usually, only a limited num ber of the block
 	/// types are needed.

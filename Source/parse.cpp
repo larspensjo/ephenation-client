@@ -129,7 +129,7 @@ unsigned long long ParseUint64(const unsigned char *b) {
 // 'n' is the number of remaining bytes (total message length minus 3).
 static void ParseChunk(const unsigned char *b, int n) {
 	// DumpBytes(b, n);
-	unique_ptr<ChunkBlocks> nc(new ChunkBlocks); // A temporary ChunkBlock is needed.
+	unique_ptr<Model::ChunkBlocks> nc(new Model::ChunkBlocks); // A temporary ChunkBlock is needed.
 	// Even though the chunk coordinates are not unsigned, they can be parsed as such.
 	ChunkCoord cc;
 	cc.x = ParseUint32(b+12);

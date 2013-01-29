@@ -185,7 +185,7 @@ void ChunkCache::SaveChunkInCache(const cachunk *chunkdata) {
 	delete[] fileName;
 };
 
-std::shared_ptr<ChunkBlocks> ChunkCache::LoadChunkFromCache(const ChunkCoord *cc) {
+std::shared_ptr<Model::ChunkBlocks> ChunkCache::LoadChunkFromCache(const ChunkCoord *cc) {
 	char *fileName;
 
 	// Check if chunk is in cache, for safety
@@ -194,7 +194,7 @@ std::shared_ptr<ChunkBlocks> ChunkCache::LoadChunkFromCache(const ChunkCoord *cc
 
 	static WorstTime tm("LdChnkFrmCache");
 	tm.Start();
-	auto cachedata = std::make_shared<ChunkBlocks>();
+	auto cachedata = std::make_shared<Model::ChunkBlocks>();
 
 	// TODO: std::string
 	fileName = new char[strlen(fCacheDir)+100];

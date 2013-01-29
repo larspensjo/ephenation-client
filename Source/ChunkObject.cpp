@@ -109,9 +109,9 @@ static void FillCubeY(const unsigned char srcCube[][2][2], unsigned char destCub
 static int height(unsigned char cube[][2][2]) {
 	int countEmptyUp = 0, countEmptyDown = 0;
 	for (int dx=-1; dx<1; dx++) for (int dy=-1; dy<1; dy++) {
-			if (ChunkBlocks::blockIsSemiTransp(cube[dx+1][dy+1][1]))
+			if (Model::ChunkBlocks::blockIsSemiTransp(cube[dx+1][dy+1][1]))
 				countEmptyUp++;
-			if (ChunkBlocks::blockIsSemiTransp(cube[dx+1][dy+1][0]))
+			if (Model::ChunkBlocks::blockIsSemiTransp(cube[dx+1][dy+1][0]))
 				countEmptyDown++;
 
 		}
@@ -135,7 +135,7 @@ static int height(unsigned char cube[][2][2]) {
 // Examine the 8 near blocks and make sure there is no rigid neighbor
 static bool rigidNeighbor(unsigned char cube[][2][2]) {
 	for (int dx=0; dx<2; dx++) for (int dy=0; dy<2; dy++) for (int dz=0; dz<2; dz++) {
-				if (ChunkBlocks::rigid(cube[dx][dy][dz]))
+				if (Model::ChunkBlocks::rigid(cube[dx][dy][dz]))
 					return true;
 			}
 	return false;
@@ -433,7 +433,7 @@ void ChunkObject::FindTriangles(const Chunk *cp, bool pickingMode, int pdx, int 
 				// The rule used to decide if a face shall be drawn is:
 				// * The adjacent block must be at least semi transparent, or noone could see the face
 				// * If the current block is also semi transparent, it must not be of the same type (e.g. don't draw faces between water blocks).
-				if (ChunkBlocks::blockIsSemiTransp(blxm1) && (!ChunkBlocks::blockIsSemiTransp(bl) || bl != blxm1)) { // Left face
+				if (Model::ChunkBlocks::blockIsSemiTransp(blxm1) && (!Model::ChunkBlocks::blockIsSemiTransp(bl) || bl != blxm1)) { // Left face
 					if (pickingMode) {
 						coding.bitmap.facing = CH_LeftFace;
 						ComputePickingNormals(tri1, tri2, coding);
@@ -477,7 +477,7 @@ void ChunkObject::FindTriangles(const Chunk *cp, bool pickingMode, int pdx, int 
 						b[bl].push_back(tri2);
 					}
 				}
-				if (ChunkBlocks::blockIsSemiTransp(blym1) && (!ChunkBlocks::blockIsSemiTransp(bl) || bl != blym1)) { // Front face
+				if (Model::ChunkBlocks::blockIsSemiTransp(blym1) && (!Model::ChunkBlocks::blockIsSemiTransp(bl) || bl != blym1)) { // Front face
 					if (pickingMode) {
 						coding.bitmap.facing = CH_FrontFace;
 						ComputePickingNormals(tri1, tri2, coding);
@@ -521,7 +521,7 @@ void ChunkObject::FindTriangles(const Chunk *cp, bool pickingMode, int pdx, int 
 						b[bl].push_back(tri2);
 					}
 				}
-				if (ChunkBlocks::blockIsSemiTransp(blzm1) && (!ChunkBlocks::blockIsSemiTransp(bl) || bl != blzm1)) { // Bottom face
+				if (Model::ChunkBlocks::blockIsSemiTransp(blzm1) && (!Model::ChunkBlocks::blockIsSemiTransp(bl) || bl != blzm1)) { // Bottom face
 					if (pickingMode) {
 						coding.bitmap.facing = CH_BottomFace;
 						ComputePickingNormals(tri1, tri2, coding);
@@ -560,7 +560,7 @@ void ChunkObject::FindTriangles(const Chunk *cp, bool pickingMode, int pdx, int 
 					b[bl].push_back(tri1);
 					b[bl].push_back(tri2);
 				}
-				if (ChunkBlocks::blockIsSemiTransp(blxp1) && (!ChunkBlocks::blockIsSemiTransp(bl) || bl != blxp1)) { // Right face
+				if (Model::ChunkBlocks::blockIsSemiTransp(blxp1) && (!Model::ChunkBlocks::blockIsSemiTransp(bl) || bl != blxp1)) { // Right face
 					if (pickingMode) {
 						coding.bitmap.facing = CH_RightFace;
 						ComputePickingNormals(tri1, tri2, coding);
@@ -604,7 +604,7 @@ void ChunkObject::FindTriangles(const Chunk *cp, bool pickingMode, int pdx, int 
 						b[bl].push_back(tri2);
 					}
 				}
-				if (ChunkBlocks::blockIsSemiTransp(blyp1) && (!ChunkBlocks::blockIsSemiTransp(bl) || bl != blyp1)) { // Back face
+				if (Model::ChunkBlocks::blockIsSemiTransp(blyp1) && (!Model::ChunkBlocks::blockIsSemiTransp(bl) || bl != blyp1)) { // Back face
 					if (pickingMode) {
 						coding.bitmap.facing = CH_BackFace;
 						ComputePickingNormals(tri1, tri2, coding);
@@ -648,7 +648,7 @@ void ChunkObject::FindTriangles(const Chunk *cp, bool pickingMode, int pdx, int 
 						b[bl].push_back(tri2);
 					}
 				}
-				if (ChunkBlocks::blockIsSemiTransp(blzp1) && (!ChunkBlocks::blockIsSemiTransp(bl) || bl != blzp1)) { // Top face
+				if (Model::ChunkBlocks::blockIsSemiTransp(blzp1) && (!Model::ChunkBlocks::blockIsSemiTransp(bl) || bl != blzp1)) { // Top face
 					if (pickingMode) {
 						// if (x == 0 && z == 2) printf("(%d,%d,%d)", coding.rgb[0], coding.rgb[1], coding.rgb[2]);
 						coding.bitmap.facing = CH_TopFace;
@@ -702,7 +702,7 @@ void ChunkObject::FindTriangles(const Chunk *cp, bool pickingMode, int pdx, int 
 	for (int i=0; i<256; i++) {
 		if (b[i].size() > 0) {
 			fVisibleTriangles[i] = std::move(b[i]);
-			if (ChunkBlocks::rigid(i) || ChunkBlocks::blockIsSemiTransp(i))
+			if (Model::ChunkBlocks::rigid(i) || Model::ChunkBlocks::blockIsSemiTransp(i))
 				continue;
 			if (mergeNormals && !pickingMode)
 				MergeNormals(fVisibleTriangles[i]);

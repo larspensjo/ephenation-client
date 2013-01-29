@@ -80,7 +80,7 @@ static bool LineToSky(const Chunk *cp, int ox, int oy, int oz, float dx, float d
 		if (currentChunk == 0)
 			return true; // We don't know, so assume there is sky. TODO: Not clever enough.
 		int x = int(floorf(fx)), y = int(floorf(fy)), z = int(floorf(fz));
-		if (!ChunkBlocks::blockIsSemiTransp(currentChunk->GetBlock(x, y, z)))
+		if (!Model::ChunkBlocks::blockIsSemiTransp(currentChunk->GetBlock(x, y, z)))
 			return false;
 		fx += dx; fy += dy; fz += dz;
 	}
@@ -195,7 +195,7 @@ Chunk* ChunkFind(const ChunkCoord *cc, bool force) {
 		pc->UpdateNeighborChunks(); // This will now use the new ChunkBlocks. 'cp' must be in sWorldCache map before this call.
 	} else {
 		// A dummy ChunkBlocks is needed. That way, every chunk always havea a ChunkBlocks.
-		auto nc = std::make_shared<ChunkBlocks>();
+		auto nc = std::make_shared<Model::ChunkBlocks>();
 		// Even though the chunk coordinates are not unsigned, they can be parsed as such.
 		nc->flag = 0;
 		nc->fChecksum = 0;
@@ -287,9 +287,9 @@ void Chunk::Draw(StageOneShader *shader, ChunkShaderPicking *pickShader, DL_Type
 		int triSize = fChunkObject->VertexSize(blockType);
 		if (triSize == 0)
 			continue; // No blocks of this type to draw.
-		if (ChunkBlocks::blockIsSemiTransp(blockType) && dlType == DL_NoTransparent)
+		if (Model::ChunkBlocks::blockIsSemiTransp(blockType) && dlType == DL_NoTransparent)
 			continue;
-		if (!ChunkBlocks::blockIsSemiTransp(blockType) && dlType == DL_OnlyTransparent)
+		if (!Model::ChunkBlocks::blockIsSemiTransp(blockType) && dlType == DL_OnlyTransparent)
 			continue;
 		if (dlType == DL_OnlyTransparent && (blockType == BT_Water || blockType == BT_BrownWater)) {
 			glDisable(GL_CULL_FACE);
