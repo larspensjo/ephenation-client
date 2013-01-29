@@ -46,7 +46,7 @@
 #include "assert.h"
 #include "Options.h"
 #include "SuperChunkManager.h"
-#include "BlenderModel.h"
+#include "manageanimation.h"
 #include "player.h"
 #include "billboard.h"
 #include "uniformbuffer.h"

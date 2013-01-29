@@ -26,7 +26,7 @@
 #include <string>
 #include <glm/glm.hpp>
 
-#include "BlenderModel.h"
+#include "manageanimation.h"
 
 using std::string;
 

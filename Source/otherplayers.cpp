@@ -36,7 +36,7 @@
 #include "DrawText.h"
 #include "Options.h"
 #include "shaders/AnimationShader.h"
-#include "BlenderModel.h"
+#include "manageanimation.h"
 
 using std::stringstream;
 using std::endl;

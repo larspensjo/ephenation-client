@@ -28,7 +28,7 @@
 #include "client_prot.h"
 #include "primitives.h"
 #include "textures.h"
-#include "BlenderModel.h"
+#include "manageanimation.h"
 #include "modes.h"
 #include "shaders/StageOneShader.h"
 #include "shaders/AnimationShader.h"

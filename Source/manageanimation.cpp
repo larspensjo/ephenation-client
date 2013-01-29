@@ -44,7 +44,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/quaternion.hpp>
 
-#include "BlenderModel.h"
+#include "manageanimation.h"
 #include "shaders/ChunkShader.h"
 #include "shaders/AnimationShader.h"
 #include "assert.h"

@@ -57,7 +57,7 @@
 #include "TSExec.h"
 #include "chunkcache.h"
 #include "ChunkProcess.h"
-#include "BlenderModel.h"
+#include "manageanimation.h"
 #include "monsters.h"
 #include "uniformbuffer.h"
 #include "billboard.h"

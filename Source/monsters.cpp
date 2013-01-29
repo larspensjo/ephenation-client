@@ -29,7 +29,7 @@
 #include "HealthBar.h"
 #include "SoundControl.h"
 #include "DrawText.h"
-#include "BlenderModel.h"
+#include "manageanimation.h"
 #include "Options.h"
 #include "animationmodels.h"
 
