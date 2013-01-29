@@ -353,7 +353,7 @@ void Inventory::DrawInventory(DrawTexture *drawTexture) {
 	}
 
 	// Draw the equipped weapon
-	int wepType = gPlayer.fWeaponType;
+	int wepType = Model::gPlayer.fWeaponType;
 	if (wepType > 0) {
 		Inventory::ObjectMap *o = &sFirstWeapon[wepType-1];
 		float xOffset = xPixelToScreen(WEAPON_SCREEN_X);
@@ -365,16 +365,16 @@ void Inventory::DrawInventory(DrawTexture *drawTexture) {
 			tooltipX = (weaponModel[3].x+1)/2 * gViewport[2];
 			tooltipY = (1-weaponModel[3].y - dY)/2 * gViewport[3];
 #ifdef WIN32
-			_snprintf(buff, sizeof buff, "%s\nlevel %ld", o->descr, gPlayer.fWeaponLevel);
+			_snprintf(buff, sizeof buff, "%s\nlevel %ld", o->descr, Model::gPlayer.fWeaponLevel);
 #else
-			snprintf(buff, sizeof buff, "%s\nlevel %ld", o->descr, gPlayer.fWeaponLevel);
+			snprintf(buff, sizeof buff, "%s\nlevel %ld", o->descr, Model::gPlayer.fWeaponLevel);
 #endif
 			drawTooltip = true;
 		}
 	}
 
 	// Draw the equipped armor
-	int armType = gPlayer.fArmorType;
+	int armType = Model::gPlayer.fArmorType;
 	if (armType > 0) {
 		Inventory::ObjectMap *o = &sFirstArmor[armType-1];
 		float xOffset = xPixelToScreen(ARMOR_SCREEN_X);
@@ -386,16 +386,16 @@ void Inventory::DrawInventory(DrawTexture *drawTexture) {
 			tooltipX = (itemModel[3].x+1)/2 * gViewport[2];
 			tooltipY = (1-itemModel[3].y - dY)/2 * gViewport[3];
 #ifdef WIN32
-			_snprintf(buff, sizeof buff, "%s\nlevel %ld", o->descr, gPlayer.fArmorLevel);
+			_snprintf(buff, sizeof buff, "%s\nlevel %ld", o->descr, Model::gPlayer.fArmorLevel);
 #else
-			snprintf(buff, sizeof buff, "%s\nlevel %ld", o->descr, gPlayer.fArmorLevel);
+			snprintf(buff, sizeof buff, "%s\nlevel %ld", o->descr, Model::gPlayer.fArmorLevel);
 #endif
 			drawTooltip = true;
 		}
 	}
 
 	// Draw the equipped helmet
-	int hlmType = gPlayer.fHelmetType;
+	int hlmType = Model::gPlayer.fHelmetType;
 	if (hlmType > 0) {
 		Inventory::ObjectMap *o = &sFirstHelmet[hlmType-1];
 		float xOffset = xPixelToScreen(HELMET_SCREEN_X);
@@ -407,9 +407,9 @@ void Inventory::DrawInventory(DrawTexture *drawTexture) {
 			tooltipX = (itemModel[3].x+1)/2 * gViewport[2];
 			tooltipY = (1-itemModel[3].y - dY)/2 * gViewport[3];
 #ifdef WIN32
-			_snprintf(buff, sizeof buff, "%s\nlevel %ld", o->descr, gPlayer.fArmorLevel);
+			_snprintf(buff, sizeof buff, "%s\nlevel %ld", o->descr, Model::gPlayer.fArmorLevel);
 #else
-			snprintf(buff, sizeof buff, "%s\nlevel %ld", o->descr, gPlayer.fArmorLevel);
+			snprintf(buff, sizeof buff, "%s\nlevel %ld", o->descr, Model::gPlayer.fArmorLevel);
 #endif
 			drawTooltip = true;
 		}
@@ -431,11 +431,11 @@ void Inventory::DrawInventory(DrawTexture *drawTexture) {
 	int msgX = (msgModel[3].x+1)/2 * gViewport[2];
 	int msgY = (1-msgModel[3].y)/2 * gViewport[3];
 	gDrawFont.SetOffset(msgX, msgY);
-	gDrawFont.vsfl.renderAndDiscard(WeaponLevelDiffMultiplier(gPlayer.fLevel, gPlayer.fWeaponLevel, gPlayer.fWeaponType));
+	gDrawFont.vsfl.renderAndDiscard(WeaponLevelDiffMultiplier(Model::gPlayer.fLevel, Model::gPlayer.fWeaponLevel, Model::gPlayer.fWeaponType));
 	gDrawFont.SetOffset(msgX, msgY+20);
-	gDrawFont.vsfl.renderAndDiscard("Armor " + ArmorLevelDiffMultiplier(gPlayer.fLevel, gPlayer.fArmorLevel, gPlayer.fArmorType));
+	gDrawFont.vsfl.renderAndDiscard("Armor " + ArmorLevelDiffMultiplier(Model::gPlayer.fLevel, Model::gPlayer.fArmorLevel, Model::gPlayer.fArmorType));
 	gDrawFont.SetOffset(msgX, msgY+40);
-	gDrawFont.vsfl.renderAndDiscard("Helmet " + ArmorLevelDiffMultiplier(gPlayer.fLevel, gPlayer.fHelmetLevel, gPlayer.fHelmetType));
+	gDrawFont.vsfl.renderAndDiscard("Helmet " + ArmorLevelDiffMultiplier(Model::gPlayer.fLevel, Model::gPlayer.fHelmetLevel, Model::gPlayer.fHelmetType));
 	gDrawFont.SetOffset(msgX, msgY+60);
 	gDrawFont.vsfl.renderAndDiscard("Shield modifier: 0 % (TBD)");
 	gDrawFont.SetOffset(msgX, msgY+80);

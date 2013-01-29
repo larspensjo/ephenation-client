@@ -36,7 +36,9 @@
 using std::stringstream;
 using std::shared_ptr;
 
-Monsters gMonsters;
+using namespace Model;
+
+Monsters Model::gMonsters;
 
 struct Monsters::OneMonster : public Object {
 	unsigned long id; // The server unique ID of the monster.

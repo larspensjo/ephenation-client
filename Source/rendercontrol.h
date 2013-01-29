@@ -25,7 +25,6 @@
 class ChunkShader;
 class AddDynamicShadow;
 class DeferredLighting;
-class Object;
 class AddPointLight;
 class AnimationShader;
 class AddPointShadow;
@@ -33,6 +32,10 @@ class SkyBox;
 class AddLocalFog;
 class AddSSAO;
 class MainUserInterface;
+
+namespace Model {
+	class Object;
+}
 
 namespace View {
 	class ShadowRender;
@@ -60,7 +63,7 @@ public:
 	/// @param showMap True if a map shall be shown
 	/// @param mapWidth Pixels in width used when drawing a map
 	/// @param ui Pointer to the user interface
-	void Draw(bool underWater, std::shared_ptr<const Object> selectedObject, bool showMap, int mapWidth, MainUserInterface *ui);
+	void Draw(bool underWater, std::shared_ptr<const Model::Object> selectedObject, bool showMap, int mapWidth, MainUserInterface *ui);
 
 	/// Update the camera position.
 	/// Check if camera position is inside a wall.

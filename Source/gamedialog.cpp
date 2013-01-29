@@ -156,7 +156,7 @@ View::Chunk *gameDialog::FindSelectedSurface(int x, int y, ChunkOffsetCoord *coc
 
 	ChunkCoord cc;
 
-	gPlayer.GetChunkCoord(&cc);
+	Model::gPlayer.GetChunkCoord(&cc);
 	cc.x += coding.bitmap.dx-1;
 	cc.y += coding.bitmap.dy-1;
 	cc.z += coding.bitmap.dz-1;
@@ -342,8 +342,8 @@ void gameDialog::handleMouseActiveMotion(int x, int y) {
 		EncodeUint16(b+5, angleVertRad);
 		// DumpBytes(b, sizeof b);
 		SendMsg(b, sizeof b);
-		gPlayer.fAngleHor = _angleHor; // Update player data with current looking direction
-		gPlayer.fAngleVert = _angleVert;
+		Model::gPlayer.fAngleHor = _angleHor; // Update player data with current looking direction
+		Model::gPlayer.fAngleVert = _angleVert;
 	}
 }
 
@@ -579,10 +579,10 @@ void gameDialog::HandleKeyPress(int key) {
 		} else {
 			gMode.Set(GameMode::CONSTRUCT);
 		}
-		if (gPlayer.KnownPosition()) {
+		if (Model::gPlayer.KnownPosition()) {
 			ChunkCoord player_cc;
 			// Force the current chunk to be redrawn, adapted for construction mode
-			gPlayer.GetChunkCoord(&player_cc);
+			Model::gPlayer.GetChunkCoord(&player_cc);
 			for (int dx=-1; dx<2; dx++) for (int dy=-1; dy<2; dy++) for (int dz=-1; dz < 2; dz++) {
 						ChunkCoord cc = player_cc;
 						cc.x += dx; cc.y += dy; cc.z += dz;
@@ -605,12 +605,12 @@ void gameDialog::HandleKeyPress(int key) {
 			break;
 		}
 		// Find next monster after the selected one.
-		fSelectedObject = gMonsters.GetNext(fSelectedObject);
+		fSelectedObject = Model::gMonsters.GetNext(fSelectedObject);
 		break;
 	case GLFW_KEY_LALT: // ALT key
 		if (gMode.Get() == GameMode::CONSTRUCT) {
 			gShowFramework = true; // Only when in construction mode
-		} else if (gMode.Get() == GameMode::GAME && gPlayer.fAdmin > 0) {
+		} else if (gMode.Get() == GameMode::GAME && Model::gPlayer.fAdmin > 0) {
 			gMode.Set(GameMode::TELEPORT);
 			gAdminTP = true;
 		}
@@ -618,7 +618,7 @@ void gameDialog::HandleKeyPress(int key) {
 	case '1': // Autoattack
 		if (!fSelectedObject) {
 			// Find next monster after the selected one.
-			fSelectedObject = gMonsters.GetNext(nullptr);
+			fSelectedObject = Model::gMonsters.GetNext(nullptr);
 		}
 		if (fSelectedObject) { // Initiate attack on a monster, if any.
 			unsigned char b[] = { 7, 0, CMD_ATTACK_MONSTER, 0, 0, 0, 0 };
@@ -770,7 +770,7 @@ void gameDialog::HandleKeyPress(int key) {
 		break;
 	}
 	case '\'': {
-		if (gPlayer.fAdmin > 0)
+		if (Model::gPlayer.fAdmin > 0)
 			fUsingTorch = !fUsingTorch;
 	}
 	default:
@@ -827,7 +827,7 @@ void gameDialog::HandleKeyRelease(int key) {
 	case GLFW_KEY_LALT: // ALT key
 		if (gMode.Get() == GameMode::CONSTRUCT)
 			gShowFramework = false; // Only when in construction mode
-		else if (gMode.Get() == GameMode::TELEPORT && gPlayer.fAdmin > 0 && gAdminTP) {
+		else if (gMode.Get() == GameMode::TELEPORT && Model::gPlayer.fAdmin > 0 && gAdminTP) {
 			gMode.Set(GameMode::GAME);
 			gAdminTP = false;
 		}
@@ -841,7 +841,7 @@ void gameDialog::ClearSelection(void) {
 }
 
 // This function is called every time the player gets aggro
-void gameDialog::AggroFrom(shared_ptr<const Object> o) {
+void gameDialog::AggroFrom(shared_ptr<const Model::Object> o) {
 	// It may be called from more than one monster. For now, use the information to set a selection for the first monster.
 	if (fSelectedObject == nullptr)
 		fSelectedObject = o;
@@ -873,7 +873,7 @@ void gameDialog::render(bool hideGUI) {
 	// Can't select objects that are dead
 	if (fSelectedObject && fSelectedObject->IsDead())
 		ClearSelection();
-	glm::vec3 playerOffset = gPlayer.GetOffsetToChunk();
+	glm::vec3 playerOffset = Model::gPlayer.GetOffsetToChunk();
 
 	gDrawnQuads = 0;
 	gNumDraw = 0;
@@ -894,7 +894,7 @@ void gameDialog::render(bool hideGUI) {
 		if (fShowWeapon && gMode.Get() != GameMode::CONSTRUCT && !fShowInventory && !fRenderControl.ThirdPersonView() && !hideGUI)
 			this->DrawWeapon();
 		static bool wasDead = false;
-		if (gPlayer.IsDead() && !wasDead) {
+		if (Model::gPlayer.IsDead() && !wasDead) {
 			wasDead = true;
 			sgPopupTitle = "Oops";
 			sgPopup = "You are dead.\n\nYou will be revived, and transported back to your starting place.\n\nThe place can be changed with a scroll of resurrection point.";
@@ -910,7 +910,7 @@ void gameDialog::render(bool hideGUI) {
 			this->ClearForDialog();
 		}
 
-		if (!gPlayer.IsDead())
+		if (!Model::gPlayer.IsDead())
 			wasDead = false;
 	}
 
@@ -927,11 +927,11 @@ void gameDialog::render(bool hideGUI) {
 	if (fSelectedObject) {
 		fSelectedObject->RenderHealthBar(fHealthBar, _angleHor);
 	}
-	gOtherPlayers.RenderPlayerStats(fHealthBar, _angleHor);
+	Model::gOtherPlayers.RenderPlayerStats(fHealthBar, _angleHor);
 	bool newHealing = false;
-	if (gPlayer.fFlags & UserFlagHealed) {
+	if (Model::gPlayer.fFlags & UserFlagHealed) {
 		newHealing = true;
-		gPlayer.fFlags &= ~UserFlagHealed;
+		Model::gPlayer.fFlags &= ~UserFlagHealed;
 	}
 	this->DrawHealingAnimation(newHealing);
 
@@ -953,7 +953,7 @@ void gameDialog::render(bool hideGUI) {
 	//=========================================================================
 	{
 		char buff[1000]; // TODO: Ugly way to create dynamic strings
-		sprintf(buff, "Level %ld, Hp %d%%, Exp %d%%", gPlayer.fLevel, (int)(gPlayer.fHp * 100), (int)(gPlayer.fExp * 100));
+		sprintf(buff, "Level %ld, Hp %d%%, Exp %d%%", Model::gPlayer.fLevel, (int)(Model::gPlayer.fHp * 100), (int)(Model::gPlayer.fExp * 100));
 		static string sPrevStat;
 		if (sPrevStat != buff) {
 			// Only update if it changed
@@ -968,7 +968,7 @@ void gameDialog::render(bool hideGUI) {
 
 		if (gMode.Get() == GameMode::CONSTRUCT) {
 			ChunkCoord cc;
-			gPlayer.GetChunkCoord(&cc);
+			Model::gPlayer.GetChunkCoord(&cc);
 			const View::Chunk *cp = ChunkFind(&cc, false);
 			unsigned int uid = 1000000;
 			if (cp) {
@@ -978,7 +978,7 @@ void gameDialog::render(bool hideGUI) {
 			}
 			// This will override other the other text
 			sprintf(buff, "Construction mode, Chunk (%d,%d,%d) offset: %.1f,%.1f,%.1f, coord(%.1f,%.1f,%.1f) owner %d",
-			        cc.x, cc.y, cc.z, playerOffset.x, playerOffset.y, playerOffset.z, gPlayer.x/100.0, gPlayer.y/100.0, gPlayer.z/100.0, uid);
+			        cc.x, cc.y, cc.z, playerOffset.x, playerOffset.y, playerOffset.z, Model::gPlayer.x/100.0, Model::gPlayer.y/100.0, Model::gPlayer.z/100.0, uid);
 		}
 
 		static string sPrevFPS;
@@ -1101,7 +1101,7 @@ void gameDialog::Update() {
 		wheel = newWheel;
 	}
 
-	gPlayer.UpdatePositionSmooth();
+	Model::gPlayer.UpdatePositionSmooth();
 
 	fRenderControl.UpdateCameraPosition(zoomDelta);
 
@@ -1110,11 +1110,11 @@ void gameDialog::Update() {
 		glfwGetMousePos(&x, &y);
 		this->ClickOnBlock(x, y);
 	}
-	gMonsters.Cleanup();
-	gOtherPlayers.Cleanup();
+	Model::gMonsters.Cleanup();
+	Model::gOtherPlayers.Cleanup();
 
 	// Determine if player head is under water
-	bl = View::Chunk::GetChunkAndBlock(gPlayer.x, gPlayer.y, gPlayer.z);
+	bl = View::Chunk::GetChunkAndBlock(Model::gPlayer.x, Model::gPlayer.y, Model::gPlayer.z);
 	if (bl == BT_Air && fUnderWater) {
 		gSoundControl.SetSoundFxStatus(SoundControl::SEnvironmentUnderWater,false);
 		fUnderWater = false;
@@ -1129,7 +1129,7 @@ void gameDialog::Update() {
 
 	// Determine if feet are wet
 	// TODO: Change "magic number" for player height!
-	bl = View::Chunk::GetChunkAndBlock(gPlayer.x, gPlayer.y, gPlayer.z-350);
+	bl = View::Chunk::GetChunkAndBlock(Model::gPlayer.x, Model::gPlayer.y, Model::gPlayer.z-350);
 	if ((bl != BT_Water && bl != BT_BrownWater) && inWater && !fUnderWater) {
 		gSoundControl.SetSoundFxStatus(SoundControl::SPlayerFeetInWater,false);
 		inWater = false;
@@ -1140,7 +1140,7 @@ void gameDialog::Update() {
 	}
 
 	// TODO: Change "magic number" for player height!
-	bl = View::Chunk::GetChunkAndBlock(gPlayer.x, gPlayer.y, gPlayer.z-400);
+	bl = View::Chunk::GetChunkAndBlock(Model::gPlayer.x, Model::gPlayer.y, Model::gPlayer.z-400);
 	if (bl != BT_Air && inAir) {
 		gSoundControl.SetSoundFxStatus(SoundControl::SPlayerInAir,false);
 		inAir = false;
@@ -1177,7 +1177,7 @@ void gameDialog::SetMessage(const char *str) {
 
 void gameDialog::DrawWeapon(void) const {
 	GLuint text = GameTexture::WEP1;
-	switch(gPlayer.fWeaponType) {
+	switch(Model::gPlayer.fWeaponType) {
 	case 0:
 		return; // No weapon equipped
 	case 1:
@@ -1248,7 +1248,7 @@ void gameDialog::ClearForDialog(void) {
 	}
 	if (gMode.Get() == GameMode::CONSTRUCT)
 		gShowFramework = false; // Only when in construction mode
-	else if (gMode.Get() == GameMode::TELEPORT && gPlayer.fAdmin > 0 && gAdminTP) {
+	else if (gMode.Get() == GameMode::TELEPORT && Model::gPlayer.fAdmin > 0 && gAdminTP) {
 		gMode.Set(GameMode::GAME);
 		gAdminTP = false;
 	}
@@ -1261,7 +1261,7 @@ void gameDialog::UpdateRunningStatus(bool disable) {
 	static bool wasRunning = false;
 
 	// There is a timeout if the player hasn't moved for some time, which is used to cancel the sound
-	bool tryingToMove = gPlayer.PlayerIsMoving();
+	bool tryingToMove = Model::gPlayer.PlayerIsMoving();
 
 	if (!wasRunning && tryingToMove) {
 		// Turn off the running sound.

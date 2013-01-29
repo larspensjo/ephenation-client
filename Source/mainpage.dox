@@ -5,3 +5,29 @@
  * The source code can be found at https://github.com/larspensjo/ephenation-client.
  * There is a wiki at https://github.com/larspensjo/ephenation-client/wiki.
  */
+
+/**
+ * The view part of the Model/View/Controll.
+ * This namespace contains all classes that are responsible with the View.
+ * That is all output that the user can see, also including sound.
+ */
+namespace View {
+}
+
+/**
+ * The model part of the Model/View/Controll.
+ * This namespace contains all classes that are responsible with the Model.
+ * Most of the model logic is managed by the server, but the client needs to
+ * maintain state informtion. Some data is also cached locally.
+ */
+namespace Model {
+}
+
+/**
+ * The model controller part of the Model/View/Controll.
+ * This namespace contains all classes that are responsible with the Controller.
+ * This includes all input from the user or events from the OS.
+ */
+namespace Controller {
+}
+

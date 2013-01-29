@@ -65,6 +65,8 @@ string gParseMessageAtLogin;
 
 #define NELEM(x) (sizeof x / sizeof x[0])
 
+using namespace Controller;
+
 void DumpBytes(const unsigned char *b, int n) {
 	char buff[1000];
 	sprintf(buff, "DumpBytes %d: ", n);
@@ -220,35 +222,35 @@ void Parse(const unsigned char *b, int n) {
 	switch (b[0]) {
 	case CMD_PLAYER_STATS: { // This message is generated on demand
 		float hp = b[1] / 255.0f;
-		unsigned long prevLevel = gPlayer.fLevel;
-		float prevExp = gPlayer.fExp;
-		gPlayer.fExp = b[2] / 255.0f;
-		if (gPlayer.fExp > prevExp && gPlayer.fStatsAvailable)
-			gMsgWindow.Add("You gain %.1f%% experience points", (gPlayer.fExp - prevExp)*100.0f);
-		gPlayer.fLevel = ParseUint32(b+3);
-		gPlayer.fFlags = ParseUint32(b+7);
-		gPlayer.fPreviousHp = gPlayer.fHp;
-		gPlayer.fHp = hp;
-		if (hp > gPlayer.fPreviousHp) {
+		unsigned long prevLevel = Model::gPlayer.fLevel;
+		float prevExp = Model::gPlayer.fExp;
+		Model::gPlayer.fExp = b[2] / 255.0f;
+		if (Model::gPlayer.fExp > prevExp && Model::gPlayer.fStatsAvailable)
+			gMsgWindow.Add("You gain %.1f%% experience points", (Model::gPlayer.fExp - prevExp)*100.0f);
+		Model::gPlayer.fLevel = ParseUint32(b+3);
+		Model::gPlayer.fFlags = ParseUint32(b+7);
+		Model::gPlayer.fPreviousHp = Model::gPlayer.fHp;
+		Model::gPlayer.fHp = hp;
+		if (hp > Model::gPlayer.fPreviousHp) {
 			// Special case: the previous hp is only used to compute damage, not healing
-			gPlayer.fPreviousHp = hp;
+			Model::gPlayer.fPreviousHp = hp;
 		}
-		gPlayer.fMana = b[11] / 255.0f;
+		Model::gPlayer.fMana = b[11] / 255.0f;
 		SoundControl::Sound sound = SoundControl::SNone;
-		if (gPlayer.fFlags & UserFlagHealed)
+		if (Model::gPlayer.fFlags & UserFlagHealed)
 			sound |= SoundControl::SHealingSelf;
-		if (prevLevel < gPlayer.fLevel && gPlayer.fStatsAvailable)
+		if (prevLevel < Model::gPlayer.fLevel && Model::gPlayer.fStatsAvailable)
 			sound |= SoundControl::SLevelUp;
-		if (gPlayer.fFlags & UserFlagJump)
+		if (Model::gPlayer.fFlags & UserFlagJump)
 			sound |= SoundControl::SPlayerLand;
 		if (sound != SoundControl::SNone)
 			gSoundControl.RequestSound(sound);
-		gPlayer.fStatsAvailable = true;
-		// printf("parse: New player stats hp %f, exp %f lvl %d, flags 0x%lx\n", gPlayer.fHp, gPlayer.fExp, gPlayer.fLevel, gPlayer.fFlags);
+		Model::gPlayer.fStatsAvailable = true;
+		// printf("parse: New player stats hp %f, exp %f lvl %d, flags 0x%lx\n", Model::gPlayer.fHp, Model::gPlayer.fExp, Model::gPlayer.fLevel, Model::gPlayer.fFlags);
 		break;
 	}
 	case CMD_REPORT_COORDINATE:
-		gPlayer.SetPosition((signed long long)Parseuint64(b+1), (signed long long)Parseuint64(b+9), (signed long long)Parseuint64(b+17));
+		Model::gPlayer.SetPosition((signed long long)Parseuint64(b+1), (signed long long)Parseuint64(b+9), (signed long long)Parseuint64(b+17));
 		break;
 	case CMD_CHUNK_ANSWER:
 		ParseChunk(b+1, n-1);
@@ -272,7 +274,7 @@ void Parse(const unsigned char *b, int n) {
 				gDebugWindow.Add("Object id %d state %d type %d level %d hp %f moved to relative (%d,%d,%d) dir %f",
 				                 id, state, type, level, (double)hp/255, dx, dy, dz, dir);
 #endif
-				gOtherPlayers.SetPlayer(id, hp, level, gPlayer.x+dx, gPlayer.y+dy, gPlayer.z+dz, dir);
+				Model::gOtherPlayers.SetPlayer(id, hp, level, Model::gPlayer.x+dx, Model::gPlayer.y+dy, Model::gPlayer.z+dz, dir);
 
 				// Update this player as a creature in SoundControl
 				gSoundControl.SetCreatureSound(SoundControl::SOtherPlayer,id,dx,dy,dz,hp==0,0.0f);
@@ -281,11 +283,11 @@ void Parse(const unsigned char *b, int n) {
 				gDebugWindow.Add("Object id %d state %d type %d level %d hp %f moved to relative (%d,%d,%d) dir %f",
 				                 id, state, type, level, (double)hp/255, dx, dy, dz, dir);
 #endif
-				// Coordinates are relative to the player feet, while gPlayer keeps track of the player head.
-				gMonsters.SetMonster(id, hp, level, gPlayer.x+dx, gPlayer.y+dy, gPlayer.z+dz-(int)(PLAYER_HEIGHT*BLOCK_COORD_RES*2), dir);
+				// Coordinates are relative to the player feet, while Model::gPlayer keeps track of the player head.
+				Model::gMonsters.SetMonster(id, hp, level, Model::gPlayer.x+dx, Model::gPlayer.y+dy, Model::gPlayer.z+dz-(int)(PLAYER_HEIGHT*BLOCK_COORD_RES*2), dir);
 
 				// Update this monster as a creature in SoundControl
-				float size = Monsters::Size(level)/5.0f; // Value is from 0.2 to 1.0
+				float size = Model::Monsters::Size(level)/5.0f; // Value is from 0.2 to 1.0
 				gSoundControl.SetCreatureSound(SoundControl::SMonster,id,dx,dy,dz,hp==0,size);
 			}
 		}
@@ -331,16 +333,16 @@ void Parse(const unsigned char *b, int n) {
 		}
 		break;
 	case CMD_LOGIN_ACK: {
-		gPlayer.fUid = ParseUint32(b+1);
+		Model::gPlayer.fUid = ParseUint32(b+1);
 		unsigned short angleHorRad = Parseuint16(b+5);
 		signed short angleVertRad = Parseuint16(b+7);
-		gPlayer.fAngleHor = _angleHor = angleHorRad * (360.0f / 2 / M_PI / 100);
-		gPlayer.fAngleVert = _angleVert = angleVertRad * (360.0f / 2 / M_PI / 100);
+		Model::gPlayer.fAngleHor = _angleHor = angleHorRad * (360.0f / 2 / M_PI / 100);
+		Model::gPlayer.fAngleVert = _angleVert = angleVertRad * (360.0f / 2 / M_PI / 100);
 		if (n >= 10)
-			gPlayer.fAdmin = b[9];
+			Model::gPlayer.fAdmin = b[9];
 		else
-			gPlayer.fAdmin = 0;
-		// printf("Player ID: %ld, admin %d\n", gPlayer.GetId(), gPlayer.fAdmin);
+			Model::gPlayer.fAdmin = 0;
+		// printf("Player ID: %ld, admin %d\n", Model::gPlayer.GetId(), Model::gPlayer.fAdmin);
 		gMode.Set(GameMode::GAME);
 		break;
 	}
@@ -386,7 +388,7 @@ void Parse(const unsigned char *b, int n) {
 			unsigned long dmg = b[i+4];
 			// gMsgWindow.Add("You hit monster %d by %d%% damage", id, dmg*100/255);
 			gSoundControl.RequestSound(SoundControl::SPlayerHits);
-			auto m = gMonsters.Find(id);
+			auto m = Model::gMonsters.Find(id);
 			if (m != nullptr) {
 				std::stringstream ss;
 				ss << dmg*100/255;
@@ -398,7 +400,7 @@ void Parse(const unsigned char *b, int n) {
 	case CMD_RESP_AGGRO_FROM_MONSTER:
 		for (int i=1; i<n; i += 4) {
 			unsigned long id = ParseUint32(b+i);
-			Controller::gGameDialog.AggroFrom(gMonsters.Find(id));
+			Controller::gGameDialog.AggroFrom(Model::gMonsters.Find(id));
 		}
 		break;
 	case CMD_UPD_INV:
@@ -409,7 +411,7 @@ void Parse(const unsigned char *b, int n) {
 	case CMD_EQUIPMENT: {
 		// DumpBytes(b, n);
 		unsigned long uid = ParseUint32(b+1);
-		if (uid != gPlayer.GetId())
+		if (uid != Model::gPlayer.GetId())
 			return; // TODO: save information about other players equipment
 		// It is the complete list for this player. Iterate over every item in the list.
 		for (int i=5; i<n; i += 9) {
@@ -419,19 +421,19 @@ void Parse(const unsigned char *b, int n) {
 			// gMsgWindow.Add("Player %d, equip slot %d with %4.4s", uid, slot, equip);
 			switch (slot) {
 			case 0: // Weapon slot
-				gPlayer.fWeaponLevel = lvl;
-				gPlayer.fWeaponType = equip[3]-'0'; // The equipment is a string WEPn, where 'n' is the type 1-4.
-				// gMsgWindow.Add("Parse: Wep lvl %d, type %d (%4s)", gPlayer.fWeaponLevel, gPlayer.fWeaponType, equip);
+				Model::gPlayer.fWeaponLevel = lvl;
+				Model::gPlayer.fWeaponType = equip[3]-'0'; // The equipment is a string WEPn, where 'n' is the type 1-4.
+				// gMsgWindow.Add("Parse: Wep lvl %d, type %d (%4s)", Model::gPlayer.fWeaponLevel, Model::gPlayer.fWeaponType, equip);
 				break;
 			case 1: // Armor slot
-				gPlayer.fArmorLevel = lvl;
-				gPlayer.fArmorType = equip[3]-'0'; // The equipment is a string ARMn, where 'n' is the type 1-4.
-				// gMsgWindow.Add("Parse: Arm lvl %d, type %d (%4s)", gPlayer.fArmorLevel, gPlayer.fArmorType, equip);
+				Model::gPlayer.fArmorLevel = lvl;
+				Model::gPlayer.fArmorType = equip[3]-'0'; // The equipment is a string ARMn, where 'n' is the type 1-4.
+				// gMsgWindow.Add("Parse: Arm lvl %d, type %d (%4s)", Model::gPlayer.fArmorLevel, Model::gPlayer.fArmorType, equip);
 				break;
 			case 2: // Helmet slot
-				gPlayer.fHelmetLevel = lvl;
-				gPlayer.fHelmetType = equip[3]-'0'; // The equipment is a string HLMn, where 'n' is the type 1-4.
-				// gMsgWindow.Add("Parse: Helmet lvl %d, type %d (%4s)", gPlayer.fHelmetLevel, gPlayer.fHelmetType, equip);
+				Model::gPlayer.fHelmetLevel = lvl;
+				Model::gPlayer.fHelmetType = equip[3]-'0'; // The equipment is a string HLMn, where 'n' is the type 1-4.
+				// gMsgWindow.Add("Parse: Helmet lvl %d, type %d (%4s)", Model::gPlayer.fHelmetLevel, Model::gPlayer.fHelmetType, equip);
 				break;
 			}
 		}
@@ -440,7 +442,7 @@ void Parse(const unsigned char *b, int n) {
 	case CMD_JELLY_BLOCKS: {
 		// unsigned char flag = b[1]; // Currently unused
 		unsigned char timeout = b[2];
-		gPlayer.GetChunkCoord(&cc);
+		Model::gPlayer.GetChunkCoord(&cc);
 		View::Chunk *pc = ChunkFind(UpdateLSB(&cc, b[3], b[4], b[5]), false);
 		if (pc == 0)
 			break; // Safety precaution
@@ -474,11 +476,11 @@ void Parse(const unsigned char *b, int n) {
 	case CMD_RESP_PLAYER_NAME: {
 		unsigned long uid = ParseUint32(b+1);
 		int adminLevel = b[5];
-		gOtherPlayers.SetPlayerName(uid, (const char *)b+6, n-6, adminLevel);
+		Model::gOtherPlayers.SetPlayerName(uid, (const char *)b+6, n-6, adminLevel);
 		break;
 	}
 	case CMD_SUPERCHUNK_ANSWER: {
-		gPlayer.GetChunkCoord(&cc);
+		Model::gPlayer.GetChunkCoord(&cc);
 		ChunkCoord *ret = UpdateLSB(&cc, b[1], b[2], b[3]);
 		Model::gSuperChunkManager.Data(ret, b+4);
 		break;

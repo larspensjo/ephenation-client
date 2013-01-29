@@ -33,7 +33,7 @@
 
 void DrawTeleports(DrawTexture *dt, float angle, float renderViewAngle) {
 	ChunkCoord player_cc;
-	gPlayer.GetChunkCoord(&player_cc);
+	Model::gPlayer.GetChunkCoord(&player_cc);
 	glBindTexture(GL_TEXTURE_2D, GameTexture::RedColor);
 	glm::mat4 proj = glm::perspective(renderViewAngle, gViewport[2]/gViewport[3], 1.0f, float(MAXTELEPORT)*CHUNK_SIZE);
 	for (int dx = -MAXTELEPORT+1; dx < MAXTELEPORT; dx++) for (int dy = -MAXTELEPORT+1; dy < MAXTELEPORT; dy++) for (int dz = -MAXTELEPORT+1; dz < MAXTELEPORT; dz++) {
@@ -61,7 +61,7 @@ const ChunkCoord *TeleportClick(HealthBar *hb, float angle, float renderViewAngl
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 	ChunkCoord player_cc;
-	gPlayer.GetChunkCoord(&player_cc);
+	Model::gPlayer.GetChunkCoord(&player_cc);
 	glm::mat4 proj = glm::perspective(renderViewAngle, gViewport[2]/gViewport[3], 1.0f, float(MAXTELEPORT)*CHUNK_SIZE);
 	glm::mat4 projview = proj * gViewMatrix;
 	for (int dx = -MAXTELEPORT+1; dx < MAXTELEPORT; dx++) for (int dy = -MAXTELEPORT+1; dy < MAXTELEPORT; dy++) for (int dz = -MAXTELEPORT+1; dz < MAXTELEPORT; dz++) {

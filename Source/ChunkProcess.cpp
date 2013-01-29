@@ -49,7 +49,7 @@ static View::Chunk *getNextChunk(std::deque<View::Chunk*> &queue) {
 	ChunkCoord cc;
 	double nearestDist2 = 1e10; // Anything very big
 	//  The player position may change and is not thread safe. Bu the worst that can happen is that wrong chunk is selected.
-	gPlayer.GetChunkCoord(&cc);
+	Model::gPlayer.GetChunkCoord(&cc);
 	int x = int(maxRenderDistance / CHUNK_SIZE + 1);
 	int max2 = x*x; // The player can't see more than this number of chunks.
 restart:
@@ -84,7 +84,7 @@ static shared_ptr<Model::ChunkBlocks> getNextChunkBlock(std::deque<shared_ptr<Mo
 	ChunkCoord cc;
 	double nearestDist2 = 1e10; // Anything very big
 	//  The player position may change and is not thread safe. Bu the worst that can happen is that wrong chunk is selected.
-	gPlayer.GetChunkCoord(&cc);
+	Model::gPlayer.GetChunkCoord(&cc);
 	auto nearest = queue.begin();
 	for (auto it = queue.begin(); it != queue.end(); it++) {
 		View::Chunk *cp = (*it)->fChunk;

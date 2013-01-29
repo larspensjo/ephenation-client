@@ -110,10 +110,10 @@ void MainUserInterface::DrawCompassRose(void) const {
 	model = glm::scale(model, glm::vec3(scale/screenRatio, scale, scale));
 
 	// Rotate according to vertical viewing direction
-	model = glm::rotate(model, gPlayer.fAngleVert, glm::vec3(1.0f, 0.0f, 0.0f));
+	model = glm::rotate(model, Model::gPlayer.fAngleVert, glm::vec3(1.0f, 0.0f, 0.0f));
 
 	// Rotate according to horisontal viewing direction
-	model = glm::rotate(model, gPlayer.fAngleHor, glm::vec3(0.0f, 0.0f, 1.0f));
+	model = glm::rotate(model, Model::gPlayer.fAngleHor, glm::vec3(0.0f, 0.0f, 1.0f));
 
 	// Move the center of the compass, so rotation is done around the center, not the lower left corner of the bitmap.
 	model = glm::translate(model, glm::vec3(-0.5f, -0.5f, 0.0f));
@@ -124,8 +124,8 @@ void MainUserInterface::DrawCompassRose(void) const {
 	// glBindTexture(GL_TEXTURE_2D, 0);  // Deprecated
 
 	auto fHealthBar = HealthBar::Make(); // Singleton
-	gMonsters.RenderMinimap(model, fHealthBar);
-	gOtherPlayers.RenderMinimap(model, fHealthBar);
+	Model::gMonsters.RenderMinimap(model, fHealthBar);
+	Model::gOtherPlayers.RenderMinimap(model, fHealthBar);
 }
 
 
@@ -135,15 +135,15 @@ void MainUserInterface::DrawPlayerStats(void) const {
 	// which means the screen is from -1.0 to +1.0 in both x and y.
 	glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(-0.69157f, -0.81982f, 0.0f));
 	model = glm::scale(model, glm::vec3(0.43802f, 0.03804f, 1.0f));
-	float dmg = gPlayer.fPreviousHp - gPlayer.fHp;
+	float dmg = Model::gPlayer.fPreviousHp - Model::gPlayer.fHp;
 	static const glm::mat4 id(1.0f); // No need to create a new one every time.
-	fHealthBar->DrawHealth(id, model, gPlayer.fHp, dmg, false);
+	fHealthBar->DrawHealth(id, model, Model::gPlayer.fHp, dmg, false);
 
 	model = glm::translate(glm::mat4(1.0f), glm::vec3(-0.69194f, -0.85735f, 0.0f));
 	model = glm::scale(model, glm::vec3(0.38361f, 0.01788f, 1.0f));
-	fHealthBar->DrawMana(model, gPlayer.fMana);
+	fHealthBar->DrawMana(model, Model::gPlayer.fMana);
 
 	model = glm::translate(glm::mat4(1.0f), glm::vec3(-1.0f, -1.0f, 0.0f));
 	model = glm::scale(model, glm::vec3(2.0f, 0.02856f, 1.0f));
-	fHealthBar->DrawExp(model, gPlayer.fExp);
+	fHealthBar->DrawExp(model, Model::gPlayer.fExp);
 }

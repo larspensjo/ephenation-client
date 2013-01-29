@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -17,9 +17,11 @@
 
 #pragma once
 
-// This is a simple interface to make it easier to send monsters or players as the same pointer.
 class HealthBar;
 
+namespace Model {
+
+/// This is a simple interface to make it easier to send monsters or players as the same pointer.
 class Object {
 public:
 	virtual unsigned long GetId() const = 0;
@@ -33,3 +35,5 @@ public:
 	virtual ~Object() {} // Virtual destructor needed for inherited classes
 private:
 };
+
+}

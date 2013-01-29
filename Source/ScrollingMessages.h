@@ -30,7 +30,10 @@ using std::unique_ptr;
 // A message is added to a specific coordinate, and will scroll in real time up to the top
 // of the screen where it will disappear.
 
-struct Object;
+namespace Model {
+	struct Object;
+}
+
 class DrawFont;
 
 class ScrollingMessages {
@@ -40,7 +43,7 @@ public:
 	void Init(std::shared_ptr<DrawFont> font);
 	void Update(void);
 	// Add a message originating at an object
-	void AddMessage(std::shared_ptr<const Object>, const std::string &, glm::vec3 colorOffset = glm::vec3(0,0,0));
+	void AddMessage(std::shared_ptr<const Model::Object>, const std::string &, glm::vec3 colorOffset = glm::vec3(0,0,0));
 	// Add a message originating at the player
 	void AddMessagePlayer(const std::string &, glm::vec3 colorOffset = glm::vec3(0,0,0));
 	// Add a message originating at a screen position. If there is another message active already,

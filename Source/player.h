@@ -29,9 +29,11 @@ namespace View {
 	class AnimationModels;
 }
 
-class player : public Object {
+namespace Model {
+
+class Player : public Object {
 public:
-	// TODO: These should be private. It is the position of the head of the player.
+	// TODO: These should be private. It is the position of the head of the Player.
 	// Coordinate in the server system ('z' is height).
 	signed long long x;
 	signed long long y;
@@ -62,7 +64,7 @@ public:
 	bool InFight(void) const;
 	void Draw(AnimationShader *animShader, StageOneShader *staticShader, bool torch, const View::AnimationModels *animationModels); // Draw self
 
-	player() {
+	Player() {
 		fHp = 1.0f; fPreviousHp = 1.0f; fMana = 1.0f; fWeaponType = 0; fWeaponLevel = 0; fArmorType = 0; fArmorLevel = 0;
 		fHelmetLevel = 0; fHelmetType = 0; fTestPlayer = 0;
 	}
@@ -100,4 +102,6 @@ private:
 	bool fKnownPosition; // False until the position of the player is known.
 };
 
-extern player gPlayer;
+extern Player gPlayer;
+
+}

@@ -459,10 +459,10 @@ void SoundControl::SwitchMusicStatus(void) {
 // Choose a song based on the distance from the start.
 static int MusicChoice(int count) {
 	// Idea is to switch song every 90 blocks. Also divide by 100 to compensate for resolution
-	int y = int(gPlayer.y / (100 * 100));
+	int y = int(Model::gPlayer.y / (100 * 100));
 	if (y<0)
 		y = 1-y;
-	int z = int(gPlayer.z / (100 * 100));
+	int z = int(Model::gPlayer.z / (100 * 100));
 	if (z<0)
 		z = 1-z;
 	int dist = y+z;
@@ -1339,17 +1339,17 @@ void SoundControl::HandleSpecialFx() {
 void SoundControl::HandlePlayerOrientation(void) {
 	static float LastCompassAngle = 0.0f;
 	// Handle player orientation, found in gPlayer.fAngleHor
-	if( ((gPlayer.fAngleHor-LastCompassAngle) >= 1.0f) || ((gPlayer.fAngleHor-LastCompassAngle) <= -1.0f) ) {
-		LastCompassAngle = gPlayer.fAngleHor;
-		ALfloat atX = -((ALfloat) sin(gPlayer.fAngleHor*3.14159265f/180.0f)); // Normalized vector -->NOTE: Changed to - to fit world coordinates
-		ALfloat atZ = (-(ALfloat) cos(gPlayer.fAngleHor*3.14159265f/180.0f)); // Normalized vector
+	if( ((Model::gPlayer.fAngleHor-LastCompassAngle) >= 1.0f) || ((Model::gPlayer.fAngleHor-LastCompassAngle) <= -1.0f) ) {
+		LastCompassAngle = Model::gPlayer.fAngleHor;
+		ALfloat atX = -((ALfloat) sin(Model::gPlayer.fAngleHor*3.14159265f/180.0f)); // Normalized vector -->NOTE: Changed to - to fit world coordinates
+		ALfloat atZ = (-(ALfloat) cos(Model::gPlayer.fAngleHor*3.14159265f/180.0f)); // Normalized vector
 		ALfloat Ori[] = {atX,0.0f,atZ,0.0f,1.0f,0.0f}; // Ignore if head is turned up/down
 		// Ori vector :  <------AT-----> <-----UP----->
 		alListenerfv(AL_ORIENTATION, Ori);
 		CheckForError("Orientation Test");
 
 #ifdef MUSIC_DEBUG
-		printf("Player orientation: %3.3f -> x=%3.3f z=%3.3f\n", gPlayer.fAngleHor, (float)atX, (float)atZ );
+		printf("Player orientation: %3.3f -> x=%3.3f z=%3.3f\n", Model::gPlayer.fAngleHor, (float)atX, (float)atZ );
 #endif
 	}
 

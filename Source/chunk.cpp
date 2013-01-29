@@ -313,7 +313,7 @@ void Chunk::DrawObjects(StageOneShader *shader, int dx, int dy, int dz, bool for
 	if (!fChunkObject)
 		return; // Nothing to show yet
 
-	bool belowGround = gPlayer.BelowGround();
+	bool belowGround = Model::gPlayer.BelowGround();
 	// Draw all trees.
 	const float billboardLimit = 80.0f;
 	const float billboardShadowLimit = 45.0f;
@@ -325,7 +325,7 @@ void Chunk::DrawObjects(StageOneShader *shader, int dx, int dy, int dz, bool for
 		float treez = -(float)fChunkObject->fTreeList[i].y - dy*CHUNK_SIZE - 0.5f;
 		glm::mat4 modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(treex, treey, treez));
 
-		glm::vec3 player = gPlayer.GetOffsetToChunk();
+		glm::vec3 player = Model::gPlayer.GetOffsetToChunk();
 		float d = glm::distance(player, glm::vec3(treex, treey, treez));
 		float limit = billboardLimit;
 		if (forShadows)

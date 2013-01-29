@@ -30,6 +30,8 @@
 class HealthBar;
 class AnimationShader;
 
+namespace Model {
+
 class OtherPlayers {
 private:
 	struct OneOtherPlayer : public Object {
@@ -68,3 +70,6 @@ public:
 };
 
 extern OtherPlayers gOtherPlayers;
+
+}
+

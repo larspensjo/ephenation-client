@@ -50,7 +50,7 @@ void Map::Create(AnimationShader *anim, StageOneShader *shader, float rotate, in
 	gViewMatrix = glm::mat4(1);
 	gViewMatrix = glm::rotate(gViewMatrix, -90.0f, glm::vec3(1.0f, 0.0f, 0.0f)); // Looking downwards
 	gViewMatrix = glm::rotate(gViewMatrix, rotate, glm::vec3(0.0f, 1.0f, 0.0f));
-	gViewMatrix = glm::translate(gViewMatrix, -gPlayer.GetOffsetToChunk());          // Adjust for player position
+	gViewMatrix = glm::translate(gViewMatrix, -Model::gPlayer.GetOffsetToChunk());          // Adjust for player position
 
 	glm::mat4 saveProj = gProjectionMatrix;
 	// TODO: Why does the 'y' need to be mirrored? If not, triangles will be drawn in the wrong order, and culling of faces will get wrong.
@@ -63,9 +63,9 @@ void Map::Create(AnimationShader *anim, StageOneShader *shader, float rotate, in
 	DrawLandscapeTopDown(shader, width, 64, false, DL_NoTransparent);
 	DrawLandscapeTopDown(shader, width, 64, false, DL_OnlyTransparent);
 	anim->EnableProgram();
-	gPlayer.Draw(anim, shader, false, animationModels);
-	gMonsters.RenderMonsters(false, false, animationModels);
-	gOtherPlayers.RenderPlayers(anim, false);
+	Model::gPlayer.Draw(anim, shader, false, animationModels);
+	Model::gMonsters.RenderMonsters(false, false, animationModels);
+	Model::gOtherPlayers.RenderPlayers(anim, false);
 
 	gProjectionMatrix = saveProj;
 	maxRenderDistance = saveMaxDistance;

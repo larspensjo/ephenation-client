@@ -78,7 +78,7 @@ void SkyBox::GetLocations(void) {
 // ====================================================================================================================
 void SkyBox::Draw() {
 	bool belowGround = false;
-	if (gPlayer.BelowGround()) // If a number of blocks below ground, use a dark gray texture instead
+	if (Model::gPlayer.BelowGround()) // If a number of blocks below ground, use a dark gray texture instead
 		belowGround = true;
 	glm::mat4 model(1);
 	glm::mat3 rot = glm::mat3(model);

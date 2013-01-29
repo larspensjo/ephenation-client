@@ -29,9 +29,12 @@ namespace View {
 	class RenderControl;
 }
 
+namespace Model {
+	class Object;
+}
+
 struct ChunkOffsetCoord;
 struct ChunkCoord;
-class Object;
 class ChunkShader;
 class BuildingBlocks;
 class HealthBar;
@@ -78,7 +81,7 @@ public:
 	void CreateActivatorMessage(int dx, int dy, int dz, const ChunkCoord &cc);
 	void GetActivator(int &dx, int &dy, int &dz, ChunkCoord &cc); // Get the current activator location
 	void ClearSelection(void); // Clear the selected object
-	void AggroFrom(std::shared_ptr<const Object>); // The player now has aggro from this monster
+	void AggroFrom(std::shared_ptr<const Model::Object>); // The player now has aggro from this monster
 	enum Calibration { CALIB_EXPOSURE, CALIB_WHITE_POINT, CALIB_AMBIENT, CALIB_NONE };
 	void CalibrateMode(Calibration);
 
@@ -124,7 +127,7 @@ private:
 	/// Call this when a dialog will be showed, to stop movement, etc.
 	/// All key presses will henceforth be forwarded to the dialog, so the player can't stop moving.
 	void ClearForDialog(void);
-	std::shared_ptr<const Object> fSelectedObject; // Pointer to the object (monster, player, ...) that is selected
+	std::shared_ptr<const Model::Object> fSelectedObject; // Pointer to the object (monster, player, ...) that is selected
 	ChunkShader *fShader;
 	BuildingBlocks *fBuildingBlocks;
 	HealthBar *fHealthBar;

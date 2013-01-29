@@ -149,9 +149,9 @@ void ComputeRelativeChunksSortedDistances() {
 
 static void FindAllNearChunks(const std::vector<ChunkDist> &chunkDistances) {
 	ChunkCoord player_cc;
-	if (!gPlayer.KnownPosition())
+	if (!Model::gPlayer.KnownPosition())
 		return;
-	gPlayer.GetChunkCoord(&player_cc);
+	Model::gPlayer.GetChunkCoord(&player_cc);
 	for (int i=0; i<sMaxVolume; i++) {
 		if (chunkDistances[i].distance > (int)(maxRenderDistance / 32 + 1)) {
 			sListOfNearChunks[i] = 0; // Just a safety marker
@@ -248,7 +248,7 @@ static void QuerySetup(StageOneShader *shader, int from, int to, int *listOfVisi
 // where the chunk ends.
 static void DrawChunkBorders(StageOneShader *shader) {
 	ChunkCoord player_cc;
-	gPlayer.GetChunkCoord(&player_cc);
+	Model::gPlayer.GetChunkCoord(&player_cc);
 	for (int dz=-1; dz<2; dz++) for (int dx=-1; dx<2; dx++) for (int dy=-1; dy<2; dy++) {
 				if (dx == 0 && dy == 0 && dz == 0)
 					continue; // Can't see the boundary to the current chunk
@@ -262,7 +262,7 @@ static void DrawChunkBorders(StageOneShader *shader) {
 				unsigned long owner = -1;
 				owner = cp->fChunkBlocks->fOwner;
 				GLuint text = GameTexture::BlueChunkBorder; // Blue means not allocated
-				if (owner == gPlayer.GetId())
+				if (owner == Model::gPlayer.GetId())
 					text = GameTexture::GreenChunkBorder; // Allocated by the current player
 				else if (owner < 0x8FFFFFFF && owner > 0)
 					text = GameTexture::RedChunkBorder; // Allocated by someone else
@@ -278,7 +278,7 @@ static void DrawChunkBorders(StageOneShader *shader) {
 
 // TODO: This function should be split into a separate function for picking mode.
 void DrawLandscape(StageOneShader *shader, DL_Type dlType) {
-	if (!gPlayer.KnownPosition())
+	if (!Model::gPlayer.KnownPosition())
 		return;
 	if (dlType == DL_NoTransparent) {
 		// The lits of chunks used for shadowing is computed below, when in non-transparent mode.
@@ -288,7 +288,7 @@ void DrawLandscape(StageOneShader *shader, DL_Type dlType) {
 
 	FindAllNearChunks(sChunkDistances);
 	ChunkCoord player_cc;
-	gPlayer.GetChunkCoord(&player_cc);
+	Model::gPlayer.GetChunkCoord(&player_cc);
 
 	// Draw all visible chunks. Chunks that are not loaded will trigger a reload from the server. The top chunks
 	// should be loaded first, as they affect the lighting on the chunks below.
@@ -400,9 +400,9 @@ void DrawLandscape(StageOneShader *shader, DL_Type dlType) {
 		if (dlType == DL_OnlyTransparent) {
 			unsigned char tx, ty, tz;
 			if (gMode.CommunicationAllowed() && Model::gSuperChunkManager.GetTeleport(&tx, &ty, &tz, &cp->cc)) {
-				double diffX = double(gPlayer.x)/BLOCK_COORD_RES - cc.x*CHUNK_SIZE - tx - 0.5;
-				double diffY = double(gPlayer.y)/BLOCK_COORD_RES - cc.y*CHUNK_SIZE - ty - 0.5;
-				double diffZ = double(gPlayer.z)/BLOCK_COORD_RES - cc.z*CHUNK_SIZE - tz - PLAYER_HEIGHT*2;
+				double diffX = double(Model::gPlayer.x)/BLOCK_COORD_RES - cc.x*CHUNK_SIZE - tx - 0.5;
+				double diffY = double(Model::gPlayer.y)/BLOCK_COORD_RES - cc.y*CHUNK_SIZE - ty - 0.5;
+				double diffZ = double(Model::gPlayer.z)/BLOCK_COORD_RES - cc.z*CHUNK_SIZE - tz - PLAYER_HEIGHT*2;
 				double d2 = diffX*diffX + diffY*diffY + diffZ*diffZ;
 				if (diffX < 1.5 && diffX > -1.5 && diffY < 1.5 && diffY > -1.5 && diffZ < 3.0 && diffZ > 0.0)
 					insideAnyTeleport = true;
@@ -466,10 +466,10 @@ void DrawLandscape(StageOneShader *shader, DL_Type dlType) {
 }
 
 void DrawLandscapeTopDown(StageOneShader *shader, int width, int height, bool forceload, DL_Type dlType) {
-	if (!gPlayer.KnownPosition())
+	if (!Model::gPlayer.KnownPosition())
 		return;
 	ChunkCoord player_cc;
-	gPlayer.GetChunkCoord(&player_cc);
+	Model::gPlayer.GetChunkCoord(&player_cc);
 
 	int verticallimit = (height+CHUNK_SIZE-1)/CHUNK_SIZE/2;
 	int horisontallimit = (width+CHUNK_SIZE-1)/CHUNK_SIZE/2;
@@ -500,10 +500,10 @@ void DrawLandscapeTopDown(StageOneShader *shader, int width, int height, bool fo
 }
 
 void DrawLandscapeForShadows(StageOneShader *shader) {
-	if (!gPlayer.KnownPosition())
+	if (!Model::gPlayer.KnownPosition())
 		return;
 	ChunkCoord player_cc;
-	gPlayer.GetChunkCoord(&player_cc);
+	Model::gPlayer.GetChunkCoord(&player_cc);
 
 	// Draw all visible chunks. Chunks that are not loaded will trigger a reload from the server. The top chunks
 	// should be loaded first, as they affect the lighting on the chunks below.

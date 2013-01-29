@@ -33,6 +33,8 @@ namespace View {
 	class AnimationModels;
 }
 
+namespace Model {
+
 class Monsters {
 private:
 	struct OneMonster;
@@ -54,3 +56,5 @@ public:
 };
 
 extern Monsters gMonsters;
+
+}

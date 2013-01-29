@@ -34,7 +34,9 @@
 #include "shaders/AnimationShader.h"
 #include "Options.h"
 
-player gPlayer;
+using namespace Model;
+
+Player Model::gPlayer;
 
 #define FACT ((long long)BLOCK_COORD_RES * CHUNK_SIZE)
 
@@ -45,13 +47,13 @@ static int ScaleToChunk(long long x) {
 		return (int)((x - FACT) / FACT);
 }
 
-void player::GetChunkCoord(ChunkCoord *cc) const {
+void Player::GetChunkCoord(ChunkCoord *cc) const {
 	cc->x = ScaleToChunk(this->x);
 	cc->y = ScaleToChunk(this->y);
 	cc->z = ScaleToChunk(this->z);
 }
 
-glm::vec3 player::GetOffsetToChunk() const {
+glm::vec3 Player::GetOffsetToChunk() const {
 	ChunkCoord cc;
 	GetChunkCoord(&cc);
 	unsigned short dx = (unsigned short)(this->x - cc.x*FACT);
@@ -62,7 +64,7 @@ glm::vec3 player::GetOffsetToChunk() const {
 	return glm::vec3(float(dx)/BLOCK_COORD_RES, float(dz)/BLOCK_COORD_RES, -float(dy)/BLOCK_COORD_RES);
 }
 
-void player::Draw(AnimationShader *animShader, StageOneShader *staticShader, bool torch, const View::AnimationModels *animationModels) {
+void Player::Draw(AnimationShader *animShader, StageOneShader *staticShader, bool torch, const View::AnimationModels *animationModels) {
 	if (!this->KnownPosition())
 		return;
 	ChunkCoord cc;
@@ -118,7 +120,7 @@ void player::Draw(AnimationShader *animShader, StageOneShader *staticShader, boo
 	}
 }
 
-glm::vec3 player::GetPosition() const {
+glm::vec3 Player::GetPosition() const {
 	ChunkCoord cc;
 	this->GetChunkCoord(&cc);
 	float dx = (this->x - (signed long long)cc.x*BLOCK_COORD_RES * CHUNK_SIZE)/(float)BLOCK_COORD_RES;
@@ -128,17 +130,17 @@ glm::vec3 player::GetPosition() const {
 	return glm::vec3(dx, dz-4.0f, -dy);
 }
 
-glm::vec3 player::GetSelectionColor() const {
+glm::vec3 Player::GetSelectionColor() const {
 	return glm::vec3(-0.2f, 0.2f, -0.2f);
 }
 
-bool player::InGame(void) const { return gMode.Get() == GameMode::GAME; } // Return true if this object is still i the game.
+bool Player::InGame(void) const { return gMode.Get() == GameMode::GAME; } // Return true if this object is still i the game.
 
-bool player::BelowGround(void) const {
+bool Player::BelowGround(void) const {
 	return gPlayer.z < -10*BLOCK_COORD_RES;
 }
 
-void player::SetPosition(signed long long newx, signed long long newy, signed long long newz) {
+void Player::SetPosition(signed long long newx, signed long long newy, signed long long newz) {
 	fPrevServerPosition = fServerPosition;
 	fServerPosition = glm::dvec3(double(newx)/BLOCK_COORD_RES, double(newy)/BLOCK_COORD_RES, double(newz)/BLOCK_COORD_RES);
 	fPrevUpdate = fLastUpdate;
@@ -147,24 +149,24 @@ void player::SetPosition(signed long long newx, signed long long newy, signed lo
 	fKnownPosition = true;
 }
 
-void player::UpdatePositionSmooth(void) {
+void Player::UpdatePositionSmooth(void) {
 	double now = glfwGetTime();
 	double projection = now - 0.1; // Set coordinates matching this time stamp, which is a little backward in time
 	glm::dvec3 res;
 
 	if (projection < fPrevUpdate) {
-		// std::cout << "player::UpdatePositionSmooth using old by " << fPrevUpdate-projection << std::endl;
+		// std::cout << "Player::UpdatePositionSmooth using old by " << fPrevUpdate-projection << std::endl;
 		res = fPrevServerPosition;
 		fMoving = true;
 	} else if (projection > fLastUpdate) {
-		// std::cout << "player::UpdatePositionSmooth missing updated position" << std::endl;
+		// std::cout << "Player::UpdatePositionSmooth missing updated position" << std::endl;
 		res = fServerPosition;
 		fMoving = false;
 	} else {
 		double w = (projection - fPrevUpdate) / (fLastUpdate - fPrevUpdate);
 		res = fPrevServerPosition*(1-w) + fServerPosition*w;
 		fMoving = true;
-		// std::cout << "player::UpdatePositionSmooth interpolating " << w << std::endl;
+		// std::cout << "Player::UpdatePositionSmooth interpolating " << w << std::endl;
 	}
 
 	this->x = res.x * BLOCK_COORD_RES;
@@ -172,6 +174,6 @@ void player::UpdatePositionSmooth(void) {
 	this->z = res.z * BLOCK_COORD_RES+PLAYER_HEIGHT*BLOCK_COORD_RES*2;
 }
 
-bool player::PlayerIsMoving(void) const {
+bool Player::PlayerIsMoving(void) const {
 	return fMoving;
 }

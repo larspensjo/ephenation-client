@@ -90,7 +90,7 @@ void ShadowRender::Render(int width, int height, const AnimationModels *animatio
 	if (gOptions.fStaticShadows)
 		T = glm::translate(glm::mat4(1), glm::vec3(-CHUNK_SIZE/2.0f, -CHUNK_SIZE/2.0f, CHUNK_SIZE/2.0f));                  // Move world to put the player in the center
 	else
-		T = glm::translate(glm::mat4(1), -gPlayer.GetOffsetToChunk());                                        // Move world to put the player in the center
+		T = glm::translate(glm::mat4(1), -Model::gPlayer.GetOffsetToChunk());                                        // Move world to put the player in the center
 	glm::mat4 viewMat = R1 * R2 * T;
 	// TODO: Why does the 'y' need to be mirrored? If not, triangles will be drawn in the wrong order, and culling of faces will get wrong.
 	glm::mat4 projMat = glm::scale(glm::mat4(1.0f), glm::vec3(2.0f/width, -2.0f/width, 2.0f/height));
@@ -113,8 +113,8 @@ void ShadowRender::Render(int width, int height, const AnimationModels *animatio
 		AnimationShader *anim = AnimationShader::Make();
 		anim->EnableProgram();
 		anim->Shadowmap(true, fProjViewMatrix);
-		gMonsters.RenderMonsters(true, false, animationModels);
-		gPlayer.Draw(anim, fShader.get(), false, animationModels);
+		Model::gMonsters.RenderMonsters(true, false, animationModels);
+		Model::gPlayer.Draw(anim, fShader.get(), false, animationModels);
 		anim->EnableProgram(); // This is lost in the player drawing for weapons.
 		anim->Shadowmap(false, fProjViewMatrix);
 	}

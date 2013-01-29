@@ -30,7 +30,7 @@ using std::shared_ptr;
 ScrollingMessages gScrollingMessages;
 
 // This is used as a special object to denote a screen coordinate instead of a world position
-class ScreenObject : public Object {
+class ScreenObject : public Model::Object {
 public:
 	virtual unsigned long GetId() const { return 0; }
 	virtual int GetType() const { return -1; } // -1 is used to identify this unique object
@@ -44,7 +44,7 @@ public:
 };
 
 struct ScrollingMessages::Message {
-	shared_ptr<const Object> o; // A reference that is allocated and deallocated elsewhere
+	shared_ptr<const Model::Object> o; // A reference that is allocated and deallocated elsewhere
 	GLuint id;
 	double startTime;
 	glm::vec3 colorOffset;
@@ -63,7 +63,7 @@ ScrollingMessages::~ScrollingMessages() {
 	// TODO Auto-generated destructor stub
 }
 
-void ScrollingMessages::AddMessage(shared_ptr<const Object> o, const std::string &str, glm::vec3 colorOffset) {
+void ScrollingMessages::AddMessage(shared_ptr<const Model::Object> o, const std::string &str, glm::vec3 colorOffset) {
 	unique_ptr<Message> m(new Message);
 	m->o = o;
 	m->id = fFont->vsfl.genSentence();
@@ -76,8 +76,8 @@ void ScrollingMessages::AddMessage(shared_ptr<const Object> o, const std::string
 
 void ScrollingMessages::AddMessagePlayer(const std::string &str, glm::vec3 colorOffset) {
 	// Some tricks are used here. A shared_ptr to an object is required, but gPlayer is a global variable.
-	auto DummyDelete = [](player*) {}; // This is a deleter function that will do nothing.
-	auto pl = shared_ptr<player>(&gPlayer, DummyDelete); // Create a shared_ptr to gPlayer, which must not be deleted
+	auto DummyDelete = [](Model::Player*) {}; // This is a deleter function that will do nothing.
+	auto pl = shared_ptr<Model::Player>(&Model::gPlayer, DummyDelete); // Create a shared_ptr to gPlayer, which must not be deleted
 	this->AddMessage(pl, str, colorOffset);
 }
 

@@ -198,8 +198,8 @@ void RenderControl::Resize(GLsizei width, GLsizei height) {
 
 enum { STENCIL_NOSKY = 1 };
 
-void RenderControl::Draw(bool underWater, shared_ptr<const Object> selectedObject, bool showMap, int mapWidth, MainUserInterface *ui) {
-	if (!gPlayer.BelowGround())
+void RenderControl::Draw(bool underWater, shared_ptr<const Model::Object> selectedObject, bool showMap, int mapWidth, MainUserInterface *ui) {
+	if (!Model::gPlayer.BelowGround())
 		this->ComputeShadowMap();
 
 	if (gShowFramework)
@@ -224,7 +224,7 @@ void RenderControl::Draw(bool underWater, shared_ptr<const Object> selectedObjec
 	glStencilFunc(GL_EQUAL, STENCIL_NOSKY, STENCIL_NOSKY); // Only execute when no sky and no UI
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_ONE, GL_ONE);
-	if ((gOptions.fDynamicShadows || gOptions.fStaticShadows) && !gPlayer.BelowGround())
+	if ((gOptions.fDynamicShadows || gOptions.fStaticShadows) && !Model::gPlayer.BelowGround())
 		drawDynamicShadows();
 	drawPointLights();
 	// drawSSAO(); // TODO: Not good enough yet.
@@ -309,7 +309,7 @@ void RenderControl::drawMonsters(void) {
 	tm.Start();
 	GLenum windowBuffOpaque[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
 	glDrawBuffers(3, windowBuffOpaque); // Nothing is transparent here, do not produce any blending data on the 4:th render target.
-	gMonsters.RenderMonsters(false, false, &fAnimationModels);
+	Model::gMonsters.RenderMonsters(false, false, &fAnimationModels);
 	tm.Stop();
 }
 
@@ -317,7 +317,7 @@ void RenderControl::drawPlayer(void) {
 	GLenum windowBuffOpaque[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
 	glDrawBuffers(3, windowBuffOpaque); // Nothing is transparent here, do not produce any blending data on the 4:th render target.
 	fAnimation->EnableProgram();
-	gPlayer.Draw(fAnimation, fShader, false, &fAnimationModels);
+	Model::gPlayer.Draw(fAnimation, fShader, false, &fAnimationModels);
 	fAnimation->DisableProgram();
 }
 
@@ -363,7 +363,7 @@ void RenderControl::drawDeferredLighting(bool underWater, float whitepoint) {
 
 	fDeferredLighting->EnableProgram();
 	fDeferredLighting->InsideTeleport(gMode.Get() == GameMode::TELEPORT);
-	fDeferredLighting->PlayerDead(gPlayer.IsDead());
+	fDeferredLighting->PlayerDead(Model::gPlayer.IsDead());
 	fDeferredLighting->InWater(underWater);
 	fDeferredLighting->SetWhitePoint(whitepoint);
 	glDisable(GL_DEPTH_TEST);
@@ -500,7 +500,7 @@ void RenderControl::ComputeShadowMap() {
 		static ChunkCoord prev = {0x7FFFFFFF, 0x7FFFFFFF, 0x7FFFFFFF};
 		static double prevTime;
 		ChunkCoord curr;
-		gPlayer.GetChunkCoord(&curr);
+		Model::gPlayer.GetChunkCoord(&curr);
 		if (curr.x != prev.x || curr.y != prev.y || curr.z != prev.z || gCurrentFrameTime-1.0 > prevTime) {
 			// Only update the shadowmap when the player move to another chunk, or after a time out
 			fShadowRender->Render(224, 160, &fAnimationModels);
@@ -512,7 +512,7 @@ void RenderControl::ComputeShadowMap() {
 }
 
 void RenderControl::drawOtherPlayers(void) {
-	gOtherPlayers.RenderPlayers(fAnimation, false);
+	Model::gOtherPlayers.RenderPlayers(fAnimation, false);
 }
 
 void RenderControl::drawSelection(const glm::vec3 &coord) {
@@ -575,7 +575,7 @@ void RenderControl::drawColoredLights() const {
 }
 
 void RenderControl::drawSkyBox(void) {
-	if (!gPlayer.IsDead()) {
+	if (!Model::gPlayer.IsDead()) {
 		// If the player is dead, he will get a gray sky.
 		// glDisable(GL_DEPTH_TEST);
 		static TimeMeasure tm("SkyBox");
@@ -640,9 +640,9 @@ void RenderControl::UpdateCameraPosition(int wheelDelta) {
 	Options::sfSave.fCameraDistance = fRequestedCameraDistance; // Make sure it is saved
 
 	ChunkCoord cc;
-	gPlayer.GetChunkCoord(&cc);
+	Model::gPlayer.GetChunkCoord(&cc);
 
-	glm::vec3 playerOffset = gPlayer.GetOffsetToChunk();
+	glm::vec3 playerOffset = Model::gPlayer.GetOffsetToChunk();
 	glm::vec3 pd(playerOffset.x, -playerOffset.z, playerOffset.y); // Same offset, but in Ephenation server coordinates
 
 	glm::mat4 T1 = glm::translate(glm::mat4(1), playerOffset);
@@ -660,9 +660,9 @@ void RenderControl::UpdateCameraPosition(int wheelDelta) {
 	const float step = 0.1f;
 	for (float d = step; d <= this->fCameraDistance; d = d + step) {
 		signed long long x, y, z;
-		x = gPlayer.x + (signed long long)(d * norm.x*BLOCK_COORD_RES);
-		y = gPlayer.y + (signed long long)(d * norm.y*BLOCK_COORD_RES);
-		z = gPlayer.z + (signed long long)(d * norm.z*BLOCK_COORD_RES);
+		x = Model::gPlayer.x + (signed long long)(d * norm.x*BLOCK_COORD_RES);
+		y = Model::gPlayer.y + (signed long long)(d * norm.y*BLOCK_COORD_RES);
+		z = Model::gPlayer.z + (signed long long)(d * norm.z*BLOCK_COORD_RES);
 		if (Chunk::GetChunkAndBlock(x, y, z) != BT_Air) {
 			this->fCameraDistance = d-step;
 			break;

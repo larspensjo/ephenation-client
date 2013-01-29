@@ -41,7 +41,9 @@
 using std::stringstream;
 using std::endl;
 
-OtherPlayers gOtherPlayers;
+using namespace Model;
+
+OtherPlayers Model::gOtherPlayers;
 
 glm::vec3 OtherPlayers::OneOtherPlayer::GetSelectionColor() const {
 	return glm::vec3(-0.2f, 0.2f, -0.2f);
