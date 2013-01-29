@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -18,7 +18,10 @@
 #pragma once
 
 class DrawTexture;
-class AnimationModels;
+
+namespace View {
+	class AnimationModels;
+}
 
 class Map {
 public:
@@ -26,7 +29,7 @@ public:
 	virtual ~Map();
 
 	// Create a map
-	void Create(AnimationShader *anim, StageOneShader *shader, float rotate, int width, const AnimationModels *animationModels);
+	void Create(AnimationShader *anim, StageOneShader *shader, float rotate, int width, const View::AnimationModels *animationModels);
 
 	void Draw(float alpha) const;
 private:

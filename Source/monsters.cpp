@@ -107,7 +107,7 @@ shared_ptr<const Object> Monsters::Find(unsigned long id) const {
 	return it->second;
 }
 
-void Monsters::RenderMonsters(bool forShadows, bool selectionMode, const AnimationModels *animationModels) const {
+void Monsters::RenderMonsters(bool forShadows, bool selectionMode, const View::AnimationModels *animationModels) const {
 	float sun = 1.0f;
 	if (gPlayer.BelowGround()) {
 		// A gross simplification. If underground, disable all sun.
@@ -122,17 +122,17 @@ void Monsters::RenderMonsters(bool forShadows, bool selectionMode, const Animati
 		model = glm::rotate(model, -mon.second->fDir, glm::vec3(0.0f, 1.0f, 0.0f));
 		model = glm::translate(model, glm::vec3(-size/3, 0.0f, size/3));
 
-		AnimationModels::AnimationModelId anim;
+		View::AnimationModels::AnimationModelId anim;
 		// Choose a monster model, depending on the level.
 		switch(level % 3) {
 		case 2:
-			anim = AnimationModels::AnimationModelId::Alien;
+			anim = View::AnimationModels::AnimationModelId::Alien;
 			break;
 		case 1:
-			anim = AnimationModels::AnimationModelId::Frog;
+			anim = View::AnimationModels::AnimationModelId::Frog;
 			break;
 		case 0:
-			anim = AnimationModels::AnimationModelId::Morran;
+			anim = View::AnimationModels::AnimationModelId::Morran;
 			break;
 		}
 

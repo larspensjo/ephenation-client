@@ -32,6 +32,8 @@ using std::string;
 
 class AnimationShader;
 
+namespace View {
+
 class AnimationModels {
 public:
 	void Init(void);
@@ -55,3 +57,5 @@ private:
 	// Load a local texture.
 	GLuint LoadTexture(const string &);
 };
+
+}

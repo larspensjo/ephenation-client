@@ -26,6 +26,7 @@
 
 namespace View {
 	class Chunk;
+	class RenderControl;
 }
 
 struct ChunkOffsetCoord;
@@ -128,7 +129,7 @@ private:
 	BuildingBlocks *fBuildingBlocks;
 	HealthBar *fHealthBar;
 	DrawTexture *fDrawTexture;
-	RenderControl fRenderControl;
+	View::RenderControl fRenderControl;
 
 	RocketGui fRocketGui; // Has to be declared before the MainUserInterface
 

@@ -62,7 +62,7 @@ glm::vec3 player::GetOffsetToChunk() const {
 	return glm::vec3(float(dx)/BLOCK_COORD_RES, float(dz)/BLOCK_COORD_RES, -float(dy)/BLOCK_COORD_RES);
 }
 
-void player::Draw(AnimationShader *animShader, StageOneShader *staticShader, bool torch, const AnimationModels *animationModels) {
+void player::Draw(AnimationShader *animShader, StageOneShader *staticShader, bool torch, const View::AnimationModels *animationModels) {
 	if (!this->KnownPosition())
 		return;
 	ChunkCoord cc;

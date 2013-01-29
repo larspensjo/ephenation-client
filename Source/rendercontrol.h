@@ -24,7 +24,6 @@
 
 class ChunkShader;
 class AddDynamicShadow;
-class ShadowRender;
 class DeferredLighting;
 class Object;
 class AddPointLight;
@@ -34,6 +33,9 @@ class SkyBox;
 class AddLocalFog;
 class AddSSAO;
 class MainUserInterface;
+
+namespace View {
+	class ShadowRender;
 
 /// This is the top level View of the Model/View/Controller
 /// Manage buffers and shaders for the various render passes
@@ -112,3 +114,5 @@ private:
 	void drawSSAO(void);
 	void drawColoredLights() const;
 };
+
+}

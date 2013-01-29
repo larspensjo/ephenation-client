@@ -21,6 +21,8 @@
 #include "shaders/AnimationShader.h"
 #include "imageloader.h"
 
+using namespace View;
+
 void AnimationModels::Init() {
 	for (unsigned i=0; i < LAST; i++) {
 		auto data = new Data;

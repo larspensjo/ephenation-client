@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -37,6 +37,8 @@
 #include "otherplayers.h"
 
 #define D 8 // How many chunks beside the current chunk to include
+
+using namespace View;
 
 Map::Map() {
 }

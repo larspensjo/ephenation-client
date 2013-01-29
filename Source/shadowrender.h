@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -23,7 +23,9 @@
 #include <glm/glm.hpp>
 
 class ShadowMapShader;
-class AnimationModels;
+
+namespace View {
+	class AnimationModels;
 
 class ShadowRender {
 public:
@@ -49,3 +51,5 @@ private:
 	std::unique_ptr<ShadowMapShader> fShader;
 	glm::mat4 fProjViewMatrix; // The matrix is needed elsewhere, save it for later
 };
+
+}
