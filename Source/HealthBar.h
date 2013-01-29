@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -19,12 +19,14 @@
 
 class ColorShader;
 
-// The original purpose of this class was to draw a health bar, but it is now also used for
-// general simple colored areas.
+namespace View {
+
+/// The original purpose of this class was to draw a health bar, but it is now also used for general simple colored areas.
 class HealthBar {
 public:
-	static HealthBar *Make(void); // Make one single HealthBar, and always return the same.
-	// Draw a health bar. 'hp' is the current hit points (0-1), 'dmg' is the last damage given (0-1).
+	/// Make one single HealthBar, and always return the same.
+	static HealthBar *Make(void);
+	/// Draw a health bar. 'hp' is the current hit points (0-1), 'dmg' is the last damage given (0-1).
 	void DrawHealth(const glm::mat4 &projection, const glm::mat4 &model, float hp, float dmg, bool fillEnd) const;
 	void DrawMana(const glm::mat4 &model, float mana) const;
 	void DrawExp(const glm::mat4 &model, float exp) const;
@@ -37,3 +39,5 @@ private:
 	ColorShader *fShader;
 	GLuint fBufferId, fVao;
 };
+
+}

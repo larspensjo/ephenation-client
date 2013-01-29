@@ -27,7 +27,10 @@
 #include <map>
 #include <string>
 
-class HealthBar;
+namespace View {
+	class HealthBar;
+}
+
 class AnimationShader;
 
 namespace Model {
@@ -52,7 +55,7 @@ private:
 		virtual glm::vec3 GetPosition() const;
 		virtual glm::vec3 GetSelectionColor() const; // The color to draw on the ground when object selected
 		virtual bool IsDead(void) const { return hp == 0; }
-		virtual void RenderHealthBar(HealthBar *, float angle) const;
+		virtual void RenderHealthBar(View::HealthBar *, float angle) const;
 		virtual bool InGame(void) const { return ingame;}
 	};
 	std::map<unsigned long, OneOtherPlayer> fPlayers;
@@ -65,8 +68,8 @@ public:
 	void RenderPlayers(AnimationShader *animShader, bool selectionMode) const;
 	// Render the stats of players. This has to be done after the deferred shader.
 	// 'angle' is the viewing angle, used to draw player data rotated correctly to the camera.
-	void RenderPlayerStats(HealthBar *hb, float angle) const;
-	void RenderMinimap(const glm::mat4 &miniMap, HealthBar *hb) const;
+	void RenderPlayerStats(View::HealthBar *hb, float angle) const;
+	void RenderMinimap(const glm::mat4 &miniMap, View::HealthBar *hb) const;
 };
 
 extern OtherPlayers gOtherPlayers;

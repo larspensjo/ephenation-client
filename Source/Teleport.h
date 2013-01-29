@@ -20,10 +20,13 @@
 // Manage the teleport functionality and drawing
 
 class DrawTexture;
-class HealthBar;
 struct ChunkCoord;
+
+namespace View {
+	class HealthBar;
+}
 
 extern void DrawTeleports(DrawTexture *dt, float angle, float renderViewAngle);
 
 // Given a click on x,y, find out what teleport is near.
-extern const ChunkCoord *TeleportClick(HealthBar *hb, float angle, float renderViewAngle, int x, int y, bool picking);
+extern const ChunkCoord *TeleportClick(View::HealthBar *hb, float angle, float renderViewAngle, int x, int y, bool picking);

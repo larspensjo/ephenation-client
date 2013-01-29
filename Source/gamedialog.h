@@ -27,6 +27,7 @@
 namespace View {
 	class Chunk;
 	class RenderControl;
+	class HealthBar;
 }
 
 namespace Model {
@@ -37,7 +38,6 @@ struct ChunkOffsetCoord;
 struct ChunkCoord;
 class ChunkShader;
 class BuildingBlocks;
-class HealthBar;
 class DrawTexture;
 
 namespace Rocket {
@@ -130,7 +130,7 @@ private:
 	std::shared_ptr<const Model::Object> fSelectedObject; // Pointer to the object (monster, player, ...) that is selected
 	ChunkShader *fShader;
 	BuildingBlocks *fBuildingBlocks;
-	HealthBar *fHealthBar;
+	View::HealthBar *fHealthBar;
 	DrawTexture *fDrawTexture;
 	View::RenderControl fRenderControl;
 

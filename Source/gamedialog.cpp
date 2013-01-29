@@ -1035,7 +1035,7 @@ void gameDialog::init(void) {
 	gTranspShader.Init();
 	fBuildingBlocks = BuildingBlocks::Make(7); // TODO: Need something more adaptive than a constant.
 	fShader = ChunkShader::Make(); // Singleton
-	fHealthBar = HealthBar::Make(); // Singleton
+	fHealthBar = View::HealthBar::Make(); // Singleton
 	fDrawTexture = DrawTexture::Make();
 	glGetFloatv(GL_VIEWPORT, &gViewport[0]);
 	handleResize(gViewport[2], gViewport[3]); // Simple way to set the projection

@@ -17,7 +17,9 @@
 
 #pragma once
 
-class HealthBar;
+namespace View {
+	class HealthBar;
+}
 
 namespace Model {
 
@@ -30,7 +32,7 @@ public:
 	virtual glm::vec3 GetPosition() const = 0;
 	virtual glm::vec3 GetSelectionColor() const = 0; // The color to draw on the ground when object selected
 	virtual bool IsDead(void) const = 0;
-	virtual void RenderHealthBar(HealthBar *, float angle) const = 0;
+	virtual void RenderHealthBar(View::HealthBar *, float angle) const = 0;
 	virtual bool InGame(void) const = 0; // Return true if this object is still i the game.
 	virtual ~Object() {} // Virtual destructor needed for inherited classes
 private:

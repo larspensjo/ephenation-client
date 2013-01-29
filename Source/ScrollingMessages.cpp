@@ -38,7 +38,7 @@ public:
 	virtual glm::vec3 GetPosition() const { return fScreen; }
 	virtual glm::vec3 GetSelectionColor() const { return glm::vec3(0,0,0); }
 	virtual bool IsDead(void) const { return false; }
-	virtual void RenderHealthBar(HealthBar *, float angle) const {}
+	virtual void RenderHealthBar(View::HealthBar *, float angle) const {}
 	virtual bool InGame(void) const { return true; }
 	glm::vec3 fScreen; // Only x and y will be used
 };

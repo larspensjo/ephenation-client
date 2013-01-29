@@ -126,7 +126,7 @@ void OtherPlayers::RenderPlayers(AnimationShader *animShader, bool selectionMode
 	animShader->DisableProgram();
 }
 
-void OtherPlayers::RenderPlayerStats(HealthBar *hb, float angle) const {
+void OtherPlayers::RenderPlayerStats(View::HealthBar *hb, float angle) const {
 	for (const auto &pl : fPlayers) {
 		if (pl.second.ingame) {
 			pl.second.RenderHealthBar(hb, angle);
@@ -134,7 +134,7 @@ void OtherPlayers::RenderPlayerStats(HealthBar *hb, float angle) const {
 	}
 }
 
-void OtherPlayers::RenderMinimap(const glm::mat4 &miniMap, HealthBar *hb) const {
+void OtherPlayers::RenderMinimap(const glm::mat4 &miniMap,View:: HealthBar *hb) const {
 	for (const auto &pl : fPlayers) {
 		if (!pl.second.ingame || pl.second.IsDead())
 			continue;
@@ -148,7 +148,7 @@ void OtherPlayers::RenderMinimap(const glm::mat4 &miniMap, HealthBar *hb) const 
 	}
 }
 
-void OtherPlayers::OneOtherPlayer::RenderHealthBar(HealthBar *hb, float angle) const {
+void OtherPlayers::OneOtherPlayer::RenderHealthBar(View::HealthBar *hb, float angle) const {
 	auto pos = this->GetPosition() + glm::vec3(0.0f, 1.0f, 0.0f);
 	glm::mat4 model = glm::translate(glm::mat4(1.0f), pos);
 	model = glm::rotate(model, -angle, glm::vec3(0.0f, 1.0f, 0.0f)); // Need to counter the rotation from the view matrix

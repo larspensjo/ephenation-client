@@ -55,7 +55,7 @@ void DrawTeleports(DrawTexture *dt, float angle, float renderViewAngle) {
 }
 
 
-const ChunkCoord *TeleportClick(HealthBar *hb, float angle, float renderViewAngle, int x, int y, bool picking) {
+const ChunkCoord *TeleportClick(View::HealthBar *hb, float angle, float renderViewAngle, int x, int y, bool picking) {
 	if (picking) {
 		glClearColor(0.0f, 0.0f, 0.0f, 0.0f); // Use black sky for picking
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

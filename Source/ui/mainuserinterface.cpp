@@ -32,6 +32,8 @@
 #include "../HealthBar.h"
 #include "../otherplayers.h"
 
+using namespace View;
+
 MainUserInterface::MainUserInterface() : fRocketContext(0), fDocument(0), fShowGUI(false) {
 }
 

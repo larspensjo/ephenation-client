@@ -58,7 +58,7 @@ struct Monsters::OneMonster : public Object {
 	virtual glm::vec3 GetPosition() const; // Get relative coordinate compared to player chunk, in OpenGL coordinates
 	virtual glm::vec3 GetSelectionColor() const; // The color to draw on the ground when object selected
 	virtual bool IsDead(void) const { return hp == 0; }
-	virtual void RenderHealthBar(HealthBar *, float angle) const;
+	virtual void RenderHealthBar(View::HealthBar *, float angle) const;
 	virtual bool InGame(void) const { return true;}
 };
 
@@ -152,7 +152,7 @@ void Monsters::RenderMonsters(bool forShadows, bool selectionMode, const View::A
 	}
 }
 
-void Monsters::RenderMinimap(const glm::mat4 &miniMap, HealthBar *hb) const {
+void Monsters::RenderMinimap(const glm::mat4 &miniMap, View::HealthBar *hb) const {
 	for (const auto &mon : fMonsters) {
 		if (mon.second->IsDead())
 			continue;
@@ -168,7 +168,7 @@ void Monsters::RenderMinimap(const glm::mat4 &miniMap, HealthBar *hb) const {
 	}
 }
 
-void Monsters::OneMonster::RenderHealthBar(HealthBar *hb, float angle) const {
+void Monsters::OneMonster::RenderHealthBar(View::HealthBar *hb, float angle) const {
 	auto pos = this->GetPosition() + glm::vec3(0.0f, 3.0f, 0.0f);
 	glm::mat4 model = glm::translate(glm::mat4(1.0f), pos);
 	model = glm::rotate(model, -angle, glm::vec3(0.0f, 1.0f, 0.0f)); // Need to counter the rotation from the view matrix

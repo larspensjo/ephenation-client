@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -25,6 +25,8 @@
 #include "textures.h"
 #include "primitives.h"
 #include "ui/Error.h"
+
+using namespace View;
 
 HealthBar::HealthBar() : fShader(0), fBufferId(0), fVao(0) {
 }
