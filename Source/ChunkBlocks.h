@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -17,34 +17,37 @@
 
 #pragma once
 
-//
-// Manage the actual blocks inside a chunk, as well as some information about the chunk as given by the server.
-// Chunks from the server, or from the local cache, are compressed.
-//
-// Jelly blocks is a special mechanism that can temporarily turn any block type into air. This is controlled from
-// activator blocks, and it is used for making trap doors and other ways to open a passage. The reason that the
-// management of this is in ChunkBlocks is that it will actually change the raw data of the chunk.
-//
-// TODO: Most data in ChunkBlocks is as decoded from the cache or as received from the server. It should be packged
-// in private structure.
-//
 
 #include <deque>
 #include <memory>
 
-class chunk;
+namespace View {
+	class Chunk;
+}
+
 class ChunkCoord;
 
+/// Manage the actual blocks inside a chunk, as well as some information about the chunk as given by the server.
+/// Chunks from the server, or from the local cache, are compressed.
+/// This is part of the Model.
+///
+/// Jelly blocks is a special mechanism that can temporarily turn any block type into air. This is controlled from
+/// activator blocks, and it is used for making trap doors and other ways to open a passage. The reason that the
+/// management of this is in ChunkBlocks is that it will actually change the raw data of the chunk.
+///
+/// @todo Most data in ChunkBlocks is as decoded from the cache or as received from the server. It should be packaged
+/// in private structure.
+///
 struct ChunkBlocks {
 	unsigned long flag;
 	unsigned int fChecksum;
 	unsigned long fOwner;
-	chunk *fChunk; // The chunk that shall be updated
+	View::Chunk *fChunk; // The View::Chunk that shall be updated
 	double fChecksumTimeout;
 	std::unique_ptr <unsigned char[]> fCompressedChunk;
 	int compressSize;
 	std::unique_ptr <unsigned char[]> fChunkData; // The unpacked data
-	bool fChecksumTestNeeded;			  // True if this chunk should verify the checksum from the server.
+	bool fChecksumTestNeeded;			  // True if this View::Chunk should verify the checksum from the server.
 
 	void Uncompress(void);
 
@@ -57,7 +60,7 @@ struct ChunkBlocks {
 	// Look at the list of jelly blocks and restore those that have timed out.
 	void TestJellyBlockTimeout(bool unconditionally = false);
 
-	// Update a block in a chunk to another type. Any calls of SetDirty() has  to be done afterwards
+	// Update a block in a View::Chunk to another type. Any calls of SetDirty() has  to be done afterwards
 	void CommandBlockUpdate(const ChunkCoord &cc, int dx, int dy, int dz, int type);
 
 	// Special case. Override block and set to TP type. Only works for air.

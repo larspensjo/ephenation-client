@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -16,25 +16,6 @@
 //
 
 #pragma once
-
-// This class will set up parallel processes (a thread pool) that will manage chunks.
-// This is a singleton class, that manages all threads. The number of allocated threads
-// depend on the number of cores of the PC.
-//
-// There are two types of tasks.
-// 1. Load the binary data into a "struct chunk".
-// 2. Compute the graphical objects from the binary data.
-//
-// The reason that these are not always combined into one single step is that it is not
-// always the case that the graphical objects are needed. They are only needed if the
-// chunk is visible.
-// OpenGL data can not be managed from this process, as OpenGL is not thread safe.
-//
-// It is possible to extend with more types of tasks, not only chunk computations. The requirements
-// for extending this mechanisms for other tasks are:
-// * It requires a computation that is resource-intensitive
-// * The computation can be done in parallel with no dependency on other data
-//
 
 #include <deque>
 #include <set>
@@ -54,11 +35,33 @@
 using std::shared_ptr;
 using std::unique_ptr;
 
-class chunk;
+namespace View {
+	class Chunk;
+}
+
 class ChunkBlocks;
 class ChunkObject;
 
-// All functions in the public interface are thread safe. They will usually be called from the main process.
+
+/// Set up parallel processes (a thread pool) that will manage chunks.
+/// This is a singleton class, that manages all threads. The number of allocated threads
+/// depend on the number of cores of the PC.
+///
+/// There are two types of tasks.
+/// 1. Load the binary data into a "struct chunk".
+/// 2. Compute the graphical objects from the binary data.
+///
+/// The reason that these are not always combined into one single step is that it is not
+/// always the case that the graphical objects are needed. They are only needed if the
+/// chunk is visible.
+/// OpenGL data can not be managed from this process, as OpenGL is not thread safe.
+///
+/// It is possible to extend with more types of tasks, not only chunk computations. The requirements
+/// for extending this mechanisms for other tasks are:
+/// * It requires a computation that is resource-intensitive
+/// * The computation can be done in parallel with no dependency on other data
+///
+/// All functions in the public interface are thread safe. They will usually be called from the main process.
 class ChunkProcess {
 public:
 	ChunkProcess();
@@ -66,7 +69,7 @@ public:
 	void Init(int numThreads); // Create a pool of threads
 
 	// Compute all graphical objects in a chunk. The result has to be polled from GetRecomputedObjects.
-	void AddTaskComputeChunk(chunk *);
+	void AddTaskComputeChunk(View::Chunk *);
 
 	// Get all new finished objects
 	void Poll(void);
@@ -90,7 +93,7 @@ private:
 	// the main thread as well as the local Task() threads.
 	//
 	bool fTerminate;               // The processes has been requested to terminate
-	std::deque<chunk*> fComputeObjectsInput; // The list of chunk recomputation jobs
+	std::deque<View::Chunk*> fComputeObjectsInput; // The list of chunk recomputation jobs
 	std::deque<shared_ptr<ChunkBlocks>> fNewChunksInput; // List of "new chunk" jobs.
 	// This is where the computed objects are saved. Use a set, to make sure every element is only ever once in it.
 	std::set<shared_ptr<ChunkObject>> fComputedObjectsOutput;

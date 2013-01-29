@@ -295,7 +295,7 @@ void Parse(const unsigned char *b, int n) {
 		cc.x = ParseUint32(b+1);
 		cc.y = ParseUint32(b+5);
 		cc.z = ParseUint32(b+9);
-		chunk *cp = ChunkFind(&cc,false);
+		View::Chunk *cp = ChunkFind(&cc,false);
 		if (cp == 0)
 			break; // Chunk not found, ignore changes to it.
 		auto cb = cp->fChunkBlocks;
@@ -441,7 +441,7 @@ void Parse(const unsigned char *b, int n) {
 		// unsigned char flag = b[1]; // Currently unused
 		unsigned char timeout = b[2];
 		gPlayer.GetChunkCoord(&cc);
-		chunk *pc = ChunkFind(UpdateLSB(&cc, b[3], b[4], b[5]), false);
+		View::Chunk *pc = ChunkFind(UpdateLSB(&cc, b[3], b[4], b[5]), false);
 		if (pc == 0)
 			break; // Safety precaution
 		auto cb = pc->fChunkBlocks;

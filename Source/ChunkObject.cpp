@@ -26,6 +26,8 @@
 #include <glm/gtc/noise.hpp>
 #include <glm/gtx/closest_point.hpp>
 
+using namespace View;
+
 //
 // All functions in this file must be thread safe. They will be called from more than one thread. The class ChunkObject need not be
 // thread safe in itself.
@@ -41,7 +43,7 @@ ChunkObject::ChunkObject() {
 	fChunk = 0;
 }
 
-unique_ptr<ChunkObject> ChunkObject::Make(const chunk *cp, bool pickingMode, int pdx, int pdy, int pdz) {
+unique_ptr<ChunkObject> ChunkObject::Make(const Chunk *cp, bool pickingMode, int pdx, int pdy, int pdz) {
 	unique_ptr<ChunkObject> co(new ChunkObject);
 	co->FindTriangles(cp, pickingMode, pdx, pdy, pdz, gOptions.fSmoothTerrain, gOptions.fMergeNormals, gOptions.fAddNoise);
 	return co;
@@ -54,7 +56,7 @@ bool ChunkObject::Empty(void) const {
 
 // If the coordinate being analyzed is on chunk border, the adjacent chunks need to be queried. That
 // is the purpose of 'neighborChunks'.
-static void FillCube(unsigned char cube[][2][2], int x, int y, int z, const chunk *neighborChunks[][3][3]) {
+static void FillCube(unsigned char cube[][2][2], int x, int y, int z, const Chunk *neighborChunks[][3][3]) {
 	for (int dx=-1; dx<1; dx++) for (int dy=-1; dy<1; dy++) for (int dz=-1; dz<1; dz++) {
 				int nx = x+dx, ny = y+dy, nz = z+dz;
 				int cx=1, cy=1, cz = 1; // Used to address chunk
@@ -81,7 +83,7 @@ static void FillCube(unsigned char cube[][2][2], int x, int y, int z, const chun
 					cz = 2;
 					nz = 0;
 				}
-				const chunk *cp = neighborChunks[cx][cy][cz];
+				const Chunk *cp = neighborChunks[cx][cy][cz];
 				if (cp == 0)
 					cube[dx+1][dy+1][dz+1] = BT_Air; // Chunk isn't loaded yet.
 				else
@@ -150,7 +152,7 @@ static bool waterNeighbor(unsigned char cube[][2][2]) {
 
 // Find the delta offset of one single coorinate in a chunk. This depends on adjacent coordinates.
 // The adjustment is done in Ephenation coordinates, not in OpenGL coordinates.
-static glm::vec3 GetDelta(int x, int y, int z, bool addNoise, const chunk *neighborChunks[][3][3]) {
+static glm::vec3 GetDelta(int x, int y, int z, bool addNoise, const Chunk *neighborChunks[][3][3]) {
 	glm::vec3 ret(0.0f);
 
 	// This scales how big the delta can be.
@@ -183,7 +185,7 @@ static glm::vec3 GetDelta(int x, int y, int z, bool addNoise, const chunk *neigh
 	if (addNoise && !water) {
 		// Use a 2D simplex noise to get a random height delta. It shall depend on the world coordinate, to
 		// make sure it is always the same.
-		const chunk *cp = neighborChunks[1][1][1];
+		const Chunk *cp = neighborChunks[1][1][1];
 		glm::dvec2 pos(double(cp->cc.x)*CHUNK_SIZE + x, double(cp->cc.y)*CHUNK_SIZE + y);
 		auto noise = glm::simplex(pos/4.3);
 		ret.z += noise/6.0;
@@ -198,7 +200,7 @@ static glm::vec3 GetDelta(int x, int y, int z, bool addNoise, const chunk *neigh
 // If 'addNoise' is true, some simplex noise is added. This is an expensive computation.
 // 'neighborChunks' is pointers to adjacent chunks. This is needed, as delta computation depends on adjacent points.
 // The 'delta' is larger than a standard chunk, to allow for one neighbor block.
-static void ComputeDelta(glm::vec3 delta[][CHUNK_SIZE+1][CHUNK_SIZE+1], bool addNoise, const chunk *neighborChunks[][3][3]) {
+static void ComputeDelta(glm::vec3 delta[][CHUNK_SIZE+1][CHUNK_SIZE+1], bool addNoise, const Chunk *neighborChunks[][3][3]) {
 	// In construction mode, leave the world as blocky. This makes it easier to build.
 	if (gMode.Get() == GameMode::CONSTRUCT)
 		return;
@@ -320,12 +322,12 @@ static bool MostlyFacingUpwards(const VertexDataf &v) {
 // The reason that the chunk pointer is a const is that nothing is allowed be changed in it. This is because this update function
 // is done in a separate process.
 // 'addNoise' will add some random height, but it is an expensive function.
-void ChunkObject::FindTriangles(const chunk *cp, bool pickingMode, int pdx, int pdy, int pdz, bool smoothing, bool mergeNormals, bool addNoise) {
+void ChunkObject::FindTriangles(const Chunk *cp, bool pickingMode, int pdx, int pdy, int pdz, bool smoothing, bool mergeNormals, bool addNoise) {
 	PickingData coding;
 	// dx, dy and dz are in the interval [-1,1]. Move them to the interval [0,2]
 	coding.bitmap.dx = pdx+1; coding.bitmap.dy = pdy+1; coding.bitmap.dz = pdz+1;
 	// Find all neighbor chunks, if they exist. This will speed up the next phase.
-	const chunk *neighbor[3][3][3]; // Const, as they are not allowed to be modified.
+	const Chunk *neighbor[3][3][3]; // Const, as they are not allowed to be modified.
 
 	for (int dx=-1; dx<2; dx++) for (int dy=-1; dy<2; dy++) for (int dz=-1; dz<2; dz++) {
 				if (dx == 0 && dy == 0 && dz == 0) {
@@ -710,7 +712,7 @@ void ChunkObject::FindTriangles(const chunk *cp, bool pickingMode, int pdx, int 
 	}
 }
 
-void ChunkObject::FindSpecialObjects(const chunk *cp) {
+void ChunkObject::FindSpecialObjects(const Chunk *cp) {
 	fSpecialObject.clear();
 	// First count, then allocate
 	fNumTree = 0;

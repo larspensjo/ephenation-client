@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -45,7 +45,7 @@ void ChunkProcess::Init(int numThreads) {
 
 // Get a chunk from the queue, but chose the one that is nearest to the player. This function is thread safe.
 // Sorting can not help, as the player moves around so that the definition of "nearest" change by time.
-static chunk *getNextChunk(std::deque<chunk*> &queue) {
+static View::Chunk *getNextChunk(std::deque<View::Chunk*> &queue) {
 	ChunkCoord cc;
 	double nearestDist2 = 1e10; // Anything very big
 	//  The player position may change and is not thread safe. Bu the worst that can happen is that wrong chunk is selected.
@@ -57,7 +57,7 @@ restart:
 		return 0;
 	auto nearest = queue.begin();
 	for (auto it = queue.begin(); it != queue.end(); it++) {
-		chunk *cp = *it;
+		View::Chunk *cp = *it;
 		auto dx = cc.x - cp->cc.x;
 		auto dy = cc.y - cp->cc.y;
 		auto dz = cc.z - cp->cc.z;
@@ -74,7 +74,7 @@ restart:
 			nearest = it;
 		}
 	}
-	chunk *cp = *nearest;  // Get a copy before the iterator is invalidated.
+	View::Chunk *cp = *nearest;  // Get a copy before the iterator is invalidated.
 	queue.erase(nearest); // Remove the chunk from the queue.
 	return cp;
 }
@@ -87,7 +87,7 @@ static shared_ptr<ChunkBlocks> getNextChunkBlock(std::deque<shared_ptr<ChunkBloc
 	gPlayer.GetChunkCoord(&cc);
 	auto nearest = queue.begin();
 	for (auto it = queue.begin(); it != queue.end(); it++) {
-		chunk *cp = (*it)->fChunk;
+		View::Chunk *cp = (*it)->fChunk;
 		auto dx = cc.x - cp->cc.x;
 		auto dy = cc.y - cp->cc.y;
 		auto dz = cc.z - cp->cc.z;
@@ -142,7 +142,7 @@ void ChunkProcess::Task(void) {
 
 		if (!fComputeObjectsInput.empty()) {
 			// Take out the chunk from the fifo
-			chunk *ch = getNextChunk(fComputeObjectsInput);
+			View::Chunk *ch = getNextChunk(fComputeObjectsInput);
 			if (ch == 0)
 				continue;
 			if (ch->fScheduledForLoading) {
@@ -162,7 +162,7 @@ void ChunkProcess::Task(void) {
 
 		if (!fNewChunksInput.empty()) {
 			auto nc = getNextChunkBlock(fNewChunksInput);
-			chunk *pc = nc->fChunk;
+			View::Chunk *pc = nc->fChunk;
 			// It may be that this chunk was also scheduled for recomputation. If so, the Uncompress() below that calls SetDirty() will not
 			// schedule a new recomputation again.
 			ASSERT(pc->fScheduledForLoading);
@@ -201,7 +201,7 @@ void ChunkProcess::RequestTerminate(void) {
 	}
 }
 
-void ChunkProcess::AddTaskComputeChunk(chunk *ch) {
+void ChunkProcess::AddTaskComputeChunk(View::Chunk *ch) {
 	// printf("ChunkProcess::AddTaskComputeChunk chunk %d,%d,%d\n", ch->cc.x, ch->cc.y, ch->cc.z);
 	// Try to lock the mutex. If it fails, try another time instead. We don't want to delay the main thread.
 	if (!fMutex.try_lock())
@@ -225,7 +225,7 @@ void ChunkProcess::Poll(void) {
 
 	for (auto it=fComputedObjectsOutput.begin() ; it != fComputedObjectsOutput.end(); it++ ) {
 		auto co = *it;
-		chunk *cp = co->fChunk;
+		View::Chunk *cp = co->fChunk;
 		co->fChunk = 0;
 		ASSERT(cp != 0 && cp->fScheduledForComputation); // Should not have been cleared elsewhere.
 		cp->fChunkObject = co;
@@ -237,7 +237,7 @@ void ChunkProcess::Poll(void) {
 
 	for (auto it=fNewChunksOutput.begin() ; it != fNewChunksOutput.end(); it++ ) {
 		auto cb = *it;
-		chunk *cp = cb->fChunk;
+		View::Chunk *cp = cb->fChunk;
 		cp->fChunkBlocks = cb;
 		cp->fScheduledForLoading = false;
 		cp->SetDirty(true); // Need to be done after clearing loading flag
@@ -252,7 +252,7 @@ void ChunkProcess::Poll(void) {
 void ChunkProcess::AddTaskNewChunk(unique_ptr<ChunkBlocks> cb) {
 	// The chunk may also have been scheduled for computation, but we can't do anything to that here.
 	fMutex.lock();				// Lock the mutex, to get access to the message variable
-	chunk *cp = cb->fChunk;
+	View::Chunk *cp = cb->fChunk;
 	// if (gVerbose) printf("ChunkProcess::AddTaskNewChunk chunk %d,%d,%d\n", cp->cc.x, cp->cc.y, cp->cc.z);
 	if (!cp->fScheduledForLoading) {
 		ASSERT(cb->fCompressedChunk != nullptr);       // There must be something to unpack.

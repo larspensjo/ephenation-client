@@ -24,7 +24,10 @@
 #include "rendercontrol.h"
 #include "chunk.h"
 
-struct chunk;
+namespace View {
+	class Chunk;
+}
+
 struct ChunkOffsetCoord;
 struct ChunkCoord;
 class Object;
@@ -108,7 +111,7 @@ private:
 	bool fDrawMap;
 	bool fShowWeapon;
 	bool fUnderWater; // True when player is below water
-	chunk *FindSelectedSurface(int x, int y, ChunkOffsetCoord *, int *surfaceDir);
+	View::Chunk *FindSelectedSurface(int x, int y, ChunkOffsetCoord *, int *surfaceDir);
 	/// Draw the player weapon
 	/// @todo Should go int the View of the MVC.
 	void DrawWeapon(void) const;

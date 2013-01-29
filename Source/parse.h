@@ -18,6 +18,7 @@
 /**
  * @file parse
  * @brief Manage parsing of the communication protocol
+ * This is part of the Controller.
  * @todo Old inheritance from C, should be managed with a class
  */
 

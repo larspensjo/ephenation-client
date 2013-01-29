@@ -57,6 +57,8 @@
 
 #define NELEM(x) (sizeof x / sizeof x[0])
 
+using namespace View;
+
 RenderControl::RenderControl() {
 	fboName = 0;
 	fDepthBuffer = 0;
@@ -661,31 +663,31 @@ void RenderControl::UpdateCameraPosition(int wheelDelta) {
 		x = gPlayer.x + (signed long long)(d * norm.x*BLOCK_COORD_RES);
 		y = gPlayer.y + (signed long long)(d * norm.y*BLOCK_COORD_RES);
 		z = gPlayer.z + (signed long long)(d * norm.z*BLOCK_COORD_RES);
-		if (chunk::GetChunkAndBlock(x, y, z) != BT_Air) {
+		if (Chunk::GetChunkAndBlock(x, y, z) != BT_Air) {
 			this->fCameraDistance = d-step;
 			break;
 		}
-		if (chunk::GetChunkAndBlock(x+1, y, z) != BT_Air) {
+		if (Chunk::GetChunkAndBlock(x+1, y, z) != BT_Air) {
 			this->fCameraDistance = d-step;
 			break;
 		}
-		if (chunk::GetChunkAndBlock(x, y+1, z) != BT_Air) {
+		if (Chunk::GetChunkAndBlock(x, y+1, z) != BT_Air) {
 			this->fCameraDistance = d-step;
 			break;
 		}
-		if (chunk::GetChunkAndBlock(x, y, z+1) != BT_Air) {
+		if (Chunk::GetChunkAndBlock(x, y, z+1) != BT_Air) {
 			this->fCameraDistance = d-step;
 			break;
 		}
-		if (chunk::GetChunkAndBlock(x-1, y, z) != BT_Air) {
+		if (Chunk::GetChunkAndBlock(x-1, y, z) != BT_Air) {
 			this->fCameraDistance = d-step;
 			break;
 		}
-		if (chunk::GetChunkAndBlock(x, y-1, z) != BT_Air) {
+		if (Chunk::GetChunkAndBlock(x, y-1, z) != BT_Air) {
 			this->fCameraDistance = d-step;
 			break;
 		}
-		if (chunk::GetChunkAndBlock(x, y, z-1) != BT_Air) {
+		if (Chunk::GetChunkAndBlock(x, y, z-1) != BT_Air) {
 			this->fCameraDistance = d-step;
 			break;
 		}

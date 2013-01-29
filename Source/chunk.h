@@ -128,9 +128,12 @@ class ChunkBlocks;
 
 using std::shared_ptr;
 
+namespace View {
+
 /// Definition of the View side of a chunk.
 /// @todo This started as a struct for data, but methods were added. The public data should be made private.
-struct chunk {
+class Chunk {
+public:
 	ChunkCoord cc;		// The chunk coordinate of this chunk
 
 	bool fScheduledForComputation;
@@ -149,7 +152,7 @@ struct chunk {
 	GLuint fVao[256];
 	bool fBuffersDefined;
 
-	chunk();
+	Chunk();
 
 	void Uncompress();
 
@@ -161,7 +164,7 @@ struct chunk {
 	/// Given a coordinate, find the chunk at this place and the block in that chunk.
 	static unsigned char GetChunkAndBlock(signed long long x, signed long long y, signed long long z);
 
-	~chunk();
+	~Chunk();
 
 	/// The outer graphical presentation of a chunk depends on the neighbor chunk blocks.
 	/// This function will tell all near chunk to update.
@@ -197,15 +200,17 @@ struct chunk {
 	float ComputeAmbientLight(int ox, int oy, int oz) const;
 private:
 	bool fDirty;						  // True if something changed so that the graphics need to be recomputed
-	chunk *fNext_gl;		// Used for linked list of chunks that need to free gl resources.
-	chunk **fPrev_gl;		// The previous item in the list.
-	static chunk *sfBusyList_gl; // The linked list of chunks that was used in the last draw operation.
-	static chunk *sfBusyListOld_gl; // The linked list of chunks with active OpenGL buffers, but not use for drawing currently.
+	Chunk *fNext_gl;		// Used for linked list of chunks that need to free gl resources.
+	Chunk **fPrev_gl;		// The previous item in the list.
+	static Chunk *sfBusyList_gl; // The linked list of chunks that was used in the last draw operation.
+	static Chunk *sfBusyListOld_gl; // The linked list of chunks with active OpenGL buffers, but not use for drawing currently.
 	shared_ptr<const ChunkObject> fPushedValues;
 };
 
-/// Find an old chunk.
+}
+
+/// Find an old Chunk.
 /// If it doesn't exist yet and force is true, data will be requested from
 /// the server. The content will be empty for a little while. If 'force' is false, a null pointer
-/// will be returned if the chunk isn't found.
-extern chunk* ChunkFind(const ChunkCoord *coord, bool force);
+/// will be returned if the Chunk isn't found.
+extern View::Chunk* ChunkFind(const ChunkCoord *coord, bool force);

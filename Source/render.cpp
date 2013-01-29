@@ -52,6 +52,8 @@
 
 #define NELEM(x) (sizeof(x)/sizeof(x[0]))
 
+using namespace View;
+
 // This is the list of chunks to be used for computing dynamic shadows.
 // A set is used, as there shall not be duplicate entries.
 static std::set<ChunkCoord> sShadowChunks;
@@ -59,7 +61,7 @@ static std::set<ChunkCoord> sShadowChunks;
 // Add the specified chunk, as well as all other chunks that are allowed to make
 // shadows. The algorithm knows the direction of the sun, and finds all chunks in
 // that direction. But only to a limited height.
-static void AddChunkToShadowList(chunk *cp) {
+static void AddChunkToShadowList(Chunk *cp) {
 	ChunkCoord cc = cp->cc;
 	// For every level, 4 chunks have to be considered.
 	const ChunkCoord delta[] = {
@@ -105,7 +107,7 @@ int compare(const void * a, const void * b) {
 static std::vector<ChunkDist> sChunkDistances;
 
 // For each item in sChunkDistances, this will point to the actual chunk.
-static std::vector<chunk*> sListOfNearChunks;
+static std::vector<Chunk*> sListOfNearChunks;
 
 // OpenGL queries are used to find if chunks can be seen, and thus need to bedrawn. This is done in groups of
 // NUMQUERIES chunks. To minimize the risk that reading the result of a query will delay the graphics pipeline,
@@ -233,7 +235,7 @@ static void QuerySetup(StageOneShader *shader, int from, int to, int *listOfVisi
 		int dy = sChunkDistances[ind].dy;
 		int dz = sChunkDistances[ind].dz;
 
-		chunk *cp = sListOfNearChunks[ind]; // Can be 0!
+		Chunk *cp = sListOfNearChunks[ind]; // Can be 0!
 		glBeginQuery(GL_SAMPLES_PASSED, sQueryId[i%(NUMQUERIES*2)]);
 		cp->DrawBoundingBox(shader, dx, dy, dz); // Works also for null pointer
 		glEndQuery(GL_SAMPLES_PASSED);
@@ -256,7 +258,7 @@ static void DrawChunkBorders(StageOneShader *shader) {
 				cc.x = player_cc.x + dx;
 				cc.y = player_cc.y + dy;
 				cc.z = player_cc.z + dz;
-				chunk *cp = ChunkFind(&cc, true);
+				Chunk *cp = ChunkFind(&cc, true);
 				unsigned long owner = -1;
 				owner = cp->fChunkBlocks->fOwner;
 				GLuint text = GameTexture::BlueChunkBorder; // Blue means not allocated
@@ -301,7 +303,7 @@ void DrawLandscape(StageOneShader *shader, DL_Type dlType) {
 	for (src=0, dst=0; sChunkDistances[src].distance < chunkHor; src++) {
 		if (src > sMaxVolume)
 			break; // Just a safety precaution, should never happen
-		chunk *cp = sListOfNearChunks[src];
+		Chunk *cp = sListOfNearChunks[src];
 		if (cp) {
 			if (cp->fScheduledForLoading)
 				continue; // Chunk doesn't exist yet
@@ -367,7 +369,7 @@ void DrawLandscape(StageOneShader *shader, DL_Type dlType) {
 		cc.z = player_cc.z + dz;
 		// If we have come this far, a null pointer is no longer accepted. The chunk is needed. Either we get
 		// the real chunk, or an empty one.
-		chunk *cp = ChunkFind(&cc, true);
+		Chunk *cp = ChunkFind(&cc, true);
 
 		if (dlType == DL_Picking) {
 			// Picking mode. Throw away the previous triangles, and replace it with special triangles used
@@ -481,7 +483,7 @@ void DrawLandscapeTopDown(StageOneShader *shader, int width, int height, bool fo
 				cc.x = player_cc.x + dx;
 				cc.y = player_cc.y + dy;
 				cc.z = player_cc.z + dz;
-				chunk *cp = ChunkFind(&cc, forceload);
+				Chunk *cp = ChunkFind(&cc, forceload);
 				if (cp == 0)
 					continue;
 
@@ -506,7 +508,7 @@ void DrawLandscapeForShadows(StageOneShader *shader) {
 	// Draw all visible chunks. Chunks that are not loaded will trigger a reload from the server. The top chunks
 	// should be loaded first, as they affect the lighting on the chunks below.
 	for (auto it=sShadowChunks.begin() ; it != sShadowChunks.end(); it++ ) {
-		chunk *cp = ChunkFind(&(*it), true);
+		Chunk *cp = ChunkFind(&(*it), true);
 
 		if (!cp->IsDirty() && cp->fChunkObject && cp->fChunkObject->Empty()) {
 			// This chunk exists, is updated, but contains nothing.

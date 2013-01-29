@@ -129,7 +129,7 @@ gameDialog::~gameDialog() {
 
 // In build mode, find the block at the given screen position. Return the chunk and the
 // data about it to the pointers.
-chunk *gameDialog::FindSelectedSurface(int x, int y, ChunkOffsetCoord *coc, int *surfaceDir) {
+View::Chunk *gameDialog::FindSelectedSurface(int x, int y, ChunkOffsetCoord *coc, int *surfaceDir) {
 	gChunkShaderPicking.EnableProgram();
 
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f); // Use black sky for picking
@@ -158,7 +158,7 @@ chunk *gameDialog::FindSelectedSurface(int x, int y, ChunkOffsetCoord *coc, int 
 	cc.x += coding.bitmap.dx-1;
 	cc.y += coding.bitmap.dy-1;
 	cc.z += coding.bitmap.dz-1;
-	chunk *cp = ChunkFind(&cc, false);
+	View::Chunk *cp = ChunkFind(&cc, false);
 	coc->x = coding.bitmap.x; coc->y = coding.bitmap.y; coc->z = coding.bitmap.z;
 
 	if (surfaceDir)
@@ -169,7 +169,7 @@ chunk *gameDialog::FindSelectedSurface(int x, int y, ChunkOffsetCoord *coc, int 
 void gameDialog::AttachBlockToSurface(int row, int col) {
 	ChunkOffsetCoord coc;
 	int surfaceDir = 0;
-	chunk *cp = FindSelectedSurface(row, col, &coc, &surfaceDir);
+	View::Chunk *cp = FindSelectedSurface(row, col, &coc, &surfaceDir);
 	if (cp == 0)
 		return;
 	// Tricky thing is that the 'coc' is not the place we want to place the new block.
@@ -284,7 +284,7 @@ void gameDialog::ClickOnBlock(int x, int y) {
 		return; // Ignore multiple clicks on the same block
 	prevX = x; prevY = y;
 	ChunkOffsetCoord coc;
-	chunk *cp = this->FindSelectedSurface(x, y, &coc, 0);
+	View::Chunk *cp = this->FindSelectedSurface(x, y, &coc, 0);
 	if (cp == 0)
 		return;
 	// Use the block that the surface belongs to
@@ -584,7 +584,7 @@ void gameDialog::HandleKeyPress(int key) {
 			for (int dx=-1; dx<2; dx++) for (int dy=-1; dy<2; dy++) for (int dz=-1; dz < 2; dz++) {
 						ChunkCoord cc = player_cc;
 						cc.x += dx; cc.y += dy; cc.z += dz;
-						chunk *cp = ChunkFind(&cc, true);
+						View::Chunk *cp = ChunkFind(&cc, true);
 						cp->SetDirty(true);
 					}
 		}
@@ -967,7 +967,7 @@ void gameDialog::render(bool hideGUI) {
 		if (gMode.Get() == GameMode::CONSTRUCT) {
 			ChunkCoord cc;
 			gPlayer.GetChunkCoord(&cc);
-			const chunk *cp = ChunkFind(&cc, false);
+			const View::Chunk *cp = ChunkFind(&cc, false);
 			unsigned int uid = 1000000;
 			if (cp) {
 				auto cb = cp->fChunkBlocks;
@@ -1005,7 +1005,7 @@ void gameDialog::render(bool hideGUI) {
 			prevPrint = gCurrentFrameTime;
 		}
 	}
-	chunk::DegradeBusyList_gl();
+	View::Chunk::DegradeBusyList_gl();
 	first = false;
 }
 
@@ -1112,7 +1112,7 @@ void gameDialog::Update() {
 	gOtherPlayers.Cleanup();
 
 	// Determine if player head is under water
-	bl = chunk::GetChunkAndBlock(gPlayer.x, gPlayer.y, gPlayer.z);
+	bl = View::Chunk::GetChunkAndBlock(gPlayer.x, gPlayer.y, gPlayer.z);
 	if (bl == BT_Air && fUnderWater) {
 		gSoundControl.SetSoundFxStatus(SoundControl::SEnvironmentUnderWater,false);
 		fUnderWater = false;
@@ -1127,7 +1127,7 @@ void gameDialog::Update() {
 
 	// Determine if feet are wet
 	// TODO: Change "magic number" for player height!
-	bl = chunk::GetChunkAndBlock(gPlayer.x, gPlayer.y, gPlayer.z-350);
+	bl = View::Chunk::GetChunkAndBlock(gPlayer.x, gPlayer.y, gPlayer.z-350);
 	if ((bl != BT_Water && bl != BT_BrownWater) && inWater && !fUnderWater) {
 		gSoundControl.SetSoundFxStatus(SoundControl::SPlayerFeetInWater,false);
 		inWater = false;
@@ -1138,7 +1138,7 @@ void gameDialog::Update() {
 	}
 
 	// TODO: Change "magic number" for player height!
-	bl = chunk::GetChunkAndBlock(gPlayer.x, gPlayer.y, gPlayer.z-400);
+	bl = View::Chunk::GetChunkAndBlock(gPlayer.x, gPlayer.y, gPlayer.z-400);
 	if (bl != BT_Air && inAir) {
 		gSoundControl.SetSoundFxStatus(SoundControl::SPlayerInAir,false);
 		inAir = false;

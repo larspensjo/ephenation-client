@@ -58,7 +58,7 @@ static const struct {
 
 // For the given chunk, coordinate and direction, determine if the specified direction
 // is a valid jelly direction.
-static bool validJellyDir(const chunk *cp, int dir, int dx, int dy, int dz) {
+static bool validJellyDir(const View::Chunk *cp, int dir, int dx, int dy, int dz) {
 	dx += jellyList[dir].dx;
 	dy += jellyList[dir].dy;
 	dz += jellyList[dir].dz;
@@ -100,7 +100,7 @@ void ActivatorDialog::UpdateInput(Rocket::Core::Element *e) {
 			}
 		} else if (name == "Activator.jellyblock") {
 			element->RemoveAll();
-			chunk *cp = ChunkFind(&fCC, false);
+			View::Chunk *cp = ChunkFind(&fCC, false);
 			for (unsigned i=0; i<NELEM(jellyList); i++) {
 				if (!validJellyDir(cp, i, fDx, fDy, fDz))
 					continue;

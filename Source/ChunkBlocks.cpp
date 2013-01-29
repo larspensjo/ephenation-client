@@ -97,32 +97,32 @@ void ChunkBlocks::CommandBlockUpdate(const ChunkCoord &cc, int dx, int dy, int d
 	if (dx == 0) {
 		ChunkCoord cc2 = cc;
 		cc2.x = cc.x-1;
-		if (chunk *cp2 = ChunkFind(&cc2,false)) cp2->SetDirty(true);
+		if (View::Chunk *cp2 = ChunkFind(&cc2,false)) cp2->SetDirty(true);
 	}
 	if (dy == 0) {
 		ChunkCoord cc2 = cc;
 		cc2.y = cc.y-1;
-		if (chunk *cp2 = ChunkFind(&cc2,false)) cp2->SetDirty(true);
+		if (View::Chunk *cp2 = ChunkFind(&cc2,false)) cp2->SetDirty(true);
 	}
 	if (dz == 0) { // This is safe even if there are no chunks below 0
 		ChunkCoord cc2 = cc;
 		cc2.z = cc.z-1;
-		if (chunk *cp2 = ChunkFind(&cc2,false)) cp2->SetDirty(true);
+		if (View::Chunk *cp2 = ChunkFind(&cc2,false)) cp2->SetDirty(true);
 	}
 	if (dx == CHUNK_SIZE-1) {
 		ChunkCoord cc2 = cc;
 		cc2.x = cc.x+1;
-		if (chunk *cp2 = ChunkFind(&cc2,false)) cp2->SetDirty(true);
+		if (View::Chunk *cp2 = ChunkFind(&cc2,false)) cp2->SetDirty(true);
 	}
 	if (dy == CHUNK_SIZE-1) {
 		ChunkCoord cc2 = cc;
 		cc2.y = cc.y+1;
-		if (chunk *cp2 = ChunkFind(&cc2,false)) cp2->SetDirty(true);
+		if (View::Chunk *cp2 = ChunkFind(&cc2,false)) cp2->SetDirty(true);
 	}
 	if (dz == CHUNK_SIZE-1) {
 		ChunkCoord cc2 = cc;
 		cc2.z = cc.z+1;
-		if (chunk *cp2 = ChunkFind(&cc2,false)) cp2->SetDirty(true);
+		if (View::Chunk *cp2 = ChunkFind(&cc2,false)) cp2->SetDirty(true);
 	}
 }
 

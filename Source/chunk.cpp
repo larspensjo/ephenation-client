@@ -53,9 +53,11 @@
 
 #define cChecksumTimeout 15.0
 
+using namespace View;
+
 // Find out if a block at (ox,oy,oz) is in a line of sight of the sky, as given by the direction (dx,dy,dz).
 // The algorithm isn't perfect when near corners of other blocks, but it isn't important.
-static bool LineToSky(const chunk *cp, int ox, int oy, int oz, float dx, float dy, float dz) {
+static bool LineToSky(const Chunk *cp, int ox, int oy, int oz, float dx, float dy, float dz) {
 	ASSERT(dz > 0);
 	float fx = float(ox), fy = float(oy), fz = float(oz);
 
@@ -63,7 +65,7 @@ static bool LineToSky(const chunk *cp, int ox, int oy, int oz, float dx, float d
 	// Simply never use sun light below a certain point
 	if (cc.z < -1)
 		return false;
-	const chunk *currentChunk = cp;
+	const Chunk *currentChunk = cp;
 	while(1) {
 		if (fx<0) { fx += CHUNK_SIZE; cc.x--; currentChunk = ChunkFind(&cc, false); }
 		if (fy<0) { fy += CHUNK_SIZE; cc.y--; currentChunk = ChunkFind(&cc, false); }
@@ -85,14 +87,14 @@ static bool LineToSky(const chunk *cp, int ox, int oy, int oz, float dx, float d
 }
 
 // Find out if a surface is in the direction of sun light. The in falling angle is handled by the renderer.
-bool chunk::InSunLight(int ox, int oy, int oz) const {
+bool Chunk::InSunLight(int ox, int oy, int oz) const {
 	return LineToSky(this, ox, oy, oz, -0.577350269f, -0.577350269f, 0.577350269f);
 }
 
 // Find out if a surface is in the direction sky, from a limited number of directions. Return
 // a value from 0 to 1. The given coordinate may be just outside the chunk!
 // A value of 1.0 means full view of sky in all directions.
-float chunk::ComputeAmbientLight(int ox, int oy, int oz) const {
+float Chunk::ComputeAmbientLight(int ox, int oy, int oz) const {
 	// The direction pointing to the sun is not included.
 	float sky =
 	    LineToSky(this, ox, oy, oz, 0.0f, 0.0f, 1.0f) +
@@ -117,7 +119,7 @@ float chunk::ComputeAmbientLight(int ox, int oy, int oz) const {
 	return sum;
 }
 
-void chunk::UpdateGraphics(void) {
+void Chunk::UpdateGraphics(void) {
 	unsigned char x, y, z;
 	if (gMode.CommunicationAllowed() && gSuperChunkManager.GetTeleport(&x, &y, &z, &this->cc)) {
 		// This is kind of a fake. There are no TP blocks at the server, they are managed in
@@ -134,9 +136,9 @@ void chunk::UpdateGraphics(void) {
 // TODO: A mechanism is needed to throw away chunks when there are too many
 //
 
-static std::map<ChunkCoord, chunk*> sWorldCache;
+static std::map<ChunkCoord, Chunk*> sWorldCache;
 
-void chunk::UpdateNeighborChunks(void) {
+void Chunk::UpdateNeighborChunks(void) {
 	for (int dx=-1; dx<2; dx++) for (int dy=-1; dy<2; dy++) for (int dz=-1; dz<2; dz++) {
 				if (dx == 0 && dy == 0 && dz == 0)
 					continue; // Skip self
@@ -146,7 +148,7 @@ void chunk::UpdateNeighborChunks(void) {
 				cc.x = this->cc.x + dx;
 				cc.y = this->cc.y + dy;
 				cc.z = this->cc.z + dz;
-				chunk *cp = ChunkFind(&cc, false);
+				Chunk *cp = ChunkFind(&cc, false);
 				if (cp && cp->fChunkBlocks) {
 					cp->SetDirty(true);
 				}
@@ -154,16 +156,16 @@ void chunk::UpdateNeighborChunks(void) {
 }
 
 // Making all chunks "dirty" will force them all to be recomputed.
-void chunk::MakeAllChunksDirty(void) {
+void Chunk::MakeAllChunksDirty(void) {
 	for (auto it = sWorldCache.begin(); it != sWorldCache.end(); it++) {
-		chunk *cp = it->second;
+		Chunk *cp = it->second;
 		cp->SetDirty(true);
 	}
 }
 
 // Given a chunk coordinate, find the chunk.
 // If "force" is true and the chunk isn't loaded yet, a request is sent to the server to load it, but a temporary empty chunk is returned.
-chunk* ChunkFind(const ChunkCoord *cc, bool force) {
+Chunk* ChunkFind(const ChunkCoord *cc, bool force) {
 	auto it = sWorldCache.find(*cc);
 
 	if (it != sWorldCache.end())
@@ -176,7 +178,7 @@ chunk* ChunkFind(const ChunkCoord *cc, bool force) {
 
 	// Didn't find the chunk, create one.
 	// printf("Created a new chunk at (%d,%d,%d)\n", cc->x, cc->y, cc->z);
-	chunk *pc = new(chunk);
+	Chunk *pc = new(Chunk);
 	// Chunk coordinate has to be defined before the chunk is added to the sWorldCache map.
 	pc->cc.x = cc->x; pc->cc.y = cc->y; pc->cc.z = cc->z;
 
@@ -223,7 +225,7 @@ chunk* ChunkFind(const ChunkCoord *cc, bool force) {
 	return pc;
 }
 
-void chunk::Draw(StageOneShader *shader, ChunkShaderPicking *pickShader, DL_Type dlType) {
+void Chunk::Draw(StageOneShader *shader, ChunkShaderPicking *pickShader, DL_Type dlType) {
 	// printf("chunk::Draw buffers for (%d,%d,%d)\n", this->cc.x, this->cc.y, this->cc.z);
 	if (this->fPrev_gl) {
 		// Remove the chunk from the previous linked list.
@@ -307,7 +309,7 @@ void chunk::Draw(StageOneShader *shader, ChunkShaderPicking *pickShader, DL_Type
 	glBindVertexArray(0);
 }
 
-void chunk::DrawObjects(StageOneShader *shader, int dx, int dy, int dz, bool forShadows) {
+void Chunk::DrawObjects(StageOneShader *shader, int dx, int dy, int dz, bool forShadows) {
 	if (!fChunkObject)
 		return; // Nothing to show yet
 
@@ -487,12 +489,12 @@ void chunk::DrawObjects(StageOneShader *shader, int dx, int dy, int dz, bool for
 	}
 }
 
-chunk::~chunk() {
+Chunk::~Chunk() {
 	// It is not strictly necessary to clear deleted pointers, but it will help to find bugs.
 	this->ReleaseOpenGLBuffers();
 }
 
-void chunk::ReleaseOpenGLBuffers(void) {
+void Chunk::ReleaseOpenGLBuffers(void) {
 	if (!this->fBuffersDefined)
 		return;
 	glDeleteVertexArrays(256, fVao); // A buffer with value 0 is ignored.
@@ -506,7 +508,7 @@ void chunk::ReleaseOpenGLBuffers(void) {
 	this->fBuffersDefined = false;
 }
 
-void chunk::PrepareOpenGL(StageOneShader *shader, ChunkShaderPicking *pickShader, DL_Type dlType) {
+void Chunk::PrepareOpenGL(StageOneShader *shader, ChunkShaderPicking *pickShader, DL_Type dlType) {
 	this->ReleaseOpenGLBuffers(); // Release the old buffers, if any.
 	fBuffersDefined = true;
 	// printf("PrepareOpenGL: chunk (%d,%d,%d)\n", this->cc.x, this->cc.y, this->cc.z);
@@ -528,10 +530,10 @@ void chunk::PrepareOpenGL(StageOneShader *shader, ChunkShaderPicking *pickShader
 		int bufferSize = 0;
 		glGetBufferParameteriv(GL_ARRAY_BUFFER, GL_BUFFER_SIZE, &bufferSize);
 		if ((unsigned)bufferSize != triSize * sizeof(VertexDataf)) {
-			checkError("chunk::PrepareOpenGL data size mismatch");
+			checkError("Chunk::PrepareOpenGL data size mismatch");
 			glDeleteBuffers(1, &fBufferId[blockType]);
 			fBufferId[blockType] = 0;
-			ErrorDialog("chunk::PrepareOpenGL: Data size %d is mismatch with input array %d\n", bufferSize, triSize * sizeof(VertexDataf));
+			ErrorDialog("Chunk::PrepareOpenGL: Data size %d is mismatch with input array %d\n", bufferSize, triSize * sizeof(VertexDataf));
 		}
 
 		switch(dlType) {
@@ -553,7 +555,7 @@ void chunk::PrepareOpenGL(StageOneShader *shader, ChunkShaderPicking *pickShader
 	glBindVertexArray(0);
 }
 
-chunk::chunk() {
+Chunk::Chunk() {
 	fBuffersDefined = false;
 	fNext_gl = 0;
 	fPrev_gl = 0;
@@ -566,18 +568,18 @@ chunk::chunk() {
 	}
 }
 
-chunk *chunk::sfBusyList_gl = 0;
-chunk *chunk::sfBusyListOld_gl = 0;
+Chunk *Chunk::sfBusyList_gl = 0;
+Chunk *Chunk::sfBusyListOld_gl = 0;
 
 // Find out what chunks are currently not drawn, and release OpenGL buffers for them
-void chunk::DegradeBusyList_gl(void) {
+void Chunk::DegradeBusyList_gl(void) {
 	while(sfBusyListOld_gl) {
 		//printf("chunk::PurgeBusyList_gl release gl buffers for (%d,%d,%d)\n", sfBusyListOld_gl->cc.x, sfBusyListOld_gl->cc.y, sfBusyListOld_gl->cc.z);
 		//printf("RELEASE(%d,%d,%d)\n", sfBusyListOld_gl->cc.x, sfBusyListOld_gl->cc.y, sfBusyListOld_gl->cc.z);
 		sfBusyListOld_gl->fPrev_gl = 0;
 		sfBusyListOld_gl->ReleaseOpenGLBuffers();
 		sfBusyListOld_gl->fChunkBlocks->fChecksumTestNeeded = true; // The time out is set when the checksum is requested (next time)
-		chunk *ch = sfBusyListOld_gl;
+		Chunk *ch = sfBusyListOld_gl;
 		sfBusyListOld_gl = sfBusyListOld_gl->fNext_gl;
 		ch->fNext_gl = 0;
 	}
@@ -591,20 +593,20 @@ void chunk::DegradeBusyList_gl(void) {
 	}
 }
 
-void chunk::PushTriangles(shared_ptr<const ChunkObject> co) {
+void Chunk::PushTriangles(shared_ptr<const ChunkObject> co) {
 	// printf("Push %d,%d,%d, comp %d, loading %d, 0x%x\n", cc.x, cc.x, cc.z, fScheduledForComputation, fScheduledForLoading, fChunkObject.get());
 	if (fPushedValues) {
-		ErrorDialog("Illegal chunk::PushTriangles\n");
+		ErrorDialog("Illegal Chunk::PushTriangles\n");
 	}
 	fPushedValues = fChunkObject;
 	fChunkObject = co;
 	this->ReleaseOpenGLBuffers();
 }
 
-void chunk::PopTriangles(void) {
+void Chunk::PopTriangles(void) {
 	// printf("Pop %d,%d,%d, comp %d, loading %d\n", cc.x, cc.x, cc.z, fScheduledForComputation, fScheduledForLoading);
 	if (!fPushedValues) {
-		ErrorDialog("chunk::PopTriangles: Pop without a push first");
+		ErrorDialog("Chunk::PopTriangles: Pop without a push first");
 	}
 	this->ReleaseOpenGLBuffers();
 	fChunkObject = fPushedValues;
@@ -635,10 +637,10 @@ static void GetOffsetToChunk(ChunkOffsetCoord* coc, signed long long x, signed l
 	// printf("this->y = %lld, cc.y=%d, FACT*cc.y=%lld, diff=%lld\n", this->y, cc.y, FACT*cc.y, this->y - cc.y*FACT);
 }
 
-unsigned char chunk::GetChunkAndBlock(signed long long x, signed long long y, signed long long z) {
+unsigned char Chunk::GetChunkAndBlock(signed long long x, signed long long y, signed long long z) {
 	ChunkCoord cc;
 	GetChunkCoord(&cc, x, y, z);
-	chunk *cp = ChunkFind(&cc, false);
+	Chunk *cp = ChunkFind(&cc, false);
 	if (cp == 0)
 		return BT_Unused;
 	ChunkOffsetCoord coc;
@@ -646,16 +648,16 @@ unsigned char chunk::GetChunkAndBlock(signed long long x, signed long long y, si
 	return cp->GetBlock(coc.x/BLOCK_COORD_RES, coc.y/BLOCK_COORD_RES, coc.z/BLOCK_COORD_RES);
 }
 
-void chunk::SetDirty(bool flag) {
+void Chunk::SetDirty(bool flag) {
 	if (flag && fScheduledForLoading)
 		return; // Will be recomputed anyway
 	ASSERT(flag == false || fScheduledForLoading == false);
-	// if (gVerbose && flag) printf("chunk::SetDirty %d,%d,%d\n", cc.x, cc.y, cc.z);
+	// if (gVerbose && flag) printf("Chunk::SetDirty %d,%d,%d\n", cc.x, cc.y, cc.z);
 	fDirty = flag;
 }
 
 // Note, 'this' pointer can be 0!
-void chunk::DrawBoundingBox(StageOneShader *shader, int dx, int dy, int dz) {
+void Chunk::DrawBoundingBox(StageOneShader *shader, int dx, int dy, int dz) {
 	char bxmin = -LAMP2_DIST, bymin = -LAMP2_DIST, bzmin = -LAMP2_DIST;
 	char bxmax = CHUNK_SIZE+LAMP2_DIST, bymax = CHUNK_SIZE+LAMP2_DIST, bzmax = CHUNK_SIZE+LAMP2_DIST;
 	if (this && !this->IsDirty()) {

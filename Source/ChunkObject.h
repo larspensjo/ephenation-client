@@ -24,12 +24,16 @@
 
 using std::unique_ptr;
 struct TriangleSurfacef;
-struct chunk;
 
-// A chunk is 32x32x32 blocks, which can't be used for drawing as it is. It is converted into two
-// types: visible blocks and special objects. It is the responsibility of this class to take the chunk
-// data and compute what can be drawn from the chunk.
+namespace View {
+	class Chunk;
+}
 
+/// Manage visible attributes of a chunk.
+/// This is part of the View.
+/// A chunk is 32x32x32 blocks, which can't be used for drawing as it is. It is converted into two
+/// types: visible blocks and special objects. It is the responsibility of this class to take the chunk
+/// data and compute what can be drawn from the chunk.
 class ChunkObject {
 public:
 	// The triangle list. There is one list for each block type, as they can't be drawn in
@@ -45,13 +49,13 @@ public:
 
 	// Create and initialize a ChunkObject from a raw chunk. 'pickingmode' is true if the data shall
 	// be used for picking. 'pdx', etc, are used in picking mode to identify which chunk it is (relative the player).
-	static unique_ptr<ChunkObject> Make(const chunk *cp, bool pickingMode, int pdx, int pdy, int pdz);
+	static unique_ptr<ChunkObject> Make(const View::Chunk *cp, bool pickingMode, int pdx, int pdy, int pdz);
 
 	// True if there are no graphical objects to show in this chunk
 	bool Empty(void) const;
 
 	// To improve the look, many block types are not drawn as blocks, but as a more advanced 3D model (e.g. trees and lamps).
-	void FindSpecialObjects(const chunk *cp);
+	void FindSpecialObjects(const View::Chunk *cp);
 
 	// For each special object, save information about it.
 	struct SpecialObject {
@@ -70,11 +74,11 @@ public:
 	std::vector<SpecialObject> fSpecialObject; // The list of all special objects found in this chunk.
 
 	// Cyclic pointer back to the chunk the data belongs to. TODO: can this be avoided?
-	chunk *fChunk;
+	View::Chunk *fChunk;
 private:
 	// Code an array of struct TriangleSurfacef.
 	// The arguments are used for selection mode.
-	void FindTriangles(const chunk *cp, bool pickingMode, int pdx, int pdy, int pdz, bool smoothing, bool mergeNormals, bool addNoise);
+	void FindTriangles(const View::Chunk *cp, bool pickingMode, int pdx, int pdy, int pdz, bool smoothing, bool mergeNormals, bool addNoise);
 
 	ChunkObject(); // Private; only the Make() can create this object
 };
