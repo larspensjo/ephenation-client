@@ -85,7 +85,7 @@ bool BaseDialog::ClickEvent(Rocket::Core::Event& event, const string &action) {
 	Splitter split(action, " ");
 	if (action == "Close") {
 		if (!this->Pop())
-			gGameDialog.ClearInputRedirect();
+			Controller::gGameDialog.ClearInputRedirect();
 		return true;
 	} else if (split[0] == "Popup" && split.size() == 2) {
 		gDialogFactory.Make(fStack.back().fDocument->GetContext(), split[1]);
@@ -97,7 +97,7 @@ bool BaseDialog::ClickEvent(Rocket::Core::Event& event, const string &action) {
 		// Pop all saved documents, if any.
 		while(this->Pop())
 			continue;
-		gGameDialog.ClearInputRedirect();
+		Controller::gGameDialog.ClearInputRedirect();
 		gMode.Set(GameMode::ESC);
 		return true;
 	} else if (action == "") {

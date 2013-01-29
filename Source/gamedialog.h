@@ -42,6 +42,8 @@ namespace Rocket {
 	}
 };
 
+namespace Controller {
+
 /// This corresponds to the controller class in a Model/View/Controller.
 /// - keyboard input
 /// - mouse input
@@ -142,6 +144,9 @@ private:
 };
 
 extern gameDialog gGameDialog;
+
+}
+
 extern float renderViewAngle;
 
 /// A string that automatically will be shown in a pop up window.

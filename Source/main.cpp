@@ -398,7 +398,7 @@ int main(int argc, char** argv) {
 	gUniformBuffer.Init();
 	gDrawFont.Init("textures/georgia12"); // Must be done before gGameDialog.
 	GameTexture::Init();
-	gGameDialog.init();
+	Controller::gGameDialog.init();
 	ChunkShader *shader = ChunkShader::Make();
 	gChunkShaderPicking.Init();
 	Tree::InitStatic();
@@ -444,8 +444,8 @@ int main(int argc, char** argv) {
 				ListenForServerMessages();
 		}
 
-		gGameDialog.Update();
-		gGameDialog.render(sHideGUI);
+		Controller::gGameDialog.Update();
+		Controller::gGameDialog.render(sHideGUI);
 
 		glfwSwapBuffers();
 

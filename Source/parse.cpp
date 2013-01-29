@@ -173,7 +173,7 @@ static void ServerMessage(const char *msg) {
 		// This is a special string to be used for sound effects.
 		gSoundControl.RequestTrigSound(msg+1);
 		if (strncmp(msg+1, "BOOM", 4) == 0)
-			gGameDialog.RequestEffect(gameDialog::EFFECT_ZOOM2);
+			Controller::gGameDialog.RequestEffect(Controller::gameDialog::EFFECT_ZOOM2);
 		if (strlen(msg) < 6)
 			return; // That was all for now
 		msg += 6; // Skip the sound string.
@@ -312,7 +312,7 @@ void Parse(const unsigned char *b, int n) {
 			else
 				gSoundControl.RequestSound(SoundControl::SBuildBlock);
 			if (type == BT_Text) {
-				gGameDialog.CreateActivatorMessage(dx, dy, dz, cc);
+				Controller::gGameDialog.CreateActivatorMessage(dx, dy, dz, cc);
 			}
 		}
 		cp->SetDirty(true);
@@ -398,7 +398,7 @@ void Parse(const unsigned char *b, int n) {
 	case CMD_RESP_AGGRO_FROM_MONSTER:
 		for (int i=1; i<n; i += 4) {
 			unsigned long id = ParseUint32(b+i);
-			gGameDialog.AggroFrom(gMonsters.Find(id));
+			Controller::gGameDialog.AggroFrom(gMonsters.Find(id));
 		}
 		break;
 	case CMD_UPD_INV:

@@ -68,6 +68,8 @@
 #include "worsttime.h"
 #include "ChunkProcess.h"
 
+using namespace Controller;
+
 using std::string;
 
 const float defaultRenderViewAngle = 60.0f;
@@ -80,7 +82,7 @@ static std::vector<unsigned>::iterator sTextureIterator;
 static bool sShowAlternateBitmap = false;
 
 static float mouseSens = -5.0f;
-gameDialog gGameDialog; // For now, there will only be one
+gameDialog Controller::gGameDialog; // For now, there will only be one
 
 // If there are any strings in these parameters, show them once in a popup dialog.
 string sgPopup, sgPopupTitle = "Ephenation";
@@ -309,7 +311,7 @@ int xStartTurn = 0, yStartTurn = 0;
 float angleHorStartTurn = 0.0f, angleVertStartTurn;
 
 static void handleMouseActiveMotion(int x, int y) {
-	gGameDialog.handleMouseActiveMotion(x, y);
+	Controller::gGameDialog.handleMouseActiveMotion(x, y);
 }
 
 void gameDialog::handleMouseActiveMotion(int x, int y) {

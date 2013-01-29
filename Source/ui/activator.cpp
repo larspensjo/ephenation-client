@@ -32,7 +32,7 @@
 
 void ActivatorDialog::UseDocument(Rocket::Core::ElementDocument *doc, std::function<void()> callback) {
 	this->Push(doc, callback); // Allways push the previous document first
-	gGameDialog.GetActivator(fDx, fDy, fDz, fCC);
+	Controller::gGameDialog.GetActivator(fDx, fDy, fDz, fCC);
 	fFormResultValues.clear(); // Restart with an empty list
 	this->Treewalk([this](Rocket::Core::Element *e){ this->UpdateInput(e);} ); // Fill default parameters in the document
 	this->Treewalk([this](Rocket::Core::Element *e) {this->DetectDefaultButton(e); }); // This can be done by the local callback
@@ -201,7 +201,7 @@ void ActivatorDialog::FormEvent(Rocket::Core::Event& event, const string &action
 	// std::cout << s << std::endl;
 
 	if (!this->Pop())
-		gGameDialog.ClearInputRedirect(); // Normal case
+		Controller::gGameDialog.ClearInputRedirect(); // Normal case
 }
 
 bool ActivatorDialog::ClickEvent(Rocket::Core::Event& event, const string &action) {

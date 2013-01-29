@@ -76,6 +76,6 @@ void LoginDialog::FormEvent(Rocket::Core::Event& event, const string &action) {
 		// printf("Login %s, %s, %s\n", fFormResultValues["Login.licensekey"].c_str(), fFormResultValues["Login.email"].c_str(), fFormResultValues["Login.password"].c_str());
 
 		if (!this->Pop())
-			gGameDialog.ClearInputRedirect(); // Normal case
+			Controller::gGameDialog.ClearInputRedirect(); // Normal case
 	}
 }

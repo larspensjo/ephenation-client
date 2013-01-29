@@ -150,6 +150,6 @@ void OptionsDialog::FormEvent(Rocket::Core::Event& event, const string &action) 
 		}
 
 		if (!this->Pop())
-			gGameDialog.ClearInputRedirect(); // Normal case
+			Controller::gGameDialog.ClearInputRedirect(); // Normal case
 	}
 }
