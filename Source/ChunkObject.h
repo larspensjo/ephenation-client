@@ -27,7 +27,6 @@ struct TriangleSurfacef;
 
 namespace View {
 	class Chunk;
-}
 
 /// Manage visible attributes of a chunk.
 /// This is part of the View.
@@ -82,3 +81,5 @@ private:
 
 	ChunkObject(); // Private; only the Make() can create this object
 };
+
+}

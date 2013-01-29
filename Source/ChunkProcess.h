@@ -37,10 +37,10 @@ using std::unique_ptr;
 
 namespace View {
 	class Chunk;
+	class ChunkObject;
 }
 
 class ChunkBlocks;
-class ChunkObject;
 
 
 /// Set up parallel processes (a thread pool) that will manage chunks.
@@ -96,7 +96,7 @@ private:
 	std::deque<View::Chunk*> fComputeObjectsInput; // The list of chunk recomputation jobs
 	std::deque<shared_ptr<ChunkBlocks>> fNewChunksInput; // List of "new chunk" jobs.
 	// This is where the computed objects are saved. Use a set, to make sure every element is only ever once in it.
-	std::set<shared_ptr<ChunkObject>> fComputedObjectsOutput;
+	std::set<shared_ptr<View::ChunkObject>> fComputedObjectsOutput;
 	std::set<shared_ptr<ChunkBlocks>> fNewChunksOutput;
 	//
 	// End of list of mutex protected variables.

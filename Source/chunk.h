@@ -123,12 +123,12 @@ struct VertexDataf;
 struct TriangleSurfacef;
 class StageOneShader;
 class ChunkShaderPicking;
-class ChunkObject;
 class ChunkBlocks;
 
 using std::shared_ptr;
 
 namespace View {
+	class ChunkObject;
 
 /// Definition of the View side of a chunk.
 /// @todo This started as a struct for data, but methods were added. The public data should be made private.

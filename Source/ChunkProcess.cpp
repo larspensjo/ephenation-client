@@ -151,7 +151,7 @@ void ChunkProcess::Task(void) {
 			}
 			fMutex.unlock(); // Unlock the mutex while doing some heavy work
 			// printf("ChunkProcess phase 1, size %lu, chunk %d,%d,%d\n", fComputeObjectsInput.size()+1, ch->cc.x, ch->cc.y, ch->cc.z);
-			auto co = ChunkObject::Make(ch, false, 0, 0, 0);
+			auto co = View::ChunkObject::Make(ch, false, 0, 0, 0);
 			co->FindSpecialObjects(ch); // This will find light sources, and should be done before FindTriangles().
 			fMutex.lock();
 			ASSERT(ch->fScheduledForComputation);
