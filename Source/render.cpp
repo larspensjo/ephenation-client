@@ -399,7 +399,7 @@ void DrawLandscape(StageOneShader *shader, DL_Type dlType) {
 
 		if (dlType == DL_OnlyTransparent) {
 			unsigned char tx, ty, tz;
-			if (gMode.CommunicationAllowed() && gSuperChunkManager.GetTeleport(&tx, &ty, &tz, &cp->cc)) {
+			if (gMode.CommunicationAllowed() && Model::gSuperChunkManager.GetTeleport(&tx, &ty, &tz, &cp->cc)) {
 				double diffX = double(gPlayer.x)/BLOCK_COORD_RES - cc.x*CHUNK_SIZE - tx - 0.5;
 				double diffY = double(gPlayer.y)/BLOCK_COORD_RES - cc.y*CHUNK_SIZE - ty - 0.5;
 				double diffZ = double(gPlayer.z)/BLOCK_COORD_RES - cc.z*CHUNK_SIZE - tz - PLAYER_HEIGHT*2;

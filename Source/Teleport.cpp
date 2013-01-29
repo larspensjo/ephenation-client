@@ -42,7 +42,7 @@ void DrawTeleports(DrawTexture *dt, float angle, float renderViewAngle) {
 				cc.x = player_cc.x + dx;
 				cc.y = player_cc.y + dy;
 				cc.z = player_cc.z + dz;
-				if (gSuperChunkManager.GetTeleport(&tx, &ty, &tz, &cc)) {
+				if (Model::gSuperChunkManager.GetTeleport(&tx, &ty, &tz, &cc)) {
 					float x = (float)tx + dx*CHUNK_SIZE + 0.5f;
 					float y = (float)tz + dz*CHUNK_SIZE + 0.5f;
 					float z = -(float)ty - dy*CHUNK_SIZE - 0.5f;
@@ -72,7 +72,7 @@ const ChunkCoord *TeleportClick(HealthBar *hb, float angle, float renderViewAngl
 				cc.x = player_cc.x + dx;
 				cc.y = player_cc.y + dy;
 				cc.z = player_cc.z + dz;
-				if (gSuperChunkManager.GetTeleport(&tx, &ty, &tz, &cc)) {
+				if (Model::gSuperChunkManager.GetTeleport(&tx, &ty, &tz, &cc)) {
 					float x = (float)tx + dx*CHUNK_SIZE + 0.5f;
 					float y = (float)tz + dz*CHUNK_SIZE + 0.5f;
 					float z = -(float)ty - dy*CHUNK_SIZE - 0.5f;

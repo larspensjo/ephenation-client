@@ -121,7 +121,7 @@ float Chunk::ComputeAmbientLight(int ox, int oy, int oz) const {
 
 void Chunk::UpdateGraphics(void) {
 	unsigned char x, y, z;
-	if (gMode.CommunicationAllowed() && gSuperChunkManager.GetTeleport(&x, &y, &z, &this->cc)) {
+	if (gMode.CommunicationAllowed() && Model::gSuperChunkManager.GetTeleport(&x, &y, &z, &this->cc)) {
 		// This is kind of a fake. There are no TP blocks at the server, they are managed in
 		// other types of data structures. But the server understands the command to remove a
 		// TP block.

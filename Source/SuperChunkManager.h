@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -23,6 +23,8 @@
 
 #define SCH_SIZE 10
 
+namespace Model {
+
 // The order of the content of the SuperChunk is important, as it matches exactly the order that
 // data is sent from the server.
 struct SuperChunk {
@@ -36,6 +38,7 @@ struct SuperChunk {
 	bool fUpdateRequested;
 };
 
+/// Manage Super chunk data
 class SuperChunkManager {
 public:
 	SuperChunkManager();
@@ -51,3 +54,5 @@ private:
 };
 
 extern SuperChunkManager gSuperChunkManager;
+
+}

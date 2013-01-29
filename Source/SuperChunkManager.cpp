@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -24,7 +24,9 @@
 
 #define flagTPDefined 0x01 // TOOD: This has to match the flag defined by the server. Move it to client_prot.h?
 
-SuperChunkManager gSuperChunkManager;
+using namespace Model;
+
+SuperChunkManager Model::gSuperChunkManager;
 
 SuperChunkManager::SuperChunkManager() {
 	// TODO Auto-generated constructor stub

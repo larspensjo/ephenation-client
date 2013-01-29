@@ -480,7 +480,7 @@ void Parse(const unsigned char *b, int n) {
 	case CMD_SUPERCHUNK_ANSWER: {
 		gPlayer.GetChunkCoord(&cc);
 		ChunkCoord *ret = UpdateLSB(&cc, b[1], b[2], b[3]);
-		gSuperChunkManager.Data(ret, b+4);
+		Model::gSuperChunkManager.Data(ret, b+4);
 		break;
 	}
 	default:
