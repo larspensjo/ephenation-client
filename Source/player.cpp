@@ -83,7 +83,7 @@ void Player::Draw(AnimationShader *animShader, StageOneShader *staticShader, boo
 	if (PlayerIsMoving())
 		tm = 0.0;
 	animShader->EnableProgram();
-	gFrog.DrawAnimation(animShader, model, tm, false, 0);
+	View::gFrog.DrawAnimation(animShader, model, tm, false, 0);
 	animShader->DisableProgram();
 #if 0
 	if (torch)
@@ -113,9 +113,9 @@ void Player::Draw(AnimationShader *animShader, StageOneShader *staticShader, boo
 			break;
 		}
 		staticShader->EnableProgram();
-		gSwordModel1.Align(model);
+		View::gSwordModel1.Align(model);
 		staticShader->Model(model);
-		gSwordModel1.DrawStatic();
+		View::gSwordModel1.DrawStatic();
 		animShader->EnableProgram();
 	}
 }

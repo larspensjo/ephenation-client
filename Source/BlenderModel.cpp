@@ -15,15 +15,15 @@
 // along with Ephenation.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-//
-// This is probably the most complicated part of the Ephenation client. One reason
-// is that model and animation data in Assimp is complex. Another is that the data
-// has to be converted to a local representation optimized for drawing using a shader.
-// At first glance, it may look as if Assimp is unecessaery complex. But the data is
-// really needed, and it has to be organized they way it is. There is a reason for it.
-//
-// See http://ephenationopengl.blogspot.de/2012/06/doing-animations-in-opengl.html
-//
+/// @class ManageAnimation
+/// This is probably the most complicated part of the Ephenation client. One reason
+/// is that model and animation data in Assimp is complex. Another is that the data
+/// has to be converted to a local representation optimized for drawing using a shader.
+/// At first glance, it may look as if Assimp is unecessaery complex. But the data is
+/// really needed, and it has to be organized they way it is. There is a reason for it.
+///
+/// See http://ephenationopengl.blogspot.de/2012/06/doing-animations-in-opengl.html
+///
 
 #ifdef ASSIMP3
     #include <assimp/Importer.hpp>
@@ -52,13 +52,15 @@
 #include "primitives.h"
 #include "textures.h"
 
+using namespace View;
+
 // There is a list of bones associated to a mesh.
 struct MeshBone {
 	glm::mat4 offset; // Offset to mesh
 	unsigned int jointIndex;
 };
 
-struct BlenderModel::Mesh {
+struct ManageAnimation::Mesh {
 	glm::vec4 colour;            // The colour of this mesh
 	unsigned int numFaces;       // Number of faces used by this mesh
 	std::vector<MeshBone> bones; // All bones used by this mesh
@@ -70,7 +72,7 @@ struct AnimationBone {
 };
 
 // There can be several animations, like "running", "walking", etc.
-struct BlenderModel::Animation {
+struct ManageAnimation::Animation {
 	std::string name;
 	std::unique_ptr<AnimationBone[]> bones;
 	std::unique_ptr<double[]> times;        // The time stamps of the key frames.
@@ -79,16 +81,16 @@ struct BlenderModel::Animation {
 	double duration;                  // Number of ticks
 };
 
-BlenderModel gSwordModel1, gTuftOfGrass, gFrog, gMorran, gAlien;
+ManageAnimation View::gSwordModel1, View::gTuftOfGrass, View::gFrog, View::gMorran, View::gAlien;
 
-BlenderModel::BlenderModel() : fRotateXCorrection(0.0f), fNumMeshes(0) {
+ManageAnimation::ManageAnimation() : fRotateXCorrection(0.0f), fNumMeshes(0) {
 	fBufferId = 0;
 	fVao = 0;
 	fIndexBufferId = 0;
 	fUsingBones = false;
 }
 
-BlenderModel::~BlenderModel() {
+ManageAnimation::~ManageAnimation() {
 	// In case of glew not having run yet.
 	if (glDeleteBuffers != 0) {
 		glDeleteBuffers(1, &fBufferId);
@@ -167,7 +169,7 @@ static void DumpNodeTree(int level, const aiNode *node) {
 }
 
 // Iterate through the node tree and compute all mesh relative matrices.
-void BlenderModel::FindMeshTransformations(int level, glm::mat4 *meshmatrix, const glm::mat4 &base, const aiNode *node) {
+void ManageAnimation::FindMeshTransformations(int level, glm::mat4 *meshmatrix, const glm::mat4 &base, const aiNode *node) {
 	glm::mat4 delta;
 	CopyaiMat(&node->mTransformation, delta);
 	glm::mat4 result = base * delta;
@@ -192,7 +194,7 @@ void BlenderModel::FindMeshTransformations(int level, glm::mat4 *meshmatrix, con
 	}
 }
 
-void BlenderModel::Init(const char *filename, float xRotateCorrection, bool normalize) {
+void ManageAnimation::Init(const char *filename, float xRotateCorrection, bool normalize) {
 	this->fRotateXCorrection = xRotateCorrection;
 	// Create an instance of the Importer class
 	Assimp::Importer importer;
@@ -390,7 +392,7 @@ void BlenderModel::Init(const char *filename, float xRotateCorrection, bool norm
 	if (tst != bufferSize) {
 		glDeleteBuffers(1, &fBufferId);
 		fBufferId = 0;
-		ErrorDialog("BlenderModel::Init: Data size is mismatch with input array\n");
+		ErrorDialog("ManageAnimation::Init: Data size is mismatch with input array\n");
 	}
 	glBufferSubData(GL_ARRAY_BUFFER, 0, AREA1, vertexData);
 	if (this->fUsingBones) {
@@ -408,7 +410,7 @@ void BlenderModel::Init(const char *filename, float xRotateCorrection, bool norm
 	if ((unsigned)bufferSize != indexSize*sizeof indexData[0]) {
 		glDeleteBuffers(1, &fBufferId);
 		fBufferId = 0;
-		ErrorDialog("BlenderModel::Init: Data size is mismatch with input array\n");
+		ErrorDialog("ManageAnimation::Init: Data size is mismatch with input array\n");
 	}
 
 	glGenVertexArrays(1, &fVao);
@@ -418,7 +420,7 @@ void BlenderModel::Init(const char *filename, float xRotateCorrection, bool norm
 	StageOneShader::VertexAttribPointer();
 	if (this->fUsingBones)
 		StageOneShader::VertexAttribPointerSkinWeights(AREA1, AREA1+AREA2);
-	checkError("BlenderModel::Init");
+	checkError("ManageAnimation::Init");
 	glBindVertexArray(0);
 
 	if (gVerbose) {
@@ -431,10 +433,10 @@ void BlenderModel::Init(const char *filename, float xRotateCorrection, bool norm
 	// Decode animation information
 	unsigned int numMeshBones = fBoneIndex.size();
 	if (numMeshBones > 0 && scene->mNumAnimations == 0)
-		ErrorDialog("BlenderModel::Init %s: Bones but no animations", filename);
+		ErrorDialog("ManageAnimation::Init %s: Bones but no animations", filename);
 	if (scene->mNumAnimations > 0) {
 		if (numMeshBones == 0)
-			ErrorDialog("BlenderModel::Init %s: No mesh bones", filename);
+			ErrorDialog("ManageAnimation::Init %s: No mesh bones", filename);
 		if (gVerbose)
 			printf("Parsing %d animations\n", scene->mNumAnimations);
 	}
@@ -458,9 +460,9 @@ void BlenderModel::Init(const char *filename, float xRotateCorrection, bool norm
 		// pre compute all matrices.
 		unsigned numChannels = aia->mNumChannels;
 		if (numChannels == 0)
-			ErrorDialog("BlenderModel::Init no animation channels for %s, %s", aia->mName.data, filename);
+			ErrorDialog("ManageAnimation::Init no animation channels for %s, %s", aia->mName.data, filename);
 		if (numChannels != numMeshBones)
-			ErrorDialog("BlenderModel::Init %s animation %d: Can only handle when all bones are used (%d out of %d)", filename, i, numChannels, numMeshBones);
+			ErrorDialog("ManageAnimation::Init %s animation %d: Can only handle when all bones are used (%d out of %d)", filename, i, numChannels, numMeshBones);
 		unsigned int numKeys = aia->mChannels[0]->mNumPositionKeys;
 		struct channel {
 			glm::mat4 mat; // Relative transformation matrix to parent
@@ -475,7 +477,7 @@ void BlenderModel::Init(const char *filename, float xRotateCorrection, bool norm
 		for (unsigned int j=0; j < numChannels; j++) {
 			aiNodeAnim *ain = aia->mChannels[j];
 			if (ain->mNumPositionKeys != numKeys || ain->mNumRotationKeys != numKeys || ain->mNumScalingKeys != numKeys)
-				ErrorDialog("BlenderModel::Init %s Bad animation setup: Pos keys %d, rot keys %d, scaling keys %d", filename, ain->mNumPositionKeys, ain->mNumRotationKeys, ain->mNumScalingKeys);
+				ErrorDialog("ManageAnimation::Init %s Bad animation setup: Pos keys %d, rot keys %d, scaling keys %d", filename, ain->mNumPositionKeys, ain->mNumRotationKeys, ain->mNumScalingKeys);
 			channels[j].node = ain;
 			channels[j].parent = 0;
 			boneindexIT_t it = fBoneIndex.find(ain->mNodeName.data);
@@ -483,7 +485,7 @@ void BlenderModel::Init(const char *filename, float xRotateCorrection, bool norm
 				// Skip this channel (bone animation)
 				channels[j].joint = UNUSEDCHANNEL; // Mark it as not used
 				continue;
-				// ErrorDialog("BlenderModel::Init: Unknown bone %s in animation %s for %s", ain->mNodeName.data, fAnimations[i].name.c_str(), filename);
+				// ErrorDialog("ManageAnimation::Init: Unknown bone %s in animation %s for %s", ain->mNodeName.data, fAnimations[i].name.c_str(), filename);
 			}
 			foundOneBone = true;
 			unsigned int joint = it->second;
@@ -491,7 +493,7 @@ void BlenderModel::Init(const char *filename, float xRotateCorrection, bool norm
 			channels[j].joint = joint;
 		}
 		if (!foundOneBone)
-			ErrorDialog("BlenderModel::Init %s animation %d no bones used", filename, i);
+			ErrorDialog("ManageAnimation::Init %s animation %d no bones used", filename, i);
 
 		// Find the parent for each animation node
 		for (unsigned j=0; j<numChannels; j++) {
@@ -547,10 +549,10 @@ void BlenderModel::Init(const char *filename, float xRotateCorrection, bool norm
 	}
 }
 
-void BlenderModel::DrawAnimation(AnimationShader *shader, const glm::mat4 &modelMatrix, double animationStart, bool dead, const GLuint *textures) {
+void ManageAnimation::DrawAnimation(AnimationShader *shader, const glm::mat4 &modelMatrix, double animationStart, bool dead, const GLuint *textures) {
 	glm::mat4 rot = glm::rotate(modelMatrix, fRotateXCorrection, glm::vec3(1, 0, 0));
 	if (!fUsingBones)
-		ErrorDialog("BlenderModel::Draw called for model without bones");
+		ErrorDialog("ManageAnimation::Draw called for model without bones");
 	double deathTransform = 0.0;
 	if (dead) {
 		deathTransform = (gCurrentFrameTime - animationStart)/3.0;
@@ -628,7 +630,7 @@ void BlenderModel::DrawAnimation(AnimationShader *shader, const glm::mat4 &model
 #endif
 }
 
-void BlenderModel::DrawStatic(void) {
+void ManageAnimation::DrawStatic(void) {
 	// Draw all meshes in one go.
 	glBindVertexArray(fVao);
 	int faces = 0;
@@ -641,11 +643,11 @@ void BlenderModel::DrawStatic(void) {
 	gDrawnQuads += faces*3;
 }
 
-void BlenderModel::Align(glm::mat4 &mat) const {
+void ManageAnimation::Align(glm::mat4 &mat) const {
 	mat = glm::rotate(mat, fRotateXCorrection, glm::vec3(1, 0, 0));
 }
 
-void BlenderModel::InitModels(void) {
+void ManageAnimation::InitModels(void) {
 	gFrog.Init("models/frog.dae", 0.0f, false);
 	gMorran.Init("models/morran.dae", 0.0f, false);
 	gTuftOfGrass.Init("models/tuft.obj", 0.0f, true);

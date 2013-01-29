@@ -114,11 +114,11 @@ void OtherPlayers::RenderPlayers(AnimationShader *animShader, bool selectionMode
 		model = glm::scale(model, glm::vec3(PLAYER_HEIGHT, PLAYER_HEIGHT, PLAYER_HEIGHT));
 
 		if (pl.second.IsDead())
-			gFrog.DrawAnimation(animShader, model, pl.second.lastTimeMoved, true, 0);
+			View::gFrog.DrawAnimation(animShader, model, pl.second.lastTimeMoved, true, 0);
 		else if (pl.second.lastTimeMoved + 0.2 > gCurrentFrameTime)
-			gFrog.DrawAnimation(animShader, model, 0.0, false, 0);
+			View::gFrog.DrawAnimation(animShader, model, 0.0, false, 0);
 		else
-			gFrog.DrawAnimation(animShader, model, gCurrentFrameTime-0.22, false, 0); // Offset in time where model is not in a stride.
+			View::gFrog.DrawAnimation(animShader, model, gCurrentFrameTime-0.22, false, 0); // Offset in time where model is not in a stride.
 
 		if (!gOptions.fDynamicShadows || sun == 0)
 			gShadows.Add(pos.x, pos.y, pos.z, 1.5f);

@@ -26,7 +26,7 @@ using namespace View;
 void AnimationModels::Init() {
 	for (unsigned i=0; i < LAST; i++) {
 		auto data = new Data;
-		data->model.reset(new BlenderModel);
+		data->model.reset(new ManageAnimation);
 		fModels.push_back(std::unique_ptr<Data>(data));
 	}
 	// Use the bounds checking index operator for extra safety

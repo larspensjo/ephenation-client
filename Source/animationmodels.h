@@ -46,7 +46,7 @@ public:
 	~AnimationModels();
 private:
 	struct Data { // TODO: Shouldn't it be enough with a forward declaration of this struct?
-		std::unique_ptr<BlenderModel> model;
+		std::unique_ptr<ManageAnimation> model;
 		std::vector<GLuint> textures; // The textures to use for each mesh
 	};
 	std::vector<std::unique_ptr<Data> > fModels;

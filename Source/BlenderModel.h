@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -15,11 +15,6 @@
 // along with Ephenation.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-//
-// This class implements a loader for animated models defined in Blender, as well as a Draw() function.
-// The loading is based on Assimp, which actually allows for many different
-// file formats. As of now, the Collada format has been used (.dae).
-//
 
 #pragma once
 
@@ -33,27 +28,33 @@
 class AnimationShader;
 class aiNode;
 
-class BlenderModel {
+namespace View {
+
+/// Implement a loader for animated models, as well as a Draw() function.
+/// The loading is based on Assimp, which actually allows for many different
+/// file formats. As of now, the Collada format has been used (.dae).
+class ManageAnimation {
 public:
 	struct Animation;
 	struct Mesh;
 
-	BlenderModel();
-	virtual ~BlenderModel();
+	ManageAnimation();
+	virtual ~ManageAnimation();
 
-	// Initialize a model from a file.
-	// xRotateCorrection: Compensate for model being rotated wrong around x axis.
-	// normalize: Normalize the size to 1.0. Doesn't work for animations.
+	/// Initialize a model from a file.
+	/// xRotateCorrection: Compensate for model being rotated wrong around x axis.
+	/// normalize: Normalize the size to 1.0. Doesn't work for animations.
 	void Init(const char *filename, float xRotateCorrection, bool normalize);
 
-	// 'textures' has to be an array of textures, one for each mesh.
+	/// 'textures' has to be an array of textures, one for each mesh.
 	void DrawAnimation(AnimationShader *shader, const glm::mat4 &modelMatrix, double animationStart, bool dead, const GLuint *textures);
 
-	// Use the model, with any shader.
+	/// Use the model, with any shader
+	/// The shader program has to first be enabled.
 	void DrawStatic(void);
 	static void InitModels(void);
 
-	// Modify a transformation matrix that will align the model, as needed.
+	/// Modify a transformation matrix that will align the model, as needed.
 	void Align(glm::mat4 &mat) const;
 private:
 	GLuint fBufferId;
@@ -74,4 +75,6 @@ private:
 	std::map<std::string, unsigned int> fBoneIndex;
 };
 
-extern BlenderModel gSwordModel1, gTuftOfGrass, gFrog, gMorran, gAlien;
+extern ManageAnimation gSwordModel1, gTuftOfGrass, gFrog, gMorran, gAlien;
+
+}

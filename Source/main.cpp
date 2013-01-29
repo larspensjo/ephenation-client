@@ -392,7 +392,7 @@ int main(int argc, char** argv) {
 
 	ComputeRelativeChunksSortedDistances();
 
-	BlenderModel::InitModels();
+	View::ManageAnimation::InitModels();
 
 	Model::gPlayer.loginOk = true;
 	gUniformBuffer.Init();
