@@ -32,10 +32,11 @@ namespace View {
 
 namespace Model {
 
+/// @brief Manage the player data
 class Player : public Object {
 public:
-	// TODO: These should be private. It is the position of the head of the Player.
-	// Coordinate in the server system ('z' is height).
+	/// @todo These should be private. It is the position of the head of the Player.
+	/// Coordinate in the server system ('z' is height).
 	signed long long x;
 	signed long long y;
 	signed long long z;
@@ -43,16 +44,16 @@ public:
 	float fAngleHor;
 	float fAngleVert;
 	bool loginOk;
-	bool fStatsAvailable; // True when player stats are available.
-	bool fTestPlayer; // Running as a test player, not logged in.
-	float fHp; // Hit points, going from 0-1
-	float fPreviousHp; // The Previous HP, used to display delta.
-	float fExp; // Experience points, going from 0-1
+	bool fStatsAvailable; /// True when player stats are available.
+	bool fTestPlayer; /// Running as a test player, not logged in.
+	float fHp; /// Hit points, going from 0-1
+	float fPreviousHp; /// The Previous HP, used to display delta.
+	float fExp; /// Experience points, going from 0-1
 	float fMana;
 	unsigned long fLevel;
-	unsigned char fAdmin; // 0 to 10, where 0 means no admin rights.
-	unsigned long fUid; // The unique server ID of the player.
-	unsigned long fFlags; // From the server, see UserFlag* defined in client_prot.h
+	unsigned char fAdmin; /// 0 to 10, where 0 means no admin rights.
+	unsigned long fUid; /// The unique server ID of the player.
+	unsigned long fFlags; /// From the server, see UserFlag* defined in client_prot.h
 	unsigned char fWeaponType;
 	unsigned long fWeaponLevel;
 	unsigned char fArmorType;
@@ -61,9 +62,9 @@ public:
 	unsigned long fHelmetLevel;
 
 	void GetChunkCoord(ChunkCoord*) const;
-	glm::vec3 GetOffsetToChunk(void) const; // This gives the head of the player
+	glm::vec3 GetOffsetToChunk(void) const; /// This gives the head of the player
 	bool InFight(void) const;
-	void Draw(AnimationShader *animShader, StageOneShader *staticShader, bool torch, const View::AnimationModels *animationModels); // Draw self
+	void Draw(AnimationShader *animShader, StageOneShader *staticShader, bool torch, const View::AnimationModels *animationModels); /// Draw self
 
 	Player() {
 		fHp = 1.0f; fPreviousHp = 1.0f; fMana = 1.0f; fWeaponType = 0; fWeaponLevel = 0; fArmorType = 0; fArmorLevel = 0;
@@ -75,19 +76,19 @@ public:
 	virtual int GetType() const { return ObjTypePlayer; }
 	virtual int GetLevel() const { return this->fLevel; }
 	virtual glm::vec3 GetPosition()	const;
-	virtual glm::vec3 GetSelectionColor() const; // The color to draw on the ground when object selected
+	virtual glm::vec3 GetSelectionColor() const; /// The color to draw on the ground when object selected
 	virtual bool IsDead(void) const { return this->fHp <= 0.0f; }
-	virtual void RenderHealthBar(View::HealthBar *, float angle) const {} // Ignore for now
-	virtual bool InGame(void) const; // Return true if this object is still i the game.
+	virtual void RenderHealthBar(View::HealthBar *, float angle) const {} /// Ignore for now
+	virtual bool InGame(void) const; /// Return true if this object is still i the game.
 
-	// Test if player is below ground level.
+	/// Test if player is below ground level.
 	bool BelowGround(void) const;
 
-	// Update with a new position. The argument is the feet of the player.
-	// Coordinates are given in the server system.
+	/// Update with a new position. The argument is the feet of the player.
+	/// Coordinates are given in the server system.
 	void SetPosition(signed long long newx, signed long long newy, signed long long newz);
 
-	// Extrapolate new coordinates, guess from time.
+	/// Extrapolate new coordinates, guess from time.
 	void UpdatePositionSmooth(void);
 
 	// Return true if the player position is known.

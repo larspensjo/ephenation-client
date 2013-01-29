@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -17,12 +17,6 @@
 
 #pragma once
 
-//
-// Manages other players that we know of. The client will only know of
-// near players, which may need to be drawn.
-//
-// TODO: The Monsters class is very similar, with too much duplication
-//
 
 #include <map>
 #include <string>
@@ -35,6 +29,9 @@ class AnimationShader;
 
 namespace Model {
 
+/// @brief Manages other players that we know of.
+/// The client will only know of near players, which may need to be drawn.
+/// @todo The Monsters class is very similar, with too much duplication
 class OtherPlayers {
 private:
 	struct OneOtherPlayer : public Object {

@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -17,11 +17,6 @@
 
 #pragma once
 
-//
-// This is a class that manages other monsters that we know of.
-//
-// TODO: The OtherPlayers class is very similar, with too much duplication
-//
 #include <map>
 #include <memory>
 
@@ -36,6 +31,8 @@ namespace View {
 
 namespace Model {
 
+/// @brief Manage other monsters that we know of.
+/// @todo The OtherPlayers class is very similar, with too much duplication
 class Monsters {
 private:
 	struct OneMonster;

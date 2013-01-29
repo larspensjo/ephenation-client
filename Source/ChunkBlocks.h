@@ -29,7 +29,7 @@ class ChunkCoord;
 
 namespace Model {
 
-/// Manage the actual blocks inside a chunk, as well as some information about the chunk as given by the server.
+/// @brief Manage the actual blocks inside a chunk, as well as some information about the chunk as given by the server.
 /// Chunks from the server, or from the local cache, are compressed.
 /// This is part of the Model.
 ///

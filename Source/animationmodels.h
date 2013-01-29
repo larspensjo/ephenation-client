@@ -34,6 +34,8 @@ class AnimationShader;
 
 namespace View {
 
+/// @brief Manage a list of animated models
+/// The main purpose for now is to know what textures to use.
 class AnimationModels {
 public:
 	void Init(void);

@@ -24,7 +24,7 @@ namespace Model {
 }
 
 /**
- * The model controller part of the Model/View/Controll.
+ * The controller part of the Model/View/Controll.
  * This namespace contains all classes that are responsible with the Controller.
  * This includes all input from the user or events from the OS.
  */

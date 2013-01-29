@@ -48,7 +48,7 @@ namespace Rocket {
 
 namespace Controller {
 
-/// This corresponds to the controller class in a Model/View/Controller.
+/// @brief This corresponds to the controller class in a Model/View/Controller.
 /// - keyboard input
 /// - mouse input
 /// - decide what shall be shown on the screen

@@ -25,8 +25,8 @@
 
 namespace Model {
 
-// The order of the content of the SuperChunk is important, as it matches exactly the order that
-// data is sent from the server.
+/// The order of the content of the SuperChunk is important, as it matches exactly the order that
+/// data is sent from the server.
 struct SuperChunk {
 	unsigned int fCheckSum;
 	struct chunkInfo {

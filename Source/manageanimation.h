@@ -30,7 +30,7 @@ class aiNode;
 
 namespace View {
 
-/// Implement a loader for animated models, as well as a Draw() function.
+/// @brief Implement a loader for animated models, as well as a Draw() function.
 /// The loading is based on Assimp, which actually allows for many different
 /// file formats. As of now, the Collada format has been used (.dae).
 class ManageAnimation {

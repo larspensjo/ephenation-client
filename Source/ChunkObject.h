@@ -28,7 +28,7 @@ struct TriangleSurfacef;
 namespace View {
 	class Chunk;
 
-/// Manage visible attributes of a chunk.
+/// @brief Manage visible attributes of a chunk.
 /// This is part of the View.
 /// A chunk is 32x32x32 blocks, which can't be used for drawing as it is. It is converted into two
 /// types: visible blocks and special objects. It is the responsibility of this class to take the chunk

@@ -40,7 +40,7 @@ namespace Model {
 namespace View {
 	class ShadowRender;
 
-/// This is the top level View of the Model/View/Controller
+/// @brief This is the top level View of the Model/View/Controller
 /// Manage buffers and shaders for the various render passes
 /// All drawing stages are controlled from this class. The main activities are:
 /// -# A Frame Buffer Object to use as a target for the first rendering.
