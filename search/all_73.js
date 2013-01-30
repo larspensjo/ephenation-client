@@ -4,10 +4,11 @@ var searchData=
   ['setambient',['SetAmbient',['../structVertexDataf.html#a9ad2b6382c957ed77e7d082edcb92253',1,'VertexDataf']]],
   ['setintensity',['SetIntensity',['../structVertexDataf.html#af236fb27ae07a90ca4ab087f067d8ff4',1,'VertexDataf']]],
   ['setnormal',['SetNormal',['../structVertexDataf.html#ab1743d9fec2952c29564511929dc38bf',1,'VertexDataf']]],
+  ['setposition',['SetPosition',['../classModel_1_1Player.html#a6e75ef23689c350da02cf842abaec584',1,'Model::Player']]],
   ['setshader',['setShader',['../classVSFLFont.html#a92b032cec5dc73f48287b5a82638e477',1,'VSFLFont']]],
   ['shaderbase',['ShaderBase',['../classShaderBase.html',1,'']]],
   ['shadowmapshader',['ShadowMapShader',['../classShadowMapShader.html',1,'']]],
-  ['shadowrender',['ShadowRender',['../classShadowRender.html',1,'']]],
+  ['shadowrender',['ShadowRender',['../classView_1_1ShadowRender.html',1,'View']]],
   ['shadows',['Shadows',['../classShadows.html',1,'']]],
   ['show',['Show',['../classBaseDialog.html#a4a4afb24b7c0cf6061df613d21ff2b4c',1,'BaseDialog']]],
   ['simpledialog',['SimpleDialog',['../classSimpleDialog.html',1,'']]],
@@ -16,9 +17,9 @@ var searchData=
   ['size_5ftype',['size_type',['../classSplitter.html#a24341275a00c0b617655258f5372a42c',1,'Splitter']]],
   ['skybox',['SkyBox',['../classSkyBox.html',1,'']]],
   ['soundcontrol',['SoundControl',['../classSoundControl.html',1,'']]],
-  ['specialobject',['SpecialObject',['../structChunkObject_1_1SpecialObject.html',1,'ChunkObject']]],
+  ['specialobject',['SpecialObject',['../structView_1_1ChunkObject_1_1SpecialObject.html',1,'View::ChunkObject']]],
   ['splitter',['Splitter',['../classSplitter.html',1,'Splitter'],['../classSplitter.html#a41eddab681f5186c74c23c4e22666a36',1,'Splitter::Splitter()']]],
   ['stageoneshader',['StageOneShader',['../classStageOneShader.html',1,'']]],
-  ['superchunk',['SuperChunk',['../structSuperChunk.html',1,'']]],
-  ['superchunkmanager',['SuperChunkManager',['../classSuperChunkManager.html',1,'']]]
+  ['superchunk',['SuperChunk',['../structModel_1_1SuperChunk.html',1,'Model']]],
+  ['superchunkmanager',['SuperChunkManager',['../classModel_1_1SuperChunkManager.html',1,'Model']]]
 ];

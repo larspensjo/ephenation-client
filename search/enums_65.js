@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['effect',['Effect',['../classgameDialog.html#ae5e677c45a3f1e7d8d1a42b44a0bcc04',1,'gameDialog']]]
+  ['effect',['Effect',['../classController_1_1gameDialog.html#af6b9c43a6f61d113c1fb6c14fa0b190f',1,'Controller::gameDialog']]]
 ];

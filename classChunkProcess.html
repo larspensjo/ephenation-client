@@ -50,6 +50,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
+      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
       <li>
         <div id="MSearchBox" class="MSearchBoxInactive">
@@ -86,22 +87,30 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!--header-->
 <div class="contents">
 <!-- doxytag: class="ChunkProcess" -->
+<p><code>#include &lt;ChunkProcess.h&gt;</code></p>
+
 <p><a href="classChunkProcess-members.html">List of all members.</a></p>
 <table class="memberdecls">
 <tr><td colspan="2"><h2><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad0f2b2ee2eddd45b315997ed40417be9"></a><!-- doxytag: member="ChunkProcess::Init" ref="ad0f2b2ee2eddd45b315997ed40417be9" args="(int numThreads)" -->
 void&#160;</td><td class="memItemRight" valign="bottom"><b>Init</b> (int numThreads)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a64eb2420d93d3c526117f699c7ffc03c"></a><!-- doxytag: member="ChunkProcess::AddTaskComputeChunk" ref="a64eb2420d93d3c526117f699c7ffc03c" args="(chunk *)" -->
-void&#160;</td><td class="memItemRight" valign="bottom"><b>AddTaskComputeChunk</b> (<a class="el" href="structchunk.html">chunk</a> *)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1027c7798f93ded17050fa761eddfac5"></a><!-- doxytag: member="ChunkProcess::AddTaskComputeChunk" ref="a1027c7798f93ded17050fa761eddfac5" args="(View::Chunk *)" -->
+void&#160;</td><td class="memItemRight" valign="bottom"><b>AddTaskComputeChunk</b> (<a class="el" href="classView_1_1Chunk.html">View::Chunk</a> *)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa48298522a70877bea81dae4e9772e27"></a><!-- doxytag: member="ChunkProcess::Poll" ref="aa48298522a70877bea81dae4e9772e27" args="(void)" -->
 void&#160;</td><td class="memItemRight" valign="bottom"><b>Poll</b> (void)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2a7c5b8db6530dd24cf5d1c30f8ae2fc"></a><!-- doxytag: member="ChunkProcess::AddTaskNewChunk" ref="a2a7c5b8db6530dd24cf5d1c30f8ae2fc" args="(unique_ptr&lt; ChunkBlocks &gt;)" -->
-void&#160;</td><td class="memItemRight" valign="bottom"><b>AddTaskNewChunk</b> (unique_ptr&lt; <a class="el" href="structChunkBlocks.html">ChunkBlocks</a> &gt;)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6161e0c2804b4780a6260e32b41e5fce"></a><!-- doxytag: member="ChunkProcess::AddTaskNewChunk" ref="a6161e0c2804b4780a6260e32b41e5fce" args="(unique_ptr&lt; Model::ChunkBlocks &gt;)" -->
+void&#160;</td><td class="memItemRight" valign="bottom"><b>AddTaskNewChunk</b> (unique_ptr&lt; <a class="el" href="classModel_1_1ChunkBlocks.html">Model::ChunkBlocks</a> &gt;)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae121487fd3afdc247d71a58c4ef8226e"></a><!-- doxytag: member="ChunkProcess::RequestTerminate" ref="ae121487fd3afdc247d71a58c4ef8226e" args="(void)" -->
 void&#160;</td><td class="memItemRight" valign="bottom"><b>RequestTerminate</b> (void)</td></tr>
 </table>
-<hr/>The documentation for this class was generated from the following files:<ul>
+<hr/><a name="details" id="details"></a><h2>Detailed Description</h2>
+<div class="textblock"><p>Set up parallel processes (a thread pool) that will manage chunks. This is a singleton class, that manages all threads. The number of allocated threads depend on the number of cores of the PC.</p>
+<p>There are two types of tasks. 1. Load the binary data into a "struct chunk". 2. Compute the graphical objects from the binary data.</p>
+<p>The reason that these are not always combined into one single step is that it is not always the case that the graphical objects are needed. They are only needed if the chunk is visible. OpenGL data can not be managed from this process, as OpenGL is not thread safe.</p>
+<p>It is possible to extend with more types of tasks, not only chunk computations. The requirements for extending this mechanisms for other tasks are: It requires a computation that is resource-intensitive The computation can be done in parallel with no dependency on other data</p>
+<p>All functions in the public interface are thread safe. They will usually be called from the main process. </p>
+</div><hr/>The documentation for this class was generated from the following files:<ul>
 <li>ChunkProcess.h</li>
 <li>ChunkProcess.cpp</li>
 </ul>
@@ -111,7 +120,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>RequestTerminate</b> 
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerator</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerator</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">

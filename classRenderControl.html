@@ -99,7 +99,11 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 void&#160;</td><td class="memItemRight" valign="bottom"><b>Init</b> (void)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1c242994dfc50db2c309fe451062c0ab"></a><!-- doxytag: member="RenderControl::ShadowMapMatrix" ref="a1c242994dfc50db2c309fe451062c0ab" args="(const glm::mat4 &amp;) const " -->
 void&#160;</td><td class="memItemRight" valign="bottom"><b>ShadowMapMatrix</b> (const glm::mat4 &amp;) const </td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRenderControl.html#acb8bc940af5eecf871119b53166a4abb">Draw</a> (bool underWater, bool thirdPersonView, std::shared_ptr&lt; const <a class="el" href="classObject.html">Object</a> &gt; selectedObject, bool showMap, int mapWidth, <a class="el" href="classMainUserInterface.html">MainUserInterface</a> *ui)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRenderControl.html#ae3d3065649c17a7b7b3b83014949e9ed">Draw</a> (bool underWater, std::shared_ptr&lt; const <a class="el" href="classObject.html">Object</a> &gt; selectedObject, bool showMap, int mapWidth, <a class="el" href="classMainUserInterface.html">MainUserInterface</a> *ui)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRenderControl.html#afa5253811c5880c218e91f4d349cda5e">UpdateCameraPosition</a> (int wheelDelta)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a58ccff44710f5496402ad6c2995797f0"></a><!-- doxytag: member="RenderControl::ThirdPersonView" ref="a58ccff44710f5496402ad6c2995797f0" args="() const " -->
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRenderControl.html#a58ccff44710f5496402ad6c2995797f0">ThirdPersonView</a> () const </td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Return true if the player is using third person view. <br/></td></tr>
 </table>
 <hr/><a name="details" id="details"></a><h2>Detailed Description</h2>
 <div class="textblock"><p>This is the top level View of the Model/View/Controller Manage buffers and shaders for the various render passes All drawing stages are controlled from this class. The main activities are:</p>
@@ -109,21 +113,15 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>ShadowMapMatrix</b> (
 <li>Project the final result to the screen. </li>
 </ol>
 </div><hr/><h2>Member Function Documentation</h2>
-<a class="anchor" id="acb8bc940af5eecf871119b53166a4abb"></a><!-- doxytag: member="RenderControl::Draw" ref="acb8bc940af5eecf871119b53166a4abb" args="(bool underWater, bool thirdPersonView, std::shared_ptr&lt; const Object &gt; selectedObject, bool showMap, int mapWidth, MainUserInterface *ui)" -->
+<a class="anchor" id="ae3d3065649c17a7b7b3b83014949e9ed"></a><!-- doxytag: member="RenderControl::Draw" ref="ae3d3065649c17a7b7b3b83014949e9ed" args="(bool underWater, std::shared_ptr&lt; const Object &gt; selectedObject, bool showMap, int mapWidth, MainUserInterface *ui)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="classRenderControl.html#acb8bc940af5eecf871119b53166a4abb">RenderControl::Draw</a> </td>
+          <td class="memname">void <a class="el" href="classRenderControl.html#ae3d3065649c17a7b7b3b83014949e9ed">RenderControl::Draw</a> </td>
           <td>(</td>
           <td class="paramtype">bool&#160;</td>
           <td class="paramname"><em>underWater</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">bool&#160;</td>
-          <td class="paramname"><em>thirdPersonView</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -161,11 +159,34 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>ShadowMapMatrix</b> (
 <dl class="params"><dt><b>Parameters:</b></dt><dd>
   <table class="params">
     <tr><td class="paramname">underwater</td><td>True if underwater effects shall be applied </td></tr>
-    <tr><td class="paramname">thirdPersonView</td><td>True if the drawing shall be done from a third person view </td></tr>
     <tr><td class="paramname">selectedObject</td><td>This object shall be visibly marked </td></tr>
     <tr><td class="paramname">showMap</td><td>True if a map shall be shown </td></tr>
     <tr><td class="paramname">mapWidth</td><td>Pixels in width used when drawing a map </td></tr>
     <tr><td class="paramname">ui</td><td>Pointer to the user interface </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="afa5253811c5880c218e91f4d349cda5e"></a><!-- doxytag: member="RenderControl::UpdateCameraPosition" ref="afa5253811c5880c218e91f4d349cda5e" args="(int wheelDelta)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classRenderControl.html#afa5253811c5880c218e91f4d349cda5e">RenderControl::UpdateCameraPosition</a> </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>wheelDelta</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Update the camera position. Check if camera position is inside a wall. </p>
+<dl class="params"><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">wheelDelta</td><td>How much the player used the wheel </td></tr>
   </table>
   </dd>
 </dl>

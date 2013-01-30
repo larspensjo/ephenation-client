@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['healthbar',['HealthBar',['../classHealthBar.html',1,'']]]
+  ['healthbar',['HealthBar',['../classView_1_1HealthBar.html',1,'View']]]
 ];

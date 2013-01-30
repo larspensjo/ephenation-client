@@ -50,6 +50,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
+      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
       <li>
         <div id="MSearchBox" class="MSearchBoxInactive">
@@ -80,13 +81,17 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div>
 <div class="header">
   <div class="summary">
-<a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="#pub-static-methods">Static Public Member Functions</a>  </div>
+<a href="#pub-methods">Public Member Functions</a>  </div>
   <div class="headertitle">
 <div class="title">ChunkShaderPicking Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-<!-- doxytag: class="ChunkShaderPicking" --><!-- doxytag: inherits="ShaderBase" --><div class="dynheader">
+<!-- doxytag: class="ChunkShaderPicking" --><!-- doxytag: inherits="ShaderBase" -->
+<p>A shader program that will draw chunks for picking.  
+ <a href="classChunkShaderPicking.html#details">More...</a></p>
+
+<p><code>#include &lt;ChunkShaderPicking.h&gt;</code></p>
+<div class="dynheader">
 Inheritance diagram for ChunkShaderPicking:</div>
 <div class="dyncontent">
  <div class="center">
@@ -100,27 +105,94 @@ Inheritance diagram for ChunkShaderPicking:</div>
 <table class="memberdecls">
 <tr><td colspan="2"><h2><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a35f8f6189a4a697c2a25baecb63c5892"></a><!-- doxytag: member="ChunkShaderPicking::Init" ref="a35f8f6189a4a697c2a25baecb63c5892" args="()" -->
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classChunkShaderPicking.html#a35f8f6189a4a697c2a25baecb63c5892">Init</a> ()</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Must be initialized before it is used. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a27218004043cc389e40489db791c4f9f"></a><!-- doxytag: member="ChunkShaderPicking::EnableProgram" ref="a27218004043cc389e40489db791c4f9f" args="(void)" -->
-void&#160;</td><td class="memItemRight" valign="bottom"><b>EnableProgram</b> (void)</td></tr>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classChunkShaderPicking.html#a27218004043cc389e40489db791c4f9f">EnableProgram</a> (void)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Enable the shader program before running it or updating variables. <br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a71e05eac6b9a07f30520a34a8841c0e4"></a><!-- doxytag: member="ChunkShaderPicking::DisableProgram" ref="a71e05eac6b9a07f30520a34a8841c0e4" args="(void)" -->
 void&#160;</td><td class="memItemRight" valign="bottom"><b>DisableProgram</b> (void)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae8115eb6eb1bb3537b743b67d8ca91e9"></a><!-- doxytag: member="ChunkShaderPicking::Model" ref="ae8115eb6eb1bb3537b743b67d8ca91e9" args="(const glm::mat4 &amp;)" -->
-void&#160;</td><td class="memItemRight" valign="bottom"><b>Model</b> (const glm::mat4 &amp;)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a04d783cbb2b3efe1410cbe0e28d9977c"></a><!-- doxytag: member="ChunkShaderPicking::View" ref="a04d783cbb2b3efe1410cbe0e28d9977c" args="(const glm::mat4 &amp;)" -->
-void&#160;</td><td class="memItemRight" valign="bottom"><b>View</b> (const glm::mat4 &amp;)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac8fcf8b492ea4e3b77931d66af664a57"></a><!-- doxytag: member="ChunkShaderPicking::Projection" ref="ac8fcf8b492ea4e3b77931d66af664a57" args="(const glm::mat4 &amp;)" -->
-void&#160;</td><td class="memItemRight" valign="bottom"><b>Projection</b> (const glm::mat4 &amp;)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a645e65c52d1a5fdc770eef02acebd545"></a><!-- doxytag: member="ChunkShaderPicking::VertexAttribPointer" ref="a645e65c52d1a5fdc770eef02acebd545" args="(GLenum type, GLsizei stride, const GLvoid *pointer)" -->
-void&#160;</td><td class="memItemRight" valign="bottom"><b>VertexAttribPointer</b> (GLenum type, GLsizei stride, const GLvoid *pointer)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af2ff798f612ebf3ab9010de6d92d5ee1"></a><!-- doxytag: member="ChunkShaderPicking::NormalAttribPointer" ref="af2ff798f612ebf3ab9010de6d92d5ee1" args="(GLenum type, GLsizei stride, const GLvoid *pointer)" -->
-void&#160;</td><td class="memItemRight" valign="bottom"><b>NormalAttribPointer</b> (GLenum type, GLsizei stride, const GLvoid *pointer)</td></tr>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classChunkShaderPicking.html#ae8115eb6eb1bb3537b743b67d8ca91e9">Model</a> (const glm::mat4 &amp;)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Define the <a class="el" href="namespaceModel.html">Model</a> matrix. <br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classChunkShaderPicking.html#a645e65c52d1a5fdc770eef02acebd545">VertexAttribPointer</a> (GLenum type, GLsizei stride, const GLvoid *pointer)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classChunkShaderPicking.html#af2ff798f612ebf3ab9010de6d92d5ee1">NormalAttribPointer</a> (GLenum type, GLsizei stride, const GLvoid *pointer)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1b0a8cef7f4c8cb7b06153caedeba1b3"></a><!-- doxytag: member="ChunkShaderPicking::EnableVertexAttribArray" ref="a1b0a8cef7f4c8cb7b06153caedeba1b3" args="(void)" -->
-void&#160;</td><td class="memItemRight" valign="bottom"><b>EnableVertexAttribArray</b> (void)</td></tr>
-<tr><td colspan="2"><h2><a name="pub-static-methods"></a>
-Static Public Member Functions</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7c69d58e0d7b62a3cf96879e42008a46"></a><!-- doxytag: member="ChunkShaderPicking::Make" ref="a7c69d58e0d7b62a3cf96879e42008a46" args="(void)" -->
-static <a class="el" href="classChunkShaderPicking.html">ChunkShaderPicking</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>Make</b> (void)</td></tr>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classChunkShaderPicking.html#a1b0a8cef7f4c8cb7b06153caedeba1b3">EnableVertexAttribArray</a> (void)</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Enable the vertex attrib. This must be done when there is a VAO. <br/></td></tr>
 </table>
+<hr/><a name="details" id="details"></a><h2>Detailed Description</h2>
+<div class="textblock"><p>A shader program that will draw chunks for picking. </p>
+</div><hr/><h2>Member Function Documentation</h2>
+<a class="anchor" id="af2ff798f612ebf3ab9010de6d92d5ee1"></a><!-- doxytag: member="ChunkShaderPicking::NormalAttribPointer" ref="af2ff798f612ebf3ab9010de6d92d5ee1" args="(GLenum type, GLsizei stride, const GLvoid *pointer)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classChunkShaderPicking.html#af2ff798f612ebf3ab9010de6d92d5ee1">ChunkShaderPicking::NormalAttribPointer</a> </td>
+          <td>(</td>
+          <td class="paramtype">GLenum&#160;</td>
+          <td class="paramname"><em>type</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">GLsizei&#160;</td>
+          <td class="paramname"><em>stride</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const GLvoid *&#160;</td>
+          <td class="paramname"><em>pointer</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Define memory layout for normal data. A buffer must be bound to do this. There are lways 3 components. </p>
+
+</div>
+</div>
+<a class="anchor" id="a645e65c52d1a5fdc770eef02acebd545"></a><!-- doxytag: member="ChunkShaderPicking::VertexAttribPointer" ref="a645e65c52d1a5fdc770eef02acebd545" args="(GLenum type, GLsizei stride, const GLvoid *pointer)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="classChunkShaderPicking.html#a645e65c52d1a5fdc770eef02acebd545">ChunkShaderPicking::VertexAttribPointer</a> </td>
+          <td>(</td>
+          <td class="paramtype">GLenum&#160;</td>
+          <td class="paramname"><em>type</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">GLsizei&#160;</td>
+          <td class="paramname"><em>stride</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const GLvoid *&#160;</td>
+          <td class="paramname"><em>pointer</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+<p>Define memory layout for vertex data. A buffer must be bound to do this. There are lways 3 components. </p>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>shaders/ChunkShaderPicking.h</li>
 <li>shaders/ChunkShaderPicking.cpp</li>
@@ -131,7 +203,7 @@ static <a class="el" href="classChunkShaderPicking.html">ChunkShaderPicking</a> 
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerator</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerator</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">

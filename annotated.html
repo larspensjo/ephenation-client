@@ -50,6 +50,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
     <ul class="tablist">
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
+      <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
       <li>
         <div id="MSearchBox" class="MSearchBoxInactive">
@@ -90,25 +91,24 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <tr><td class="indexkey"><a class="el" href="classAddPointLight.html">AddPointLight</a></td><td class="indexvalue"></td></tr>
   <tr><td class="indexkey"><a class="el" href="classAddPointShadow.html">AddPointShadow</a></td><td class="indexvalue">A shader that will add a local shadow or other lighting effects </td></tr>
   <tr><td class="indexkey"><a class="el" href="classAddSSAO.html">AddSSAO</a></td><td class="indexvalue"></td></tr>
-  <tr><td class="indexkey"><a class="el" href="classAnimationModels.html">AnimationModels</a></td><td class="indexvalue"></td></tr>
+  <tr><td class="indexkey"><a class="el" href="classView_1_1AnimationModels.html">View::AnimationModels</a></td><td class="indexvalue">Manage a list of animated models The main purpose for now is to know what textures to use </td></tr>
   <tr><td class="indexkey"><a class="el" href="classAnimationShader.html">AnimationShader</a></td><td class="indexvalue"></td></tr>
   <tr><td class="indexkey"><a class="el" href="classBaseDialog.html">BaseDialog</a></td><td class="indexvalue">A common base class for libRocket dialogs </td></tr>
   <tr><td class="indexkey"><a class="el" href="classBaseObject.html">BaseObject</a></td><td class="indexvalue"></td></tr>
   <tr><td class="indexkey"><a class="el" href="classBillboard.html">Billboard</a></td><td class="indexvalue"></td></tr>
-  <tr><td class="indexkey"><a class="el" href="classBlenderModel.html">BlenderModel</a></td><td class="indexvalue"></td></tr>
   <tr><td class="indexkey"><a class="el" href="structbstrList.html">bstrList</a></td><td class="indexvalue"></td></tr>
   <tr><td class="indexkey"><a class="el" href="classBuildingBlocks.html">BuildingBlocks</a></td><td class="indexvalue"></td></tr>
   <tr><td class="indexkey"><a class="el" href="structChunkCache_1_1cachunk.html">ChunkCache::cachunk</a></td><td class="indexvalue"></td></tr>
-  <tr><td class="indexkey"><a class="el" href="structchunk.html">chunk</a></td><td class="indexvalue"></td></tr>
-  <tr><td class="indexkey"><a class="el" href="structChunkBlocks.html">ChunkBlocks</a></td><td class="indexvalue"></td></tr>
+  <tr><td class="indexkey"><a class="el" href="classView_1_1Chunk.html">View::Chunk</a></td><td class="indexvalue">Definition of the <a class="el" href="namespaceView.html">View</a> side of a chunk </td></tr>
+  <tr><td class="indexkey"><a class="el" href="classModel_1_1ChunkBlocks.html">Model::ChunkBlocks</a></td><td class="indexvalue">Manage the actual blocks inside a chunk, as well as some information about the chunk as given by the server. Chunks from the server, or from the local cache, are compressed. This is part of the <a class="el" href="namespaceModel.html">Model</a> </td></tr>
   <tr><td class="indexkey"><a class="el" href="classChunkCache.html">ChunkCache</a></td><td class="indexvalue"></td></tr>
   <tr><td class="indexkey"><a class="el" href="structChunkCoord.html">ChunkCoord</a></td><td class="indexvalue"></td></tr>
-  <tr><td class="indexkey"><a class="el" href="structSuperChunk_1_1chunkInfo.html">SuperChunk::chunkInfo</a></td><td class="indexvalue"></td></tr>
-  <tr><td class="indexkey"><a class="el" href="classChunkObject.html">ChunkObject</a></td><td class="indexvalue"></td></tr>
+  <tr><td class="indexkey"><a class="el" href="structModel_1_1SuperChunk_1_1chunkInfo.html">Model::SuperChunk::chunkInfo</a></td><td class="indexvalue"></td></tr>
+  <tr><td class="indexkey"><a class="el" href="classView_1_1ChunkObject.html">View::ChunkObject</a></td><td class="indexvalue">Manage visible attributes of a chunk. This is part of the <a class="el" href="namespaceView.html">View</a>. A chunk is 32x32x32 blocks, which can't be used for drawing as it is. It is converted into two types: visible blocks and special objects. It is the responsibility of this class to take the chunk data and compute what can be drawn from the chunk </td></tr>
   <tr><td class="indexkey"><a class="el" href="structChunkOffsetCoord.html">ChunkOffsetCoord</a></td><td class="indexvalue"></td></tr>
   <tr><td class="indexkey"><a class="el" href="classChunkProcess.html">ChunkProcess</a></td><td class="indexvalue"></td></tr>
   <tr><td class="indexkey"><a class="el" href="classChunkShader.html">ChunkShader</a></td><td class="indexvalue"></td></tr>
-  <tr><td class="indexkey"><a class="el" href="classChunkShaderPicking.html">ChunkShaderPicking</a></td><td class="indexvalue"></td></tr>
+  <tr><td class="indexkey"><a class="el" href="classChunkShaderPicking.html">ChunkShaderPicking</a></td><td class="indexvalue">A shader program that will draw chunks for picking </td></tr>
   <tr><td class="indexkey"><a class="el" href="classColorShader.html">ColorShader</a></td><td class="indexvalue"></td></tr>
   <tr><td class="indexkey"><a class="el" href="classstd_1_1condition__variable.html">std::condition_variable</a></td><td class="indexvalue"></td></tr>
   <tr><td class="indexkey"><a class="el" href="classCube.html">Cube</a></td><td class="indexvalue"></td></tr>
@@ -120,48 +120,49 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   <tr><td class="indexkey"><a class="el" href="classDrawTexture.html">DrawTexture</a></td><td class="indexvalue"></td></tr>
   <tr><td class="indexkey"><a class="el" href="classErrorDialog.html">ErrorDialog</a></td><td class="indexvalue"></td></tr>
   <tr><td class="indexkey"><a class="el" href="classFogs.html">Fogs</a></td><td class="indexvalue"></td></tr>
-  <tr><td class="indexkey"><a class="el" href="classgameDialog.html">gameDialog</a></td><td class="indexvalue"></td></tr>
+  <tr><td class="indexkey"><a class="el" href="classController_1_1gameDialog.html">Controller::gameDialog</a></td><td class="indexvalue">This corresponds to the controller class in a Model/View/Controller </td></tr>
   <tr><td class="indexkey"><a class="el" href="classGameMode.html">GameMode</a></td><td class="indexvalue"></td></tr>
   <tr><td class="indexkey"><a class="el" href="structGameTexture.html">GameTexture</a></td><td class="indexvalue"></td></tr>
-  <tr><td class="indexkey"><a class="el" href="classHealthBar.html">HealthBar</a></td><td class="indexvalue"></td></tr>
+  <tr><td class="indexkey"><a class="el" href="classView_1_1HealthBar.html">View::HealthBar</a></td><td class="indexvalue">The original purpose of this class was to draw a health bar, but it is now also used for general simple colored areas </td></tr>
   <tr><td class="indexkey"><a class="el" href="classImage.html">Image</a></td><td class="indexvalue"></td></tr>
   <tr><td class="indexkey"><a class="el" href="classInventory.html">Inventory</a></td><td class="indexvalue"></td></tr>
   <tr><td class="indexkey"><a class="el" href="classLightSources.html">LightSources</a></td><td class="indexvalue"></td></tr>
   <tr><td class="indexkey"><a class="el" href="classLoginDialog.html">LoginDialog</a></td><td class="indexvalue">Manage the login dialog </td></tr>
   <tr><td class="indexkey"><a class="el" href="classMainUserInterface.html">MainUserInterface</a></td><td class="indexvalue"></td></tr>
+  <tr><td class="indexkey"><a class="el" href="classView_1_1ManageAnimation.html">View::ManageAnimation</a></td><td class="indexvalue">Implement a loader for animated models, as well as a Draw() function. The loading is based on Assimp, which actually allows for many different file formats. As of now, the Collada format has been used (.dae). There are three main sides of this class: 1. Parse a model file (usually Collada, .dae). 2. Transform the data into VAOs. 3. Actually animate the model, from the shader </td></tr>
   <tr><td class="indexkey"><a class="el" href="classMap.html">Map</a></td><td class="indexvalue"></td></tr>
   <tr><td class="indexkey"><a class="el" href="classModulatedTextureShader.html">ModulatedTextureShader</a></td><td class="indexvalue"></td></tr>
-  <tr><td class="indexkey"><a class="el" href="classMonsters.html">Monsters</a></td><td class="indexvalue"></td></tr>
+  <tr><td class="indexkey"><a class="el" href="classModel_1_1Monsters.html">Model::Monsters</a></td><td class="indexvalue">Manage other monsters that we know of </td></tr>
   <tr><td class="indexkey"><a class="el" href="classMonsterShader.html">MonsterShader</a></td><td class="indexvalue"></td></tr>
   <tr><td class="indexkey"><a class="el" href="classMsgWindow.html">MsgWindow</a></td><td class="indexvalue"></td></tr>
   <tr><td class="indexkey"><a class="el" href="classstd_1_1mutex.html">std::mutex</a></td><td class="indexvalue"></td></tr>
-  <tr><td class="indexkey"><a class="el" href="classObject.html">Object</a></td><td class="indexvalue"></td></tr>
+  <tr><td class="indexkey"><a class="el" href="classModel_1_1Object.html">Model::Object</a></td><td class="indexvalue">This is a simple interface to make it easier to send monsters or players as the same pointer </td></tr>
   <tr><td class="indexkey"><a class="el" href="structInventory_1_1ObjectMap.html">Inventory::ObjectMap</a></td><td class="indexvalue"></td></tr>
   <tr><td class="indexkey"><a class="el" href="classOptions.html">Options</a></td><td class="indexvalue"></td></tr>
   <tr><td class="indexkey"><a class="el" href="classOptionsDialog.html">OptionsDialog</a></td><td class="indexvalue">Manage the options dialog </td></tr>
-  <tr><td class="indexkey"><a class="el" href="classOtherPlayers.html">OtherPlayers</a></td><td class="indexvalue"></td></tr>
+  <tr><td class="indexkey"><a class="el" href="classModel_1_1OtherPlayers.html">Model::OtherPlayers</a></td><td class="indexvalue">Manages other players that we know of. The client will only know of near players, which may need to be drawn </td></tr>
   <tr><td class="indexkey"><a class="el" href="unionPickingData.html">PickingData</a></td><td class="indexvalue"></td></tr>
-  <tr><td class="indexkey"><a class="el" href="classplayer.html">player</a></td><td class="indexvalue"></td></tr>
+  <tr><td class="indexkey"><a class="el" href="classModel_1_1Player.html">Model::Player</a></td><td class="indexvalue">Manage the player data </td></tr>
   <tr><td class="indexkey"><a class="el" href="classQuad.html">Quad</a></td><td class="indexvalue">A very minimal shape, drawing a quad from 0 to 1 in x and y. A simple quad drawn using VAO and VBO </td></tr>
   <tr><td class="indexkey"><a class="el" href="classQuadStage1.html">QuadStage1</a></td><td class="indexvalue"></td></tr>
-  <tr><td class="indexkey"><a class="el" href="classRenderControl.html">RenderControl</a></td><td class="indexvalue"></td></tr>
+  <tr><td class="indexkey"><a class="el" href="classView_1_1RenderControl.html">View::RenderControl</a></td><td class="indexvalue">This is the top level <a class="el" href="namespaceView.html">View</a> of the Model/View/Controller Manage buffers and shaders for the various render passes All drawing stages are controlled from this class. The main activities are: </td></tr>
   <tr><td class="indexkey"><a class="el" href="classRocketGui.html">RocketGui</a></td><td class="indexvalue"></td></tr>
   <tr><td class="indexkey"><a class="el" href="classRocketRenderInterface.html">RocketRenderInterface</a></td><td class="indexvalue"></td></tr>
   <tr><td class="indexkey"><a class="el" href="classRocketSystemInterface.html">RocketSystemInterface</a></td><td class="indexvalue"></td></tr>
   <tr><td class="indexkey"><a class="el" href="classScrollingMessages.html">ScrollingMessages</a></td><td class="indexvalue"></td></tr>
   <tr><td class="indexkey"><a class="el" href="classShaderBase.html">ShaderBase</a></td><td class="indexvalue">An abstract shader class. Inherit it to create new shader programs </td></tr>
   <tr><td class="indexkey"><a class="el" href="classShadowMapShader.html">ShadowMapShader</a></td><td class="indexvalue"></td></tr>
-  <tr><td class="indexkey"><a class="el" href="classShadowRender.html">ShadowRender</a></td><td class="indexvalue"></td></tr>
+  <tr><td class="indexkey"><a class="el" href="classView_1_1ShadowRender.html">View::ShadowRender</a></td><td class="indexvalue"></td></tr>
   <tr><td class="indexkey"><a class="el" href="classShadows.html">Shadows</a></td><td class="indexvalue"></td></tr>
   <tr><td class="indexkey"><a class="el" href="classSimpleDialog.html">SimpleDialog</a></td><td class="indexvalue">A manager for simple dialogs, with no forms </td></tr>
   <tr><td class="indexkey"><a class="el" href="classSimpleTextureShader.html">SimpleTextureShader</a></td><td class="indexvalue"></td></tr>
   <tr><td class="indexkey"><a class="el" href="classSkyBox.html">SkyBox</a></td><td class="indexvalue">Implementation of the Skybox used in Ephenation </td></tr>
   <tr><td class="indexkey"><a class="el" href="classSoundControl.html">SoundControl</a></td><td class="indexvalue"></td></tr>
-  <tr><td class="indexkey"><a class="el" href="structChunkObject_1_1SpecialObject.html">ChunkObject::SpecialObject</a></td><td class="indexvalue"></td></tr>
+  <tr><td class="indexkey"><a class="el" href="structView_1_1ChunkObject_1_1SpecialObject.html">View::ChunkObject::SpecialObject</a></td><td class="indexvalue"></td></tr>
   <tr><td class="indexkey"><a class="el" href="classSplitter.html">Splitter</a></td><td class="indexvalue"></td></tr>
   <tr><td class="indexkey"><a class="el" href="classStageOneShader.html">StageOneShader</a></td><td class="indexvalue"></td></tr>
-  <tr><td class="indexkey"><a class="el" href="structSuperChunk.html">SuperChunk</a></td><td class="indexvalue"></td></tr>
-  <tr><td class="indexkey"><a class="el" href="classSuperChunkManager.html">SuperChunkManager</a></td><td class="indexvalue"></td></tr>
+  <tr><td class="indexkey"><a class="el" href="structModel_1_1SuperChunk.html">Model::SuperChunk</a></td><td class="indexvalue"></td></tr>
+  <tr><td class="indexkey"><a class="el" href="classModel_1_1SuperChunkManager.html">Model::SuperChunkManager</a></td><td class="indexvalue">Manage Super chunk data </td></tr>
   <tr><td class="indexkey"><a class="el" href="structtagbstring.html">tagbstring</a></td><td class="indexvalue"></td></tr>
   <tr><td class="indexkey"><a class="el" href="classstd_1_1thread.html">std::thread</a></td><td class="indexvalue"></td></tr>
   <tr><td class="indexkey"><a class="el" href="classTimeMeasure.html">TimeMeasure</a></td><td class="indexvalue"></td></tr>
@@ -182,7 +183,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerator</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerator</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">

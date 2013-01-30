@@ -6,6 +6,6 @@ var searchData=
   ['addpointlight',['AddPointLight',['../classAddPointLight.html',1,'']]],
   ['addpointshadow',['AddPointShadow',['../classAddPointShadow.html',1,'']]],
   ['addssao',['AddSSAO',['../classAddSSAO.html',1,'']]],
-  ['animationmodels',['AnimationModels',['../classAnimationModels.html',1,'']]],
+  ['animationmodels',['AnimationModels',['../classView_1_1AnimationModels.html',1,'View']]],
   ['animationshader',['AnimationShader',['../classAnimationShader.html',1,'']]]
 ];
