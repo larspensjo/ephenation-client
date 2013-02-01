@@ -52,7 +52,6 @@
 			<Add library="glew32" />
 			<Add library="glaux" />
 			<Add library="opengl32" />
-			<Add library="fltk" />
 			<Add library="pthread" />
 			<Add library="ogg" />
 			<Add library="vorbis" />
@@ -73,8 +72,6 @@
 			<Add directory="C:/MinGW/msys/1.0/local/lib" />
 			<Add directory="C:/MinGW/msys/1.0/bin/assimp/lib" />
 		</Linker>
-		<Unit filename="BlenderModel.cpp" />
-		<Unit filename="BlenderModel.h" />
 		<Unit filename="BuildingBlocks.cpp" />
 		<Unit filename="BuildingBlocks.h" />
 		<Unit filename="ChunkBlocks.cpp" />
@@ -145,11 +142,15 @@
 		<Unit filename="ephenation.rc">
 			<Option compilerVar="WINDRES" />
 		</Unit>
+		<Unit filename="errormanager.cpp" />
+		<Unit filename="errormanager.h" />
 		<Unit filename="gamedialog.cpp" />
 		<Unit filename="gamedialog.h" />
 		<Unit filename="imageloader.cpp" />
 		<Unit filename="imageloader.h" />
 		<Unit filename="main.cpp" />
+		<Unit filename="manageanimation.cpp" />
+		<Unit filename="manageanimation.h" />
 		<Unit filename="modes.cpp" />
 		<Unit filename="modes.h" />
 		<Unit filename="monsters.cpp" />
@@ -275,7 +276,7 @@
 			<envvars />
 			<debugger>
 				<remote_debugging target="Debug">
-					<options conn_type="0" serial_baud="115200" additional_cmds_before="set args --debug --testuser 192.168.56.101" />
+					<options conn_type="0" serial_baud="115200" additional_cmds_before="set args --debug --testuser" />
 				</remote_debugging>
 			</debugger>
 			<DoxyBlocks>

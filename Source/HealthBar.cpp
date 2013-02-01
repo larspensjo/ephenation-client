@@ -24,7 +24,7 @@
 #include "shaders/ColorShader.h"
 #include "textures.h"
 #include "primitives.h"
-#include "ui/Error.h"
+#include "errormanager.h"
 
 using namespace View;
 
@@ -81,7 +81,8 @@ void HealthBar::Init(void) {
 	glBindVertexArray(0);
 	if ((unsigned)bufferSize != sizeof vertexData) {
 		glDeleteBuffers(1, &fBufferId);
-		ErrorDialog("HealthBar::Init: Data size is mismatch with input array\n");
+		auto &ss = View::gErrorManager.GetStream(false, false);
+		ss << "[BuildingBlocks::Init] Data size is mismatch with input array";
 	}
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }

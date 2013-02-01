@@ -22,6 +22,7 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>
+#include <iostream>
 
 #ifdef WIN32
 #include <winsock2.h>
@@ -41,11 +42,11 @@
 #include "player.h"
 #include "client_prot.h"
 #include "modes.h"
-#include "ui/Error.h"
 #include "worsttime.h"
 #include "Options.h"
 #include "crypt.h"
 #include "SoundControl.h"
+#include "errormanager.h"
 
 #ifdef WIN32
 static SOCKET sock_fd;
@@ -98,22 +99,21 @@ void ConnectToServer(const char *host, int port) {
 	serv_addr.sin_port = htons(port);
 	int ret = connect(sock_fd, (sockaddr*)&serv_addr, sizeof serv_addr);
 	if (ret < 0) {
+		auto &ss = View::gErrorManager.GetStream(true, false);
 #ifdef WIN32
 		auto err = WSAGetLastError();
 		switch(err) {
 		case WSAETIMEDOUT:
-			ErrorDialog("No connection to server");
+			ss << "No connection to server";
 			break;
 		default:
-			ErrorDialog("Failed to connect to server (%d)", err);
+			ss << "Failed to connect to server " << err;
 		}
 #else
 		auto err = errno;
-		ErrorDialog("Failed to connect to server (%d)", err);
+		ss << "Failed to connect to server " << err;
 #endif
-		exit(0);
 	}
-	// printf("Got fd %d\n", sock_fd);
 }
 
 static std::vector<unsigned char> buff;
@@ -136,10 +136,11 @@ static int ReadBytes(int offset, int n) {
 	}
 	if (count < 0) {
 		if (errno != EAGAIN) {
+			auto &ss = View::gErrorManager.GetStream(true, false);
 #ifdef WIN32
-			ErrorDialog("ListenForServerMessages1: Error %d, length %d\n", errno, count);
+			ss << "ListenForServerMessages1: Error " << errno << " length " << count;
 #else
-			ErrorDialog("ListenForServerMessages1: Error %d (%s), length %d\n", errno, sys_errlist[errno], count);
+			ss << "ListenForServerMessages1: Error " << errno << "(" << sys_errlist[errno] << "), length" << count;
 #endif
 		}
 		count = 0; // This is not a fatal error, need to try again
@@ -182,9 +183,10 @@ bool ListenForServerMessages(void) {
 	if (cnt < 0) {
 		if (errno == EINTR)
 			return true;                // "Interrupted system call". Not fatal.
-		ErrorDialog("ListenForServerMessages select() failed: errno %d\n", errno);
+		auto &ss = View::gErrorManager.GetStream(true, false);
+		ss << "ListenForServerMessages select() failed: errno " << errno;
 	}
-	if (cnt == 0)
+	if (cnt <= 0)
 		return false;                   // Nothing more available for now
 	if (ReadOneMessage()) {
 		if (buff.size() == 0)
@@ -262,8 +264,11 @@ static void Password(const char *pass, const char *key) {
 bool PerformLoginProcedure(const string &email, const string &licencekey, const string &password, bool testOverride) {
 	// Wait for acknowledge from server (in the form of a protocol command)
 	auto beginTime = glfwGetTime();
-	if (gMode.Get() != GameMode::LOGIN)
-		ErrorDialog("Login in wrong state (%d)", gMode.Get());
+	if (gMode.Get() != GameMode::LOGIN) {
+		auto &ss = View::gErrorManager.GetStream(true, false);
+		ss << "Login in wrong state " << gMode.Get();
+		return false;
+	}
 
 	LoginMessage(testOverride ? "test0" : email.c_str());
 	gMode.Set(GameMode::PASSWORD);
@@ -281,8 +286,8 @@ bool PerformLoginProcedure(const string &email, const string &licencekey, const 
 			// printf("loginDialog::UpdateDialog: Mode GameMode::WAIT_ACK\n");
 			continue;
 		case GameMode::LOGIN_FAILED: {
-			ErrorDialog("Login failed");
-			// printf("Login failed\n");
+			auto &ss = View::gErrorManager.GetStream(true, false);
+			ss << "Login failed";
 			return false;
 		}
 		case GameMode::ESC:
@@ -294,7 +299,8 @@ bool PerformLoginProcedure(const string &email, const string &licencekey, const 
 		case GameMode::INIT:
 		case GameMode::LOGIN:
 		case GameMode::EXIT:
-			ErrorDialog("HandleLoginDialog:Unexpected mode %d\n", gMode);
+			std::cerr << "PerformLoginProcedure Unexpected mode" << gMode.Get();
+			exit(1);
 		}
 	}
 	double connectionDelay = glfwGetTime() - beginTime;

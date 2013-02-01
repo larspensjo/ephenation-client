@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -27,7 +27,7 @@
 #include <GL/glfw.h>
 
 #include "SoundControl.h"
-#include "ui/Error.h"
+#include "errormanager.h"
 #include "Options.h"
 #include "modes.h"
 #include "player.h"
@@ -228,7 +228,9 @@ void SoundControl::Init(void) {
 	alutInit(NULL, 0);
 	fAudioEnabled = alGetError() != AL_NO_ERROR;
 	if(fAudioEnabled) {
-		ErrorDialog("SoundControl: alutInit failed!\n");
+		auto &ss = View::gErrorManager.GetStream(false, false);
+		ss << "SoundControl: alutInit failed!";
+		return;
 	}
 
 	// Check for ALC_EXT_EFX and store state

@@ -67,7 +67,6 @@ MY_LIBS   =\
 	-lglew32\
 	-lassimp\
 	 -lopengl32\
-	-lfltk\
 	contrib/win32/freealut-1.1.0-bin/lib/alut.lib\
 	contrib/win32/OpenAL/libs/Win32/OpenAL32.lib\
 	-lpthread\

@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -19,7 +19,7 @@
 
 #include "primitives.h"
 #include "billboard.h"
-#include "ui/Error.h"
+#include "errormanager.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include "shaders/StageOneShader.h"
 #include "uniformbuffer.h"
@@ -72,7 +72,8 @@ again:
 		goto again;
 	}
 	if (fboStatus != GL_FRAMEBUFFER_COMPLETE) {
-		ErrorDialog("Billboard::Init: FrameBuffer atlas incomplete: %s (0x%x)\n", FrameBufferError(fboStatus), fboStatus);
+		auto &ss = View::gErrorManager.GetStream(false, false);
+		ss << "Billboard::Init: FrameBuffer atlas incomplete: " << FrameBufferError(fboStatus) << fboStatus;
 	}
 
 	// Clear the atlas. Probably not needed as every picture will be cleared eventually.
@@ -106,7 +107,8 @@ again:
 	glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, fTempTextureId, 0);
 	fboStatus = glCheckFramebufferStatus(GL_DRAW_FRAMEBUFFER);
 	if (fboStatus != GL_FRAMEBUFFER_COMPLETE) {
-		ErrorDialog("Billboard::Init: FrameBuffer temp incomplete: %s (0x%x)\n", FrameBufferError(fboStatus), fboStatus);
+		auto &ss = View::gErrorManager.GetStream(false, false);
+		ss << "Billboard::Init: FrameBuffer atlas incomplete: " << FrameBufferError(fboStatus) << fboStatus;
 	}
 
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);

@@ -50,6 +50,7 @@
 #include "player.h"
 #include "billboard.h"
 #include "uniformbuffer.h"
+#include "modes.h"
 
 #define cChecksumTimeout 15.0
 

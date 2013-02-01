@@ -16,11 +16,18 @@
 //
 
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "assert.h"
-#include "ui/Error.h"
+#include "errormanager.h"
 
 void assert_failed(const char *str, const char *file, int linenumber) {
-	ErrorDialog("Assert failed: '%s' (%s line %d)\n", str, file, linenumber);
+	static bool recursive = false;
+	if (recursive)
+		_Exit(1); // Force immediate termination
+	recursive = true;
+	auto &ss = View::gErrorManager.GetStream(false, false); // This may fail for some cases.
+	ss << "Assert failed: " << str << " " << file << " line " << linenumber;
+	View::gErrorManager.Report(); // Force immediate report
 	exit(1);
 }

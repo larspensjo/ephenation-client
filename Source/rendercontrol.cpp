@@ -53,6 +53,7 @@
 #include "msgwindow.h"
 #include "ui/mainuserinterface.h"
 #include "animationmodels.h"
+#include "modes.h"
 
 
 #define NELEM(x) (sizeof x / sizeof x[0])

@@ -40,7 +40,6 @@
 			<Add library="assimp" />
 			<Add library="glfw" />
 			<Add library="tinyxml" />
-			<Add library="fltk" />
 			<Add library="alut" />
 			<Add library="openal" />
 			<Add library="pthread" />
@@ -243,13 +242,14 @@
 		<Extensions>
 			<code_completion />
 			<debugger>
-				<remote_debugging target="Release">
-					<options conn_type="0" serial_baud="115200" additional_cmds_before="set args --debug" />
-				</remote_debugging>
 				<remote_debugging target="Debug">
 					<options conn_type="0" serial_baud="115200" additional_cmds_before="set args --debug  --singlethread --testuser localhost" />
 				</remote_debugging>
+				<remote_debugging target="Release">
+					<options conn_type="0" serial_baud="115200" additional_cmds_before="set args --debug" />
+				</remote_debugging>
 			</debugger>
+			<envvars />
 		</Extensions>
 	</Project>
 </CodeBlocks_project_file>

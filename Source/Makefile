@@ -57,7 +57,6 @@ MY_LIBS   = -lGL\
 	-lassimp\
 	-lglfw\
 	-ltinyxml\
-	-lfltk\
 	-lalut\
 	-lopenal\
 	-lpthread\

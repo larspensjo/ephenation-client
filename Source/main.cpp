@@ -63,6 +63,7 @@
 #include "billboard.h"
 #include "worsttime.h"
 #include "contrib/glsw.h"
+#include "errormanager.h"
 
 #ifndef GL_VERSION_3_2
 #define GL_CONTEXT_CORE_PROFILE_BIT       0x00000001
@@ -453,6 +454,8 @@ int main(int argc, char** argv) {
 			glfwCloseWindow();
 		tm.Stop();
 	}
+
+	View::gErrorManager.Report();
 
 	// The window is closed, request quit (which will save the player on the server side)
 	unsigned char b[] = { 0x03, 0x00, CMD_QUIT };

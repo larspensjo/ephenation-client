@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -25,7 +25,7 @@
 #include "BuildingBlocks.h"
 #include "shaders/SimpleTextureShader.h"
 #include "DrawText.h"
-#include "ui/Error.h"
+#include "errormanager.h"
 
 // Every coordinate is 3 dimensions and two dimension texture
 struct vertex {
@@ -152,7 +152,8 @@ void BuildingBlocks::Init(int numToDisplay) {
 	glGetBufferParameteriv(GL_ARRAY_BUFFER, GL_BUFFER_SIZE, &bufferSize);
 	if ((unsigned)bufferSize != sizeof vertexData) {
 		glDeleteBuffers(1, &fBufferId);
-		ErrorDialog("[BuildingBlocks::Init] Data size is mismatch with input array\n");
+		auto &ss = View::gErrorManager.GetStream(false, false);
+		ss << "[BuildingBlocks::Init] Data size is mismatch with input array";
 	}
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	fShader->DisableProgram();

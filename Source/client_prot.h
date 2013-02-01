@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -66,6 +66,7 @@
 #define CMD_REQ_PLAYER_INFO   44 // Request player information
 #define CMD_RESP_PLAYER_NAME  45 // A name of a player
 #define CMD_TELEPORT          46 // Teleport the player to the specified chunk
+#define CMD_ERROR_REPORT      47 /// Send an error report to the server, in the form of a string.
 
 #define PROT_VER_MAJOR 5 // What major version of the protocol is supported
 #define PROT_VER_MINOR 2 // What minor version of the protocol is supported

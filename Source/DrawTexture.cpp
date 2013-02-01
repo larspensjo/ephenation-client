@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -24,7 +24,7 @@
 #include "shaders/SimpleTextureShader.h"
 #include "textures.h"
 #include "primitives.h"
-#include "ui/Error.h"
+#include "errormanager.h"
 
 DrawTexture::DrawTexture() : fShader(0), fBufferId(0), fVao(0) {
 }
@@ -81,7 +81,8 @@ void DrawTexture::Init(void) {
 	glBindVertexArray(0);
 	if ((unsigned)bufferSize != sizeof vertexData) {
 		glDeleteBuffers(1, &fBufferId);
-		ErrorDialog("DrawTexture::Init: Data size is mismatch with input array\n");
+		auto &ss = View::gErrorManager.GetStream(false, false);
+		ss << "[BuildingBlocks::Init] Data size is mismatch with input array";
 	}
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
