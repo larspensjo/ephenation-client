@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -15,10 +15,6 @@
 // along with Ephenation.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-//
-// A class to measure real worst execution time, and provide a report.
-//
-
 #pragma once
 
 #include <string>
@@ -26,19 +22,35 @@
 
 #include "primitives.h"
 
+/// @brief Measure real worst execution time, and provide a report.
+/// Surround a section of code as follows:
+/// @code{.cpp}
+/// static WorstTime tm("name");
+/// tm.Start();
+/// SomeFunctionTakingTime();
+/// tm.Stop();
+/// @endcode
+/// From the main loop, call WorstTime::Report() now and then.
+///
 class WorstTime {
 public:
+    /// @brief Declare a timer
+    /// @param title A string that names the timer, and will be included in the final report
 	WorstTime(const std::string &title) : fStart(0.0), fIndex(0) {
 		if (!gDebugOpenGL || fLast == MAXSIZE)
 			return; // Quietly ignore
 		fIndex = fLast++; // Allocate a slot
 		fTitles[fIndex] = title;
 	}
+
+	/// @brief Start the timer
 	void Start() {
 		if (!gDebugOpenGL)
 			return;
 		fStart = glfwGetTime();
 	}
+
+	/// @brief Stop the timer. The worst case since the last report is saved.
 	void Stop(void) {
 		if (!gDebugOpenGL)
 			return;
@@ -47,11 +59,11 @@ public:
 			fResults[fIndex] = delta;
 	}
 
+    /// @brief Report all timers and reset worst case.
 	static void Report(void);
 
-	double Get(void) const { return fResults[fIndex]; }
 private:
-	enum { MAXSIZE = 20 };
+	enum { MAXSIZE = 20 }; /// @todo Use std::vector instead!
 	double fStart;
 	static double fResults[MAXSIZE];
 	static std::string fTitles[MAXSIZE];

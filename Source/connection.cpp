@@ -127,9 +127,7 @@ static int ReadBytes(int offset, int n) {
 	int count = read(sock_fd, &buff[offset], n);
 #endif
 	tm.Stop();
-	if (tm.Get() > 0.030) {
-		// printf("ListenForServerMessages: Long reading time (%.1f ms). Message %2d, length %4d\n", tm.Get() * 1000, buff[0], n);
-	}
+
 	if (count == 0 || (count<0 && errno == EEXIST)) { // EEXIST can happen on windows if connection is broken
 		gMode.Set(GameMode::ESC);
 		count = 0;
