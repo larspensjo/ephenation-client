@@ -86,6 +86,8 @@
 				<tr><td class="longlabel">'B'</td> <td class="description">Build a block where the mouse points</td></tr>
 				<tr><td class="longlabel">'V'</td> <td class="description">Remove a block where the mouse points</td></tr>
 				<tr><td class="longlabel">'V'+Mouse button 1</td> <td class="description">Continous block removal</td></tr>
+				<tr><td class="longlabel">'U'</td> <td class="description">Undo a change</td></tr>
+				<tr><td class="longlabel">'R'</td> <td class="description">Redo a change</td></tr>
 			</table>
 		</div>
 		<button class="formatbutton firstbuttonpos" onclick="Close" cancelkey=true>Close</button>

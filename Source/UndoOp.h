@@ -2,9 +2,10 @@
 #define _UNDO_OP_
 
 #include <stack>
-#include "client_prot.h"
 #include "glm/glm.hpp"
 #include "chunk.h"
+
+namespace Controller {
 
 typedef unsigned char OperationType; // block add/remove
 typedef glm::vec3 BlockLocation;       // coordinate of block w.r.t chunk
@@ -59,5 +60,6 @@ class UndoOp {
 
 };
 
+}
 
 #endif

@@ -1,6 +1,9 @@
+#include "client_prot.h"
 #include "UndoOp.h"
 #include "connection.h"
 #include "parse.h"
+
+using namespace Controller;
 
 UndoOp::UndoOp()
 {
