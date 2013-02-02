@@ -40,7 +40,6 @@ Source: "\MinGW\msys\1.0\bin\glew32.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "\MinGW\bin\pthreadGC2.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "\MinGW\bin\libgcc_s_dw2-1.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "\MinGW\bin\libstdc++-6.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "vcredist_x86.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "Disclaimer.rtf"; DestDir: "{app}"; Flags: ignoreversion
 Source: "sounds\*"; DestDir: "{app}\sounds"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "textures\*"; DestDir: "{app}\textures"; Flags: ignoreversion recursesubdirs createallsubdirs
@@ -56,7 +55,6 @@ Name: "{group}\{cm:UninstallProgram,Ephenation}"; Filename: "{uninstallexe}"
 Name: "{commondesktop}\Ephenation"; Filename: "{app}\ephenation.exe"; Tasks: desktopicon; IconFilename: "{app}\ephenation.ico"
 
 [Run]
-Filename: "{app}\vcredist_x86.exe"; Parameters: "/q"; StatusMsg: "Installing Microsoft runtime libraries..."
 Filename: "{app}\oalinst.exe"; StatusMsg: "Installing OpenAL library..."
 Filename: "{app}\ephenation.exe"; Description: "{cm:LaunchProgram,Ephenation}"; Flags: nowait postinstall skipifsilent
 
