@@ -32,6 +32,7 @@
 #endif
 #include <iostream>
 #include <sstream>
+#include <cstring>
 #include <GL/glew.h>
 #include <GL/glfw.h>
 

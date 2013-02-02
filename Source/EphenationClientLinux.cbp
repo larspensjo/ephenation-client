@@ -12,6 +12,7 @@
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
+					<Add option="-std=c++0x" />
 					<Add option="-g" />
 					<Add option="-Dunix" />
 					<Add directory="contrib/glm" />
@@ -50,8 +51,6 @@
 			<Add library="RocketDebugger" />
 			<Add library="RocketControls" />
 		</Linker>
-		<Unit filename="BlenderModel.cpp" />
-		<Unit filename="BlenderModel.h" />
 		<Unit filename="BuildingBlocks.cpp" />
 		<Unit filename="BuildingBlocks.h" />
 		<Unit filename="ChunkBlocks.cpp" />
@@ -117,11 +116,15 @@
 		<Unit filename="dialogs/topleveldialog.rml" />
 		<Unit filename="dialogs/topoptions.rml" />
 		<Unit filename="dialogs/userinterface.rml" />
+		<Unit filename="errormanager.cpp" />
+		<Unit filename="errormanager.h" />
 		<Unit filename="gamedialog.cpp" />
 		<Unit filename="gamedialog.h" />
 		<Unit filename="imageloader.cpp" />
 		<Unit filename="imageloader.h" />
 		<Unit filename="main.cpp" />
+		<Unit filename="manageanimation.cpp" />
+		<Unit filename="manageanimation.h" />
 		<Unit filename="modes.cpp" />
 		<Unit filename="modes.h" />
 		<Unit filename="monsters.cpp" />
@@ -242,11 +245,11 @@
 		<Extensions>
 			<code_completion />
 			<debugger>
-				<remote_debugging target="Debug">
-					<options conn_type="0" serial_baud="115200" additional_cmds_before="set args --debug  --singlethread --testuser localhost" />
-				</remote_debugging>
 				<remote_debugging target="Release">
 					<options conn_type="0" serial_baud="115200" additional_cmds_before="set args --debug" />
+				</remote_debugging>
+				<remote_debugging target="Debug">
+					<options conn_type="0" serial_baud="115200" additional_cmds_before="set args --debug  --singlethread --testuser localhost" />
 				</remote_debugging>
 			</debugger>
 			<envvars />
