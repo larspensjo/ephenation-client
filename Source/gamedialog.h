@@ -23,6 +23,7 @@
 #include "ui/RocketGui.h"
 #include "rendercontrol.h"
 #include "chunk.h"
+#include "UndoOp.h"
 
 namespace View {
 	class Chunk;
@@ -145,6 +146,8 @@ private:
 	// Save the place where a text activator was requested.
 	ChunkCoord fRequestActivatorChunk;
 	int fRequestActivatorX, fRequestActivatorY, fRequestActivatorZ;
+
+	UndoOp fUndoOperator; //for undo/redo
 };
 
 extern gameDialog gGameDialog;

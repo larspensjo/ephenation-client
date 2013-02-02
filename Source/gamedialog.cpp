@@ -249,6 +249,17 @@ void gameDialog::AttachBlockToSurface(int row, int col) {
 		fRequestActivatorY = y;
 		fRequestActivatorZ = z;
 	}
+
+    ChunkCoord c;
+    c.x = cp->cc.x;
+    c.y = cp->cc.y;
+    c.z = cp->cc.z;
+    fUndoOperator.addOperation(new Operation(CMD_BLOCK_UPDATE,
+                                              BlockLocation(x, y, z),
+                                              c,
+                                              fBuildingBlocks->CurrentBlockType()
+                                             )
+                               );
 }
 
 void gameDialog::CreateActivatorMessage(int dx, int dy, int dz, const ChunkCoord &cc) {
@@ -304,6 +315,18 @@ void gameDialog::ClickOnBlock(int x, int y) {
 	b[17] = coc.z;
 	SendMsg(b, sizeof b);
 	// printf("Click on block %d, %d, %d\n", coc.x, coc.y , coc.z);
+
+    ChunkCoord ch;
+    ch.x = cp->cc.x;
+    ch.y = cp->cc.y;
+    ch.z = cp->cc.z;
+
+    fUndoOperator.addOperation(new Operation(CMD_HIT_BLOCK,
+                                              BlockLocation(coc.x, coc.y, coc.z),
+                                              ch,
+                                              cp->GetBlock(coc.x, coc.y, coc.z) // add this type
+                                             )
+                               );
 }
 
 static bool sTurning = false;
@@ -709,6 +732,16 @@ void gameDialog::HandleKeyPress(int key) {
 		if (gMode.Get() == GameMode::CONSTRUCT) {
 			ClickOnBlock(x, y);
 		}
+		break;
+    case 'U':
+            if (gMode.Get() == GameMode::CONSTRUCT) {
+                fUndoOperator.undoOperation();
+            }
+		break;
+       case 'R':
+            if (gMode.Get() == GameMode::CONSTRUCT) {
+                fUndoOperator.redoOperation();
+            }
 		break;
 	case GLFW_KEY_KP_SUBTRACT:
 		switch(fCalibrationMode) {
