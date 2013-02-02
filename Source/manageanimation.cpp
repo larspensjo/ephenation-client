@@ -15,6 +15,8 @@
 // along with Ephenation.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+#define ASSIMP3
+
 /// @class ManageAnimation
 /// This is probably the most complicated part of the Ephenation client. One reason
 /// is that model and animation data in Assimp is complex. Another is that the data

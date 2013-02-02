@@ -44,6 +44,7 @@
 			<Add directory="C:/MinGW/msys/1.0/bin/assimp/include" />
 			<Add directory="contrib/win32/libRocket/include" />
 			<Add directory="contrib/glm" />
+			<Add directory="contrib/win32/assimp3/include" />
 		</Compiler>
 		<Linker>
 			<Add library="contrib\win32\glfw-2.7.bin.WIN32\lib-mingw\libglfw.a" />
@@ -63,11 +64,12 @@
 			<Add library="gdi32" />
 			<Add library="uuid" />
 			<Add library="comdlg32" />
-			<Add library="assimp" />
-			<Add library="contrib\win32\libRocket\libRocketCore.a" />
-			<Add library="contrib\win32\libRocket\libRocketControls.a" />
-			<Add library="contrib\win32\libRocket\libRocketDebugger.a" />
+			<Add library="contrib\win32\libRocket\libRocketCore.dll.a" />
+			<Add library="contrib\win32\libRocket\libRocketControls.dll.a" />
+			<Add library="contrib\win32\libRocket\libRocketDebugger.dll.a" />
 			<Add library="contrib\win32\libRocket\libfreetype.dll.a" />
+			<Add library="contrib\win32\assimp3\lib\libassimp.dll.a" />
+			<Add library="contrib\win32\assimp3\lib\libzlib.a" />
 			<Add directory="C:/MinGW/msys/1.0/lib" />
 			<Add directory="C:/MinGW/msys/1.0/local/lib" />
 			<Add directory="C:/MinGW/msys/1.0/bin/assimp/lib" />
@@ -280,7 +282,7 @@
 				</remote_debugging>
 			</debugger>
 			<DoxyBlocks>
-				<comment_style block="0" line="0" />
+				<comment_style block="2" line="2" />
 				<doxyfile_project />
 				<doxyfile_build />
 				<doxyfile_warnings />

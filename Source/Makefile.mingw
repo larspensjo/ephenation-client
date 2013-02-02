@@ -55,6 +55,7 @@ MY_CFLAGS = -L/usr/lib -L/usr/local/lib -I/usr/local/include -I/usr/include\
 	-Icontrib/win32/freealut-1.1.0-bin/include\
 	-Icontrib/win32/tinyxml\
 	-Icontrib/win32/libRocket/include\
+	-Icontrib/win32/assimp3/include\
 	-Icontrib/glm\
 	-DOV_EXCLUDE_STATIC_CALLBACKS\
 	-DWIN32\
@@ -65,15 +66,15 @@ MY_CFLAGS = -L/usr/lib -L/usr/local/lib -I/usr/local/include -I/usr/include\
 MY_LIBS   =\
 	contrib/win32/glfw-2.7.bin.WIN32/lib-mingw/libglfw.a\
 	-lglew32\
-	-lassimp\
-	 -lopengl32\
+	contrib/win32/assimp3/lib/libassimp.dll.a contrib/win32/assimp3/lib/libzlib.a\
+    -lopengl32\
 	contrib/win32/freealut-1.1.0-bin/lib/alut.lib\
 	contrib/win32/OpenAL/libs/Win32/OpenAL32.lib\
 	-lpthread\
 	-logg -lvorbis -llibvorbisfile\
-	contrib/win32/libRocket/libRocketDebugger.a\
-	contrib/win32/libRocket/libRocketControls.a\
-	contrib/win32/libRocket/libRocketCore.a\
+	contrib/win32/libRocket/libRocketDebugger.dll.a\
+	contrib/win32/libRocket/libRocketControls.dll.a\
+	contrib/win32/libRocket/libRocketCore.dll.a\
 	contrib/win32/libfreetype.dll.a\
 	-lWs2_32 -lole32 -lcomctl32 -lgdi32 -lcomdlg32 -luuid
 
