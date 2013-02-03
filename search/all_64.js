@@ -21,5 +21,6 @@ var searchData=
   ['drawpointshadow',['DrawPointShadow',['../classAddPointShadow.html#a5f8a71d687f96e53f4babe3f35345fd7',1,'AddPointShadow']]],
   ['drawredlight',['DrawRedLight',['../classAddPointShadow.html#a4de7eb45e3e1d7e592fd66bc8fc8824a',1,'AddPointShadow']]],
   ['drawstatic',['DrawStatic',['../classView_1_1ManageAnimation.html#a1661851c7055cf2f3c9af2b0924e0c76',1,'View::ManageAnimation']]],
-  ['drawtexture',['DrawTexture',['../classDrawTexture.html',1,'']]]
+  ['drawtexture',['DrawTexture',['../classDrawTexture.html',1,'']]],
+  ['directory_20description',['Directory description',['../md_README.html',1,'']]]
 ];

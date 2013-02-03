@@ -1,5 +1,6 @@
 var searchData=
 [
+  ['main_20page_20documentation',['Main page documentation',['../index.html',1,'']]],
   ['mainuserinterface',['MainUserInterface',['../classMainUserInterface.html',1,'']]],
   ['make',['Make',['../classView_1_1HealthBar.html#adaf212118d98abc5741033077b951553',1,'View::HealthBar::Make()'],['../classDialogFactory.html#a52123735c25cf3e12a8ce6acffa717b8',1,'DialogFactory::Make()']]],
   ['manageanimation',['ManageAnimation',['../classView_1_1ManageAnimation.html',1,'View']]],

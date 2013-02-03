@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['errordialog',['ErrorDialog',['../classErrorDialog.html',1,'']]]
+  ['errormanager',['ErrorManager',['../classView_1_1ErrorManager.html',1,'View']]]
 ];

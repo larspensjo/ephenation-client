@@ -8,7 +8,7 @@ var searchData=
   ['simpledialog',['SimpleDialog',['../classSimpleDialog.html',1,'']]],
   ['simpletextureshader',['SimpleTextureShader',['../classSimpleTextureShader.html',1,'']]],
   ['skybox',['SkyBox',['../classSkyBox.html',1,'']]],
-  ['soundcontrol',['SoundControl',['../classSoundControl.html',1,'']]],
+  ['soundcontrol',['SoundControl',['../classView_1_1SoundControl.html',1,'View']]],
   ['specialobject',['SpecialObject',['../structView_1_1ChunkObject_1_1SpecialObject.html',1,'View::ChunkObject']]],
   ['splitter',['Splitter',['../classSplitter.html',1,'']]],
   ['stageoneshader',['StageOneShader',['../classStageOneShader.html',1,'']]],
