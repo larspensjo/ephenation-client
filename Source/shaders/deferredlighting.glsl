@@ -127,7 +127,7 @@ void main(void)
 	float vertFogGrad = 1.0 - clamp(dot(-eyeDir, vec3(0,1,0))-0.1, 0.0, 0.25) / 0.25;
 
 	// The fog will go from transparent to opaque in "fogDepth" blocks.
-    const float fogDepth = UBOViewingDistance/5;
+    float fogDepth = UBOViewingDistance/5;
 
 	// Compute the horizontal fog gradient.
     float horFogGrad = clamp(cameraToWorldDistance-UBOViewingDistance+fogDepth, 0, fogDepth)/fogDepth;
