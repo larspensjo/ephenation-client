@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -24,7 +24,7 @@
 #include <string>
 #include <Rocket/Core.h>
 
-using std::string;
+namespace View {
 
 class MsgWindow {
 public:
@@ -33,7 +33,7 @@ public:
 	void Init(Rocket::Core::Element *rocketElement);
 	void SetAlternatePosition(int x, int y, bool enable=true);
 private:
-	string fCompleteMessage;
+	std::string fCompleteMessage;
 	Rocket::Core::Element *fRocketElement;
 
 	// Some special messages shall be directed if inventory screen is shown
@@ -42,3 +42,5 @@ private:
 };
 
 extern MsgWindow gMsgWindow;
+
+}

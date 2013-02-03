@@ -27,6 +27,8 @@
 #include "DrawText.h"
 #include "errormanager.h"
 
+using namespace View;
+
 // Every coordinate is 3 dimensions and two dimension texture
 struct vertex {
 	char v[3];

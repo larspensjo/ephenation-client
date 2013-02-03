@@ -195,7 +195,7 @@ void Inventory::UseObjectFunctionKey(int key) {
 	}
 
 	View::gSoundControl.RequestTrigSound("FAIL");
-	gMsgWindow.Add("You don't have any object of that type");
+	View::gMsgWindow.Add("You don't have any object of that type");
 }
 
 #define INVENTORY_SCALE 1.3f // How big the inventory screen will be. 2.0 would be a full X width.
@@ -578,7 +578,7 @@ bool Inventory::HandleMouseClick(int button, int action, int x, int y) {
 			if (validateDropZone(ic, x, y)) {
 				this->UseObjectMessage(&fItemList[dragItem], CMD_USE_ITEM);
 			} else if (validateDropOutside(ic, x, y)) {
-				gMsgWindow.SetAlternatePosition(x, y, true);
+				View::gMsgWindow.SetAlternatePosition(x, y, true);
 				this->UseObjectMessage(&fItemList[dragItem], CMD_DROP_ITEM);
 			}
 		}

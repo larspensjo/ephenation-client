@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -15,23 +15,19 @@
 // along with Ephenation.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-/*
- * BuildingBlocks.h
- *
- * Present a list of available building blocks.
- */
-
-#ifndef BUILDINGBLOCKS_H_
-#define BUILDINGBLOCKS_H_
+#pragma once
 
 class SimpleTextureShader;
 class DrawFont;
 
+namespace View {
+
+ /// Present a list of available building blocks.
 class BuildingBlocks {
 public:
-	static BuildingBlocks *Make(int numToDisplay); // Make an instance, but not before OpenGL has been initialized
+	static BuildingBlocks *Make(int numToDisplay); /// Make an instance, but not before OpenGL has been initialized
 	void Draw(glm::mat4 &projection);
-	void UpdateSelection(int pos); // Update what building block is selected
+	void UpdateSelection(int pos); /// Update what building block is selected
 	int CurrentBlockType(void) const;
 private:
 	void Init(int numToDisplay);
@@ -45,4 +41,4 @@ private:
 	int fCurrentSelection;
 };
 
-#endif /* BUILDINGBLOCKS_H_ */
+}

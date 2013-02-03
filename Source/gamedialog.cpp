@@ -71,6 +71,7 @@
 using namespace Controller;
 using View::SoundControl;
 using View::gSoundControl;
+using View::gMsgWindow;
 
 using std::string;
 
@@ -1068,7 +1069,7 @@ void gameDialog::init(void) {
 	if (maxRenderDistance < 5.0f)
 		maxRenderDistance = 5.0f;
 	gTranspShader.Init();
-	fBuildingBlocks = BuildingBlocks::Make(7); // TODO: Need something more adaptive than a constant.
+	fBuildingBlocks = View::BuildingBlocks::Make(7); // TODO: Need something more adaptive than a constant.
 	fShader = ChunkShader::Make(); // Singleton
 	fHealthBar = View::HealthBar::Make(); // Singleton
 	fDrawTexture = DrawTexture::Make();

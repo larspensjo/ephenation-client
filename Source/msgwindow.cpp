@@ -33,6 +33,8 @@
 
 #define ILL_SENT 0xFFFFFFFF
 
+using namespace View;
+
 MsgWindow::MsgWindow(): fRocketElement(0), fActivateDropMessage(false), fDropX(0), fDropY(0) {
 }
 
@@ -72,4 +74,4 @@ void MsgWindow::SetAlternatePosition(int x, int y, bool enable) {
 	fDropY = y;
 }
 
-MsgWindow gMsgWindow;
+MsgWindow View::gMsgWindow;

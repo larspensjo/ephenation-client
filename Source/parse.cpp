@@ -77,7 +77,7 @@ void DumpBytes(const unsigned char *b, int n) {
 		sprintf(buff2, "%d ", b[i]);
 		strcat(buff, buff2);
 	}
-	gMsgWindow.Add(buff);
+	View::gMsgWindow.Add(buff);
 }
 
 // Parse a 16-bit unsigned from two bytes. LSB first.
@@ -192,7 +192,7 @@ static void ServerMessage(const char *msg) {
 		sgPopup = sgPopup + &msg[1] + "\n";
 		return;
 	}
-	gMsgWindow.Add("%s", msg);
+	View::gMsgWindow.Add("%s", msg);
 	string s = msg;
 	size_t n = s.find_first_of(' ');
 	if (n != s.npos && s.length() > n) {
@@ -228,7 +228,7 @@ void Parse(const unsigned char *b, int n) {
 		float prevExp = Model::gPlayer.fExp;
 		Model::gPlayer.fExp = b[2] / 255.0f;
 		if (Model::gPlayer.fExp > prevExp && Model::gPlayer.fStatsAvailable)
-			gMsgWindow.Add("You gain %.1f%% experience points", (Model::gPlayer.fExp - prevExp)*100.0f);
+			View::gMsgWindow.Add("You gain %.1f%% experience points", (Model::gPlayer.fExp - prevExp)*100.0f);
 		Model::gPlayer.fLevel = ParseUint32(b+3);
 		Model::gPlayer.fFlags = ParseUint32(b+7);
 		Model::gPlayer.fPreviousHp = Model::gPlayer.fHp;
@@ -380,7 +380,7 @@ void Parse(const unsigned char *b, int n) {
 			std::stringstream ss;
 			ss << dmg*100/255;
 			gScrollingMessages.AddMessagePlayer(ss.str(), glm::vec3(0, -1, -1)); // Use red color for player
-			gMsgWindow.Add("Monster hit you with %d%% damage", dmg*100/255);
+			View::gMsgWindow.Add("Monster hit you with %d%% damage", dmg*100/255);
 			gSoundControl.RequestSound(SoundControl::SMonsterHits);
 		}
 		break;
@@ -388,7 +388,7 @@ void Parse(const unsigned char *b, int n) {
 		for (int i=1; i<n; i += 5) {
 			unsigned long id = ParseUint32(b+i);
 			unsigned long dmg = b[i+4];
-			// gMsgWindow.Add("You hit monster %d by %d%% damage", id, dmg*100/255);
+			// View::gMsgWindow.Add("You hit monster %d by %d%% damage", id, dmg*100/255);
 			gSoundControl.RequestSound(SoundControl::SPlayerHits);
 			auto m = Model::gMonsters.Find(id);
 			if (m != nullptr) {
@@ -488,7 +488,7 @@ void Parse(const unsigned char *b, int n) {
 		break;
 	}
 	default:
-		gMsgWindow.Add("Parse: Unknown server command %d, length %d", b[0], n);
+		View::gMsgWindow.Add("Parse: Unknown server command %d, length %d", b[0], n);
 		DumpBytes(b, n);
 		break;
 	}
