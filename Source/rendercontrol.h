@@ -59,7 +59,7 @@ public:
 	void ShadowMapMatrix(const glm::mat4 &) const;
 
 	/// Do the actual drawing
-	/// @param underwater True if underwater effects shall be applied
+	/// @param underWater True if underwater effects shall be applied
 	/// @param selectedObject This object shall be visibly marked
 	/// @param showMap True if a map shall be shown
 	/// @param mapWidth Pixels in width used when drawing a map

@@ -15,7 +15,7 @@
 // along with Ephenation.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-/// @file primitives
+/// @file primitives.h
 /// Manage various global types and variables.
 /// @todo The number of global variables should be minimized.
 
