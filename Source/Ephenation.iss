@@ -7,7 +7,7 @@
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
 AppId={{C788FC6C-60BF-4D59-B6C5-EAB408F761F8}
 AppName=Ephenation
-AppVersion=4.2
+AppVersion=4.3
 AppPublisher=Ephenation
 AppPublisherURL=www.ephenation.net
 AppSupportURL=www.ephenation.net
@@ -18,8 +18,8 @@ AllowNoIcons=yes
 OutputBaseFilename=setup
 Compression=lzma
 SolidCompression=yes
-InfoBeforeFile=Disclaimer.rtf
-InfoAfterFile=readme.txt
+InfoBeforeFile=../Disclaimer.rtf
+InfoAfterFile=../readme.txt
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
@@ -31,8 +31,8 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 Source: "ephenation.exe"; DestDir: "{app}"; DestName: "ephenation.exe"; Flags: ignoreversion
 Source: "ephenation.ico"; DestDir: "{app}"; Flags: ignoreversion
 Source: "*.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "readme.txt"; DestDir: "{app}"; Flags: ignoreversion
-Source: "win32/OpenAL/redist/oalinst.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "../readme.txt"; DestDir: "{app}"; Flags: ignoreversion
+Source: "contrib/win32/OpenAL/redist/oalinst.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "\MinGW\msys\1.0\bin\libvorbis-0.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "\MinGW\msys\1.0\bin\libogg-0.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "\MinGW\msys\1.0\bin\libvorbisfile-3.dll"; DestDir: "{app}"; Flags: ignoreversion
@@ -40,13 +40,12 @@ Source: "\MinGW\msys\1.0\bin\glew32.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "\MinGW\bin\pthreadGC2.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "\MinGW\bin\libgcc_s_dw2-1.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "\MinGW\bin\libstdc++-6.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "Disclaimer.rtf"; DestDir: "{app}"; Flags: ignoreversion
+Source: "../Disclaimer.rtf"; DestDir: "{app}"; Flags: ignoreversion
 Source: "sounds\*"; DestDir: "{app}\sounds"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "textures\*"; DestDir: "{app}\textures"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "models\*.dae"; DestDir: "{app}\models"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "models\*.obj"; DestDir: "{app}\models"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "models\*.mtl"; DestDir: "{app}\models"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "shaders\*.glsl"; DestDir: "{app}\shaders"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "dialogs\*"; DestDir: "{app}\dialogs"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "models\*"; DestDir: "{app}\models"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
