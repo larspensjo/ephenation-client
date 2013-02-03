@@ -66,6 +66,7 @@ void main(void)
 	vec4 hdr = diffuse/(1-diffuse);
 	// Temporary helper data
 	vec3 cameraToWorld = UBOCamera.xyz-worldPos.xyz;
+	float cameraToWorldDistance = length(cameraToWorld);
 	vec3 eyeDir = normalize(cameraToWorld);
 	vec3 vHalfVector = normalize(sundir.xyz+eyeDir);
 	float inSun = worldPos.a; // Is greater than 0 if this position is reached by the sun
@@ -79,7 +80,7 @@ void main(void)
 		vec3 pos2 = texture(posTex, ind).xyz;
 		vec3 normal2 = texture(normalTex, ind).xyz;
 		const float maxdist = 1; // Ignore contributions when distance difference exceeds this value
-		float dist = min(abs(distance(UBOCamera.xyz, pos2) - length(cameraToWorld)), maxdist); // A value between 0 and maxdist.
+		float dist = min(abs(distance(UBOCamera.xyz, pos2) - cameraToWorldDistance), maxdist); // A value between 0 and maxdist.
 		//		Use a weight that depends on the distance difference. Also, if there is a sharp corner, we don't want
 		//		shadows to bleed around the corner. This this is prevented by using a test for normals.
 		float weight = (maxdist-dist)*dot(normal.xyz, normal2); // A value from 0 to 1
@@ -121,6 +122,20 @@ void main(void)
 	    fragColor.g = (fragColor.g)/4;
 	    fragColor.b = (fragColor.b)/4;
 	}
+
+	// Use a vertical fog gradient. This will make far distant sky come through.
+	float vertFogGrad = 1.0 - clamp(dot(-eyeDir, vec3(0,1,0))-0.1, 0.0, 0.25) / 0.25;
+
+	// The fog will go from transparent to opaque in "fogDepth" blocks.
+    const float fogDepth = UBOViewingDistance/5;
+
+	// Compute the horizontal fog gradient.
+    float horFogGrad = clamp(cameraToWorldDistance-UBOViewingDistance+fogDepth, 0, fogDepth)/fogDepth;
+
+    // Apply the fog of distance.
+    if (!Uwater)
+        fragColor = mix(fragColor, vec3(0.6, 0.6, 0.6) + UBOambientLight*0.7, vertFogGrad*horFogGrad);
+
 //"	fragColor.rgb = vHalfVector;
 //"	fragColor = (normal+1)/2;
 //"	fragColor = shadowmapcoord.z;
