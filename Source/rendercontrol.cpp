@@ -478,7 +478,7 @@ void RenderControl::drawLocalFog(void) {
 	glDisable(GL_DEPTH_TEST);
 	for (int i=0; i < count; i++) {
 		// Extract the integral part (fog strength), and the fractional part (ambient).
-		float ambient = modff(list[i].w, &list[i].w);   // TODO: Ugly, will modify original list
+		float ambient = modff(list[i].w, &list[i].w);   /// @todo Ugly, will modify original list
 		fAddLocalFog->Draw(list[i], ambient);
 	}
 	glEnable(GL_DEPTH_TEST);

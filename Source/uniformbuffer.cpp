@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -19,6 +19,7 @@
 #include "Options.h"
 #include "primitives.h"
 #include "render.h"
+#include "player.h"
 
 UniformBuffer gUniformBuffer;
 
@@ -43,6 +44,7 @@ struct Data {
 	int dynamicshadows;
 	int windowheight; // Height of window, in pixels.
 	int toggleTesting;
+	int belowGround; // True when player is below ground
 	float exposure;
 	float ambientLight;
 };
@@ -78,6 +80,7 @@ void UniformBuffer::Update(void) const {
 	data.toggleTesting = gToggleTesting;
 	data.exposure = gOptions.fExposure;
 	data.ambientLight = gOptions.fAmbientLight / 200.0f;
+	data.belowGround = Model::gPlayer.BelowGround();
 
 	glBindBuffer(GL_UNIFORM_BUFFER, fUBOBuffer);
 	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(Data), &data);

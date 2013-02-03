@@ -29,6 +29,7 @@ layout(std140) uniform GlobalData {
 	int UBODynamicshadows;
 	int UBOWindowHeight;
 	int UBOToggleTesting;
+	int UBOBelowGround;
 	float UBOexposure;
 	float UBOambientLight;
 };

@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -129,12 +129,18 @@ void main(void)
 	// The fog will go from transparent to opaque in "fogDepth" blocks.
     float fogDepth = UBOViewingDistance/5;
 
-	// Compute the horizontal fog gradient.
+	// Compute the horizontal fog gradient. This will enable the sky when looking upwards.
     float horFogGrad = clamp(cameraToWorldDistance-UBOViewingDistance+fogDepth, 0, fogDepth)/fogDepth;
 
     // Apply the fog of distance.
-    if (!Uwater)
-        fragColor = mix(fragColor, vec3(0.6, 0.6, 0.6) + UBOambientLight*0.7, vertFogGrad*horFogGrad);
+    if (!Uwater) {
+        vec3 fogColor = vec3(0.6, 0.6, 0.6);
+        if (UBOBelowGround == 1) {
+            fogColor = vec3(0, 0, 0); // Use dark fog
+            vertFogGrad = 1.0;        // Use fog when looking in all directions
+        }
+        fragColor = mix(fragColor, fogColor + UBOambientLight*0.7, vertFogGrad*horFogGrad);
+    }
 
 //"	fragColor.rgb = vHalfVector;
 //"	fragColor = (normal+1)/2;
