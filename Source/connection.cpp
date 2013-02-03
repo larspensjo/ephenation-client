@@ -307,7 +307,7 @@ bool PerformLoginProcedure(const string &email, const string &licencekey, const 
 	unsigned char b[] = { 0x03, 0x00, CMD_GET_COORDINATE }; // GET_COORDINATE
 	SendMsg(b, sizeof b);
 
-	gSoundControl.RequestMusicMode(SoundControl::SMusicModeTourist);
+	View::gSoundControl.RequestMusicMode(View::SoundControl::SMusicModeTourist);
 
 	return true;
 }

@@ -43,7 +43,9 @@
 // NOTE: The current value corresponds approximately to the "compass circle" in the game
 #define SOUND_DISTANCE_MAX 9500000.0f
 
-SoundControl gSoundControl;
+using namespace View;
+
+SoundControl View::gSoundControl;
 
 // Macro that computes number of elements of a static vector
 #define NELEM(v) (sizeof v / sizeof v[0])
@@ -51,7 +53,7 @@ SoundControl gSoundControl;
 /*
 ** SUPPORT FUNCTIONS
 */
-ALenum err; // Declaring this global for the check error macro to work everywhere
+static ALenum err; // Declaring this global for the check error macro to work everywhere
 #define CheckForError(x) err = alGetError(); if( err != AL_NO_ERROR) { printf("SoundControl: error %s at %s!\n",GetALErrorString(err),x);}
 
 // Helper function for errors

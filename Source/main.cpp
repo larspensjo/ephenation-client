@@ -331,7 +331,7 @@ int main(int argc, char** argv) {
 	glswInit();
 	glswSetPath("shaders/", ".glsl");
 	ConnectToServer(host, port);
-	gSoundControl.Init();
+	View::gSoundControl.Init();
 	TSExec::gTSExec.Init(); // This must be called after initiating gSoundControl.
 
 	if (gDebugOpenGL)
@@ -407,7 +407,7 @@ int main(int argc, char** argv) {
 	gQuadStage1.Init();
 	gBillboard.Init();
 
-	gSoundControl.RequestMusicMode(SoundControl::SMusicModeMenu);
+	View::gSoundControl.RequestMusicMode(View::SoundControl::SMusicModeMenu);
 	glEnable(GL_DEPTH_TEST); // Always enabled by default
 
 	// Immediately clear screen, to minimize chance that something undefined is shown.

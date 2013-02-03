@@ -248,7 +248,7 @@ void Monsters::Cleanup(void) {
 		} else {
 			// Remove this monster as a creature in SoundControl
 			// printf("Remove monster %d\n", it->second->id);
-			gSoundControl.RemoveCreatureSound(SoundControl::SMonster, it->second->id);
+			View::gSoundControl.RemoveCreatureSound(View::SoundControl::SMonster, it->second->id);
 			fMonsters.erase(it++);
 		}
 	}

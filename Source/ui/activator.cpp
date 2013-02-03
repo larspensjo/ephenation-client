@@ -1,4 +1,4 @@
-// Copyright 2012,2013 The Ephenation Authors
+// Copyright 2012-2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -29,6 +29,8 @@
 #include "../SoundControl.h"
 
 #define NELEM(x) (sizeof(x) / sizeof (x[0]))
+
+using namespace View;
 
 void ActivatorDialog::UseDocument(Rocket::Core::ElementDocument *doc, std::function<void()> callback) {
 	this->Push(doc, callback); // Allways push the previous document first

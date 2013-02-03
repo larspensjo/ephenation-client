@@ -193,6 +193,6 @@ void OtherPlayers::Cleanup(void) {
 		pl.second.ingame = false;
 
 		// Remove this players as a creature in SoundControl
-		gSoundControl.RemoveCreatureSound(SoundControl::SOtherPlayer, pl.second.id);
+		View::gSoundControl.RemoveCreatureSound(View::SoundControl::SOtherPlayer, pl.second.id);
 	}
 }

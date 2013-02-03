@@ -69,6 +69,8 @@
 #include "ChunkProcess.h"
 
 using namespace Controller;
+using View::SoundControl;
+using View::gSoundControl;
 
 using std::string;
 

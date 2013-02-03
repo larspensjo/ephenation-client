@@ -66,6 +66,8 @@ string gParseMessageAtLogin;
 #define NELEM(x) (sizeof x / sizeof x[0])
 
 using namespace Controller;
+using View::SoundControl;
+using View::gSoundControl;
 
 void DumpBytes(const unsigned char *b, int n) {
 	char buff[1000];
@@ -173,7 +175,7 @@ ChunkCoord *UpdateLSB(ChunkCoord *cc, int x, int y, int z) {
 static void ServerMessage(const char *msg) {
 	if (msg[0] == '#') {
 		// This is a special string to be used for sound effects.
-		gSoundControl.RequestTrigSound(msg+1);
+		View::gSoundControl.RequestTrigSound(msg+1);
 		if (strncmp(msg+1, "BOOM", 4) == 0)
 			Controller::gGameDialog.RequestEffect(Controller::gameDialog::EFFECT_ZOOM2);
 		if (strlen(msg) < 6)
@@ -197,12 +199,12 @@ static void ServerMessage(const char *msg) {
 		// Found a space.
 		int cmp = s.compare(n+1, 5, "says:");
 		if (cmp == 0) {
-			gSoundControl.RequestSound(SoundControl::SInterfacePing);
+			View::gSoundControl.RequestSound(SoundControl::SInterfacePing);
 		}
 
 		cmp = s.compare(n+1, 10, "tells you:");
 		if (cmp == 0) {
-			gSoundControl.RequestSound(SoundControl::SInterfacePing);
+			View::gSoundControl.RequestSound(SoundControl::SInterfacePing);
 		}
 	}
 	// printf("Parse: message '%s'\n", b+1);

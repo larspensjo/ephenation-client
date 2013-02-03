@@ -43,6 +43,7 @@
 #include "msgwindow.h"
 
 using namespace std;
+using View::SoundControl;
 
 enum DragAndDropState {
 	DadNone,     // No Drag and drop in progress
@@ -137,7 +138,7 @@ void Inventory::SetAmount(const char *code, int n, unsigned lvl) {
 		fItemList[i].fAmount = n;
 		// Give a sound feed back to the player, but not if this is the initial list sent in the login process.
 		if (n > prevAmount && gMode.Get() != GameMode::WAIT_ACK) {
-			gSoundControl.RequestSound(fItemList[i].fInfo->song);
+			View::gSoundControl.RequestSound(fItemList[i].fInfo->song);
 			gScrollingMessages.AddMessagePlayer(fItemList[i].fInfo->descr);
 		}
 		// printf("Inventory::SetAmount code '%s': count %d descr '%s' level %d\n", code, n, fsObjectMap[i].descr, lvl);
@@ -159,7 +160,7 @@ void Inventory::SetAmount(const char *code, int n, unsigned lvl) {
 	fItemList[fNumItems].fLevel = lvl;
 	fItemList[fNumItems].fInfo = info;
 	if (gMode.Get() != GameMode::WAIT_ACK) {
-		gSoundControl.RequestSound(fItemList[fNumItems].fInfo->song);
+		View::gSoundControl.RequestSound(fItemList[fNumItems].fInfo->song);
 		gScrollingMessages.AddMessagePlayer(fItemList[fNumItems].fInfo->descr);
 	}
 	fNumItems++;
@@ -193,7 +194,7 @@ void Inventory::UseObjectFunctionKey(int key) {
 		}
 	}
 
-	gSoundControl.RequestTrigSound("FAIL");
+	View::gSoundControl.RequestTrigSound("FAIL");
 	gMsgWindow.Add("You don't have any object of that type");
 }
 

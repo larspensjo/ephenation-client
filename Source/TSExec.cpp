@@ -45,7 +45,7 @@ void *TSExec::Thread(void *p) {
 		if (gMode.Get() == GameMode::EXIT)
 			pthread_exit(0);
 		// printf("TSExec::Thread %d\n", context->fThread);
-		gSoundControl.RequestSound(SoundControl::STSExec); // This will wakeup this process
+		View::gSoundControl.RequestSound(View::SoundControl::STSExec); // This will wakeup this process
 	}
 	return 0; // Not reached
 }

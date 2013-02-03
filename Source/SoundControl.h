@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -33,6 +33,9 @@
 #include <ogg/ogg.h>
 #include <vorbis/vorbisfile.h>
 
+namespace View {
+
+/// @brief Manage the sound effects and music
 class SoundControl {
 public:
 	SoundControl(void);
@@ -224,3 +227,5 @@ private:
 
 // One sound server, to be used to play the sounds.
 extern SoundControl gSoundControl;
+
+}
