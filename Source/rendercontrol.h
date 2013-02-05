@@ -32,6 +32,7 @@ class SkyBox;
 class AddLocalFog;
 class AddSSAO;
 class MainUserInterface;
+class DownSamplingLuminance;
 
 namespace Model {
 	class Object;
@@ -55,7 +56,10 @@ public:
 	/// Initialize the FBO to a specified size, and allocate buffers.
 	void Resize(GLsizei width, GLsizei height);
 
-	void Init(void);
+	/// Initialize
+	/// @param lumSamplingFactor The windows size is divided by this to get the size of the luminance map
+	void Init(int lightSamplingFactor);
+
 	void ShadowMapMatrix(const glm::mat4 &) const;
 
 	/// Do the actual drawing
@@ -82,6 +86,10 @@ private:
 	GLuint fDiffuseTexture, fPositionTexture, fNormalsTexture, fBlendTexture, fLightsTexture;
 	GLsizei fWidth, fHeight;
 
+	GLuint fboDownSampleLum;
+	GLuint fDownSampleLumTexture;
+	int fLightSamplingFactor;
+
 	std::unique_ptr<AddDynamicShadow> fAddDynamicShadow;
 	std::unique_ptr<ShadowRender> fShadowRender;
 	std::unique_ptr<DeferredLighting> fDeferredLighting;
@@ -90,6 +98,7 @@ private:
 	std::unique_ptr<AddLocalFog> fAddLocalFog;
 	std::unique_ptr<AddSSAO> fAddSSAO;
 	std::unique_ptr<SkyBox> fSkyBox;
+	std::unique_ptr<DownSamplingLuminance> fDownSamplingLuminance;
 	ChunkShader *fShader;
 	AnimationShader *fAnimation;
 	AnimationModels fAnimationModels;
@@ -98,6 +107,7 @@ private:
 	float fRequestedCameraDistance; /// Requested camera distance behind the player
 
 	void ComputeShadowMap(void);
+	void ComputeAverageLighting(bool underWater);
 
 	void drawClearFBO(void); // Initialize all images in the FBO
 	void drawClear(void); // Clear the main window

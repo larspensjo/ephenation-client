@@ -66,7 +66,7 @@ again:
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, fAtlasId, 0);
 	GLenum fboStatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 	if (fboStatus == GL_FRAMEBUFFER_UNSUPPORTED && internalFormat == GL_RGBA2) {
-		// Some cars doesn't support GL_RGBA2.
+		// Some cards doesn't support GL_RGBA2.
 		internalFormat = GL_RGBA;
 		glDeleteFramebuffers(1, &fboAtlas); // It will be created again
 		goto again;
