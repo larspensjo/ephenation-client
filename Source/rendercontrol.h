@@ -33,6 +33,7 @@ class AddLocalFog;
 class AddSSAO;
 class MainUserInterface;
 class DownSamplingLuminance;
+class FBOFlat;
 
 namespace Model {
 	class Object;
@@ -86,7 +87,6 @@ private:
 	GLuint fDiffuseTexture, fPositionTexture, fNormalsTexture, fBlendTexture, fLightsTexture;
 	GLsizei fWidth, fHeight;
 
-	GLuint fboDownSampleLum;
 	GLuint fDownSampleLumTexture;
 	int fLightSamplingFactor;
 
@@ -99,6 +99,7 @@ private:
 	std::unique_ptr<AddSSAO> fAddSSAO;
 	std::unique_ptr<SkyBox> fSkyBox;
 	std::unique_ptr<DownSamplingLuminance> fDownSamplingLuminance;
+	std::unique_ptr<FBOFlat> fboDownSampleLum;
 	ChunkShader *fShader;
 	AnimationShader *fAnimation;
 	AnimationModels fAnimationModels;

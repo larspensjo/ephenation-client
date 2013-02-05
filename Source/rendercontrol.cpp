@@ -55,7 +55,7 @@
 #include "ui/mainuserinterface.h"
 #include "animationmodels.h"
 #include "modes.h"
-
+#include "fboflat.h"
 
 #define NELEM(x) (sizeof x / sizeof x[0])
 
@@ -70,7 +70,6 @@ RenderControl::RenderControl() {
 	fCameraDistance = 0.0f;
 	fRequestedCameraDistance = 0.0f;
 
-	fboDownSampleLum = 0;
 	fDownSampleLumTexture = 0;
 }
 
@@ -90,10 +89,8 @@ RenderControl::~RenderControl() {
 void RenderControl::FreeFBO() {
 	if (fboName != 0) {
 		glDeleteFramebuffers(1, &fboName);
-		glDeleteFramebuffers(1, &fboDownSampleLum);
 	}
 	fboName = 0;
-	fboDownSampleLum = 0;
 }
 
 void RenderControl::Init(int lightSamplingFactor) {
@@ -207,10 +204,6 @@ void RenderControl::Resize(GLsizei width, GLsizei height) {
 	}
 
 
-	//
-	// Create the FBO used for drawing the luminance map.
-	glGenFramebuffers(1, &fboDownSampleLum);
-
 	// Generate and bind the texture for lights
 	glBindTexture(GL_TEXTURE_2D, fDownSampleLumTexture);
 	int w = gViewport[2] / fLightSamplingFactor;
@@ -221,17 +214,10 @@ void RenderControl::Resize(GLsizei width, GLsizei height) {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-	// Attach all textures and the depth buffer
-	glBindFramebuffer(GL_FRAMEBUFFER, fboDownSampleLum);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, fDownSampleLumTexture, 0);
-	glReadBuffer(GL_NONE);
-
-	fboStatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-	if (fboStatus != GL_FRAMEBUFFER_COMPLETE) {
-		ErrorDialog("RenderControl::Resize: Luminance frameBuffer incomplete: %s (0x%x)\n", FrameBufferError(fboStatus), fboStatus);
-		exit(1);
-	}
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	//
+	// Create the FBO used for drawing the luminance map.
+	fboDownSampleLum.reset(new FBOFlat);
+	fboDownSampleLum->Attach(fDownSampleLumTexture);
 
 	checkError("RenderControl::Resize");
 }
@@ -743,7 +729,7 @@ void RenderControl::UpdateCameraPosition(int wheelDelta) {
 void RenderControl::ComputeAverageLighting(bool underWater) {
 	static TimeMeasure tm("AvgLght");
 	tm.Start();
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fboDownSampleLum);
+	fboDownSampleLum->EnableWriting();
 	int w = gViewport[2] / fLightSamplingFactor;
 	int h = gViewport[3] / fLightSamplingFactor;
 	glViewport(0, 0, w, h); // set viewport to texture dimensions
