@@ -120,6 +120,8 @@
 		<Unit filename="dialogs/userinterface.rml" />
 		<Unit filename="errormanager.cpp" />
 		<Unit filename="errormanager.h" />
+		<Unit filename="fboflat.cpp" />
+		<Unit filename="fboflat.h" />
 		<Unit filename="gamedialog.cpp" />
 		<Unit filename="gamedialog.h" />
 		<Unit filename="imageloader.cpp" />
@@ -184,6 +186,9 @@
 		<Unit filename="shaders/downsmpllum.glsl" />
 		<Unit filename="shaders/downsmpllum.h" />
 		<Unit filename="shaders/dynamicshadow.glsl" />
+		<Unit filename="shaders/gaussblur.cpp" />
+		<Unit filename="shaders/gaussblur.glsl" />
+		<Unit filename="shaders/gaussblur.h" />
 		<Unit filename="shaders/localfog.glsl" />
 		<Unit filename="shaders/modulatedtexture.glsl" />
 		<Unit filename="shaders/modulatedtextureshader.cpp" />
