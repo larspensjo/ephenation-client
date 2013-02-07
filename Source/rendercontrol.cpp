@@ -74,8 +74,8 @@ RenderControl::RenderControl() {
 }
 
 RenderControl::~RenderControl() {
-	this->FreeFBO();
 	if (fDepthBuffer != 0) {
+		glDeleteFramebuffers(1, &fboName);
 		glDeleteTextures(1, &fDepthBuffer);
 		glDeleteTextures(1, &fDiffuseTexture);
 		glDeleteTextures(1, &fPositionTexture);
@@ -86,14 +86,19 @@ RenderControl::~RenderControl() {
 	}
 }
 
-void RenderControl::FreeFBO() {
-	if (fboName != 0) {
-		glDeleteFramebuffers(1, &fboName);
-	}
-	fboName = 0;
-}
-
 void RenderControl::Init(int lightSamplingFactor) {
+	// This only has to be done first time
+	glGenRenderbuffers(1, &fDepthBuffer);
+	glGenTextures(1, &fDownSampleLumTextureBlurred); gDebugTextures.push_back(fDownSampleLumTextureBlurred); // Add this texture to the debugging list of textures
+	glGenTextures(1, &fDownSampleLumTexture); gDebugTextures.push_back(fDownSampleLumTexture); // Add this texture to the debugging list of textures
+	glGenTextures(1, &fDiffuseTexture); gDebugTextures.push_back(fDiffuseTexture); // Add this texture to the debugging list of textures
+	glGenTextures(1, &fPositionTexture); gDebugTextures.push_back(fPositionTexture);
+	glGenTextures(1, &fNormalsTexture); gDebugTextures.push_back(fNormalsTexture);
+	glGenTextures(1, &fBlendTexture); gDebugTextures.push_back(fBlendTexture);
+	glGenTextures(1, &fLightsTexture); gDebugTextures.push_back(fLightsTexture);
+
+	glGenFramebuffers(1, &fboName);
+
 	fLightSamplingFactor = lightSamplingFactor;
 	fAddDynamicShadow.reset(new AddDynamicShadow);
 	fAddDynamicShadow->Init();
@@ -127,21 +132,6 @@ void RenderControl::Init(int lightSamplingFactor) {
 
 void RenderControl::Resize(GLsizei width, GLsizei height) {
 	fWidth = width; fHeight = height;
-	// This function can be called repeatedly, when window size changes.
-	this->FreeFBO();
-
-	glGenFramebuffers(1, &fboName);
-
-	if (fDepthBuffer == 0) {
-		// This only has to be done first time
-		glGenRenderbuffers(1, &fDepthBuffer);
-		glGenTextures(1, &fDownSampleLumTexture); gDebugTextures.push_back(fDownSampleLumTexture); // Add this texture to the debugging list of textures
-		glGenTextures(1, &fDiffuseTexture); gDebugTextures.push_back(fDiffuseTexture); // Add this texture to the debugging list of textures
-		glGenTextures(1, &fPositionTexture); gDebugTextures.push_back(fPositionTexture);
-		glGenTextures(1, &fNormalsTexture); gDebugTextures.push_back(fNormalsTexture);
-		glGenTextures(1, &fBlendTexture); gDebugTextures.push_back(fBlendTexture);
-		glGenTextures(1, &fLightsTexture); gDebugTextures.push_back(fLightsTexture);
-	}
 
 	// Generate and bind the texture depth information
 	glBindRenderbuffer(GL_RENDERBUFFER, fDepthBuffer);

@@ -80,8 +80,6 @@ public:
 	bool ThirdPersonView() const { return fCameraDistance > 2.0f; }
 private:
 
-	// Free the buffers. Also needed to reinitialize for a new size.
-	void FreeFBO();
 	GLuint fboName;
 	GLuint fDepthBuffer; // Render target buffers
 	GLuint fDiffuseTexture, fPositionTexture, fNormalsTexture, fBlendTexture, fLightsTexture;

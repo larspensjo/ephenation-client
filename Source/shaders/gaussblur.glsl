@@ -4,9 +4,12 @@
 -- Vertex
 
 layout (location=0) in vec2 vertex;
+out vec2 screen;             // Screen coordinate
 void main(void)
 {
-	gl_Position = vec4(vertex*2-1, 0, 1); // Transform from interval 0 to 1, to interval -1 to 1.
+	vec4 pos = vec4(vertex*2-1, 0, 1); // Transform from interval 0 to 1, to interval -1 to 1.
+	gl_Position = pos;
+	screen = pos.xy/2+0.5;
 }
 
 -- Fragment
@@ -28,11 +31,13 @@ uniform float UnumBlurPixelsPerSide = 4.0f;
 // This uniform should either have the value 1,0 or 0,1.
 uniform vec2 UblurMultiplyVec = vec2(0.0f, 1.0f);
 
+in vec2 screen;               // The screen position
+
 layout(location = 0) out vec3 fragColor;
 
 void main() {
 	ivec2 bitmapSize = textureSize(UblurSampler, 0);
-	vec2 pixelSize = 1.0 / float(bitmapSize);
+	vec2 pixelSize = 1.0 / vec2(bitmapSize);
 	// Incremental Gaussian Coefficent Calculation (See GPU Gems 3 pp. 877 - 889)
 	vec3 incrementalGaussian;
 	incrementalGaussian.x = 1.0f / (sqrt(2.0f * pi) * Usigma);
@@ -43,14 +48,14 @@ void main() {
 	float coefficientSum = 0.0f;
 
 	// Take the central sample first.
-	avgValue += texture2D(UblurSampler, gl_TexCoord[0].xy) * incrementalGaussian.x;
+	avgValue += texture2D(UblurSampler, screen) * incrementalGaussian.x;
 	coefficientSum += incrementalGaussian.x;
 	incrementalGaussian.xy *= incrementalGaussian.yz;
-	
-	vec2 offset = pixelSize * UblurMultiplyVec; // Component-wise 
+
+	vec2 offset = pixelSize * UblurMultiplyVec; // Component-wise
 	for (float i = 1.0f; i <= UnumBlurPixelsPerSide; i++) {
-		avgValue += texture2D(UblurSampler, gl_TexCoord[0].xy - i*offset) * incrementalGaussian.x;         
-		avgValue += texture2D(UblurSampler, gl_TexCoord[0].xy + i*offset) * incrementalGaussian.x;         
+		avgValue += texture2D(UblurSampler, screen - i*offset) * incrementalGaussian.x;
+		avgValue += texture2D(UblurSampler, screen + i*offset) * incrementalGaussian.x;
 		coefficientSum += 2 * incrementalGaussian.x;
 		incrementalGaussian.xy *= incrementalGaussian.yz;
 	}
