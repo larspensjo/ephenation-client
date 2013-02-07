@@ -16,8 +16,11 @@
 //
 
 #include <GL/glew.h>
+#include <string>
 
 #include "timemeasure.h"
+
+using std::string;
 
 void TimeMeasure::Report(void) {
 	static unsigned prevSize = 0;

@@ -29,8 +29,8 @@ public:
 	/// Use this to create a static instance.
 	/// @param title A string used in the report.
 	TimeMeasure(const std::string &title) : fQuery(0), fFirst(true), fTitle(title) {}
-	
-	/// Start the timer. 
+
+	/// Start the timer.
 	void Start() {
 		if (!gDebugOpenGL)
 			return;
@@ -46,7 +46,7 @@ public:
 		}
 		glBeginQuery(GL_TIME_ELAPSED, fQuery);
 	}
-	
+
 	/// Stop the timer.
 	void Stop(void) {
 		if (!gDebugOpenGL)
@@ -59,7 +59,7 @@ public:
 private:
 	GLuint fQuery;
 	bool fFirst;
-	string fTitle;
+	std::string fTitle;
 	static std::map<GLuint, double> fResults;
-	static std::map<GLuint, string> fTitles;
+	static std::map<GLuint, std::string> fTitles;
 };
