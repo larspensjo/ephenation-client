@@ -56,9 +56,9 @@ void ChunkShader::PreLinkCallback(GLuint prg) {
 
 void ChunkShader::GetLocations(void) {
 	fModelMatrixIndex = this->GetUniformLocation("modelMatrix");
-	fFirstTextureIndex = this->GetUniformLocation("firstTexture");
 	fTextOffsMultiInd = this->GetUniformLocation("textOffsMulti");
 
+	glUniform1i(this->GetUniformLocation("firstTexture"), 0); // Always 0
 	checkError("ChunkShader::GetLocations");
 }
 
@@ -67,18 +67,12 @@ void ChunkShader::Model(const glm::mat4 &mat) {
 		glUniformMatrix4fv(fModelMatrixIndex, 1, GL_FALSE, &mat[0][0]); // Send our modelView matrix to the shader
 }
 
-void ChunkShader::FirstTexture(int ind) {
-	if (fFirstTextureIndex != -1)
-		glUniform1i(fFirstTextureIndex, 0);
-}
-
 void ChunkShader::TextureOffsetMulti(float offsX, float offsY, float mult) {
 	glUniform3f(fTextOffsMultiInd, offsX, offsY, mult);
 }
 
 ChunkShader::ChunkShader() {
 	fModelMatrixIndex = -1;
-	fFirstTextureIndex = -1;
 	fTextOffsMultiInd = -1;
 }
 

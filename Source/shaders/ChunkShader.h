@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -17,20 +17,18 @@
 
 #pragma once
 
-//
-// A shader program used for drawing chunks.
-// No lighting effects etc.
-// This is a singleton class.
-//
-
 #include "StageOneShader.h"
 
+/// A shader program used for drawing chunks.
+/// No lighting effects etc.
 class ChunkShader : public StageOneShader {
 public:
+	/// Make an instance
 	static ChunkShader *Make(void);
 
-	void Model(const glm::mat4 &);// Define the Model matrix
-	void FirstTexture(int ind);
+	/// Define the Model matrix
+	void Model(const glm::mat4 &);
+
 	virtual void TextureOffsetMulti(float offsX, float offsY, float mult); // Override
 protected:
 	virtual void PreLinkCallback(GLuint prg);
@@ -43,6 +41,5 @@ private:
 	static ChunkShader fgSingleton; // This is the singleton instance
 
 	GLint fModelMatrixIndex;
-	GLint fFirstTextureIndex;
 	GLint fTextOffsMultiInd;
 };
