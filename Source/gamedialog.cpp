@@ -454,9 +454,6 @@ void gameDialog::handleResize(int w, int h) {
 	if (gOptions.fFullScreen)
 		aspectRatio = gDesktopAspectRatio;
 	gProjectionMatrix  = glm::perspective(renderViewAngle, aspectRatio, 0.01f, maxRenderDistance);  // Create our perspective projection matrix
-	gTranspShader.EnableProgram();
-	gTranspShader.Projection((float)w, (float)h);
-	gTranspShader.DisableProgram();
 	glViewport(0, 0, w, h);
 	gViewport = glm::vec4(0.0f, 0.0f, (float)w, (float)h );
 	fRenderControl.Resize(w, h);

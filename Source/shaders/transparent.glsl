@@ -20,6 +20,7 @@ uniform mat4 modelMatrix;
 in vec4 vertex; // First 3 are vertex coordinates, the 4:th is texture data coded as two scaled bytes
 out vec2 fragmentTexCoord;
 out vec3 position;
+out vec2 screen;             // Screen coordinate
 void main(void)
 {
 	vec4 vertexScaled = vec4(vec3(vertex) / VERTEXSCALING, 1);
@@ -27,7 +28,9 @@ void main(void)
 	vec2 tex = vec2(t1&0xFF, t1>>8);
 	vec2 textureScaled = tex / TEXTURESCALING;
 	fragmentTexCoord = textureScaled;
-	gl_Position = UBOProjectionviewMatrix * modelMatrix * vertexScaled;
+	vec4 pos = UBOProjectionviewMatrix * modelMatrix * vertexScaled;
+	gl_Position = pos;
+	screen = pos.xy/2/pos.w+0.5;
 	position = vec3(modelMatrix * vertexScaled); // Copy position to the fragment shader
 }
 
@@ -38,14 +41,17 @@ uniform sampler2D posTexture;
 uniform bool depthDependingAlpha = false;
 uniform vec2 screenSize = vec2(1920, 1003); // A default as a safety precaution
 uniform float time = 0; // Number of seconds since the game was started
+
+in vec2 screen;               // The screen position
 in vec2 fragmentTexCoord;
 in vec3 position;       // The model coordinate, as given by the vertex shader
-out vec4 blendOutput;   // layout(location = 0)
+
+layout(location = 0) out vec4 blendOutput;
 
 vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
 vec2 mod289(vec2 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
 vec3 permute(vec3 x) { return mod289(((x*34.0)+1.0)*x); }
-/// This is an implementation of a 2D simplex noise
+/// An implementation of a 2D simplex noise
 float snoise(vec2 v) {
 	const vec4 C = vec4(0.211324865405187, 0.366025403784439, -0.577350269189626, 0.024390243902439);
 	vec2 i  = floor(v + dot(v, C.yy) );
@@ -67,7 +73,6 @@ float snoise(vec2 v) {
 }
 
 void main(void) {
-	vec2 screen = gl_FragCoord.xy / screenSize;
 	float distCamPos = distance(UBOCamera.xyz, position);
 	if (distCamPos > UBOViewingDistance) { discard; return; }
 	vec2 textCoord = fract(fragmentTexCoord);

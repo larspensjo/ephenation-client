@@ -37,11 +37,10 @@ void main(void)
 	// The modelView is one of the corners of the quad in view space.
 	vec4 modelView = -vec4(d, 0)*l + vec4(box, 0) + viewPos;
 	vec4 pos = UBOProjectionMatrix * modelView;
-	pos /= pos.w;
 	gl_Position = pos;
 	// Copy position to the fragment shader. Only x and y is needed. Scale it
 	// from interval -1 .. 1, to the interval 0 .. 1.
-	screen = pos.xy/2+0.5;
+	screen = pos.xy/2/pos.w+0.5;
 }
 
 -- Fragment

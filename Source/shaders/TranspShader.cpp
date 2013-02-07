@@ -46,8 +46,6 @@ void TranspShader::Init(void) {
 }
 
 void TranspShader::PreLinkCallback(GLuint prg) {
-	glBindFragDataLocation(prg, 0, "blendOutput");
-
 	// Ensure that the same index for inputs are always used (to enable the use of the same VAO on other shaders).
 	glBindAttribLocation(prg, StageOneShader::Vertex, "vertex");
 }
@@ -55,13 +53,10 @@ void TranspShader::PreLinkCallback(GLuint prg) {
 void TranspShader::GetLocations(void) {
 	fModelMatrixIndex = this->GetUniformLocation("modelMatrix");
 	fDepthDependingAlpha = this->GetUniformLocation("depthDependingAlpha");
-	fScreenSizeIdx = this->GetUniformLocation("screenSize");
 	fTimeIdx = this->GetUniformLocation("time");
 
-	GLint firstTextureIndex = this->GetUniformLocation("firstTexture");
-	GLint deptPositionIdx = this->GetUniformLocation("posTexture");
-	glUniform1i(firstTextureIndex, 0);
-	glUniform1i(deptPositionIdx, 1);
+	glUniform1i(this->GetUniformLocation("firstTexture"), 0);
+	glUniform1i(this->GetUniformLocation("posTexture"), 1);
 	checkError("TranspShader::GetLocations");
 }
 
@@ -73,10 +68,6 @@ void TranspShader::View(float time) {
 	glUniform1f(fTimeIdx, time);
 }
 
-void TranspShader::Projection(float w, float h) {
-	glUniform2f(fScreenSizeIdx, w, h);
-}
-
 void TranspShader::DrawingWater(bool flag) {
 	glUniform1i(fDepthDependingAlpha, flag);
 }
@@ -84,7 +75,6 @@ void TranspShader::DrawingWater(bool flag) {
 TranspShader::TranspShader() {
 	fModelMatrixIndex = -1;
 	fDepthDependingAlpha = -1;
-	fScreenSizeIdx = -1;
 	fTimeIdx = -1;
 }
 

@@ -176,6 +176,7 @@
 		<Unit filename="shaders/addpointshadow.glsl" />
 		<Unit filename="shaders/addpointshadow.h" />
 		<Unit filename="shaders/addssao.cpp" />
+		<Unit filename="shaders/addssao.glsl" />
 		<Unit filename="shaders/addssao.h" />
 		<Unit filename="shaders/animationshader.glsl" />
 		<Unit filename="shaders/chunkshader.glsl" />

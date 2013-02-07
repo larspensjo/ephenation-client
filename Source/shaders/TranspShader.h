@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -17,13 +17,10 @@
 
 #pragma once
 
-//
-// A shader program used for drawing the transparent parts of the chunks.
-// Texture 0 has to be the main texture.
-//
-
 #include "StageOneShader.h"
 
+// A shader program used for drawing the transparent parts of the chunks.
+// Texture 0 has to be the diffuse texture, and 1 the position texture.
 class TranspShader : public StageOneShader {
 public:
 	TranspShader();
@@ -32,7 +29,6 @@ public:
 
 	void Model(const glm::mat4 &);// Define the Model matrix
 	void View(float time);// The view depends on the time.
-	void Projection(float w, float h); // Define the projection matrix
 
 	virtual void DrawingWater(bool);
 protected:
@@ -44,7 +40,6 @@ private:
 
 	GLint fModelMatrixIndex;
 	GLint fDepthDependingAlpha;
-	GLint fScreenSizeIdx;
 	GLint fTimeIdx;
 };
 
