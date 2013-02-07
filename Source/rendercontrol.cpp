@@ -207,7 +207,7 @@ void RenderControl::Resize(GLsizei width, GLsizei height) {
 	//
 	// Create the FBO used for drawing the luminance map.
 	fboDownSampleLum.reset(new FBOFlat);
-	fboDownSampleLum->Attach(fDownSampleLumTexture);
+	fboDownSampleLum->AttachTexture(fDownSampleLumTexture);
 
 	checkError("RenderControl::Resize");
 }

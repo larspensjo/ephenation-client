@@ -28,7 +28,7 @@ FBOFlat::~FBOFlat() {
 	}
 }
 
-void FBOFlat::Attach(GLuint textureId) {
+void FBOFlat::AttachTexture(GLuint textureId) {
 	if (fbo == 0) {
 		// Only needed first time
 		glGenFramebuffers(1, &fbo);
@@ -38,7 +38,24 @@ void FBOFlat::Attach(GLuint textureId) {
 	GLenum fboStatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 	if (fboStatus != GL_FRAMEBUFFER_COMPLETE) {
 		auto &ss = View::gErrorManager.GetStream(false, false);
-		ss << "Billboard::Init: FrameBuffer atlas incomplete: " << FrameBufferError(fboStatus) << fboStatus;
+		ss << "FBOFlat::AttachTexture: FrameBuffer incomplete: " << FrameBufferError(fboStatus) << fboStatus;
+	}
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void FBOFlat::AttachDepthBuffer(GLuint textureId) {
+	if (fbo == 0) {
+		// Only needed first time
+		glGenFramebuffers(1, &fbo);
+	}
+	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, textureId, 0);
+	glDrawBuffer(GL_NONE); // Need to disable this as there is no color buffer attached.
+	glReadBuffer(GL_NONE);
+	GLenum fboStatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+	if (fboStatus != GL_FRAMEBUFFER_COMPLETE) {
+		auto &ss = View::gErrorManager.GetStream(false, false);
+		ss << "FBOFlat::AttachDepthBuffer: FrameBuffer incomplete: " << FrameBufferError(fboStatus) << fboStatus;
 	}
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }

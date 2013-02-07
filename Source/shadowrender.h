@@ -23,6 +23,7 @@
 #include <glm/glm.hpp>
 
 class ShadowMapShader;
+class FBOFlat;
 
 namespace View {
 	class AnimationModels;
@@ -45,10 +46,10 @@ public:
 	const glm::mat4 &GetProViewMatrix(void) const;
 
 private:
-	GLuint fboName;
 	GLuint fTexture; // Texture id used for depth buffer
 	int fMapWidth, fMapHeight; // Size of the shadow map
 	std::unique_ptr<ShadowMapShader> fShader;
+	std::unique_ptr<FBOFlat> fbo;
 	glm::mat4 fProjViewMatrix; // The matrix is needed elsewhere, save it for later
 };
 

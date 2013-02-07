@@ -19,7 +19,7 @@
 
 #include <GL/glew.h>
 
-/// Set up an FBO for one single bitmap target, no depth buffer
+/// Set up a simple FBO for either one color texture or depth buffer
 ///
 /// The viewport has to be controlled elsewhere.
 class FBOFlat {
@@ -29,7 +29,11 @@ public:
 
 	/// Initialize the FBO.
 	/// @param textureId The texture to use with this FBO
-	void Attach(GLuint textureId);
+	void AttachTexture(GLuint textureId);
+
+	/// Initialize the FBO.
+	/// @param textureId The texture to use with this FBO
+	void AttachDepthBuffer(GLuint textureId);
 
 	/// Enable the FBO for reading
 	void EnableReading() const;

@@ -28,16 +28,16 @@
 #include "chunk.h"
 #include "monsters.h"
 #include "Options.h"
+#include "fboflat.h"
 
 using namespace View;
 
 ShadowRender::ShadowRender(int width, int height) :
-	fboName(0), fTexture(0), fMapWidth(width), fMapHeight(height) {
+	fTexture(0), fMapWidth(width), fMapHeight(height) {
 }
 
 ShadowRender::~ShadowRender() {
-	if (fboName != 0) {
-		glDeleteFramebuffers(1, &fboName);
+	if (fTexture != 0) {
 		glDeleteTextures(1, &fTexture);
 	}
 }
@@ -64,21 +64,8 @@ void ShadowRender::Init() {
 
 	// Create the frame buffer object
 	//-------------------------------
-	glGenFramebuffers(1, &fboName);
-	// enable this frame buffer as the current frame buffer
-	glBindFramebuffer(GL_FRAMEBUFFER, fboName);
-	// attach the texture to the frame buffer so that rendering saves into the texture
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, fTexture, 0);
-	glDrawBuffer(GL_NONE);
-	glReadBuffer(GL_NONE);
-	// check for sucecssful FBO creation
-	auto result = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-	if (result != GL_FRAMEBUFFER_COMPLETE) {
-		ErrorDialog("ShadowRender::Init: Framebuffer is not complete: %s\n", FrameBufferError(result));
-		exit(1);
-	}
-	// bind the default frame buffer again
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	fbo.reset(new FBOFlat);
+	fbo->AttachDepthBuffer(fTexture);
 
 	fShader = ShadowMapShader::Make();
 }
@@ -99,8 +86,7 @@ void ShadowRender::Render(int width, int height, const AnimationModels *animatio
 
 	fShader->EnableProgram();
 	fShader->ProjectionView(fProjViewMatrix);
-	glBindFramebuffer (GL_FRAMEBUFFER, fboName);
-	glDrawBuffer (GL_NONE);
+	fbo->EnableWriting();
 	glClear(GL_DEPTH_BUFFER_BIT); // Clear the depth buffer
 	glViewport(0, 0, fMapWidth, fMapHeight); // set viewport to texture dimensions
 	glDepthFunc(GL_LESS);
