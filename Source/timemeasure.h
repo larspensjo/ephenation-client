@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -15,22 +15,22 @@
 // along with Ephenation.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-//
-// A class to measure shader execution time, and provide a report.
-//
-
 #pragma once
 
 #include <map>
 #include <string>
 
+// Header file defines gDebugOpenGL that can be used to disable the timers.
 #include "primitives.h"
 
-using std::string;
-
+/// Measure shader execution time, and provide a report.
 class TimeMeasure {
 public:
-	TimeMeasure(const string &title) : fQuery(0), fFirst(true), fTitle(title) {}
+	/// Use this to create a static instance.
+	/// @param title A string used in the report.
+	TimeMeasure(const std::string &title) : fQuery(0), fFirst(true), fTitle(title) {}
+	
+	/// Start the timer. 
 	void Start() {
 		if (!gDebugOpenGL)
 			return;
@@ -46,12 +46,15 @@ public:
 		}
 		glBeginQuery(GL_TIME_ELAPSED, fQuery);
 	}
+	
+	/// Stop the timer.
 	void Stop(void) {
 		if (!gDebugOpenGL)
 			return;
 		glEndQuery(GL_TIME_ELAPSED);
 	}
 
+	/// Make a report of all timers, showing the last result.
 	static void Report(void);
 private:
 	GLuint fQuery;
