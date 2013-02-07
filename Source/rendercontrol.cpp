@@ -89,7 +89,7 @@ RenderControl::~RenderControl() {
 void RenderControl::Init(int lightSamplingFactor) {
 	// This only has to be done first time
 	glGenRenderbuffers(1, &fDepthBuffer);
-	glGenTextures(1, &fDownSampleLumTextureBlurred); gDebugTextures.push_back(fDownSampleLumTextureBlurred); // Add this texture to the debugging list of textures
+	// glGenTextures(1, &fDownSampleLumTextureBlurred); gDebugTextures.push_back(fDownSampleLumTextureBlurred); // Add this texture to the debugging list of textures
 	glGenTextures(1, &fDownSampleLumTexture); gDebugTextures.push_back(fDownSampleLumTexture); // Add this texture to the debugging list of textures
 	glGenTextures(1, &fDiffuseTexture); gDebugTextures.push_back(fDiffuseTexture); // Add this texture to the debugging list of textures
 	glGenTextures(1, &fPositionTexture); gDebugTextures.push_back(fPositionTexture);
