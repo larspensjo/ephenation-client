@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -95,7 +95,6 @@ void main(void)
 	// Load data, stored in textures, from the first stage rendering.
 	normal = texture(normalTex, screen);
 	worldPos = texture(posTex, screen);
-	// if (normal.xyz == vec3(0,0,0)) skyPixel = true; // No normal, which means sky. Not needed because of stencil mask
 	// Temporary helper data
 	float sun = max(dot(normal.xyz,sundir),0);
 	float inSun = worldPos.a; // Is greater than 0 if this position is reached by the sun

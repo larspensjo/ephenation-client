@@ -46,7 +46,6 @@ void main(void)
 -- Fragment
 
 uniform sampler2D posTex;     // World position
-uniform sampler2D normalTex;  // Normals
 uniform vec4 Upoint;          // A point source. .xyz is the coordinate, and .w is the radius of the shadow
 uniform int Umode = 0;        // Special case, use a selection color instead of a shadow
 in vec2 screen;               // The screen position
@@ -54,8 +53,6 @@ layout (location = 0) out vec4 colorChange;
 
 void main(void)
 {
-	vec4 normal = texture(normalTex, screen);
-	if (normal.xyz == vec3(0,0,0)) { discard; return;}   // No normal, which means sky
 	vec4 worldPos = texture(posTex, screen);
 	float dist = distance(worldPos.xyz, Upoint.xyz);     // Distance to the player or monster
 	if (worldPos.y - Upoint.y > 0.3 && Umode < 2) { discard; return; }   // Don't draw shadow too high on the object itself.

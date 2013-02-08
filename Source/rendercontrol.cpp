@@ -456,8 +456,6 @@ void RenderControl::drawSSAO(void) {
 void RenderControl::drawPointShadows(void) {
 	static TimeMeasure tm("Pntshdw");
 	tm.Start();
-	glActiveTexture(GL_TEXTURE2);
-	glBindTexture(GL_TEXTURE_2D, fNormalsTexture);
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, fPositionTexture);
 	glActiveTexture(GL_TEXTURE0); // Need to restore it or everything will break.
@@ -597,8 +595,8 @@ void RenderControl::drawSkyBox(void) {
 		// glDisable(GL_DEPTH_TEST);
 		static TimeMeasure tm("SkyBox");
 		tm.Start();
-		GLenum windowBuffOpaque[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_NONE };
-		glDrawBuffers(4, windowBuffOpaque); // Nothing is transparent here, do not produce any blending data on the 4:th render target.
+		GLenum windowBuffOpaque[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
+		glDrawBuffers(2, windowBuffOpaque); // Nothing is transparent here, do not produce any blending data on the 4:th render target.
 		glDepthRange(1, 1); // This will move the sky box to the far plane, exactly
 		glDepthFunc(GL_LEQUAL); // Seems to be needed, or depth value 1.0 will not be shown.
 		glDisable(GL_CULL_FACE); // Skybox is drawn with the wrong culling order.

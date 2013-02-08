@@ -61,12 +61,13 @@ void main(void)
 	vec4 diffuse = texture(diffuseTex, screen) * 0.95; // Downscale a little, 1.0 can't be mapped to HDR.
 	vec4 blend = texture(blendTex, screen);
 	worldPos = texture(posTex, screen);
-	if (normal.xyz == vec3(0,0,0)) skyPixel = true;             // No normal, which means sky
 	float ambient = normal.a; // The ambient light is in the alpha channel.
 	vec4 hdr = diffuse/(1-diffuse);
 	// Temporary helper data
 	vec3 cameraToWorld = UBOCamera.xyz-worldPos.xyz;
 	float cameraToWorldDistance = length(cameraToWorld);
+	// The sky is more than 1000 blocks away
+	if (cameraToWorldDistance > 1000) skyPixel = true;
 	vec3 eyeDir = normalize(cameraToWorld);
 	vec3 vHalfVector = normalize(sundir.xyz+eyeDir);
 	float inSun = worldPos.a; // Is greater than 0 if this position is reached by the sun

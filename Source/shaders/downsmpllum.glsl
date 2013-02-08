@@ -29,8 +29,8 @@ void main(void)
 uniform sampler2D diffuseTex; // The color information
 uniform sampler2D posTex;     // World position
 uniform sampler2D normalTex;  // Normals
-uniform sampler2D blendTex;   // A bitmap with colors to blend with, afterwars.
-uniform sampler2D lightTex;   // A bitmap with colors to blend with, afterwars.
+uniform sampler2D blendTex;   // A bitmap with colors to blend with, afterwards.
+uniform sampler2D lightTex;   // A bitmap with colors to blend with, afterwards.
 uniform sampler1D poissondisk;
 uniform bool Udead;            // True if the player is dead
 uniform bool Uwater;           // True when head is in water
@@ -53,7 +53,9 @@ void main(void)
 	vec4 diffuse = texture(diffuseTex, screen) * 0.95; // Downscale a little, 1.0 can't be mapped to HDR.
 	vec4 blend = texture(blendTex, screen);
 	vec4 worldPos = texture(posTex, screen);
-	if (normal.xyz == vec3(0,0,0)) skyPixel = true;             // No normal, which means sky
+	float cameraToWorldDistance = length(UBOCamera.xyz-worldPos.xyz);
+	// The sky is more than 1000 blocks away
+	if (cameraToWorldDistance > 1000) skyPixel = true;
 	float fact = texture(lightTex, screen).r;
 	if (UBODynamicshadows == 0) fact += worldPos.a;         // Add pre computed light instead of using shadow map
 	if (skyPixel) { fact = 0.8; }

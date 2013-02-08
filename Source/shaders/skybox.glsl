@@ -44,12 +44,10 @@ in vec2 TexCoord;
 
 layout(location = 0) out vec4 diffuseOutput;
 layout(location = 1) out vec4 posOutput;
-layout(location = 2) out vec4 normOutput;
 
 void main(void)
 {
 	vec4 color = texture(UTextureSampler, TexCoord);
 	diffuseOutput = color;
-	normOutput = vec4(0,0,0,1);    // Last byte is ambient light
 	posOutput = vec4(position, 1); // Last byte is sun intensity
 }

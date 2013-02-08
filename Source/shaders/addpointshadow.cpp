@@ -51,7 +51,6 @@ void AddPointShadow::GetLocations(void) {
 	fPointIdx = this->GetUniformLocation("Upoint");
 	fSelectionIdx = this->GetUniformLocation("Umode");
 
-	glUniform1i(this->GetUniformLocation("normalTex"), 2);
 	glUniform1i(this->GetUniformLocation("posTex"), 1);
 }
 
