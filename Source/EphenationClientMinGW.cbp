@@ -86,6 +86,7 @@
 		<Unit filename="DrawText.h" />
 		<Unit filename="DrawTexture.cpp" />
 		<Unit filename="DrawTexture.h" />
+		<Unit filename="Ephenation.iss" />
 		<Unit filename="HealthBar.cpp" />
 		<Unit filename="HealthBar.h" />
 		<Unit filename="Inventory.cpp" />
@@ -106,6 +107,8 @@
 		<Unit filename="TSExec.h" />
 		<Unit filename="Teleport.cpp" />
 		<Unit filename="Teleport.h" />
+		<Unit filename="UndoOp.cpp" />
+		<Unit filename="UndoOp.h" />
 		<Unit filename="animationmodels.cpp" />
 		<Unit filename="animationmodels.h" />
 		<Unit filename="assert.cpp" />
@@ -146,6 +149,8 @@
 		</Unit>
 		<Unit filename="errormanager.cpp" />
 		<Unit filename="errormanager.h" />
+		<Unit filename="fboflat.cpp" />
+		<Unit filename="fboflat.h" />
 		<Unit filename="gamedialog.cpp" />
 		<Unit filename="gamedialog.h" />
 		<Unit filename="imageloader.cpp" />
@@ -209,7 +214,13 @@
 		<Unit filename="shaders/colorshader.glsl" />
 		<Unit filename="shaders/common.glsl" />
 		<Unit filename="shaders/deferredlighting.glsl" />
+		<Unit filename="shaders/downsmpllum.cpp" />
+		<Unit filename="shaders/downsmpllum.glsl" />
+		<Unit filename="shaders/downsmpllum.h" />
 		<Unit filename="shaders/dynamicshadow.glsl" />
+		<Unit filename="shaders/gaussblur.cpp" />
+		<Unit filename="shaders/gaussblur.glsl" />
+		<Unit filename="shaders/gaussblur.h" />
 		<Unit filename="shaders/localfog.glsl" />
 		<Unit filename="shaders/modulatedtexture.glsl" />
 		<Unit filename="shaders/modulatedtextureshader.cpp" />
