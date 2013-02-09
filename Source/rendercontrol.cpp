@@ -467,7 +467,6 @@ void RenderControl::drawPointShadows(void) {
 	glm::vec4 *list = gShadows.GetList();
 	int count = gShadows.GetCount();
 	glEnable(GL_BLEND);
-	glBlendFunc(GL_DST_COLOR, GL_ZERO);
 	glDisable(GL_CULL_FACE);
 	glDepthMask(GL_FALSE);
 	glDisable(GL_DEPTH_TEST);
@@ -477,7 +476,6 @@ void RenderControl::drawPointShadows(void) {
 	glEnable(GL_DEPTH_TEST);
 	glDepthMask(GL_TRUE);
 	glEnable(GL_CULL_FACE);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // Restore to default
 	glDisable(GL_BLEND);
 	tm.Stop();
 }
@@ -563,7 +561,7 @@ void RenderControl::drawColoredLights() const {
 	glBindTexture(GL_TEXTURE_2D, fPositionTexture);
 	glActiveTexture(GL_TEXTURE0); // Need to restore it or everything will break.
 	glEnable(GL_BLEND);
-	glBlendFunc(GL_DST_COLOR, GL_ZERO); // Multiply the old color with a new factor
+	glBlendFunc(GL_ZERO, GL_SRC_COLOR);
 	glDisable(GL_CULL_FACE);
 	glDepthMask(GL_FALSE);
 	glDisable(GL_DEPTH_TEST);

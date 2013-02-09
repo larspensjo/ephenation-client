@@ -73,7 +73,7 @@ const vec3 sundir = vec3(-0.577350269, 0.577350269, 0.577350269);
 /// Distant object shall be blended into the sky/fog distance.
 /// @param maxViewDistance Distance where objects are culled.
 /// @param currentViewDistance Distance from camera to pixel.
-/// @return The alpha used for blending.
+/// @return The alpha used for blending. 1 at near distance, 0 at far.
 float DistanceAlphaBlending(float maxViewDistance, float currentViewDistance) {
 	// The fog will go from transparent to opaque in "fogDepth" blocks.
 	float fogDepth = maxViewDistance/5;

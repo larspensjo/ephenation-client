@@ -88,5 +88,7 @@ void main(void)
 	// Uambient is a function 0-1 of how much sky is visible (indirect light).
 	// UBOambientLight is a global offset, so as to never have a place that is completely dark.
 	float intensity = Uambient*0.6f + UBOambientLight*0.7;
-	blendColor = vec4(intensity, intensity, intensity, alpha);
+	// For blending this fog into the far distance, use distance to fog center as criteria, not the pixel behind the fog.
+	float distanceBlending = DistanceAlphaBlending(UBOViewingDistance, cameraToFogDist);
+	blendColor = vec4(intensity, intensity, intensity, alpha*distanceBlending);
 }

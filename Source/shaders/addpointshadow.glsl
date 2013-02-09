@@ -54,31 +54,33 @@ layout (location = 0) out vec4 colorChange;
 void main(void)
 {
 	vec4 worldPos = texture(posTex, screen);
-	float dist = distance(worldPos.xyz, Upoint.xyz);     // Distance to the player or monster
+	float dist = distance(worldPos.xyz, Upoint.xyz); // Distance to the player or monster
 	if (worldPos.y - Upoint.y > 0.3 && Umode < 2) { discard; return; }   // Don't draw shadow too high on the object itself.
-	float radius = Upoint.w;                             // The maximum distance (radius of the shadow) is coded in the w channel
-	if (dist >= radius) {discard; return; }             // Is the pixel near, below the player/monster?
-	float f, upper, lower;
+	float radius = Upoint.w;                         // The maximum distance (radius of the shadow) is coded in the w channel
+	if (dist >= radius) {discard; return; }          // Is the pixel too far away?
+	float cameraToWorldDistance = length(UBOCamera.xyz-worldPos.xyz);
+	float alpha = DistanceAlphaBlending(UBOViewingDistance, cameraToWorldDistance);
+	float f;
 	if (Umode >= 2) {
-		upper = 1.0 + (1.0 - dist/radius) * 0.8;
-		lower = 1.0 - (upper-1.0)/2;
+		f = min(dist/radius/2+0.5, 1);               // 'f' goes from 0.5 to 1, depending on distance.
+		f = 1 - (1-f)*alpha;                         // Blend between colored light radius fading, and skybox distance fading.
 	}
 	switch(Umode) {
-	case 4:
-		colorChange = vec4(lower, lower, upper, 1);
+	case 4: // Add blue tint by multiplying color channels
+		colorChange = vec4(f, f, 1, 1);
 		break;
-	case 3:
-		colorChange = vec4(lower, upper, lower, 1);
+	case 3: // Add green tint by multiplying color channels
+		colorChange = vec4(f, 1, f, 1);
 		break;
-	case 2:
-		colorChange = vec4(upper, lower, lower, 1);
+	case 2: // Add red tint by multiplying color channels
+		colorChange = vec4(1, f, f, 1);
 		break;
-	case 1:
-		colorChange = vec4(1, 0, 0, 0.3);                   // Shall be used as a blending component, adding a red marker at the feet of a monster.
+	case 1: // Red marker below monster feet
+		colorChange = vec4(1, 0, 0, 0.3*alpha);      // Shall be used as a blending component, adding a red marker at the feet of a monster.
 		break;
-	case 0:
-		f = 1 - (1 - dist/radius)/1.1;                      // 'f' goes from 0.09 to 1.0, depending on distance.
-		colorChange = vec4(f, f, f, 1);                     // Will be used as a multiplicative component, making center almost black.
+	case 0: // Static shadow below trees
+		f = (1 - dist/radius)/1.1;                   // 'f' goes from 0.91 to 0, depending on distance.
+		colorChange = vec4(0, 0, 0, alpha*f);
 		break;
 	}
 }
