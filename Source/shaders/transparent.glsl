@@ -78,17 +78,16 @@ void main(void) {
 	vec2 textCoord = fract(fragmentTexCoord);
 	vec4 clr = texture(firstTexture, textCoord);
 	vec3 backgroundPos = texture(posTexture, screen).xyz;
-	float alpha = clr.a;
 	if (depthDependingAlpha) {
 		float dist = distance(position, backgroundPos); // TODO: Move this logic to the vertex shader?
-		alpha = clamp(0.4+dist/50, 0, 1);
-		clr.rgb *= alpha; // This texture isn't premultiplied
+		clr.a = clamp(0.4+dist/50, 0, 1);
 		if (distCamPos<100 && UBOPerformance > 1) {
 			float wave1 = snoise(vec2(position.x/3, position.z+time/2.5))/10;
 			float wave2 = snoise(vec2(position.x/3+1000, position.z+time/2.5))/10;
 			clr.rgb += (wave2*sin(time) + wave1*sin(time+3.14/2)) * (1-distCamPos/100); // Let the water ripples fade out with distance
 		}
+		clr.rgb *= clr.a; // This texture isn't premultiplied
 	}
-	blendOutput.rgb = clr.rgb; // The colors are already premultiplied by alpha
-	blendOutput.a = alpha;
+	blendOutput = clr; // The colors are already premultiplied by alpha
+	blendOutput *= DistanceAlphaBlending(UBOViewingDistance, distCamPos);
 }

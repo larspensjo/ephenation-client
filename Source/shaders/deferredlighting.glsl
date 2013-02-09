@@ -124,5 +124,6 @@ void main(void)
 	    fragColor.b = (fragColor.b)/4;
 	}
 
-	fragColorFinal = vec4(fragColor, DistanceAlphaBlending(UBOViewingDistance, cameraToWorldDistance));
+	float distanceBlending = max (blend.a, DistanceAlphaBlending(UBOViewingDistance, cameraToWorldDistance));
+	fragColorFinal = vec4(fragColor, distanceBlending);
 }
