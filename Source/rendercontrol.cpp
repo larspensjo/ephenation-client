@@ -37,6 +37,7 @@
 #include "shaders/addlocalfog.h"
 #include "shaders/addssao.h"
 #include "shaders/downsmpllum.h"
+#include "shaders/gaussblur.h"
 #include "render.h"
 #include "Options.h"
 #include "shadowrender.h"
@@ -70,7 +71,7 @@ RenderControl::RenderControl() {
 	fCameraDistance = 0.0f;
 	fRequestedCameraDistance = 0.0f;
 
-	fDownSampleLumTexture = 0;
+	fDownSampleLumTexture1 = 0; fDownSampleLumTexture2 = 0;
 }
 
 RenderControl::~RenderControl() {
@@ -82,7 +83,8 @@ RenderControl::~RenderControl() {
 		glDeleteTextures(1, &fNormalsTexture);
 		glDeleteTextures(1, &fBlendTexture);
 		glDeleteTextures(1, &fLightsTexture);
-		glDeleteTextures(1, &fDownSampleLumTexture);
+		glDeleteTextures(1, &fDownSampleLumTexture1);
+		glDeleteTextures(1, &fDownSampleLumTexture2);
 	}
 }
 
@@ -90,7 +92,8 @@ void RenderControl::Init(int lightSamplingFactor) {
 	// This only has to be done first time
 	glGenRenderbuffers(1, &fDepthBuffer);
 	// glGenTextures(1, &fDownSampleLumTextureBlurred); gDebugTextures.push_back(fDownSampleLumTextureBlurred); // Add this texture to the debugging list of textures
-	glGenTextures(1, &fDownSampleLumTexture); gDebugTextures.push_back(fDownSampleLumTexture); // Add this texture to the debugging list of textures
+	glGenTextures(1, &fDownSampleLumTexture1); gDebugTextures.push_back(fDownSampleLumTexture1); // Add this texture to the debugging list of textures
+	glGenTextures(1, &fDownSampleLumTexture2); gDebugTextures.push_back(fDownSampleLumTexture2); // Add this texture to the debugging list of textures
 	glGenTextures(1, &fDiffuseTexture); gDebugTextures.push_back(fDiffuseTexture); // Add this texture to the debugging list of textures
 	glGenTextures(1, &fPositionTexture); gDebugTextures.push_back(fPositionTexture);
 	glGenTextures(1, &fNormalsTexture); gDebugTextures.push_back(fNormalsTexture);
@@ -120,6 +123,8 @@ void RenderControl::Init(int lightSamplingFactor) {
 	fDownSamplingLuminance->Init();
 	fAnimationModels.Init();
 	fRequestedCameraDistance = gOptions.fCameraDistance;
+	fGaussianBlur.reset(new GaussianBlur);
+	fGaussianBlur->Init();
 
 	if (gOptions.fDynamicShadows) {
 		fShadowRender.reset(new ShadowRender(DYNAMIC_SHADOW_MAP_SIZE,DYNAMIC_SHADOW_MAP_SIZE));
@@ -194,19 +199,28 @@ void RenderControl::Resize(GLsizei width, GLsizei height) {
 	}
 
 	// Generate and bind the texture for lights
-	glBindTexture(GL_TEXTURE_2D, fDownSampleLumTexture);
+	glBindTexture(GL_TEXTURE_2D, fDownSampleLumTexture1);
 	int w = gViewport[2] / fLightSamplingFactor;
 	int h = gViewport[3] / fLightSamplingFactor;
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_R16F, w, h, 0, GL_RED, GL_UNSIGNED_BYTE, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, w, h, 0, GL_RED, GL_UNSIGNED_BYTE, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-	//
+	// Generate and bind the texture for lights
+	glBindTexture(GL_TEXTURE_2D, fDownSampleLumTexture2);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, w, h, 0, GL_RED, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
 	// Create the FBO used for drawing the luminance map.
-	fboDownSampleLum.reset(new FBOFlat);
-	fboDownSampleLum->AttachTexture(fDownSampleLumTexture);
+	fboDownSampleLum1.reset(new FBOFlat);
+	fboDownSampleLum1->AttachTexture(fDownSampleLumTexture1);
+	fboDownSampleLum2.reset(new FBOFlat);
+	fboDownSampleLum2->AttachTexture(fDownSampleLumTexture2);
 
 	checkError("RenderControl::Resize");
 }
@@ -255,7 +269,7 @@ void RenderControl::Draw(bool underWater, shared_ptr<const Model::Object> select
 	if (!Model::gPlayer.IsDead())
         drawSkyBox(GL_BACK_LEFT, GL_NONE); // Draw the sky texture, but ignore position data.
 
-	ComputeAverageLighting(underWater);
+	// ComputeAverageLighting(underWater);
 	if (gShowFramework)
 		glPolygonMode(GL_FRONT, GL_FILL);
 	// Draw the main result to the screen. TODO: It would be possible to have the deferred rendering update the depth buffer!
@@ -719,7 +733,7 @@ void RenderControl::UpdateCameraPosition(int wheelDelta) {
 void RenderControl::ComputeAverageLighting(bool underWater) {
 	static TimeMeasure tm("AvgLght");
 	tm.Start();
-	fboDownSampleLum->EnableWriting();
+	fboDownSampleLum1->EnableWriting();
 	int w = gViewport[2] / fLightSamplingFactor;
 	int h = gViewport[3] / fLightSamplingFactor;
 	glViewport(0, 0, w, h); // set viewport to texture dimensions
@@ -741,9 +755,18 @@ void RenderControl::ComputeAverageLighting(bool underWater) {
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_CULL_FACE);
 	fDownSamplingLuminance->Draw();
+
+	int tap = h/8;
+	float sigma = float(tap);
+	fboDownSampleLum2->EnableWriting();
+	glBindTexture(GL_TEXTURE_2D, fDownSampleLumTexture1);
+	fGaussianBlur->BlurHorizontal(h, sigma);
+	fboDownSampleLum1->EnableWriting();
+	glBindTexture(GL_TEXTURE_2D, fDownSampleLumTexture2);
+	fGaussianBlur->BlurVertical();
+
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
-	fDownSamplingLuminance->DisableProgram();
 	glViewport(0, 0, gViewport[2], gViewport[3]); // Restore default viewport.
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 	tm.Stop();

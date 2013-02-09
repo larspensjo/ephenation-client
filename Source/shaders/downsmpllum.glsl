@@ -31,11 +31,6 @@ uniform sampler2D posTex;     // World position
 uniform sampler2D normalTex;  // Normals
 uniform sampler2D blendTex;   // A bitmap with colors to blend with, afterwards.
 uniform sampler2D lightTex;   // A bitmap with colors to blend with, afterwards.
-uniform sampler1D poissondisk;
-uniform bool Udead;            // True if the player is dead
-uniform bool Uwater;           // True when head is in water
-uniform bool Uteleport;        // Special mode when inside a teleport
-uniform float UwhitePoint = 3.0;
 in vec2 screen;               // The screen position
 layout(location = 0) out float luminance;
 
@@ -47,7 +42,6 @@ float linearToSRGB(float linear) {
 void main(void)
 {
 	// Load data, stored in textures, from the first stage rendering.
-	vec3 fragColor;
 	bool skyPixel = false;
 	vec4 normal = texture(normalTex, screen);
 	vec4 diffuse = texture(diffuseTex, screen) * 0.95; // Downscale a little, 1.0 can't be mapped to HDR.
@@ -61,6 +55,7 @@ void main(void)
 	if (skyPixel) { fact = 0.8; }
 	vec3 step2 = fact*diffuse.xyz;
 
+	vec3 fragColor = (1-blend.a)*step2 + blend.xyz;     // manual blending, using premultiplied alpha.
 	fragColor = (1-blend.a)*step2 + blend.xyz;     // manual blending, using premultiplied alpha.
 	//	Add some post processing effects
 	fragColor.x = linearToSRGB(fragColor.x);       // Transform to non-linear space

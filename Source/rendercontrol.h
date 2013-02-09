@@ -34,6 +34,7 @@ class AddSSAO;
 class MainUserInterface;
 class DownSamplingLuminance;
 class FBOFlat;
+class GaussianBlur;
 
 namespace Model {
 	class Object;
@@ -85,7 +86,7 @@ private:
 	GLuint fDiffuseTexture, fPositionTexture, fNormalsTexture, fBlendTexture, fLightsTexture;
 	GLsizei fWidth, fHeight;
 
-	GLuint fDownSampleLumTexture;
+	GLuint fDownSampleLumTexture1, fDownSampleLumTexture2;
 	int fLightSamplingFactor;
 
 	std::unique_ptr<AddDynamicShadow> fAddDynamicShadow;
@@ -97,7 +98,9 @@ private:
 	std::unique_ptr<AddSSAO> fAddSSAO;
 	std::unique_ptr<SkyBox> fSkyBox;
 	std::unique_ptr<DownSamplingLuminance> fDownSamplingLuminance;
-	std::unique_ptr<FBOFlat> fboDownSampleLum;
+	std::unique_ptr<GaussianBlur> fGaussianBlur;
+	// Use two FBOs to switch between for blurring
+	std::unique_ptr<FBOFlat> fboDownSampleLum1, fboDownSampleLum2;
 	ChunkShader *fShader;
 	AnimationShader *fAnimation;
 	AnimationModels fAnimationModels;

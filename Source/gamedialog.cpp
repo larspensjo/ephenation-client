@@ -1051,7 +1051,7 @@ static int GLFWCALL CloseWindowCallback(void) {
 }
 
 void gameDialog::init(void) {
-	fRenderControl.Init(20);
+	fRenderControl.Init(8);
 
 	std::shared_ptr<DrawFont> gabriola18(new DrawFont);
 	gabriola18->Init("textures/gabriola18");

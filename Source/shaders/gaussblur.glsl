@@ -14,7 +14,7 @@ void main(void)
 
 -- Fragment
 
-// The sigma value for the gaussian function: higher value means more blur
+// The sigma value for the Gaussian function: higher value means more blur
 // A good value for 9x9 is around 3 to 5
 // A good value for 7x7 is around 2.5 to 4
 // A good value for 5x5 is around 2 to 3.5

@@ -20,19 +20,22 @@
 #include "shader.h"
 
 /// A shader that will blur a texture
+///
+/// Bind an input texture on active texture 0, and setup a FBO to
+/// receive the output.
 class GaussianBlur : public ShaderBase {
 public:
 	GaussianBlur();
 
 	void Init();
 
-	/// Apply blurring on horisontal pixels.
+	/// Apply blurring on horizontal pixels.
 	/// This will leave the program active for the next phase.
 	/// @param tap Number of taps. Should be 5, 7, 9...
 	/// @param sigma The sigma value used in the Gaussian blur
 	void BlurHorizontal(int tap, float sigma) const;
 
-	/// Apply blurring on vetical pixels. Use the same 'tap' and 'sigma' as for the horizontal blur.
+	/// Apply blurring on vertical pixels. Use the same 'tap' and 'sigma' as for the horizontal blur.
 	/// The program is expected to be open from the previous phase.
 	void BlurVertical() const;
 private:
