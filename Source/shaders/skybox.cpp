@@ -36,6 +36,7 @@ static const GLchar *vertexShaderSource[] = {
 
 /// Using GLSW to define shader
 static const GLchar *fragmentShaderSource[] = {
+	"common.UniformBuffer",
 	"skybox.Fragment",
 };
 
@@ -104,6 +105,11 @@ void SkyBox::Draw() {
 
 	glBindTexture(GL_TEXTURE_2D, belowGround ? GameTexture::DarkGray : GameTexture::SkyupId);
 	rot =  glm::mat3(glm::rotate(model, 90.0f, glm::vec3(1.0f, 0.0f, 0.0f)));
+	glUniformMatrix3fv(fModelMatrixIdx, 1, GL_FALSE, &rot[0][0]); //
+	gQuad.Draw();
+
+	glBindTexture(GL_TEXTURE_2D, GameTexture::DarkGray);
+	rot =  glm::mat3(glm::rotate(model, -90.0f, glm::vec3(1.0f, 0.0f, 0.0f)));
 	glUniformMatrix3fv(fModelMatrixIdx, 1, GL_FALSE, &rot[0][0]); //
 	gQuad.Draw();
 

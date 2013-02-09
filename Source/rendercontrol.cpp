@@ -193,7 +193,6 @@ void RenderControl::Resize(GLsizei width, GLsizei height) {
 		exit(1);
 	}
 
-
 	// Generate and bind the texture for lights
 	glBindTexture(GL_TEXTURE_2D, fDownSampleLumTexture);
 	int w = gViewport[2] / fLightSamplingFactor;
@@ -234,7 +233,7 @@ void RenderControl::Draw(bool underWater, shared_ptr<const Model::Object> select
 	drawMonsters();
 	drawTransparentLandscape();
 	glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP); // Make stencil read-only
-	drawSkyBox();
+	drawSkyBox(GL_NONE, GL_COLOR_ATTACHMENT1); // Only output positional data.
 
 	// Apply deferred shader filters.
 	glStencilFunc(GL_EQUAL, STENCIL_NOSKY, STENCIL_NOSKY); // Only execute when no sky and no UI
@@ -250,14 +249,16 @@ void RenderControl::Draw(bool underWater, shared_ptr<const Model::Object> select
 	glDisable(GL_STENCIL_TEST);
 
 	// At this point, there is no depth buffer representing the geometry and no stencil. They are only valid inside the FBO.
-	// However, there is the global stencil buffer. Use it to set the bit for the UI, but it is not possible to reconstruct the
-	// bit for the sky.
 	drawClear();
 
-	// Draw the main result to the screen. TODO: It would be possible to have the deferred rendering update the depth buffer!
+    // If the player is dead, he will get a gray sky.
+	if (!Model::gPlayer.IsDead())
+        drawSkyBox(GL_BACK_LEFT, GL_NONE); // Draw the sky texture, but ignore position data.
+
+	ComputeAverageLighting(underWater);
 	if (gShowFramework)
 		glPolygonMode(GL_FRONT, GL_FILL);
-	ComputeAverageLighting(underWater);
+	// Draw the main result to the screen. TODO: It would be possible to have the deferred rendering update the depth buffer!
 	drawDeferredLighting(underWater, gOptions.fWhitePoint);
 
 	// Do some post processing
@@ -385,7 +386,11 @@ void RenderControl::drawDeferredLighting(bool underWater, float whitepoint) {
 	fDeferredLighting->SetWhitePoint(whitepoint);
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_CULL_FACE);
+	// Blend scene into background, depending on distance.
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	fDeferredLighting->Draw();
+	glDisable(GL_BLEND);
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 	fDeferredLighting->DisableProgram();
@@ -589,24 +594,23 @@ void RenderControl::drawColoredLights() const {
 	tm.Stop();
 }
 
-void RenderControl::drawSkyBox(void) {
-	if (!Model::gPlayer.IsDead()) {
-		// If the player is dead, he will get a gray sky.
-		// glDisable(GL_DEPTH_TEST);
-		static TimeMeasure tm("SkyBox");
-		tm.Start();
-		GLenum windowBuffOpaque[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
-		glDrawBuffers(2, windowBuffOpaque); // Nothing is transparent here, do not produce any blending data on the 4:th render target.
-		glDepthRange(1, 1); // This will move the sky box to the far plane, exactly
-		glDepthFunc(GL_LEQUAL); // Seems to be needed, or depth value 1.0 will not be shown.
-		glDisable(GL_CULL_FACE); // Skybox is drawn with the wrong culling order.
-		fSkyBox->Draw();
-		glEnable(GL_CULL_FACE);
-		glDepthFunc(GL_LESS);
-		glDepthRange(0, 1);
-		glEnable(GL_DEPTH_TEST);
-		tm.Stop();
-	}
+// This function can be used for two things:
+// 1. Drawing the skybox color
+// 2. Drawing the skybox position data
+// Specify color target with 'diffuse' and position data target with 'position'.
+void RenderControl::drawSkyBox(GLenum diffuse, GLenum position) {
+    static TimeMeasure tm("SkyBox");
+    tm.Start();
+    GLenum windowBuffOpaque[] = { diffuse, position };
+    glDrawBuffers(2, windowBuffOpaque);
+    glDepthRange(1, 1); // This will move the sky box to the far plane, exactly
+    glDepthFunc(GL_LEQUAL); // Seems to be needed, or depth value 1.0 will not be shown.
+    glDisable(GL_CULL_FACE); // Skybox is drawn with the wrong culling order.
+    fSkyBox->Draw();
+    glEnable(GL_CULL_FACE);
+    glDepthFunc(GL_LESS);
+    glDepthRange(0, 1);
+    tm.Stop();
 }
 
 void RenderControl::drawUI(MainUserInterface *ui) {

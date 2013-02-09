@@ -67,3 +67,18 @@ vec2 DoubleResolution(vec2 coord) {
 -- SunDirection
 
 const vec3 sundir = vec3(-0.577350269, 0.577350269, 0.577350269);
+
+-- DistanceAlphaBlending
+
+/// Distant object shall be blended into the sky/fog distance.
+/// @param maxViewDistance Distance where objects are culled.
+/// @param currentViewDistance Distance from camera to pixel.
+/// @return The alpha used for blending.
+float DistanceAlphaBlending(float maxViewDistance, float currentViewDistance) {
+	// The fog will go from transparent to opaque in "fogDepth" blocks.
+	float fogDepth = maxViewDistance/5;
+
+	// Compute the horizontal fog gradient.
+	float alpha = clamp(maxViewDistance-currentViewDistance, 0, fogDepth)/fogDepth;
+	return alpha;
+}

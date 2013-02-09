@@ -37,7 +37,7 @@ uniform bool Uwater;           // True when head is in water
 uniform bool Uteleport;        // Special mode when inside a teleport
 uniform float UwhitePoint = 3.0;
 in vec2 screen;               // The screen position
-layout(location = 0) out vec3 fragColor;
+layout(location = 0) out vec4 fragColorFinal;
 
 bool skyPixel = false;
 vec4 worldPos;
@@ -99,7 +99,7 @@ void main(void)
 	float L = 0.2126 * step1.r + 0.7152 * step1.g + 0.0722 * step1.b;
 	vec3 step2 = step1 * (1+L/Lwhite2)/(1+L);
 
-	fragColor = (1-blend.a)*step2 + blend.xyz;     // manual blending, using premultiplied alpha.
+	vec3 fragColor = (1-blend.a)*step2 + blend.xyz;     // manual blending, using premultiplied alpha.
 	//	Add some post processing effects
 	fragColor.x = linearToSRGB(fragColor.x);       // Transform to non-linear space
 	fragColor.y = linearToSRGB(fragColor.y);       // Transform to non-linear space
@@ -124,35 +124,5 @@ void main(void)
 	    fragColor.b = (fragColor.b)/4;
 	}
 
-	// Use a vertical fog gradient. This will make far distant sky come through.
-	float vertFogGrad = 1.0 - clamp(dot(-eyeDir, vec3(0,1,0))-0.1, 0.0, 0.25) / 0.25;
-
-	// The fog will go from transparent to opaque in "fogDepth" blocks.
-    float fogDepth = UBOViewingDistance/5;
-
-	// Compute the horizontal fog gradient. This will enable the sky when looking upwards.
-    float horFogGrad = clamp(cameraToWorldDistance-UBOViewingDistance+fogDepth, 0, fogDepth)/fogDepth;
-
-    // Apply the fog of distance.
-    if (!Uwater) {
-        vec3 fogColor = vec3(0.6, 0.6, 0.6);
-        if (UBOBelowGround == 1) {
-            fogColor = vec3(0, 0, 0); // Use dark fog
-            vertFogGrad = 1.0;        // Use fog when looking in all directions
-        }
-        fragColor = mix(fragColor, fogColor + UBOambientLight*0.7, vertFogGrad*horFogGrad);
-    }
-
-//"	fragColor.rgb = vHalfVector;
-//"	fragColor = (normal+1)/2;
-//"	fragColor = shadowmapcoord.z;
-//"	fragColor = texture(shadowmapTex, screen).x;
-//"	fragColor = dist/32 * vec4(1,1,1,1);
-//"	fragColor = blend;
-//"	fragColor = debug * vec3(1,1,1);
-//"	fragColor = depth;
-//"	fragColor = inSun * vec3(1,1,1);
-//"	fragColor = (sun*inSun+ambient)*vec4(1,1,1,1);
-//"	fragColor = vec3(1,1,1)*texture(lightTex, screen).r;
-//"	fragColor = vec3(rand2(screen), 0);" // Test the random
+	fragColorFinal = vec4(fragColor, DistanceAlphaBlending(UBOViewingDistance, cameraToWorldDistance));
 }
