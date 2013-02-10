@@ -112,7 +112,7 @@ private:
 	void ComputeAverageLighting(bool underWater);
 
 	void drawClearFBO(void); // Initialize all images in the FBO
-	void drawClear(void); // Clear the main window
+	void drawClear(bool underWater); // Clear the main window
 	void drawNonTransparentLandscape(void);
 	void drawDynamicShadows(void);
 	void drawDeferredLighting(bool underWater, float whitepoint);

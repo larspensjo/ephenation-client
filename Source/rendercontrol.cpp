@@ -268,10 +268,10 @@ void RenderControl::Draw(bool underWater, shared_ptr<const Model::Object> select
 	glDisable(GL_STENCIL_TEST);
 
 	// At this point, there is no depth buffer representing the geometry and no stencil. They are only valid inside the FBO.
-	drawClear();
+	drawClear(underWater);
 
     // If the player is dead, he will get a gray sky.
-	if (!Model::gPlayer.IsDead() && !Model::gPlayer.BelowGround())
+	if (!Model::gPlayer.IsDead() && !Model::gPlayer.BelowGround() && !underWater)
         drawSkyBox(GL_BACK_LEFT, GL_NONE); // Draw the sky texture, but ignore position data.
 
 	ComputeAverageLighting(underWater);
@@ -294,9 +294,12 @@ void RenderControl::Draw(bool underWater, shared_ptr<const Model::Object> select
 		drawMap(mapWidth);
 }
 
-void RenderControl::drawClear() {
+void RenderControl::drawClear(bool underWater) {
 	float ambient = gOptions.fAmbientLight / 200.0f;
-	glClearColor(ambient, ambient, ambient, 1.0f );
+	if (underWater)
+		glClearColor(0.0f, 0.1f, 0.5f, 1.0f);
+	else
+		glClearColor(ambient, ambient, ambient, 1.0f );
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 }
 
