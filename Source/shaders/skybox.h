@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -43,8 +43,9 @@ class SkyBox : public ShaderBase {
 public:
 	SkyBox();
 
+	/// Initialisation for Skybox shaders.
 	void Init();
-	// point.xyz is the world cordinate, adn point.w is the strength of the light.
+
 	void Draw();
 private:
 	// Callback that defines all uniform and attribute indices.

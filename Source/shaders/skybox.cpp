@@ -44,12 +44,6 @@ SkyBox::SkyBox() {
 	fModelMatrixIdx = -1;
 }
 
-// ====================================================================================================================
-/**
- * @brief Initialisation for Skybox shaders.
- */
-// ====================================================================================================================
-
 void SkyBox::Init(void) {
 	const GLsizei vertexShaderLines = sizeof(vertexShaderSource) / sizeof(GLchar*);
 	const GLsizei fragmentShaderLines = sizeof(fragmentShaderSource) / sizeof(GLchar*);
@@ -70,11 +64,9 @@ void SkyBox::GetLocations(void) {
 /**
  * @brief This is the Draw method for the Skybox
  *
- * The skybox is created using 4 quads, each going from -1.0 to 1.0. The quads are rotated
- * and a box is formed. The model transformations(the four rotations) are done on the CPU as shown
+ * The skybox is created using 6 quads, each going from -1.0 to 1.0. The quads are rotated
+ * and a box is formed. The model transformations(the rotations) are done on the CPU as shown
  * below. The view transform is then applied within the shader.
- *
- * @todo Move the model transforms to shader?
  */
 // ====================================================================================================================
 void SkyBox::Draw() {

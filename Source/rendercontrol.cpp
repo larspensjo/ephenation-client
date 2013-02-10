@@ -271,13 +271,13 @@ void RenderControl::Draw(bool underWater, shared_ptr<const Model::Object> select
 	drawClear();
 
     // If the player is dead, he will get a gray sky.
-	if (!Model::gPlayer.IsDead())
+	if (!Model::gPlayer.IsDead() && !Model::gPlayer.BelowGround())
         drawSkyBox(GL_BACK_LEFT, GL_NONE); // Draw the sky texture, but ignore position data.
 
 	ComputeAverageLighting(underWater);
 	if (gShowFramework)
 		glPolygonMode(GL_FRONT, GL_FILL);
-	// Draw the main result to the screen. TODO: It would be possible to have the deferred rendering update the depth buffer!
+	// Draw the main result to the screen.
 	drawDeferredLighting(underWater, gOptions.fWhitePoint);
 
 	// Do some post processing
@@ -295,8 +295,9 @@ void RenderControl::Draw(bool underWater, shared_ptr<const Model::Object> select
 }
 
 void RenderControl::drawClear() {
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f );
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
+	float ambient = gOptions.fAmbientLight / 200.0f;
+	glClearColor(ambient, ambient, ambient, 1.0f );
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 }
 
 void RenderControl::drawClearFBO(void) {
