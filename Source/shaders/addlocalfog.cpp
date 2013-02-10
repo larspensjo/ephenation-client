@@ -39,7 +39,7 @@ static const GLchar *fragmentShaderSource[] = {
 };
 
 AddLocalFog::AddLocalFog() {
-	fPointIdx = -1; fAmbientIdx = -1;
+	fPointIdx = -1;
 }
 
 void AddLocalFog::Init(void) {
@@ -51,17 +51,16 @@ void AddLocalFog::Init(void) {
 
 void AddLocalFog::GetLocations(void) {
 	fPointIdx = this->GetUniformLocation("Upoint");
-	fAmbientIdx = this->GetUniformLocation("Uambient");
 
+	glUniform1i(this->GetUniformLocation("lumTex"), 0);
 	glUniform1i(this->GetUniformLocation("posTex"), 1);
 
 	checkError("AddLocalFog::GetLocations");
 }
 
-void AddLocalFog::Draw(const glm::vec4 &pos, float ambient) {
+void AddLocalFog::Draw(const glm::vec4 &pos) {
 	glUseProgram(this->Program());
 	glUniform4fv(fPointIdx, 1, &pos.x);
-	glUniform1f(fAmbientIdx, ambient);
 	gQuad.Draw();
 	glUseProgram(0);
 }

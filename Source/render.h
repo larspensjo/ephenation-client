@@ -104,8 +104,8 @@ extern Shadows gShadows;
 // A class that manage shadows beneath monsters and players.
 class Fogs : public BaseObject {
 public:
-	// Add another light source to the list. Optional 'limit' will limit how much of the maximal buffer that is used.
-	void Add(float x, float y, float z, int radius, float ambient);
+	// Add another local fog to the list. Optional 'limit' will limit how much of the maximal buffer that is used.
+	void Add(float x, float y, float z, int radius);
 };
 
 extern Fogs gFogs;

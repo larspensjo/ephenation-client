@@ -431,13 +431,12 @@ void Chunk::DrawObjects(StageOneShader *shader, int dx, int dy, int dz, bool for
 		float x = (float)fChunkObject->fFogList[i].x + dx*CHUNK_SIZE + 0.5f;
 		float y = (float)fChunkObject->fFogList[i].z + dz*CHUNK_SIZE;
 		float z = -(float)fChunkObject->fFogList[i].y - dy*CHUNK_SIZE - 0.5f;
-		float ambient = fChunkObject->fFogList[i].ambient;
 		switch (fChunkObject->fFogList[i].type) {
 		case BT_SmallFog:
-			gFogs.Add(x, y, z, LAMP1_DIST, ambient);
+			gFogs.Add(x, y, z, LAMP1_DIST);
 			break;
 		case BT_BigFog:
-			gFogs.Add(x, y, z, LAMP2_DIST, ambient);
+			gFogs.Add(x, y, z, LAMP2_DIST);
 			break;
 		}
 	}

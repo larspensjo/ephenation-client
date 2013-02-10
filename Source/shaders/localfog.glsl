@@ -46,8 +46,8 @@ void main(void)
 -- Fragment
 
 uniform sampler2D posTex;     // World position
+uniform sampler2D lumTex;     // The blurred luminance map.
 uniform vec4 Upoint;          // A point source. .xyz is the coordinate, and .w is the strength of the shadow
-uniform float Uambient;       // Approximate amount of ambient light at around the fog.
 in vec2 screen;               // The screen position
 layout (location = 0) out vec4 blendColor;
 
@@ -85,10 +85,8 @@ void main(void)
 	}
 	float sqr = dist*dist/radius/radius;
 	float alpha = 0.25 * sqr;
-	// Uambient is a function 0-1 of how much sky is visible (indirect light).
-	// UBOambientLight is a global offset, so as to never have a place that is completely dark.
-	float intensity = Uambient*0.6f + UBOambientLight*0.7;
+	float luminance = texture(lumTex, screen).r * 1.05; // Add a small offset to get a little whiter fogs.
 	// For blending this fog into the far distance, use distance to fog center as criteria, not the pixel behind the fog.
 	float distanceBlending = DistanceAlphaBlending(UBOViewingDistance, cameraToFogDist);
-	blendColor = vec4(intensity, intensity, intensity, alpha*distanceBlending);
+	blendColor = vec4(luminance, luminance, luminance, alpha*distanceBlending);
 }

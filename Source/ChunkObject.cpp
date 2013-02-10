@@ -781,8 +781,6 @@ void ChunkObject::FindSpecialObjects(const Chunk *cp) {
 					fFogList[fogInd].y = y;
 					fFogList[fogInd].z = z;
 					fFogList[fogInd].type = bl;
-					float tmpamb = cp->ComputeAmbientLight(x, y, z)*0.25 + cp->InSunLight(x, y, z) * 0.75;
-					fFogList[fogInd].ambient = tmpamb;
 					fogInd++;
 					break;
 				}

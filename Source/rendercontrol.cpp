@@ -274,7 +274,7 @@ void RenderControl::Draw(bool underWater, shared_ptr<const Model::Object> select
 	if (!Model::gPlayer.IsDead())
         drawSkyBox(GL_BACK_LEFT, GL_NONE); // Draw the sky texture, but ignore position data.
 
-	// ComputeAverageLighting(underWater);
+	ComputeAverageLighting(underWater);
 	if (gShowFramework)
 		glPolygonMode(GL_FRONT, GL_FILL);
 	// Draw the main result to the screen. TODO: It would be possible to have the deferred rendering update the depth buffer!
@@ -505,6 +505,7 @@ void RenderControl::drawLocalFog(void) {
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, fPositionTexture);
 	glActiveTexture(GL_TEXTURE0); // Need to restore it or everything will break.
+	glBindTexture(GL_TEXTURE_2D, fDownSampleLumTexture1);
 	glm::vec4 *list = gFogs.GetList();
 	int count = gFogs.GetCount();
 	glEnable(GL_BLEND);
@@ -513,9 +514,7 @@ void RenderControl::drawLocalFog(void) {
 	glDepthMask(GL_FALSE);
 	glDisable(GL_DEPTH_TEST);
 	for (int i=0; i < count; i++) {
-		// Extract the integral part (fog strength), and the fractional part (ambient).
-		float ambient = modff(list[i].w, &list[i].w);   /// @todo Ugly, will modify original list
-		fAddLocalFog->Draw(list[i], ambient);
+		fAddLocalFog->Draw(list[i]);
 	}
 	glEnable(GL_DEPTH_TEST);
 	glDepthMask(GL_TRUE);

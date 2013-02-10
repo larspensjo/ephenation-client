@@ -549,11 +549,9 @@ void Shadows::Add(float x, float y, float z, float radius, float limit) {
 
 Fogs gFogs;
 
-void Fogs::Add(float x, float y, float z, int radius, float ambient) {
+void Fogs::Add(float x, float y, float z, int radius) {
 	if (fItems.size() < MAX_RENDER_FOGS) {
-		// Add ambient fraction as decimals to the radius.
-		if (ambient > 0.99f) ambient = 0.99f;
-		fItems.push_back(glm::vec4(x, y, z, radius + ambient));
+		fItems.push_back(glm::vec4(x, y, z, radius ));
 	}
 }
 std::vector<DrawObjectList> gDrawObjectList;

@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -17,24 +17,25 @@
 
 #pragma once
 
-//
-// This class encapsulates a shader that will add a local fog.
-// It is done by adding color to the destination color buffer.
-//
 
 #include "shader.h"
 
+/// A shader that will add a local fog.
+///
+/// It is done by blending color to the destination color buffer.
 class AddLocalFog : public ShaderBase {
 public:
 	AddLocalFog();
 
 	void Init();
-	// point.xyz is the world cordinate, point.w is the radius of the fog.
-	// 'ambient' is the light intensity to use for the fog.
-	void Draw(const glm::vec4 &point, float ambient);
+
+	/// Draw the fog. The world position texture has to be bound on texture unit 1, and
+	/// the luminance map on texture unit 0.
+	/// @param point The world coordinate in point.xyz, point.w is the radius of the fog.
+	void Draw(const glm::vec4 &point);
 private:
 	// Callback that defines all uniform and attribute indices.
 	virtual void GetLocations(void);
 
-	GLint fPointIdx, fAmbientIdx;
+	GLint fPointIdx;
 };
