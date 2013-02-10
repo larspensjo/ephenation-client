@@ -38,7 +38,7 @@ layout(location = 0) out vec3 fragColor;
 void main() {
 	ivec2 bitmapSize = textureSize(UblurSampler, 0);
 	vec2 pixelSize = 1.0 / vec2(bitmapSize);
-	// Incremental Gaussian Coefficent Calculation (See GPU Gems 3 pp. 877 - 889)
+	// Incremental Gaussian Coefficient Calculation (See GPU Gems 3 pp. 877 - 889)
 	vec3 incrementalGaussian;
 	incrementalGaussian.x = 1.0f / (sqrt(2.0f * pi) * Usigma);
 	incrementalGaussian.y = exp(-0.5f / (Usigma * Usigma));

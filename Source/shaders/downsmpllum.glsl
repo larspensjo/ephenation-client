@@ -41,16 +41,22 @@ float linearToSRGB(float linear) {
 
 void main(void)
 {
+	vec4 normal = texture(normalTex, screen);
+	if (normal.xyz == vec3(0,0,0)) {
+		discard; // The luminosity of this pixel is unknown.
+		return;
+	}
+	vec2 pixelSize = 1.0 / vec2(textureSize(diffuseTex, 0));
+	vec2 ind = screen + pixelSize/2.0; // Add half a pixel so as to use linear sampling
 	// Load data, stored in textures, from the first stage rendering.
 	bool skyPixel = false;
-	vec4 normal = texture(normalTex, screen);
-	vec4 diffuse = texture(diffuseTex, screen) * 0.95; // Downscale a little, 1.0 can't be mapped to HDR.
-	vec4 blend = texture(blendTex, screen);
+	vec4 diffuse = texture(diffuseTex, ind) * 0.95; // Downscale a little, 1.0 can't be mapped to HDR.
+	vec4 blend = texture(blendTex, ind);
 	vec4 worldPos = texture(posTex, screen);
 	float cameraToWorldDistance = length(UBOCamera.xyz-worldPos.xyz);
 	// The sky is more than 1000 blocks away
 	if (cameraToWorldDistance > 1000) skyPixel = true;
-	float fact = texture(lightTex, screen).r;
+	float fact = texture(lightTex, ind).r;
 	if (UBODynamicshadows == 0) fact += worldPos.a;         // Add pre computed light instead of using shadow map
 	if (skyPixel) { fact = 0.8; }
 	vec3 step2 = fact*diffuse.xyz;

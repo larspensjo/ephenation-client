@@ -138,6 +138,11 @@ void RenderControl::Init(int lightSamplingFactor) {
 void RenderControl::Resize(GLsizei width, GLsizei height) {
 	fWidth = width; fHeight = height;
 
+	//==============================================================================
+	// Create the G-buffers used by the deferred shader. Linear sampling is enabled
+	// as there are some filters that downsample the textures.
+	//==============================================================================
+
 	// Generate and bind the texture depth information
 	glBindRenderbuffer(GL_RENDERBUFFER, fDepthBuffer);
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
@@ -145,7 +150,7 @@ void RenderControl::Resize(GLsizei width, GLsizei height) {
 	// Generate and bind the texture for diffuse
 	glBindTexture(GL_TEXTURE_2D, fDiffuseTexture);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
@@ -153,7 +158,7 @@ void RenderControl::Resize(GLsizei width, GLsizei height) {
 	// Generate and bind the texture for positions
 	glBindTexture(GL_TEXTURE_2D, fPositionTexture);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, width, height, 0, GL_RGBA, GL_FLOAT, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
@@ -161,7 +166,7 @@ void RenderControl::Resize(GLsizei width, GLsizei height) {
 	// Generate and bind the texture for normals
 	glBindTexture(GL_TEXTURE_2D, fNormalsTexture);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, width, height, 0, GL_RGBA, GL_FLOAT, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
@@ -169,7 +174,7 @@ void RenderControl::Resize(GLsizei width, GLsizei height) {
 	// Generate and bind the texture for blending data
 	glBindTexture(GL_TEXTURE_2D, fBlendTexture);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
@@ -177,7 +182,7 @@ void RenderControl::Resize(GLsizei width, GLsizei height) {
 	// Generate and bind the texture for lights
 	glBindTexture(GL_TEXTURE_2D, fLightsTexture);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_R16F, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
@@ -734,6 +739,11 @@ void RenderControl::ComputeAverageLighting(bool underWater) {
 	static TimeMeasure tm("AvgLght");
 	tm.Start();
 	fboDownSampleLum1->EnableWriting();
+	if (Model::gPlayer.BelowGround())
+		glClearColor(gOptions.fAmbientLight / 200.0f, 0.0f, 0.0f, 1.0f );
+	else
+		glClearColor(1.0f, 0.0f, 0.0f, 1.0f );
+	glClear(GL_COLOR_BUFFER_BIT);
 	int w = gViewport[2] / fLightSamplingFactor;
 	int h = gViewport[3] / fLightSamplingFactor;
 	glViewport(0, 0, w, h); // set viewport to texture dimensions
