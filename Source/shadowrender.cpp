@@ -86,7 +86,7 @@ void ShadowRender::Render(int width, int height, const AnimationModels *animatio
 
 	fShader->EnableProgram();
 	fShader->ProjectionView(fProjViewMatrix);
-	fbo->EnableWriting();
+	fbo->EnableWriting(GL_NONE);
 	glClear(GL_DEPTH_BUFFER_BIT); // Clear the depth buffer
 	glViewport(0, 0, fMapWidth, fMapHeight); // set viewport to texture dimensions
 	glDepthFunc(GL_LESS);

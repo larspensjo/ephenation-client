@@ -39,7 +39,8 @@ public:
 	void EnableReading() const;
 
 	/// Enable the FBO for writing
-	void EnableWriting() const;
+	/// @param buf The buffer to write to. See glDrawBuffers().
+	void EnableWriting(GLenum buf) const;
 private:
 	GLuint fbo;
 };

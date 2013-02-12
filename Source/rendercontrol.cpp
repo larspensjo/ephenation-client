@@ -741,7 +741,7 @@ void RenderControl::UpdateCameraPosition(int wheelDelta) {
 void RenderControl::ComputeAverageLighting(bool underWater) {
 	static TimeMeasure tm("AvgLght");
 	tm.Start();
-	fboDownSampleLum1->EnableWriting();
+	fboDownSampleLum1->EnableWriting(GL_COLOR_ATTACHMENT0);
 	if (Model::gPlayer.BelowGround())
 		glClearColor(gOptions.fAmbientLight / 200.0f, 0.0f, 0.0f, 1.0f );
 	else
@@ -769,12 +769,12 @@ void RenderControl::ComputeAverageLighting(bool underWater) {
 	glDisable(GL_CULL_FACE);
 	fDownSamplingLuminance->Draw();
 
-	int tap = h/8;
-	float sigma = float(tap);
-	fboDownSampleLum2->EnableWriting();
+	int tap = h/4;
+	float sigma = float(tap)/3.0f;
+	fboDownSampleLum2->EnableWriting(GL_COLOR_ATTACHMENT0);
 	glBindTexture(GL_TEXTURE_2D, fDownSampleLumTexture1);
-	fGaussianBlur->BlurHorizontal(h, sigma);
-	fboDownSampleLum1->EnableWriting();
+	fGaussianBlur->BlurHorizontal(tap, sigma);
+	fboDownSampleLum1->EnableWriting(GL_COLOR_ATTACHMENT0);
 	glBindTexture(GL_TEXTURE_2D, fDownSampleLumTexture2);
 	fGaussianBlur->BlurVertical();
 

@@ -64,6 +64,8 @@ void FBOFlat::EnableReading() const {
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, fbo);
 }
 
-void FBOFlat::EnableWriting() const {
+void FBOFlat::EnableWriting(GLenum buf) const {
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo);
+	GLenum windows[] = { buf };
+	glDrawBuffers(1, windows);
 }
