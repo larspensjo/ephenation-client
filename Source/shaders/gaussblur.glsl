@@ -60,5 +60,6 @@ void main() {
 		incrementalGaussian.xy *= incrementalGaussian.yz;
 	}
 
-	fragColor = avgValue.xyz / coefficientSum;
+	fragColor = avgValue.rgb / coefficientSum;
+	gl_FragDepth = fragColor.r; // This will enable blur of the depth buffer.
 }
