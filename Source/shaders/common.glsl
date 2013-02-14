@@ -92,40 +92,39 @@ float DistanceAlphaBlending(float maxViewDistance, float currentViewDistance) {
 /// @return The corner in screen space.
 vec4 GetTileFromSphere(vec3 c, float r, vec2 v) {
 	vec2 v2 = v*2-1; // Normalize from 0..1 to -1 .. +1.
-	// Compute offset to be used from sphere center, scaling with radius
-	vec2 quadOffset =  v2*r;
-	// Transform sphere model center to view coordinates
-	vec4 viewPos = UBOViewMatrix * vec4(c, 1);
+	vec2 quadOffset =  v2*r; // Compute offset to be used from sphere center, scaling with radius
+	vec4 viewPos = UBOViewMatrix * vec4(c, 1); // Transform sphere model center to view coordinates
+
 	// The vector "viewpos" shall now be moved, either forward or backward.
 	// The objective is that the resulting quad shall always cover the sphere,
 	// from the camera point of view. If it would not have been moved, ground in front
 	// would conceal light effects.
 	// Find the unit vector 'u' pointing to "viewPos" from the camera.
 	vec3 u = normalize(viewPos.xyz);
-	// The distance to the sphere center from the camera. Negative values means behind the camera.
-	float d = length(viewPos.xyz) * sign(viewPos.z);
+	// The distance to the sphere center from the camera. Negative values means beyond the camera.
+	float d = length(viewPos.xyz)*sign(-viewPos.z);
 	// Find the adjustment to move the quad towards the camera. There are four cases
 	// of the camera position that have to be handled:
 	// 1. In front of the sphere and outside.
 	// 2. Inside the sphere, but in front of the sphere center.
 	// 3. Inside the sphere, but beyond the sphere center.
 	// 4. Beyond the sphere, and completely outside.
-	float delta;         // How far to move the vertices of the quad towards the camera
-	bool inside = false; // Force full screen
-	if (d > radius)         // Case 1
-		delta = radius;
-	else if (l < radius)    // Case 2
+	float delta;              // How far to move the vertices of the quad towards the camera
+	bool inside = false;      // Force full screen
+	if (d > r)                // Case 1
+		delta = r;
+	else if (d > 0 && d < r)  // Case 2
 		inside = true;
-	else if (l < -radius)   // Case 3
-		inside = true;
-	else                    // Case 4, the quad will be drawn behind the camera, and thus culled.
+	else if (d < 0 && -d < r) // Case 3
+		inside = false;
+	else                      // Case 4, the quad would be drawn behind the camera, and thus culled.
 		delta = d;
 
 	// The modelView is one of the vertices of the quad in view space.
 	vec4 modelView = viewPos - vec4(u, 0)*delta + vec4(quadOffset, 0, 0);
-	if (inside)
-		modeView = v2; // Override with the full screen normalized coordinate
 	vec4 pos = UBOProjectionMatrix * modelView;
+	if (inside)
+		pos = vec4(v2, 0, 1); // Override with the full screen normalized coordinate
 	pos /= pos.w;
 	return pos;
 }

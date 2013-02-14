@@ -28,6 +28,7 @@
 /// Using GLSW to define shader
 static const GLchar *vertexShaderSource[] = {
 	"common.UniformBuffer",
+	"common.GetTileFromSphere",
 	"addpointshadow.Vertex",
 };
 

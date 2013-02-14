@@ -24,19 +24,7 @@ layout (location = 0) in vec2 vertex;
 out vec2 screen;                // Screen coordinate
 void main(void)
 {
-	float radius = Upoint.w;    // Interpreted as the radius of the shadow
-	// Relative bounding (2D) box around the point light
-	vec3 box =  vec3(vertex*2-1, 0)*radius;
-	vec4 viewPos = UBOViewMatrix * vec4(Upoint.xyz, 1);
-	vec3 d = normalize(viewPos.xyz);
-	// We want to move the quad towards the player. It shall be moved so as
-	// precisely be outside the range of the lamp. This is needed as the depth
-	// culling will remove parts of the quad that are hidden.
-	float l = min(radius, -viewPos.z-1);
-	// The modelView is one of the corners of the quad in view space.
-	vec4 modelView = -vec4(d, 0)*l + vec4(box, 0) + viewPos;
-	vec4 pos = UBOProjectionMatrix * modelView;
-	pos /= pos.w;
+	vec4 pos = GetTileFromSphere(Upoint.xyz, Upoint.w, vertex);
 	gl_Position = pos;
 	// Copy position to the fragment shader. Only x and y is needed. Scale it
 	// from interval -1 .. 1, to the interval 0 .. 1.

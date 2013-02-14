@@ -38,7 +38,7 @@ void FBOFlat::AttachTexture(GLuint textureId) {
 	GLenum fboStatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 	if (fboStatus != GL_FRAMEBUFFER_COMPLETE) {
 		auto &ss = View::gErrorManager.GetStream(false, false);
-		ss << "FBOFlat::AttachTexture: FrameBuffer incomplete: " << FrameBufferError(fboStatus) << fboStatus;
+		ss << "FBOFlat::AttachTexture: FrameBuffer incomplete: " << FrameBufferError(fboStatus) << " (" << fboStatus << ")";
 	}
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }

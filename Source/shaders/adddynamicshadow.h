@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -17,17 +17,14 @@
 
 #pragma once
 
-//
-// Use the shadow map and compute lighting effects.
-//
-
 #include "shader.h"
 
+/// Use the shadow map and compute lighting effects.
 class AddDynamicShadow : public ShaderBase {
 public:
 	AddDynamicShadow();
 
-	void Init(void);
+	void Init();
 
 	void Draw(const glm::mat4 &);
 private:
