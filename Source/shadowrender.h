@@ -24,6 +24,7 @@
 
 class ShadowMapShader;
 class FBOFlat;
+class GaussianBlur;
 
 namespace View {
 	class AnimationModels;
@@ -39,7 +40,7 @@ public:
 
 	/// Render the shadow map, givne the specified world volume (specified in blocks).
 	/// Blocks horisontal from -width/2 to +width/2 will be included, and -height/2 to +height/2.
-	void Render(int width, int height, const AnimationModels *animationModels);
+	void Render(int width, int height, const AnimationModels *animationModels, GaussianBlur *blurShader);
 
 	/// Bind the shadowmap texture to the currently active texture unit.
 	void BindTexture(void) const;
@@ -47,10 +48,11 @@ public:
 	const glm::mat4 &GetProViewMatrix(void) const;
 
 private:
-	GLuint fTexture; // Texture id used for depth buffer
+	void Blur(GaussianBlur *blurShader);     /// Blur the depth buffer
+	GLuint fTexture1, fTexture2; // Texture id used for depth buffer
 	int fMapWidth, fMapHeight; // Size of the shadow map
 	std::unique_ptr<ShadowMapShader> fShader;
-	std::unique_ptr<FBOFlat> fbo;
+	std::unique_ptr<FBOFlat> fbo1, fbo2;
 	glm::mat4 fProjViewMatrix; // The matrix is needed elsewhere, save it for later
 };
 

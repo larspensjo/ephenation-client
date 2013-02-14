@@ -39,9 +39,6 @@ vec4 normal;
 // Declarations used for sun and shadow
 uniform mat4 shadowmat;       // combination of projection * view matrices of the light source
 uniform sampler2D shadowmapTex; // TODO: Use shadow sampler instead
-const float shadowMapSize1 = DYNAMIC_SHADOW_MAP_SIZE; // The size of the dynamic shadowmap bitmap
-const float shadowMapSize2 = STATIC_SHADOW_MAP_SIZE; // The size of the dynamic shadowmap bitmap
-const int shadowMultiSample = 5;
 
 // This function computes lighting from a low resolution shadow map. The purpose is to use it for
 // low performance systems
@@ -53,16 +50,12 @@ float ShadowMapLinear(vec3 pos, vec3 normal) {
 	shadowmapcoord = shadowmapcoord/2 + 0.5;
 	float sun = 1.0;
 	if (shadowmapcoord.x > 0 && shadowmapcoord.x < 1 && shadowmapcoord.y > 0 && shadowmapcoord.y < 1 && shadowmapcoord.z < 1) {
-		const float p = 1.0/shadowMapSize2; // Size of one pixel
 		// Add a small delta or there is a chance objects will shadow themselves.
 		float cosTheta = clamp(dot(normal, sundir), 0.1, 1);
 		float d = clamp(0.002/sqrt(cosTheta), 0.0, 0.01);
-		// int start = int(fract(dot(pos, vec3(23.534, 65.91281, 31.231)))*32)%32;"
-		for (int i=0;i<shadowMultiSample;i++) {
-			vec2 ind = shadowmapcoord.xy + rand2(screen.xy)*p;
-			float depth = texture(shadowmapTex, ind).x;
-			if (shadowmapcoord.z > depth + d) sun -= 1.0/shadowMultiSample;
-		}
+		float depth = texture(shadowmapTex, shadowmapcoord.xy).x;
+		float c = 200;
+		sun = min(exp(-c*(shadowmapcoord.z - depth-d)), 1);
 	}
 	return sun;
 }
@@ -77,15 +70,12 @@ float ShadowMap(vec3 pos, vec3 normal) {
 	shadowmapcoord = shadowmapcoord/2 + 0.5;
 	float sun = 1.0;
 	if (shadowmapcoord.x > 0 && shadowmapcoord.x < 1 && shadowmapcoord.y > 0 && shadowmapcoord.y < 1 && shadowmapcoord.z < 1) {
-		const float p = 1.0/shadowMapSize1; // Size of one pixel
 		// Add a small delta or there is a chance objects will shadow themselves.
 		float cosTheta = clamp(dot(normal, sundir), 0.1, 1);
 		float d = clamp(0.002/sqrt(cosTheta), 0.0, 0.01);
-		for (int i=0;i<shadowMultiSample;i++) {
-			vec2 ind = shadowmapcoord.xy + rand2(screen.xy)*p*4;
-			float depth = texture(shadowmapTex, ind).x;
-			if (shadowmapcoord.z > depth + d) sun -= 1.0/shadowMultiSample;
-		}
+		float depth = texture(shadowmapTex, shadowmapcoord.xy).x;
+		float c = 100;
+		sun = min(exp(-c*(shadowmapcoord.z - depth-d)), 1);
 	}
 	return sun;
 }

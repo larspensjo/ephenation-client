@@ -71,24 +71,7 @@ void main(void)
 	vec3 eyeDir = normalize(cameraToWorld);
 	vec3 vHalfVector = normalize(sundir.xyz+eyeDir);
 	float inSun = worldPos.a; // Is greater than 0 if this position is reached by the sun
-	float fact = texture(lightTex, screen).r;
-	float num = 1;
-	// Do some multi sampling to blur the lighting. It is kind of a box filter, but with enhanced weights
-	// dynamically controlled by the geometry.
-	for (int i=0; i < 4; i++) {
-		const float filterpixels = 4; // The size of the area to include in the filter.
-		vec2 ind = screen + rand2(screen)/UBOWindowHeight*filterpixels;
-		vec3 pos2 = texture(posTex, ind).xyz;
-		vec3 normal2 = texture(normalTex, ind).xyz;
-		const float maxdist = 1; // Ignore contributions when distance difference exceeds this value
-		float dist = min(abs(distance(UBOCamera.xyz, pos2) - cameraToWorldDistance), maxdist); // A value between 0 and maxdist.
-		//		Use a weight that depends on the distance difference. Also, if there is a sharp corner, we don't want
-		//		shadows to bleed around the corner. This this is prevented by using a test for normals.
-		float weight = (maxdist-dist)*dot(normal.xyz, normal2); // A value from 0 to 1
-		fact += weight * texture(lightTex, ind).r;
-		num += weight;
-	}
-	fact = fact/num + (ambient+UBOambientLight)*0.03;
+	float fact = texture(lightTex, screen).r + (ambient+UBOambientLight)*0.03;
 	if (UBODynamicshadows == 0) fact += inSun;         // Add pre computed light instead of using shadow map
 	if (skyPixel) { fact = 0.8; }
 	vec3 step1 = fact*hdr.xyz; // + inSun*pow(max(dot(normal.xyz,vHalfVector),0.0), 100) * 0.1; // TODO: Specular glare isn't correct

@@ -531,7 +531,7 @@ void RenderControl::ComputeShadowMap() {
 	if (gOptions.fDynamicShadows && fShadowRender) {
 		static TimeMeasure tm("ShdwDyn");
 		tm.Start();
-		fShadowRender->Render(352, 160, &fAnimationModels);
+		fShadowRender->Render(352, 160, &fAnimationModels, fGaussianBlur.get());
 		tm.Stop();
 	}
 	if (gOptions.fStaticShadows && fShadowRender) {
@@ -543,7 +543,7 @@ void RenderControl::ComputeShadowMap() {
 		Model::gPlayer.GetChunkCoord(&curr);
 		if (curr.x != prev.x || curr.y != prev.y || curr.z != prev.z || gCurrentFrameTime-1.0 > prevTime) {
 			// Only update the shadowmap when the player move to another chunk, or after a time out
-			fShadowRender->Render(224, 160, &fAnimationModels);
+			fShadowRender->Render(224, 160, &fAnimationModels, fGaussianBlur.get());
 			prev = curr;
 			prevTime = gCurrentFrameTime;
 		}

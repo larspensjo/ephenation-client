@@ -22,6 +22,7 @@
 #include <glm/gtx/transform2.hpp>
 #include "shaders/shadowmapshader.h"
 #include "shaders/AnimationShader.h"
+#include "shaders/gaussblur.h"
 #include "primitives.h"
 #include "render.h"
 #include "player.h"
@@ -33,25 +34,35 @@
 using namespace View;
 
 ShadowRender::ShadowRender(int width, int height) :
-	fTexture(0), fMapWidth(width), fMapHeight(height) {
+	fTexture1(0), fTexture2(0), fMapWidth(width), fMapHeight(height) {
 }
 
 ShadowRender::~ShadowRender() {
-	if (fTexture != 0) {
-		glDeleteTextures(1, &fTexture);
+	if (fTexture1 != 0) {
+		glDeleteTextures(1, &fTexture1);
+		glDeleteTextures(1, &fTexture2);
 	}
 }
 
 void ShadowRender::Init() {
-	// Create the depth texture
-	//-------------------------
-	glGenTextures(1, &fTexture); gDebugTextures.push_back(fTexture); // Add this texture to the debugging list of textures
-	glBindTexture(GL_TEXTURE_2D, fTexture);
+	// Create the depth textures
+	//--------------------------
+	glGenTextures(1, &fTexture1); gDebugTextures.push_back(fTexture1); // Add this texture to the debugging list of textures
+	glBindTexture(GL_TEXTURE_2D, fTexture1);
 	// Using a depth of less than 24 bits adds more random shadow flickering.
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, fMapWidth, fMapHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-	// There is no need for interpolation in the shadow map. It would give an interpolated value between a depth value and
-	// something else, possible a long way off. An interpolated depth value is not meaningfull, as it will still give
-	// a true/false result when compared to somwhere to cast the shadow.
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	// No comparison function shall be used, or the depth value would be reported as 0 or 1 only. It is probably not
+	// enabled by default anyway.
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE);
+
+	glGenTextures(1, &fTexture2);
+	glBindTexture(GL_TEXTURE_2D, fTexture2);
+	// Using a depth of less than 24 bits adds more random shadow flickering.
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, fMapWidth, fMapHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -62,15 +73,17 @@ void ShadowRender::Init() {
 	// unbind, bind the default texture (0) instead
 	glBindTexture(GL_TEXTURE_2D, 0);
 
-	// Create the frame buffer object
-	//-------------------------------
-	fbo.reset(new FBOFlat);
-	fbo->AttachDepthBuffer(fTexture);
+	// Create the frame buffer objects
+	//--------------------------------
+	fbo1.reset(new FBOFlat);
+	fbo1->AttachDepthBuffer(fTexture1);
+	fbo2.reset(new FBOFlat);
+	fbo2->AttachDepthBuffer(fTexture2);
 
 	fShader = ShadowMapShader::Make();
 }
 
-void ShadowRender::Render(int width, int height, const AnimationModels *animationModels) {
+void ShadowRender::Render(int width, int height, const AnimationModels *animationModels, GaussianBlur *blurShader) {
 	glm::mat4 R1 = glm::rotate(glm::mat4(1), -115.0f, glm::vec3(1.0f, 0.0f, 0.0f));       // Rotate world upwards, in direction of sun
 	glm::mat4 R2 = glm::rotate(glm::mat4(1), -45.0f, glm::vec3(0.0f, 0.0f, 1.0f));        // Rotate world upwards, in direction of sun
 	glm::mat4 T;
@@ -86,7 +99,7 @@ void ShadowRender::Render(int width, int height, const AnimationModels *animatio
 
 	fShader->EnableProgram();
 	fShader->ProjectionView(fProjViewMatrix);
-	fbo->EnableWriting(GL_NONE);
+	fbo1->EnableWriting(GL_NONE);
 	glClear(GL_DEPTH_BUFFER_BIT); // Clear the depth buffer
 	glViewport(0, 0, fMapWidth, fMapHeight); // set viewport to texture dimensions
 	glDepthFunc(GL_LESS);
@@ -105,12 +118,28 @@ void ShadowRender::Render(int width, int height, const AnimationModels *animatio
 		anim->Shadowmap(false, fProjViewMatrix);
 	}
 
+	// Blur the depth buffer, before the default viewport is restored.
+	this->Blur(blurShader);
+
 	glViewport(0, 0, gViewport[2], gViewport[3]); // Restore default viewport.
 	glBindFramebuffer (GL_FRAMEBUFFER, 0);
 }
 
+void ShadowRender::Blur(GaussianBlur *blurShader) {
+	glEnable(GL_DEPTH_TEST);
+	glDisable(GL_CULL_FACE);
+	glDepthFunc(GL_ALWAYS); // Overwrite the old values
+	fbo2->EnableWriting(GL_NONE); // Only update depth buffer
+	glBindTexture(GL_TEXTURE_2D, fTexture1);
+	blurShader->BlurHorizontal(11, 4.0f);
+	fbo1->EnableWriting(GL_NONE); // Only update depth buffer
+	glDepthFunc(GL_LESS); // Restore default
+	glBindTexture(GL_TEXTURE_2D, fTexture2);
+	blurShader->BlurVertical();
+}
+
 void ShadowRender::BindTexture(void) const {
-	glBindTexture(GL_TEXTURE_2D, fTexture);
+	glBindTexture(GL_TEXTURE_2D, fTexture1);
 }
 
 const glm::mat4 &ShadowRender::GetProViewMatrix(void) const {
