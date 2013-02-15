@@ -85,30 +85,29 @@ float DistanceAlphaBlending(float maxViewDistance, float currentViewDistance) {
 
 -- GetTileFromSphere
 
-/// Find corner from quad that covers a light effect.
+/// Find corner from octagon that covers a light effect.
 /// @param c The sphere center in model space where the light is located.
 /// @param r Sphere radius.
-/// @param v One corner from the quad (-1,-1) - (1,1).
+/// @param v One corner from the octagon (-1,-1) - (1,1).
 /// @return The corner in screen space.
 vec4 GetTileFromSphere(vec3 c, float r, vec2 v) {
-	vec2 quadOffset =  v*r; // Compute offset to be used from sphere center, scaling with radius
 	vec4 viewPos = UBOViewMatrix * vec4(c, 1); // Transform sphere model center to view coordinates
 
 	// The vector "viewpos" shall now be moved, either forward or backward.
-	// The objective is that the resulting quad shall always cover the sphere,
+	// The objective is that the resulting octagon shall always cover the sphere,
 	// from the camera point of view. If it would not have been moved, ground in front
 	// would conceal light effects.
 	// Find the unit vector 'u' pointing to "viewPos" from the camera.
 	vec3 u = normalize(viewPos.xyz);
 	// The distance to the sphere center from the camera. Negative values means beyond the camera.
 	float d = length(viewPos.xyz)*sign(-viewPos.z);
-	// Find the adjustment to move the quad towards the camera. There are four cases
+	// Find the adjustment to move the octagon towards the camera. There are four cases
 	// of the camera position that have to be handled:
 	// 1. In front of the sphere and outside.
 	// 2. Inside the sphere, but in front of the sphere center.
 	// 3. Inside the sphere, but beyond the sphere center.
 	// 4. Beyond the sphere, and completely outside.
-	float delta;              // How far to move the vertices of the quad towards the camera
+	float delta;              // How far to move the vertices of the octagon towards the camera
 	bool inside = false;      // Force full screen
 	if (d > r)                // Case 1
 		delta = r;
@@ -116,11 +115,15 @@ vec4 GetTileFromSphere(vec3 c, float r, vec2 v) {
 		inside = true;
 	else if (d < 0 && -d < r) // Case 3
 		inside = false;
-	else                      // Case 4, the quad would be drawn behind the camera, and thus culled.
+	else                      // Case 4, the octagon would be drawn behind the camera, and thus culled.
 		delta = d;
 
-	// The modelView is one of the vertices of the quad in view space.
-	vec4 modelView = viewPos - vec4(u, 0)*delta + vec4(quadOffset, 0, 0);
+	// Compute offset to be used from sphere center, scaling with radius.
+	// Also scale with perspective, the octagon in front of the light can be a little
+	// smaller than the light radius.
+	vec2 vertexOffset =  v*r*(d-r)/sqrt(d*d-r*r);
+	// The modelView is one of the vertices of the octagon in view space.
+	vec4 modelView = viewPos - vec4(u, 0)*delta + vec4(vertexOffset, 0, 0);
 	vec4 pos = UBOProjectionMatrix * modelView;
 	if (inside)
 		pos = vec4(v, 0, 1); // Override with the full screen normalized coordinate
