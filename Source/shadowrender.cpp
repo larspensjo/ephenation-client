@@ -136,6 +136,7 @@ void ShadowRender::Blur(GaussianBlur *blurShader) {
 	glDepthFunc(GL_LESS); // Restore default
 	glBindTexture(GL_TEXTURE_2D, fTexture2);
 	blurShader->BlurVertical();
+	glEnable(GL_CULL_FACE);
 }
 
 void ShadowRender::BindTexture(void) const {
