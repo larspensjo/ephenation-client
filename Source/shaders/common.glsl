@@ -114,7 +114,7 @@ vec4 GetTileFromSphere(vec3 c, float r, vec2 v) {
 	else if (d > 0 && d < r)  // Case 2
 		inside = true;
 	else if (d < 0 && -d < r) // Case 3
-		inside = false;
+		inside = true;
 	else                      // Case 4, the octagon would be drawn behind the camera, and thus culled.
 		delta = d;
 
