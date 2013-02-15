@@ -23,7 +23,7 @@
 #include "../primitives.h"
 #include "addpointshadow.h"
 #include "../ui/Error.h"
-#include "../shapes/quad.h"
+#include "../shapes/octagon.h"
 
 /// Using GLSW to define shader
 static const GLchar *vertexShaderSource[] = {
@@ -65,7 +65,7 @@ void AddPointShadow::DrawBlueLight(const glm::vec4 &pos) {
 		glUniform1i(fSelectionIdx, fPreviousMode);
 	}
 	glUniform4fv(fPointIdx, 1, &pos.x);
-	gQuad.Draw();
+	gOctagon.Draw();
 	glUseProgram(0);
 }
 
@@ -77,7 +77,7 @@ void AddPointShadow::DrawGreenLight(const glm::vec4 &pos) {
 		glUniform1i(fSelectionIdx, fPreviousMode);
 	}
 	glUniform4fv(fPointIdx, 1, &pos.x);
-	gQuad.Draw();
+	gOctagon.Draw();
 	glUseProgram(0);
 }
 
@@ -89,7 +89,7 @@ void AddPointShadow::DrawRedLight(const glm::vec4 &pos) {
 		glUniform1i(fSelectionIdx, fPreviousMode);
 	}
 	glUniform4fv(fPointIdx, 1, &pos.x);
-	gQuad.Draw();
+	gOctagon.Draw();
 	glUseProgram(0);
 }
 
@@ -101,7 +101,7 @@ void AddPointShadow::DrawMonsterSelection(const glm::vec4 &pos) {
 		glUniform1i(fSelectionIdx, fPreviousMode);
 	}
 	glUniform4fv(fPointIdx, 1, &pos.x);
-	gQuad.Draw();
+	gOctagon.Draw();
 	glUseProgram(0);
 }
 
@@ -113,6 +113,6 @@ void AddPointShadow::DrawPointShadow(const glm::vec4 &pos) {
 		glUniform1i(fSelectionIdx, fPreviousMode);
 	}
 	glUniform4fv(fPointIdx, 1, &pos.x);
-	gQuad.Draw();
+	gOctagon.Draw();
 	glUseProgram(0);
 }

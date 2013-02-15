@@ -23,7 +23,7 @@
 #include "../primitives.h"
 #include "addlocalfog.h"
 #include "../ui/Error.h"
-#include "../shapes/quad.h"
+#include "../shapes/octagon.h"
 
 /// Using GLSW to define shader
 static const GLchar *vertexShaderSource[] = {
@@ -62,6 +62,6 @@ void AddLocalFog::GetLocations(void) {
 void AddLocalFog::Draw(const glm::vec4 &pos) {
 	glUseProgram(this->Program());
 	glUniform4fv(fPointIdx, 1, &pos.x);
-	gQuad.Draw();
+	gOctagon.Draw();
 	glUseProgram(0);
 }

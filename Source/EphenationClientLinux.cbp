@@ -215,6 +215,8 @@
 		<Unit filename="shapes/Cylinder.h" />
 		<Unit filename="shapes/Tree.cpp" />
 		<Unit filename="shapes/Tree.h" />
+		<Unit filename="shapes/octagon.cpp" />
+		<Unit filename="shapes/octagon.h" />
 		<Unit filename="shapes/quad.cpp" />
 		<Unit filename="shapes/quad.h" />
 		<Unit filename="shapes/quadstage1.cpp" />

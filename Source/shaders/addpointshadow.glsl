@@ -18,7 +18,7 @@
 
 /// This vertex shader will only draw two triangles, limited to the part of the screen
 /// that can be affected.
-/// The vertex input is 0,0 in one corner and 1,1 in the other.
+/// The vertex input is -1,-1 in one corner and 1,1 in the other.
 uniform vec4 Upoint;            // A light. .xyz is the coordinate, and .w is the strength (radius)
 layout (location = 0) in vec2 vertex;
 out vec2 screen;                // Screen coordinate

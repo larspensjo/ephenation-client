@@ -23,7 +23,7 @@
 #include "../primitives.h"
 #include "addpointlight.h"
 #include "../ui/Error.h"
-#include "../shapes/quad.h"
+#include "../shapes/octagon.h"
 
 /// Using GLSW to define shader
 static const GLchar *vertexShaderSource[] = {
@@ -61,6 +61,6 @@ void AddPointLight::Draw(const glm::vec3 &pos, float strength) {
 	glUseProgram(this->Program());
 	const glm::vec4 point(pos.x, pos.y, pos.z, strength);
 	glUniform4fv(fLampIdx, 1, &point.x);
-	gQuad.Draw();
+	gOctagon.Draw();
 	glUseProgram(0);
 }

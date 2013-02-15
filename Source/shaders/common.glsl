@@ -88,11 +88,10 @@ float DistanceAlphaBlending(float maxViewDistance, float currentViewDistance) {
 /// Find corner from quad that covers a light effect.
 /// @param c The sphere center in model space where the light is located.
 /// @param r Sphere radius.
-/// @param v One corner from the quad (0,0) - (1,1).
+/// @param v One corner from the quad (-1,-1) - (1,1).
 /// @return The corner in screen space.
 vec4 GetTileFromSphere(vec3 c, float r, vec2 v) {
-	vec2 v2 = v*2-1; // Normalize from 0..1 to -1 .. +1.
-	vec2 quadOffset =  v2*r; // Compute offset to be used from sphere center, scaling with radius
+	vec2 quadOffset =  v*r; // Compute offset to be used from sphere center, scaling with radius
 	vec4 viewPos = UBOViewMatrix * vec4(c, 1); // Transform sphere model center to view coordinates
 
 	// The vector "viewpos" shall now be moved, either forward or backward.
@@ -124,7 +123,7 @@ vec4 GetTileFromSphere(vec3 c, float r, vec2 v) {
 	vec4 modelView = viewPos - vec4(u, 0)*delta + vec4(quadOffset, 0, 0);
 	vec4 pos = UBOProjectionMatrix * modelView;
 	if (inside)
-		pos = vec4(v2, 0, 1); // Override with the full screen normalized coordinate
+		pos = vec4(v, 0, 1); // Override with the full screen normalized coordinate
 	pos /= pos.w;
 	return pos;
 }
