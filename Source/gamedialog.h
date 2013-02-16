@@ -148,6 +148,9 @@ private:
 	int fRequestActivatorX, fRequestActivatorY, fRequestActivatorZ;
 
 	UndoOp fUndoOperator; //for undo/redo
+
+	/// Save the game screen to a file
+	void SaveScreen();
 };
 
 extern gameDialog gGameDialog;

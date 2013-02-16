@@ -524,6 +524,11 @@ void gameDialog::HandleKeyPress(int key) {
 		return;
 	}
 
+	if (key == GLFW_KEY_F11) {
+        this->SaveScreen();
+        return;
+	}
+
 	if ((key == GLFW_KEY_ENTER || key == GLFW_KEY_KP_ENTER) && fEnterDebugText && fCurrentRocketContextInput) {
 		fCurrentRocketContextInput = 0; // Override. Use ENTER key to submit the input text.
 	}
@@ -1339,6 +1344,75 @@ void gameDialog::CancelCurrentEffect(void) {
 		break;
 	}
 	fCurrentEffect = EFFECT_NONE;
+}
+
+void gameDialog::SaveScreen() {
+	/// @todo Fix this for Windows also.
+#ifdef unix
+    int w = gViewport[2];
+    w = w/4*4; /// @todo For some reason, snapshot doesn't work if width is not a factor of 4.
+    int h = gViewport[3];
+
+    // Make the BYTE array, factor of 3 because it's RBG.
+    unsigned char pixels[ 3 * w * h];
+    this->render(true);
+
+    glReadPixels(0, 0, w, h, GL_BGR, GL_UNSIGNED_BYTE, pixels);
+
+    FILE *f;
+	int bytesPerRow = ((w * 3 + 3) / 4) * 4;
+	int size = bytesPerRow * h;
+    unsigned char img[size];
+    int filesize = 54 + size;
+
+    for(int i=0; i<w; i++)
+    {
+        for(int j=0; j<h; j++)
+        {
+            int x=i; int y=(h-1)-j;
+            ASSERT(bytesPerRow * y + 3 * x + 2 < size);
+            ASSERT(y>=0);
+            img[bytesPerRow * y + 3 * x + 2] = pixels[(i+j*w)*3+2];
+            img[bytesPerRow * y + 3 * x + 1] = pixels[(i+j*w)*3+1];
+            img[bytesPerRow * y + 3 * x + 0] = pixels[(i+j*w)*3+0];
+        }
+    }
+
+    unsigned char bmpfileheader[14] = {'B','M', 0,0,0,0, 0,0, 0,0, 54,0,0,0};
+    unsigned char bmpinfoheader[40] = {40,0,0,0, 0,0,0,0, 0,0,0,0, 1,0, 24,0};
+    unsigned char bmppad[3] = {0,0,0};
+
+    bmpfileheader[ 2] = (unsigned char)(filesize    );
+    bmpfileheader[ 3] = (unsigned char)(filesize>> 8);
+    bmpfileheader[ 4] = (unsigned char)(filesize>>16);
+    bmpfileheader[ 5] = (unsigned char)(filesize>>24);
+
+    bmpinfoheader[ 4] = (unsigned char)(       w    );
+    bmpinfoheader[ 5] = (unsigned char)(       w>> 8);
+    bmpinfoheader[ 6] = (unsigned char)(       w>>16);
+    bmpinfoheader[ 7] = (unsigned char)(       w>>24);
+    bmpinfoheader[ 8] = (unsigned char)(       h    );
+    bmpinfoheader[ 9] = (unsigned char)(       h>> 8);
+    bmpinfoheader[10] = (unsigned char)(       h>>16);
+    bmpinfoheader[11] = (unsigned char)(       h>>24);
+
+	const char *home = getenv("HOME");
+	// Save Linux Path
+	string filename = string(home) + "/Pictures/EphenationSnapShot.bmp";
+
+    f = fopen(filename.c_str(),"wb");
+    fwrite(bmpfileheader,1,14,f);
+    fwrite(bmpinfoheader,1,40,f);
+    for(int i=0; i<h; i++)
+    {
+        fwrite(img+(w*(h-i-1)*3),3,w,f);
+        fwrite(bmppad,1,(4-(w*3)%4)%4,f);
+    }
+    fclose(f);
+
+	string viewer = "gimp " + filename + "&";
+    (void)system(viewer.c_str());
+#endif
 }
 
 void gameDialog::UpdateEffect(void) {

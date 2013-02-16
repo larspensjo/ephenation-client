@@ -60,6 +60,7 @@
 				<tr><td class="shortlabel">SPACE</td> <td class="description">Jump, swim upwards, climb stairs</td></tr>
 				<tr><td class="shortlabel">'M'</td> <td class="description">Toggle map</td></tr>
 				<tr><td class="shortlabel">Mouse wheel</td> <td class="description">Zoom in and out</td></tr>
+				<tr><td class="shortlabel">F11</td> <td class="description">Take a snapshot (unix only)</td></tr>
 
 				<tr><td class="shortlabel"><br /></td></tr>
 				<tr><td class="tblhdr">Attack</td></tr>
