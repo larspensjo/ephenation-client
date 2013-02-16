@@ -94,20 +94,68 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="title">View::ShadowRender Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p>Create a shadowmap (depth texture).  
+ <a href="classView_1_1ShadowRender.html#details">More...</a></p>
+
+<p><code>#include &lt;shadowrender.h&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:ad1a1341925ec8819980f5c1553f380be"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad1a1341925ec8819980f5c1553f380be"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>ShadowRender</b> (int width, int height)</td></tr>
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classView_1_1ShadowRender.html#ad1a1341925ec8819980f5c1553f380be">ShadowRender</a> (int width, int height)</td></tr>
+<tr class="memdesc:ad1a1341925ec8819980f5c1553f380be"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize a shadow map of specified bitmap size. <br/></td></tr>
 <tr class="memitem:a52e948acef634915df96cb489f69bc1c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a52e948acef634915df96cb489f69bc1c"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>Init</b> ()</td></tr>
-<tr class="memitem:aed016f7894f22533f04f52cbf33447e0"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aed016f7894f22533f04f52cbf33447e0"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>Render</b> (int width, int height, const <a class="el" href="classView_1_1AnimationModels.html">AnimationModels</a> *animationModels)</td></tr>
+<tr class="memitem:a4d176e3f7a3a576a1acb34a4734a8cca"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classView_1_1ShadowRender.html#a4d176e3f7a3a576a1acb34a4734a8cca">Render</a> (int width, int height, const <a class="el" href="classView_1_1AnimationModels.html">AnimationModels</a> *animationModels, <a class="el" href="classGaussianBlur.html">GaussianBlur</a> *blurShader)</td></tr>
 <tr class="memitem:a3b4d1f1c5604badf5b2aaa4449451896"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3b4d1f1c5604badf5b2aaa4449451896"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>BindTexture</b> (void) const </td></tr>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classView_1_1ShadowRender.html#a3b4d1f1c5604badf5b2aaa4449451896">BindTexture</a> (void) const </td></tr>
+<tr class="memdesc:a3b4d1f1c5604badf5b2aaa4449451896"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bind the shadowmap texture to the currently active texture unit. <br/></td></tr>
 <tr class="memitem:a7251c69265a5a890e4237c54d9a661c3"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7251c69265a5a890e4237c54d9a661c3"></a>
 const glm::mat4 &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>GetProViewMatrix</b> (void) const </td></tr>
 </table>
+<a name="details" id="details"></a><h2>Detailed Description</h2>
+<div class="textblock"><p>Create a shadowmap (depth texture). </p>
+</div><h2>Member Function Documentation</h2>
+<a class="anchor" id="a4d176e3f7a3a576a1acb34a4734a8cca"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void ShadowRender::Render </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>width</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>height</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classView_1_1AnimationModels.html">AnimationModels</a> *&#160;</td>
+          <td class="paramname"><em>animationModels</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classGaussianBlur.html">GaussianBlur</a> *&#160;</td>
+          <td class="paramname"><em>blurShader</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Render the shadow map, givne the specified world volume (specified in blocks). Blocks horisontal from -width/2 to +width/2 will be included, and -height/2 to +height/2. </p>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>shadowrender.h</li>
 <li>shadowrender.cpp</li>

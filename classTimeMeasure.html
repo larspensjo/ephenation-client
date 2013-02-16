@@ -91,21 +91,62 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="title">TimeMeasure Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p>Measure shader execution time, and provide a report.  
+ <a href="classTimeMeasure.html#details">More...</a></p>
+
+<p><code>#include &lt;timemeasure.h&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ada461c9f89dce4c52b6e30e7cf8b1750"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ada461c9f89dce4c52b6e30e7cf8b1750"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>TimeMeasure</b> (const string &amp;title)</td></tr>
+<tr class="memitem:abd8bf56ac74117834d6b2f581fbf500a"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTimeMeasure.html#abd8bf56ac74117834d6b2f581fbf500a">TimeMeasure</a> (const std::string &amp;title)</td></tr>
 <tr class="memitem:a73a09593f22bab5270cec7514a8c2771"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a73a09593f22bab5270cec7514a8c2771"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>Start</b> ()</td></tr>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTimeMeasure.html#a73a09593f22bab5270cec7514a8c2771">Start</a> ()</td></tr>
+<tr class="memdesc:a73a09593f22bab5270cec7514a8c2771"><td class="mdescLeft">&#160;</td><td class="mdescRight">Start the timer. <br/></td></tr>
 <tr class="memitem:a67706c32e985156d13918875cb71968d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a67706c32e985156d13918875cb71968d"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>Stop</b> (void)</td></tr>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTimeMeasure.html#a67706c32e985156d13918875cb71968d">Stop</a> (void)</td></tr>
+<tr class="memdesc:a67706c32e985156d13918875cb71968d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stop the timer. <br/></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
 <tr class="memitem:ab62bbe12d6a71b692560a2e076735dc6"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab62bbe12d6a71b692560a2e076735dc6"></a>
-static void&#160;</td><td class="memItemRight" valign="bottom"><b>Report</b> (void)</td></tr>
+static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classTimeMeasure.html#ab62bbe12d6a71b692560a2e076735dc6">Report</a> (void)</td></tr>
+<tr class="memdesc:ab62bbe12d6a71b692560a2e076735dc6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Make a report of all timers, showing the last result. <br/></td></tr>
 </table>
+<a name="details" id="details"></a><h2>Detailed Description</h2>
+<div class="textblock"><p>Measure shader execution time, and provide a report. </p>
+</div><h2>Constructor &amp; Destructor Documentation</h2>
+<a class="anchor" id="abd8bf56ac74117834d6b2f581fbf500a"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">TimeMeasure::TimeMeasure </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>title</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Use this to create a static instance. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">title</td><td>A string used in the report. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>timemeasure.h</li>
 <li>timemeasure.cpp</li>

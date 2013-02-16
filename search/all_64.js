@@ -8,7 +8,8 @@ var searchData=
   ['dialogfactory',['DialogFactory',['../classDialogFactory.html',1,'DialogFactory'],['../classDialogFactory.html#ac0b6c8357c8db1c003e638bd779f5351',1,'DialogFactory::DialogFactory()']]],
   ['dispatchcancel',['DispatchCancel',['../classBaseDialog.html#af4f3849f5db5f656bb0977a5793435dd',1,'BaseDialog']]],
   ['dispatchdefault',['DispatchDefault',['../classBaseDialog.html#a90d9f452731a0ecabb61df6cf9af4e49',1,'BaseDialog']]],
-  ['draw',['Draw',['../classView_1_1Chunk.html#a65ca252194abbff0621af588ae278026',1,'View::Chunk::Draw()'],['../classView_1_1RenderControl.html#a905e63c3c94c4ce0faa1a024ba746712',1,'View::RenderControl::Draw()'],['../classSkyBox.html#ab9db46f2e34683cae517ba97a44aee9e',1,'SkyBox::Draw()'],['../classQuad.html#ac9fd55b0f273d9829f7991c3fdfc80ee',1,'Quad::Draw()']]],
+  ['downsamplingluminance',['DownSamplingLuminance',['../classDownSamplingLuminance.html',1,'']]],
+  ['draw',['Draw',['../classView_1_1BuildingBlocks.html#aa28581a2b7760f7326a45e9281b063a4',1,'View::BuildingBlocks::Draw()'],['../classView_1_1Chunk.html#a65ca252194abbff0621af588ae278026',1,'View::Chunk::Draw()'],['../classView_1_1RenderControl.html#a905e63c3c94c4ce0faa1a024ba746712',1,'View::RenderControl::Draw()'],['../classAddLocalFog.html#a187ce92a61671176d68845fb31619a67',1,'AddLocalFog::Draw()'],['../classSkyBox.html#ab9db46f2e34683cae517ba97a44aee9e',1,'SkyBox::Draw()'],['../classOctagon.html#a957ed04244b049ba3bbb3a2fed67d970',1,'Octagon::Draw()'],['../classQuad.html#ac9fd55b0f273d9829f7991c3fdfc80ee',1,'Quad::Draw()']]],
   ['drawanimation',['DrawAnimation',['../classView_1_1ManageAnimation.html#ae3abad89f4393a4a4d98380b9715dc6e',1,'View::ManageAnimation']]],
   ['drawbluelight',['DrawBlueLight',['../classAddPointShadow.html#ac02be93bba7c984edb1c4e9e893e88e1',1,'AddPointShadow']]],
   ['drawboundingbox',['DrawBoundingBox',['../classView_1_1Chunk.html#a6d83ab1f281dbc3b425ec8eea2d62966',1,'View::Chunk']]],
@@ -21,6 +22,5 @@ var searchData=
   ['drawpointshadow',['DrawPointShadow',['../classAddPointShadow.html#a5f8a71d687f96e53f4babe3f35345fd7',1,'AddPointShadow']]],
   ['drawredlight',['DrawRedLight',['../classAddPointShadow.html#a4de7eb45e3e1d7e592fd66bc8fc8824a',1,'AddPointShadow']]],
   ['drawstatic',['DrawStatic',['../classView_1_1ManageAnimation.html#a1661851c7055cf2f3c9af2b0924e0c76',1,'View::ManageAnimation']]],
-  ['drawtexture',['DrawTexture',['../classDrawTexture.html',1,'']]],
-  ['directory_20description',['Directory description',['../md_README.html',1,'']]]
+  ['drawtexture',['DrawTexture',['../classDrawTexture.html',1,'']]]
 ];

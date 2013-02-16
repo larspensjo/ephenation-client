@@ -80,36 +80,34 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><dl class="reflist">
-<dt><a class="anchor" id="_todo000018"></a>Member <a class="el" href="classActivatorDialog.html#a63b67f2a6c53e84386f067eea67624e9">ActivatorDialog::FormEvent</a>  (Rocket::Core::Event &amp;event, const string &amp;action)</dt>
+<dt><a class="anchor" id="_todo000017"></a>Member <a class="el" href="classActivatorDialog.html#a63b67f2a6c53e84386f067eea67624e9">ActivatorDialog::FormEvent</a>  (Rocket::Core::Event &amp;event, const string &amp;action)</dt>
 <dd>The key picture is hard coded as 0.  </dd>
 <dt><a class="anchor" id="_todo000001"></a>File <a class="el" href="chunk_8h.html">chunk.h</a>  </dt>
 <dd>Copied manually from worldDB.go, should be generated automatically  </dd>
-<dt><a class="anchor" id="_todo000004"></a>Class <a class="el" href="classController_1_1gameDialog.html">Controller::gameDialog</a>  </dt>
+<dt><a class="anchor" id="_todo000005"></a>Class <a class="el" href="classController_1_1gameDialog.html">Controller::gameDialog</a>  </dt>
 <dd><p class="startdd">This class has grown to be rather fat. A refactoring is needed. </p>
 <p class="enddd">Some things here remains from old, and is not really part of the controller class.  </p>
 </dd>
-<dt><a class="anchor" id="_todo000005"></a>Member <a class="el" href="classController_1_1gameDialog.html#a1898c52340f0823e8bbe890a46007be2">Controller::gameDialog::render</a>  (bool hideGUI)</dt>
+<dt><a class="anchor" id="_todo000006"></a>Member <a class="el" href="classController_1_1gameDialog.html#a1898c52340f0823e8bbe890a46007be2">Controller::gameDialog::render</a>  (bool hideGUI)</dt>
 <dd>Nothing should be renderred from here, it should all go into the <a class="el" href="namespaceView.html">View</a> of the MVC.  </dd>
-<dt><a class="anchor" id="_todo000008"></a>Class <a class="el" href="classInventory.html">Inventory</a>  </dt>
+<dt><a class="anchor" id="_todo000009"></a>Class <a class="el" href="classInventory.html">Inventory</a>  </dt>
 <dd>This class is a bad mixture of Model/Class/Controller.  </dd>
 <dt><a class="anchor" id="_todo000003"></a>Class <a class="el" href="classModel_1_1ChunkBlocks.html">Model::ChunkBlocks</a>  </dt>
 <dd>Most data in ChunkBlocks is as decoded from the cache or as received from the server. It should be packaged in private structure.  </dd>
-<dt><a class="anchor" id="_todo000009"></a>Class <a class="el" href="classModel_1_1Monsters.html">Model::Monsters</a>  </dt>
+<dt><a class="anchor" id="_todo000010"></a>Class <a class="el" href="classModel_1_1Monsters.html">Model::Monsters</a>  </dt>
 <dd>The OtherPlayers class is very similar, with too much duplication  </dd>
-<dt><a class="anchor" id="_todo000010"></a>Class <a class="el" href="classModel_1_1OtherPlayers.html">Model::OtherPlayers</a>  </dt>
+<dt><a class="anchor" id="_todo000011"></a>Class <a class="el" href="classModel_1_1OtherPlayers.html">Model::OtherPlayers</a>  </dt>
 <dd>The Monsters class is very similar, with too much duplication  </dd>
-<dt><a class="anchor" id="_todo000012"></a>Member <a class="el" href="classModel_1_1Player.html#a69a00078c5779b4841d757d4b9998034">Model::Player::x</a>  </dt>
+<dt><a class="anchor" id="_todo000013"></a>Member <a class="el" href="classModel_1_1Player.html#a69a00078c5779b4841d757d4b9998034">Model::Player::x</a>  </dt>
 <dd>These should be private. It is the position of the head of the Player. Coordinate in the server system ('z' is height).  </dd>
-<dt><a class="anchor" id="_todo000011"></a>File <a class="el" href="parse_8h.html">parse.h</a>  </dt>
+<dt><a class="anchor" id="_todo000012"></a>File <a class="el" href="parse_8h.html">parse.h</a>  </dt>
 <dd>Old inheritance from C, should be managed with a class  </dd>
-<dt><a class="anchor" id="_todo000013"></a>File <a class="el" href="primitives_8h.html">primitives.h</a>  </dt>
+<dt><a class="anchor" id="_todo000014"></a>File <a class="el" href="primitives_8h.html">primitives.h</a>  </dt>
 <dd>The number of global variables should be minimized.  </dd>
 <dt><a class="anchor" id="_todo000015"></a>Member <a class="el" href="classShaderBase.html#a12ba43f4f4228bb1b759f53f9e0d9e38">ShaderBase::Initglsw</a>  (const char *debug, int vertexShaderLines, const char **vertexShaderSource, int fragmentShaderLines, const char **fragmentShaderSource)</dt>
 <dd>dealloate using glDeleteProgram() and glDeleteShader()  </dd>
-<dt><a class="anchor" id="_todo000017"></a>Class <a class="el" href="classSkyBox.html">SkyBox</a>  </dt>
+<dt><a class="anchor" id="_todo000016"></a>Class <a class="el" href="classSkyBox.html">SkyBox</a>  </dt>
 <dd>: explain above better. </dd>
-<dt><a class="anchor" id="_todo000016"></a>Member <a class="el" href="classSkyBox.html#ab9db46f2e34683cae517ba97a44aee9e">SkyBox::Draw</a>  ()</dt>
-<dd>Move the model transforms to shader?  </dd>
 <dt><a class="anchor" id="_todo000002"></a>Class <a class="el" href="classView_1_1Chunk.html">View::Chunk</a>  </dt>
 <dd>This started as a struct for data, but methods were added. The public data should be made private. </dd>
 </dl>

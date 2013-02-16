@@ -90,6 +90,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="title">AddLocalFog Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p><code>#include &lt;addlocalfog.h&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for AddLocalFog:</div>
 <div class="dyncontent">
@@ -104,8 +106,7 @@ Inheritance diagram for AddLocalFog:</div>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a4bbf62a52b77842e3855e05b22e1206e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4bbf62a52b77842e3855e05b22e1206e"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>Init</b> ()</td></tr>
-<tr class="memitem:a0aacc047e5f7e74161b7a603dac0a823"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0aacc047e5f7e74161b7a603dac0a823"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>Draw</b> (const glm::vec4 &amp;point, float ambient)</td></tr>
+<tr class="memitem:a187ce92a61671176d68845fb31619a67"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classAddLocalFog.html#a187ce92a61671176d68845fb31619a67">Draw</a> (const glm::vec4 &amp;point)</td></tr>
 <tr class="inherit_header pub_methods_classShaderBase"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classShaderBase')"><img src="closed.png" alt="-"/>&nbsp;Public Member Functions inherited from <a class="el" href="classShaderBase.html">ShaderBase</a></td></tr>
 <tr class="memitem:a9dd2a538a1760b1b8744e2e0a8075d27 inherit pub_methods_classShaderBase"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9dd2a538a1760b1b8744e2e0a8075d27"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classShaderBase.html#a9dd2a538a1760b1b8744e2e0a8075d27">Init</a> (const char *debug, int vertexShaderLines, const char **vertexShaderSource, int fragmentShaderLines, const char **fragmentShaderSource)</td></tr>
@@ -131,6 +132,33 @@ virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 <tr class="memitem:a88e69e90e73dabcc754d690e4ed026fb inherit pro_methods_classShaderBase"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a88e69e90e73dabcc754d690e4ed026fb"></a>
 GLuint&#160;</td><td class="memItemRight" valign="bottom"><b>GetUniformBlockIndex</b> (const char *name) const </td></tr>
 </table>
+<a name="details" id="details"></a><h2>Detailed Description</h2>
+<div class="textblock"><p>A shader that will add a local fog.</p>
+<p>It is done by blending color to the destination color buffer. </p>
+</div><h2>Member Function Documentation</h2>
+<a class="anchor" id="a187ce92a61671176d68845fb31619a67"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void AddLocalFog::Draw </td>
+          <td>(</td>
+          <td class="paramtype">const glm::vec4 &amp;&#160;</td>
+          <td class="paramname"><em>point</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Draw the fog. The world position texture has to be bound on texture unit 1, and the luminance map on texture unit 0. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">point</td><td>The world coordinate in point.xyz, point.w is the radius of the fog. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>shaders/addlocalfog.h</li>
 <li>shaders/addlocalfog.cpp</li>

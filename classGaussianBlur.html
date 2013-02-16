@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
-<title>Ephenation: ChunkShader Class Reference</title>
+<title>Ephenation: GaussianBlur Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -85,40 +85,29 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
-<a href="#pro-methods">Protected Member Functions</a> &#124;
-<a href="classChunkShader-members.html">List of all members</a>  </div>
+<a href="classGaussianBlur-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">ChunkShader Class Reference</div>  </div>
+<div class="title">GaussianBlur Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 
-<p><code>#include &lt;ChunkShader.h&gt;</code></p>
+<p><code>#include &lt;gaussblur.h&gt;</code></p>
 <div class="dynheader">
-Inheritance diagram for ChunkShader:</div>
+Inheritance diagram for GaussianBlur:</div>
 <div class="dyncontent">
  <div class="center">
-  <img src="classChunkShader.png" usemap="#ChunkShader_map" alt=""/>
-  <map id="ChunkShader_map" name="ChunkShader_map">
-<area href="classStageOneShader.html" alt="StageOneShader" shape="rect" coords="0,56,109,80"/>
-<area href="classShaderBase.html" title="An abstract shader class. Inherit it to create new shader programs." alt="ShaderBase" shape="rect" coords="0,0,109,24"/>
+  <img src="classGaussianBlur.png" usemap="#GaussianBlur_map" alt=""/>
+  <map id="GaussianBlur_map" name="GaussianBlur_map">
+<area href="classShaderBase.html" title="An abstract shader class. Inherit it to create new shader programs." alt="ShaderBase" shape="rect" coords="0,0,87,24"/>
 </map>
  </div></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ae69371ea31b05cf34ab85357e2ce7588"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae69371ea31b05cf34ab85357e2ce7588"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classChunkShader.html#ae69371ea31b05cf34ab85357e2ce7588">Model</a> (const glm::mat4 &amp;)</td></tr>
-<tr class="memdesc:ae69371ea31b05cf34ab85357e2ce7588"><td class="mdescLeft">&#160;</td><td class="mdescRight">Define the <a class="el" href="namespaceModel.html">Model</a> matrix. <br/></td></tr>
-<tr class="memitem:a62334139662241090f92e742f92c5473"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a62334139662241090f92e742f92c5473"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>TextureOffsetMulti</b> (float offsX, float offsY, float mult)</td></tr>
-<tr class="inherit_header pub_methods_classStageOneShader"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classStageOneShader')"><img src="closed.png" alt="-"/>&nbsp;Public Member Functions inherited from <a class="el" href="classStageOneShader.html">StageOneShader</a></td></tr>
-<tr class="memitem:a500639ba8a97e46d6b1b5f2b5815a239 inherit pub_methods_classStageOneShader"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a500639ba8a97e46d6b1b5f2b5815a239"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>DrawingWater</b> (bool)</td></tr>
-<tr class="memitem:a3e4c603995edf86b5d4c0985bebfcb03 inherit pub_methods_classStageOneShader"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3e4c603995edf86b5d4c0985bebfcb03"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>EnableProgram</b> (void)</td></tr>
-<tr class="memitem:a722e5537b67ddb180e6e063992b78952 inherit pub_methods_classStageOneShader"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a722e5537b67ddb180e6e063992b78952"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>DisableProgram</b> (void)</td></tr>
+<tr class="memitem:a7837051cbcd54545a412878d993de9b1"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7837051cbcd54545a412878d993de9b1"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>Init</b> ()</td></tr>
+<tr class="memitem:aff52749a686838629b2e353737bbb5fa"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGaussianBlur.html#aff52749a686838629b2e353737bbb5fa">BlurHorizontal</a> (int tap, float sigma) const </td></tr>
+<tr class="memitem:a25051538034770e34e09abf602f6596e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classGaussianBlur.html#a25051538034770e34e09abf602f6596e">BlurVertical</a> () const </td></tr>
 <tr class="inherit_header pub_methods_classShaderBase"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classShaderBase')"><img src="closed.png" alt="-"/>&nbsp;Public Member Functions inherited from <a class="el" href="classShaderBase.html">ShaderBase</a></td></tr>
 <tr class="memitem:a9dd2a538a1760b1b8744e2e0a8075d27 inherit pub_methods_classShaderBase"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9dd2a538a1760b1b8744e2e0a8075d27"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classShaderBase.html#a9dd2a538a1760b1b8744e2e0a8075d27">Init</a> (const char *debug, int vertexShaderLines, const char **vertexShaderSource, int fragmentShaderLines, const char **fragmentShaderSource)</td></tr>
@@ -126,39 +115,81 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr class="memitem:a12ba43f4f4228bb1b759f53f9e0d9e38 inherit pub_methods_classShaderBase"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classShaderBase.html#a12ba43f4f4228bb1b759f53f9e0d9e38">Initglsw</a> (const char *debug, int vertexShaderLines, const char **vertexShaderSource, int fragmentShaderLines, const char **fragmentShaderSource)</td></tr>
 <tr class="memdesc:a12ba43f4f4228bb1b759f53f9e0d9e38 inherit pub_methods_classShaderBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Same as <a class="el" href="classShaderBase.html#a9dd2a538a1760b1b8744e2e0a8075d27" title="Initialize the shader program, and call back to setup uniform and attribute indices.">Init()</a>, but process all lines with the glsw shader wrangler.  <a href="#a12ba43f4f4228bb1b759f53f9e0d9e38"></a><br/></td></tr>
 </table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2><a name="pub-static-methods"></a>
-Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a9bfc76370f471b02c61c9435f7ab969c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9bfc76370f471b02c61c9435f7ab969c"></a>
-static <a class="el" href="classChunkShader.html">ChunkShader</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classChunkShader.html#a9bfc76370f471b02c61c9435f7ab969c">Make</a> (void)</td></tr>
-<tr class="memdesc:a9bfc76370f471b02c61c9435f7ab969c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Make an instance. <br/></td></tr>
-<tr class="inherit_header pub_static_methods_classStageOneShader"><td colspan="2" onclick="javascript:toggleInherit('pub_static_methods_classStageOneShader')"><img src="closed.png" alt="-"/>&nbsp;Static Public Member Functions inherited from <a class="el" href="classStageOneShader.html">StageOneShader</a></td></tr>
-<tr class="memitem:ad3d7c53fc11c96c9166925e3a4fe5ba9 inherit pub_static_methods_classStageOneShader"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad3d7c53fc11c96c9166925e3a4fe5ba9"></a>
-static void&#160;</td><td class="memItemRight" valign="bottom"><b>VertexAttribPointer</b> (int offset=0)</td></tr>
-<tr class="memitem:a81e968281d4547e9acb0b7e18924399d inherit pub_static_methods_classStageOneShader"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a81e968281d4547e9acb0b7e18924399d"></a>
-static void&#160;</td><td class="memItemRight" valign="bottom"><b>VertexAttribPointerSkinWeights</b> (int skinOffset, int jointOffset)</td></tr>
-<tr class="memitem:a05553a57de5a17345538af0e02cf9989 inherit pub_static_methods_classStageOneShader"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a05553a57de5a17345538af0e02cf9989"></a>
-static void&#160;</td><td class="memItemRight" valign="bottom"><b>EnableVertexAttribArray</b> (bool useBones=false)</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2><a name="pro-methods"></a>
-Protected Member Functions</h2></td></tr>
-<tr class="memitem:ae348affb10b3fd69e97d3b64b821d44e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae348affb10b3fd69e97d3b64b821d44e"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classChunkShader.html#ae348affb10b3fd69e97d3b64b821d44e">PreLinkCallback</a> (GLuint prg)</td></tr>
-<tr class="memdesc:ae348affb10b3fd69e97d3b64b821d44e"><td class="mdescLeft">&#160;</td><td class="mdescRight">A callback called before linkage, that can optionally be overrided. <br/></td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2><a name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
-<tr class="inherit_header pub_types_classStageOneShader"><td colspan="2" onclick="javascript:toggleInherit('pub_types_classStageOneShader')"><img src="closed.png" alt="-"/>&nbsp;Public Types inherited from <a class="el" href="classStageOneShader.html">StageOneShader</a></td></tr>
-<tr class="memitem:ae57252f6471fa2e3767327b28556364c inherit pub_types_classStageOneShader"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><b>InputLocations</b> { <b>Normal</b>, 
-<b>Vertex</b>, 
-<b>SkinWeights</b>, 
-<b>Joints</b>
- }</td></tr>
+<tr class="inherit_header pro_methods_classShaderBase"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_classShaderBase')"><img src="closed.png" alt="-"/>&nbsp;Protected Member Functions inherited from <a class="el" href="classShaderBase.html">ShaderBase</a></td></tr>
+<tr class="memitem:a43c4aeb651eaa7d12ffa45c65cb86cc5 inherit pro_methods_classShaderBase"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a43c4aeb651eaa7d12ffa45c65cb86cc5"></a>
+GLuint&#160;</td><td class="memItemRight" valign="bottom"><b>Program</b> (void) const </td></tr>
+<tr class="memitem:abd2bd3d01dce1e25aa10d1f62216ee57 inherit pro_methods_classShaderBase"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="abd2bd3d01dce1e25aa10d1f62216ee57"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classShaderBase.html#abd2bd3d01dce1e25aa10d1f62216ee57">GetLocations</a> (void)=0</td></tr>
+<tr class="memdesc:abd2bd3d01dce1e25aa10d1f62216ee57 inherit pro_methods_classShaderBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">Define all uniform and attribute indices. This function must always be overridden. <br/></td></tr>
+<tr class="memitem:aba35258b10e57c65fb07e3b134f1977e inherit pro_methods_classShaderBase"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aba35258b10e57c65fb07e3b134f1977e"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classShaderBase.html#aba35258b10e57c65fb07e3b134f1977e">PreLinkCallback</a> (GLuint prg)</td></tr>
+<tr class="memdesc:aba35258b10e57c65fb07e3b134f1977e inherit pro_methods_classShaderBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">A callback called before linkage, that can optionally be overrided. <br/></td></tr>
+<tr class="memitem:a1f789a2bb6445febcf80fac933abac84 inherit pro_methods_classShaderBase"><td class="memItemLeft" align="right" valign="top">GLint&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classShaderBase.html#a1f789a2bb6445febcf80fac933abac84">GetUniformLocation</a> (const char *name) const </td></tr>
+<tr class="memdesc:a1f789a2bb6445febcf80fac933abac84 inherit pro_methods_classShaderBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">A helper function for uniform locations.  <a href="#a1f789a2bb6445febcf80fac933abac84"></a><br/></td></tr>
+<tr class="memitem:a5b448a834bbb0324daa3f05ef1b6413c inherit pro_methods_classShaderBase"><td class="memItemLeft" align="right" valign="top">GLint&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classShaderBase.html#a5b448a834bbb0324daa3f05ef1b6413c">GetAttribLocation</a> (const char *name) const </td></tr>
+<tr class="memdesc:a5b448a834bbb0324daa3f05ef1b6413c inherit pro_methods_classShaderBase"><td class="mdescLeft">&#160;</td><td class="mdescRight">A helper function for attrib locations.  <a href="#a5b448a834bbb0324daa3f05ef1b6413c"></a><br/></td></tr>
+<tr class="memitem:a88e69e90e73dabcc754d690e4ed026fb inherit pro_methods_classShaderBase"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a88e69e90e73dabcc754d690e4ed026fb"></a>
+GLuint&#160;</td><td class="memItemRight" valign="bottom"><b>GetUniformBlockIndex</b> (const char *name) const </td></tr>
 </table>
 <a name="details" id="details"></a><h2>Detailed Description</h2>
-<div class="textblock"><p>A shader program used for drawing chunks. No lighting effects etc. </p>
-</div><hr/>The documentation for this class was generated from the following files:<ul>
-<li>shaders/ChunkShader.h</li>
-<li>shaders/ChunkShader.cpp</li>
+<div class="textblock"><p>A shader that will blur a texture</p>
+<p>Bind an input texture on active texture 0, and setup a FBO to receive the output. </p>
+</div><h2>Member Function Documentation</h2>
+<a class="anchor" id="aff52749a686838629b2e353737bbb5fa"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void GaussianBlur::BlurHorizontal </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>tap</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>sigma</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Apply blurring on horizontal pixels. This will leave the program active for the next phase. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">tap</td><td>Number of taps. Should be 5, 7, 9... </td></tr>
+    <tr><td class="paramname">sigma</td><td>The sigma value used in the Gaussian blur </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a25051538034770e34e09abf602f6596e"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void GaussianBlur::BlurVertical </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Apply blurring on vertical pixels. Use the same 'tap' and 'sigma' as for the horizontal blur. The program is expected to be open from the previous phase. </p>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
+<li>shaders/gaussblur.h</li>
+<li>shaders/gaussblur.cpp</li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

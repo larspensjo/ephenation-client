@@ -2,6 +2,7 @@ var searchData=
 [
   ['object',['Object',['../classModel_1_1Object.html',1,'Model']]],
   ['objectmap',['ObjectMap',['../structInventory_1_1ObjectMap.html',1,'Inventory']]],
+  ['octagon',['Octagon',['../classOctagon.html',1,'']]],
   ['operation',['Operation',['../structController_1_1Operation.html',1,'Controller']]],
   ['operator_5b_5d',['operator[]',['../classSplitter.html#a2023627ffc281f4adc668251141715cc',1,'Splitter']]],
   ['options',['Options',['../classOptions.html',1,'']]],

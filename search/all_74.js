@@ -3,7 +3,7 @@ var searchData=
   ['tagbstring',['tagbstring',['../structtagbstring.html',1,'']]],
   ['thirdpersonview',['ThirdPersonView',['../classView_1_1RenderControl.html#a2def6f1b894b272d3456af2c582350b7',1,'View::RenderControl']]],
   ['thread',['thread',['../classstd_1_1thread.html',1,'std']]],
-  ['timemeasure',['TimeMeasure',['../classTimeMeasure.html',1,'']]],
+  ['timemeasure',['TimeMeasure',['../classTimeMeasure.html',1,'TimeMeasure'],['../classTimeMeasure.html#abd8bf56ac74117834d6b2f581fbf500a',1,'TimeMeasure::TimeMeasure()']]],
   ['todo_20list',['Todo List',['../todo.html',1,'']]],
   ['transpshader',['TranspShader',['../classTranspShader.html',1,'']]],
   ['tree',['Tree',['../classTree.html',1,'']]],

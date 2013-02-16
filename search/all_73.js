@@ -10,6 +10,7 @@ var searchData=
   ['shaderbase',['ShaderBase',['../classShaderBase.html',1,'']]],
   ['shadowmapshader',['ShadowMapShader',['../classShadowMapShader.html',1,'']]],
   ['shadowrender',['ShadowRender',['../classView_1_1ShadowRender.html',1,'View']]],
+  ['shadowrender',['ShadowRender',['../classView_1_1ShadowRender.html#ad1a1341925ec8819980f5c1553f380be',1,'View::ShadowRender']]],
   ['shadows',['Shadows',['../classShadows.html',1,'']]],
   ['show',['Show',['../classBaseDialog.html#a4a4afb24b7c0cf6061df613d21ff2b4c',1,'BaseDialog']]],
   ['simpledialog',['SimpleDialog',['../classSimpleDialog.html',1,'']]],
@@ -21,8 +22,8 @@ var searchData=
   ['specialobject',['SpecialObject',['../structView_1_1ChunkObject_1_1SpecialObject.html',1,'View::ChunkObject']]],
   ['splitter',['Splitter',['../classSplitter.html',1,'Splitter'],['../classSplitter.html#a41eddab681f5186c74c23c4e22666a36',1,'Splitter::Splitter()']]],
   ['stageoneshader',['StageOneShader',['../classStageOneShader.html',1,'']]],
-  ['start',['Start',['../classWorstTime.html#a5f2c483f9a772f29bb1c57812f2fa398',1,'WorstTime']]],
-  ['stop',['Stop',['../classWorstTime.html#aaa5040c2cc64fe63c3ebfeb30a3ccde1',1,'WorstTime']]],
+  ['start',['Start',['../classTimeMeasure.html#a73a09593f22bab5270cec7514a8c2771',1,'TimeMeasure::Start()'],['../classWorstTime.html#a5f2c483f9a772f29bb1c57812f2fa398',1,'WorstTime::Start()']]],
+  ['stop',['Stop',['../classTimeMeasure.html#a67706c32e985156d13918875cb71968d',1,'TimeMeasure::Stop()'],['../classWorstTime.html#aaa5040c2cc64fe63c3ebfeb30a3ccde1',1,'WorstTime::Stop()']]],
   ['superchunk',['SuperChunk',['../structModel_1_1SuperChunk.html',1,'Model']]],
   ['superchunkmanager',['SuperChunkManager',['../classModel_1_1SuperChunkManager.html',1,'Model']]]
 ];

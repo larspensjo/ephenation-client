@@ -6,6 +6,6 @@ var searchData=
   ['modulatedtextureshader',['ModulatedTextureShader',['../classModulatedTextureShader.html',1,'']]],
   ['monsters',['Monsters',['../classModel_1_1Monsters.html',1,'Model']]],
   ['monstershader',['MonsterShader',['../classMonsterShader.html',1,'']]],
-  ['msgwindow',['MsgWindow',['../classMsgWindow.html',1,'']]],
+  ['msgwindow',['MsgWindow',['../classView_1_1MsgWindow.html',1,'View']]],
   ['mutex',['mutex',['../classstd_1_1mutex.html',1,'std']]]
 ];

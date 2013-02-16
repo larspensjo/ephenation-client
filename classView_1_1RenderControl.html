@@ -105,8 +105,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a27ff96bb3b07efb33bdd11aa24b4f4b3"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a27ff96bb3b07efb33bdd11aa24b4f4b3"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classView_1_1RenderControl.html#a27ff96bb3b07efb33bdd11aa24b4f4b3">Resize</a> (GLsizei width, GLsizei height)</td></tr>
 <tr class="memdesc:a27ff96bb3b07efb33bdd11aa24b4f4b3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize the FBO to a specified size, and allocate buffers. <br/></td></tr>
-<tr class="memitem:a0107433760a1f931231d6d4396130c01"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0107433760a1f931231d6d4396130c01"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>Init</b> (void)</td></tr>
+<tr class="memitem:a7d2c8e4625335e9b8cf9666213c850c4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classView_1_1RenderControl.html#a7d2c8e4625335e9b8cf9666213c850c4">Init</a> (int lightSamplingFactor)</td></tr>
 <tr class="memitem:a6dfdefe63712b3fb7c3baa98436bf04d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6dfdefe63712b3fb7c3baa98436bf04d"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>ShadowMapMatrix</b> (const glm::mat4 &amp;) const </td></tr>
 <tr class="memitem:a905e63c3c94c4ce0faa1a024ba746712"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classView_1_1RenderControl.html#a905e63c3c94c4ce0faa1a024ba746712">Draw</a> (bool underWater, std::shared_ptr&lt; const <a class="el" href="classModel_1_1Object.html">Model::Object</a> &gt; selectedObject, bool showMap, int mapWidth, <a class="el" href="classMainUserInterface.html">MainUserInterface</a> *ui)</td></tr>
@@ -173,6 +172,29 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
     <tr><td class="paramname">showMap</td><td>True if a map shall be shown </td></tr>
     <tr><td class="paramname">mapWidth</td><td>Pixels in width used when drawing a map </td></tr>
     <tr><td class="paramname">ui</td><td>Pointer to the user interface </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="a7d2c8e4625335e9b8cf9666213c850c4"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void RenderControl::Init </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>lightSamplingFactor</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Initialize </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">lumSamplingFactor</td><td>The windows size is divided by this to get the size of the luminance map </td></tr>
   </table>
   </dd>
 </dl>
