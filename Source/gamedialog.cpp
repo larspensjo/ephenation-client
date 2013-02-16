@@ -1354,15 +1354,16 @@ void gameDialog::SaveScreen() {
     int h = gViewport[3];
 
     // Make the BYTE array, factor of 3 because it's RBG.
-    unsigned char pixels[ 3 * w * h];
+    // unsigned char pixels[ 4 * w * h*2];
+    std::unique_ptr<unsigned char[]> pixels(new unsigned char[3*w*h]);
     this->render(true);
 
-    glReadPixels(0, 0, w, h, GL_BGR, GL_UNSIGNED_BYTE, pixels);
+    glReadPixels(0, 0, w, h, GL_BGR, GL_UNSIGNED_BYTE, pixels.get());
 
     FILE *f;
 	int bytesPerRow = ((w * 3 + 3) / 4) * 4;
 	int size = bytesPerRow * h;
-    unsigned char img[size];
+    std::unique_ptr<unsigned char[]> img(new unsigned char[size]);
     int filesize = 54 + size;
 
     for(int i=0; i<w; i++)
@@ -1405,7 +1406,7 @@ void gameDialog::SaveScreen() {
     fwrite(bmpinfoheader,1,40,f);
     for(int i=0; i<h; i++)
     {
-        fwrite(img+(w*(h-i-1)*3),3,w,f);
+        fwrite(img.get()+(w*(h-i-1)*3),3,w,f);
         fwrite(bmppad,1,(4-(w*3)%4)%4,f);
     }
     fclose(f);
