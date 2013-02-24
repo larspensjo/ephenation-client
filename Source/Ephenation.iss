@@ -46,6 +46,7 @@ Source: "textures\*"; DestDir: "{app}\textures"; Flags: ignoreversion recursesub
 Source: "shaders\*.glsl"; DestDir: "{app}\shaders"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "dialogs\*"; DestDir: "{app}\dialogs"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "models\*"; DestDir: "{app}\models"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "fonts\*"; DestDir: "{app}\fonts"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]

@@ -24,6 +24,19 @@ Ephenation Readme
 * Look at the high scores of popular areas, to find places to go adventure
 * To kill a monster, use TAB to select it and initiate attack with '1'.
 
+Release 4.3 2013-02-24
+======================
+* Replace all dialogs with in-game dialogs.
+* Add a few animated monsters.
+* New block types: colored lights (red, green or blue).
+* Enable Undo and Redo from the construction mode.
+* When the game is stared, the last world position is shown in the background.
+* Improve shadows.
+* The long distance view cut-off is replaced with a fog of distance.
+* F11 takes a snapshot of the screen, and saves in the Pictures folder.
+* Option --hidegui runs the game without the GUI.
+* Numerous minor bug fixes.
+
 Release 4.2 2012-09-29
 ======================
 This is a maintenance release, to improve functionality but no new features.
