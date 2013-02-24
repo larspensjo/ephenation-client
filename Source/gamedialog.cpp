@@ -1346,9 +1346,14 @@ void gameDialog::CancelCurrentEffect(void) {
 	fCurrentEffect = EFFECT_NONE;
 }
 
+// Only used for saving picture to file
+#if defined(_WIN32)
+#include <windows.h>
+#include <Shlobj.h>
+#endif
+
 void gameDialog::SaveScreen() {
 	/// @todo Fix this for Windows also.
-#ifdef unix
     int w = gViewport[2];
     w = w/4*4; /// @todo For some reason, snapshot doesn't work if width is not a factor of 4.
     int h = gViewport[3];
@@ -1397,11 +1402,27 @@ void gameDialog::SaveScreen() {
     bmpinfoheader[10] = (unsigned char)(       h>>16);
     bmpinfoheader[11] = (unsigned char)(       h>>24);
 
-	const char *home = getenv("HOME");
+	string filename;
+#ifdef unix
 	// Save Linux Path
-	string filename = string(home) + "/Pictures/EphenationSnapShot.bmp";
+	const char *home = getenv("HOME");
+	filename = string(home) + "/Pictures/EphenationSnapShot.bmp";
+#else
+	TCHAR home[MAX_PATH];
+	HRESULT res = SHGetFolderPath(NULL, CSIDL_MYPICTURES, 0, 0, home);
+	if (res != S_OK) {
+		View::gMsgWindow.Add("Failed to find home folder for pictures");
+		return;
+	}
+	filename = string(home) + "\\EphenationSnapShot.bmp";
+	printf("File: '%s'\n", filename.c_str());
+#endif // unix
 
     f = fopen(filename.c_str(),"wb");
+    if (f == NULL) {
+		View::gMsgWindow.Add("Failed to open %s", filename.c_str());
+		return;
+    }
     fwrite(bmpfileheader,1,14,f);
     fwrite(bmpinfoheader,1,40,f);
     for(int i=0; i<h; i++)
@@ -1411,6 +1432,9 @@ void gameDialog::SaveScreen() {
     }
     fclose(f);
 
+	View::gMsgWindow.Add("Picture saved to %s", filename.c_str());
+
+#ifdef unix
 	string viewer = "gimp " + filename + "&";
     (void)system(viewer.c_str());
 #endif
