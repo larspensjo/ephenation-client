@@ -528,15 +528,12 @@ void RenderControl::drawLocalFog(void) {
 }
 
 void RenderControl::ComputeShadowMap() {
+	static TimeMeasure tm("Shadowmap");
+	tm.Start();
 	if (gOptions.fDynamicShadows && fShadowRender) {
-		static TimeMeasure tm("ShdwDyn");
-		tm.Start();
 		fShadowRender->Render(352, 160, &fAnimationModels, fGaussianBlur.get());
-		tm.Stop();
 	}
 	if (gOptions.fStaticShadows && fShadowRender) {
-		static TimeMeasure tm("ShdwStat");
-		tm.Start();
 		static ChunkCoord prev = {0x7FFFFFFF, 0x7FFFFFFF, 0x7FFFFFFF};
 		static double prevTime;
 		ChunkCoord curr;
@@ -547,8 +544,8 @@ void RenderControl::ComputeShadowMap() {
 			prev = curr;
 			prevTime = gCurrentFrameTime;
 		}
-		tm.Stop();
 	}
+	tm.Stop();
 }
 
 void RenderControl::drawOtherPlayers(void) {
