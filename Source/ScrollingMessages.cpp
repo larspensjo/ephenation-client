@@ -29,7 +29,7 @@ using std::shared_ptr;
 
 using namespace View;
 
-ScrollingMessages View::gScrollingMessages;
+boost::shared_ptr<ScrollingMessages> View::gScrollingMessages = boost::make_shared<ScrollingMessages>();
 
 // This is used as a special object to denote a screen coordinate instead of a world position
 class ScreenObject : public Model::Object {
@@ -130,4 +130,7 @@ void ScrollingMessages::Update(void) {
 
 void ScrollingMessages::Init(shared_ptr<DrawFont> font) {
 	fFont = font;
+}
+
+void ScrollingMessages::update(entityx::EntityManager &entities, entityx::EventManager &events, double dt) {
 }

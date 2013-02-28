@@ -65,7 +65,7 @@ void MsgWindow::Add(const char *fmt, ...) {
 		return;
 	}
 	if (fActivateDropMessage)
-		gScrollingMessages.AddMessage(fDropX, fDropY, buff);
+		gScrollingMessages->AddMessage(fDropX, fDropY, buff);
 }
 
 void MsgWindow::SetAlternatePosition(int x, int y, bool enable) {

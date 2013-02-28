@@ -379,7 +379,7 @@ void Parse(const unsigned char *b, int n) {
 			unsigned long dmg = b[i+4];
 			std::stringstream ss;
 			ss << dmg*100/255;
-			View::gScrollingMessages.AddMessagePlayer(ss.str(), glm::vec3(0, -1, -1)); // Use red color for player
+			View::gScrollingMessages->AddMessagePlayer(ss.str(), glm::vec3(0, -1, -1)); // Use red color for player
 			View::gMsgWindow.Add("Monster hit you with %d%% damage", dmg*100/255);
 			gSoundControl.RequestSound(SoundControl::SMonsterHits);
 		}
@@ -394,7 +394,7 @@ void Parse(const unsigned char *b, int n) {
 			if (m != nullptr) {
 				std::stringstream ss;
 				ss << dmg*100/255;
-				View::gScrollingMessages.AddMessage(m, ss.str(), glm::vec3(0, 0, -1)); // Use yellow color for monster
+				View::gScrollingMessages->AddMessage(m, ss.str(), glm::vec3(0, 0, -1)); // Use yellow color for monster
 			}
 		}
 		break;

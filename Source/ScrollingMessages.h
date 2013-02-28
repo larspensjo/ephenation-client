@@ -20,12 +20,12 @@
 #include <list>
 #include <string>
 #include <memory>
+#include <entityx/System.h>
+#include <boost/shared_ptr.hpp>
 
 using std::unique_ptr;
 
 #include <glm/glm.hpp>
-
-//
 
 namespace Model {
 	struct Object;
@@ -38,12 +38,17 @@ namespace View {
 /// Implement a list of scrolling messages.
 /// A message is added to a specific coordinate, and will scroll in real time up to the top
 /// of the screen where it will disappear.
-class ScrollingMessages {
+class ScrollingMessages : public entityx::System<ScrollingMessages> {
 public:
 	ScrollingMessages();
 	virtual ~ScrollingMessages();
 	void Init(std::shared_ptr<DrawFont> font);
 	void Update(void);
+
+	/// Apply System behavior.
+	///
+	/// Called every game step.
+	virtual void update(entityx::EntityManager &entities, entityx::EventManager &events, double dt);
 
 	/// Add a message originating at an object
 	void AddMessage(std::shared_ptr<const Model::Object>, const std::string &, glm::vec3 colorOffset = glm::vec3(0,0,0));
@@ -60,6 +65,6 @@ private:
 	std::shared_ptr<DrawFont> fFont;
 };
 
-extern ScrollingMessages gScrollingMessages;
+extern boost::shared_ptr<ScrollingMessages> gScrollingMessages;
 
 }
