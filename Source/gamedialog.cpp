@@ -1026,7 +1026,7 @@ void gameDialog::render(bool hideGUI) {
 			fFPS_Element->SetInnerRML(buff);
 		}
 
-		gScrollingMessages.Update();
+		View::gScrollingMessages.Update();
 	}
 
 	if (!fDrawMap && !fShowInventory) {
@@ -1060,7 +1060,7 @@ void gameDialog::init(void) {
 
 	std::shared_ptr<DrawFont> gabriola18(new DrawFont);
 	gabriola18->Init("textures/gabriola18");
-	gScrollingMessages.Init(gabriola18);
+	View::gScrollingMessages.Init(gabriola18);
 	Model::ChunkBlocks::InitStatic();
 	maxRenderDistance = (float)gOptions.fViewingDistance;
 	if (maxRenderDistance > MAXRENDERDISTANCE) {

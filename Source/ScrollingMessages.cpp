@@ -27,7 +27,9 @@
 using std::list;
 using std::shared_ptr;
 
-ScrollingMessages gScrollingMessages;
+using namespace View;
+
+ScrollingMessages View::gScrollingMessages;
 
 // This is used as a special object to denote a screen coordinate instead of a world position
 class ScreenObject : public Model::Object {

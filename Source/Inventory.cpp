@@ -139,7 +139,7 @@ void Inventory::SetAmount(const char *code, int n, unsigned lvl) {
 		// Give a sound feed back to the player, but not if this is the initial list sent in the login process.
 		if (n > prevAmount && gMode.Get() != GameMode::WAIT_ACK) {
 			View::gSoundControl.RequestSound(fItemList[i].fInfo->song);
-			gScrollingMessages.AddMessagePlayer(fItemList[i].fInfo->descr);
+			View::gScrollingMessages.AddMessagePlayer(fItemList[i].fInfo->descr);
 		}
 		// printf("Inventory::SetAmount code '%s': count %d descr '%s' level %d\n", code, n, fsObjectMap[i].descr, lvl);
 		if (n == 0) {
@@ -161,7 +161,7 @@ void Inventory::SetAmount(const char *code, int n, unsigned lvl) {
 	fItemList[fNumItems].fInfo = info;
 	if (gMode.Get() != GameMode::WAIT_ACK) {
 		View::gSoundControl.RequestSound(fItemList[fNumItems].fInfo->song);
-		gScrollingMessages.AddMessagePlayer(fItemList[fNumItems].fInfo->descr);
+		View::gScrollingMessages.AddMessagePlayer(fItemList[fNumItems].fInfo->descr);
 	}
 	fNumItems++;
 	return;
