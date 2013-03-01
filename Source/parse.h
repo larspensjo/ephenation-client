@@ -71,3 +71,12 @@ struct PlayerHitByMonsterEvt : public entityx::Event<PlayerHitByMonsterEvt> {
 
 	float damage; /// The amount of damage
 };
+
+/// Event generated when the player is hit by a monster
+struct MonsterHitByPlayerEvt : public entityx::Event<MonsterHitByPlayerEvt> {
+	/// Add a message originating at an object
+	MonsterHitByPlayerEvt(float dmg, unsigned long id) : damage(dmg), id(id) {}
+
+	float damage;     /// The amount of damage
+	unsigned long id; /// Id of the monster
+};

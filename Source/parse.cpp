@@ -59,7 +59,6 @@ string gParseMessageAtLogin;
 #include "ChunkProcess.h"
 #include "ChunkBlocks.h"
 #include "assert.h"
-#include "ScrollingMessages.h"
 #include "primitives.h"
 #include "SuperChunkManager.h"
 #include "entitycomponentsystem.h"
@@ -389,14 +388,9 @@ void Parse(const unsigned char *b, int n) {
 		for (int i=1; i<n; i += 5) {
 			unsigned long id = ParseUint32(b+i);
 			unsigned long dmg = b[i+4];
+			gEntityComponentSystem.fEventManager.emit<MonsterHitByPlayerEvt>(float(dmg)/255.0f, id);
 			// View::gMsgWindow.Add("You hit monster %d by %d%% damage", id, dmg*100/255);
 			gSoundControl.RequestSound(SoundControl::SPlayerHits);
-			auto m = Model::gMonsters.Find(id);
-			if (m != nullptr) {
-				std::stringstream ss;
-				ss << dmg*100/255;
-				View::gScrollingMessages->AddMessage(m, ss.str(), glm::vec3(0, 0, -1)); // Use yellow color for monster
-			}
 		}
 		break;
 	}

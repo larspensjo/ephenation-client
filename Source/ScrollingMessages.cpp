@@ -24,18 +24,21 @@
 #include "DrawText.h"
 #include "player.h"
 #include "parse.h"
+#include "monsters.h"
 
 using std::list;
 using std::shared_ptr;
 
 using namespace View;
 
-struct receiver : public entityx::Receiver<PlayerHitByMonsterEvt> {
+struct receiver : public entityx::Receiver<receiver> {
 	void receive(const PlayerHitByMonsterEvt &evt);
+	void receive(const MonsterHitByPlayerEvt &evt);
 
 	/// Register self for events
 	void Init(entityx::EventManager &events) {
 		events.subscribe<PlayerHitByMonsterEvt>(*this);
+		events.subscribe<MonsterHitByPlayerEvt>(*this);
 	}
 };
 
@@ -148,5 +151,15 @@ void receiver::receive(const PlayerHitByMonsterEvt &evt) {
 	std::stringstream ss;
 	ss << int(evt.damage*100+0.5f);
 	gScrollingMessages->AddMessagePlayer(ss.str(), glm::vec3(0, -1, -1));
+	// @todo Add an Entity instead.
+}
+
+void receiver::receive(const MonsterHitByPlayerEvt &evt) {
+	auto m = Model::gMonsters.Find(evt.id);
+	if (m != nullptr) {
+		std::stringstream ss;
+		ss << int(evt.damage*100+0.5f);
+		View::gScrollingMessages->AddMessage(m, ss.str(), glm::vec3(0, 0, -1)); // Use yellow color for monster
+	}
 	// @todo Add an Entity instead.
 }
