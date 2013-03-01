@@ -402,7 +402,7 @@ void gameDialog::handleMouse(int button, int action) {
 	glfwGetMousePos(&x, &y);
 	if (fShowInventory) {
 		// Override the usual mouse handling
-		bool close = gInventory.HandleMouseClick(button, action, x, y);
+		bool close = gInventory->HandleMouseClick(button, action, x, y);
 		if (close) {
 			fShowInventory = false;
 			gMsgWindow.SetAlternatePosition(0,0,false);
@@ -560,7 +560,7 @@ void gameDialog::HandleKeyPress(int key) {
 	}
 
 	if (key >= GLFW_KEY_F1 && key <= GLFW_KEY_F11) {
-		gInventory.UseObjectFunctionKey(key);
+		gInventory->UseObjectFunctionKey(key);
 		return;
 	}
 	if (fEnterDebugText) {
@@ -941,7 +941,7 @@ void gameDialog::render(bool hideGUI) {
 			gDialogFactory.Make(fCurrentRocketContextInput, "messagedialog.rml", revive);
 			this->ClearForDialog();
 		} else if (fShowInventory)
-			gInventory.DrawInventory(fDrawTexture);
+			gInventory->DrawInventory(fDrawTexture);
 		else if (sgPopup.length() > 0) {
 			// There are some messages that shall be shown in a popup dialog.
 			fCurrentRocketContextInput = fMainUserInterface.GetRocketContext();

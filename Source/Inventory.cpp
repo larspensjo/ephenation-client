@@ -59,7 +59,7 @@ struct Inventory::Item {
 	unsigned long fAmount;
 };
 
-Inventory gInventory;
+boost::shared_ptr<Inventory> gInventory = boost::make_shared<Inventory>();
 
 #define IS 8.0f // The icon scaling. Has to be a float.
 
@@ -585,4 +585,8 @@ bool Inventory::HandleMouseClick(int button, int action, int x, int y) {
 		break;
 	}
 	return false;
+}
+
+void Inventory::update(entityx::EntityManager &entities, entityx::EventManager &events, double dt) {
+	// @todo Iterate through the entities instead
 }

@@ -17,6 +17,9 @@
 
 #pragma once
 
+#include <entityx/System.h>
+#include <entityx/Event.h>
+
 #include "SoundControl.h"
 
 class DrawTexture;
@@ -24,7 +27,7 @@ class DrawFont;
 
 /// @brief Manage the inventory of a player, and the objects in the inventory.
 /// @todo This class is a bad mixture of Model/Class/Controller.
-class Inventory {
+class Inventory : public entityx::System<Inventory> {
 public:
 	Inventory(void);
 	~Inventory(void);
@@ -46,6 +49,11 @@ public:
 	/// As long as the inventory screen is shown, this function will be called.
 	/// @return true if window shall be closed.
 	bool HandleMouseClick(int button, int action, int x, int y);
+
+	/// Apply System behavior.
+	///
+	/// Called every game step.
+	virtual void update(entityx::EntityManager &entities, entityx::EventManager &events, double dt) override;
 private:
 	struct Item;
 	Item *fItemList;
@@ -56,4 +64,4 @@ private:
 };
 
 // Only one inventory instance is needed.
-extern Inventory gInventory;
+extern boost::shared_ptr<Inventory> gInventory;

@@ -17,6 +17,7 @@
 
 #include "entitycomponentsystem.h"
 #include "ScrollingMessages.h"
+#include "Inventory.h"
 
 using namespace Controller;
 
@@ -26,6 +27,7 @@ EntityComponentSystem::EntityComponentSystem() : fEntityManager(fEventManager), 
 
 void EntityComponentSystem::Init() {
 	fSystemManager.add(View::gScrollingMessages);
+	fSystemManager.add(gInventory);
 
 	// After all systems have been added, configure them.
 	fSystemManager.configure();

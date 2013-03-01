@@ -402,7 +402,7 @@ void Parse(const unsigned char *b, int n) {
 		break;
 	case CMD_UPD_INV:
 		for (int i=1; i<n; i += 9) {
-			gInventory.SetAmount((const char *)(&b[i]), b[i+4], ParseUint32(&b[i+5]));
+			gInventory->SetAmount((const char *)(&b[i]), b[i+4], ParseUint32(&b[i+5]));
 		}
 		break;
 	case CMD_EQUIPMENT: {
