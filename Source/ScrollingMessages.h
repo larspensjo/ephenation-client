@@ -59,6 +59,7 @@ public:
 	/// it will be moved along to the new position.
 	void AddMessage(float x, float y, const std::string &, glm::vec3 colorOffset = glm::vec3(0,0,0));
 
+	/// Called automatically after System initialization
 	virtual void configure(entityx::EventManager &events) override;
 private:
 	struct Message;

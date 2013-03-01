@@ -54,6 +54,17 @@ public:
 	///
 	/// Called every game step.
 	virtual void update(entityx::EntityManager &entities, entityx::EventManager &events, double dt) override;
+
+	/// Called automatically after System initialization
+	virtual void configure(entityx::EventManager &events) override;
+
+	/// Event generated when the player is hit by a monster
+	struct AddObjectToPlayer : public entityx::Event<AddObjectToPlayer> {
+		/// Add a message originating at an object
+		AddObjectToPlayer(ObjectMap *map) : map(map) {}
+
+		ObjectMap *map; /// Describes the object
+	};
 private:
 	struct Item;
 	Item *fItemList;

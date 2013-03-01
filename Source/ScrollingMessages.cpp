@@ -25,6 +25,7 @@
 #include "player.h"
 #include "parse.h"
 #include "monsters.h"
+#include "Inventory.h"
 
 using std::list;
 using std::shared_ptr;
@@ -34,11 +35,13 @@ using namespace View;
 struct receiver : public entityx::Receiver<receiver> {
 	void receive(const PlayerHitByMonsterEvt &evt);
 	void receive(const MonsterHitByPlayerEvt &evt);
+	void receive(const Inventory::AddObjectToPlayer &evt);
 
 	/// Register self for events
 	void Init(entityx::EventManager &events) {
 		events.subscribe<PlayerHitByMonsterEvt>(*this);
 		events.subscribe<MonsterHitByPlayerEvt>(*this);
+		events.subscribe<Inventory::AddObjectToPlayer>(*this);
 	}
 };
 
@@ -159,7 +162,11 @@ void receiver::receive(const MonsterHitByPlayerEvt &evt) {
 	if (m != nullptr) {
 		std::stringstream ss;
 		ss << int(evt.damage*100+0.5f);
-		View::gScrollingMessages->AddMessage(m, ss.str(), glm::vec3(0, 0, -1)); // Use yellow color for monster
+		gScrollingMessages->AddMessage(m, ss.str(), glm::vec3(0, 0, -1)); // Use yellow color for monster
 	}
 	// @todo Add an Entity instead.
+}
+
+void receiver::receive(const Inventory::AddObjectToPlayer &evt) {
+	gScrollingMessages->AddMessagePlayer(evt.map->descr);
 }

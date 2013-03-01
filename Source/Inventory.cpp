@@ -38,9 +38,9 @@
 #include "primitives.h"
 #include "parse.h"
 #include "vsfl/vsfl.h"
-#include "ScrollingMessages.h"
 #include "gamedialog.h"
 #include "msgwindow.h"
+#include "entitycomponentsystem.h"
 
 using namespace std;
 using View::SoundControl;
@@ -139,7 +139,7 @@ void Inventory::SetAmount(const char *code, int n, unsigned lvl) {
 		// Give a sound feed back to the player, but not if this is the initial list sent in the login process.
 		if (n > prevAmount && gMode.Get() != GameMode::WAIT_ACK) {
 			View::gSoundControl.RequestSound(fItemList[i].fInfo->song);
-			View::gScrollingMessages->AddMessagePlayer(fItemList[i].fInfo->descr);
+			Controller::gEntityComponentSystem.fEventManager.emit<AddObjectToPlayer>(fItemList[i].fInfo);
 		}
 		// printf("Inventory::SetAmount code '%s': count %d descr '%s' level %d\n", code, n, fsObjectMap[i].descr, lvl);
 		if (n == 0) {
@@ -161,7 +161,7 @@ void Inventory::SetAmount(const char *code, int n, unsigned lvl) {
 	fItemList[fNumItems].fInfo = info;
 	if (gMode.Get() != GameMode::WAIT_ACK) {
 		View::gSoundControl.RequestSound(fItemList[fNumItems].fInfo->song);
-		View::gScrollingMessages->AddMessagePlayer(fItemList[fNumItems].fInfo->descr);
+		Controller::gEntityComponentSystem.fEventManager.emit<AddObjectToPlayer>(fItemList[fNumItems].fInfo);
 	}
 	fNumItems++;
 	return;
@@ -589,4 +589,7 @@ bool Inventory::HandleMouseClick(int button, int action, int x, int y) {
 
 void Inventory::update(entityx::EntityManager &entities, entityx::EventManager &events, double dt) {
 	// @todo Iterate through the entities instead
+}
+
+void Inventory::configure(entityx::EventManager &events) {
 }
