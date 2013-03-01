@@ -66,6 +66,8 @@ MY_LIBS   = -lGL\
 	-lRocketCore\
 	-lRocketDebugger\
 	-lRocketControls\
+	-lentityx\
+	-lboost_signals\
 	$(PROFILING)
 
 # The pre-processor options used by the cpp (man cpp for more).

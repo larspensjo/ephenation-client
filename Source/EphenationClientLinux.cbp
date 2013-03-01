@@ -50,6 +50,8 @@
 			<Add library="RocketCore" />
 			<Add library="RocketDebugger" />
 			<Add library="RocketControls" />
+			<Add library="boost_signals" />
+			<Add library="entityx" />
 		</Linker>
 		<Unit filename="BuildingBlocks.cpp" />
 		<Unit filename="BuildingBlocks.h" />
@@ -118,6 +120,8 @@
 		<Unit filename="dialogs/topleveldialog.rml" />
 		<Unit filename="dialogs/topoptions.rml" />
 		<Unit filename="dialogs/userinterface.rml" />
+		<Unit filename="entitycomponentsystem.cpp" />
+		<Unit filename="entitycomponentsystem.h" />
 		<Unit filename="errormanager.cpp" />
 		<Unit filename="errormanager.h" />
 		<Unit filename="fboflat.cpp" />

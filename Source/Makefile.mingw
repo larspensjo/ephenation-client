@@ -76,6 +76,8 @@ MY_LIBS   =\
 	contrib/win32/libRocket/libRocketControls.dll.a\
 	contrib/win32/libRocket/libRocketCore.dll.a\
 	contrib/win32/libfreetype.dll.a\
+	-lentityx\
+	-lboost_signals\
 	-lWs2_32 -lole32 -lcomctl32 -lgdi32 -lcomdlg32 -luuid
 
 # The pre-processor options used by the cpp (man cpp for more).

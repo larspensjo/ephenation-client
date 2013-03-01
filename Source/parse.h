@@ -24,6 +24,7 @@
 
 #include <string>
 #include <vector>
+#include <entityx/Event.h>
 
 /**
  * @brief Parse a message from the server
@@ -62,3 +63,11 @@ extern std::vector<unsigned char> gLoginChallenge;
  * This is typically used for information about mismatch in protocols, etc.
  */
 extern std::string gParseMessageAtLogin;
+
+/// Event generated when the player is hit by a monster
+struct PlayerHitByMonsterEvt : public entityx::Event<PlayerHitByMonsterEvt> {
+	/// Add a message originating at an object
+	PlayerHitByMonsterEvt(float dmg) : damage(dmg) {}
+
+	float damage; /// The amount of damage
+};

@@ -23,13 +23,25 @@
 #include "object.h"
 #include "DrawText.h"
 #include "player.h"
+#include "parse.h"
 
 using std::list;
 using std::shared_ptr;
 
 using namespace View;
 
-boost::shared_ptr<ScrollingMessages> View::gScrollingMessages = boost::make_shared<ScrollingMessages>();
+struct receiver : public entityx::Receiver<PlayerHitByMonsterEvt> {
+	void receive(const PlayerHitByMonsterEvt &evt);
+
+	/// Register self for events
+	void Init(entityx::EventManager &events) {
+		events.subscribe<PlayerHitByMonsterEvt>(*this);
+	}
+};
+
+static receiver sEventReceiver;
+
+boost::shared_ptr<ScrollingMessages> View::gScrollingMessages = boost::make_shared<View::ScrollingMessages>();
 
 // This is used as a special object to denote a screen coordinate instead of a world position
 class ScreenObject : public Model::Object {
@@ -55,15 +67,6 @@ struct ScrollingMessages::Message {
 		fFont->vsfl.deleteSentence(id);
 	}
 };
-
-ScrollingMessages::ScrollingMessages() {
-	// TODO Auto-generated constructor stub
-
-}
-
-ScrollingMessages::~ScrollingMessages() {
-	// TODO Auto-generated destructor stub
-}
 
 void ScrollingMessages::AddMessage(shared_ptr<const Model::Object> o, const std::string &str, glm::vec3 colorOffset) {
 	unique_ptr<Message> m(new Message);
@@ -133,4 +136,17 @@ void ScrollingMessages::Init(shared_ptr<DrawFont> font) {
 }
 
 void ScrollingMessages::update(entityx::EntityManager &entities, entityx::EventManager &events, double dt) {
+	// @todo Iterate through the entities instead
+	this->Update();
+}
+
+void ScrollingMessages::configure(entityx::EventManager &events) {
+	sEventReceiver.Init(events);
+}
+
+void receiver::receive(const PlayerHitByMonsterEvt &evt) {
+	std::stringstream ss;
+	ss << int(evt.damage*100+0.5f);
+	gScrollingMessages->AddMessagePlayer(ss.str(), glm::vec3(0, -1, -1));
+	// @todo Add an Entity instead.
 }

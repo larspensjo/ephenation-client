@@ -67,6 +67,7 @@
 #include "timemeasure.h"
 #include "worsttime.h"
 #include "ChunkProcess.h"
+#include "entitycomponentsystem.h"
 
 using namespace Controller;
 using View::SoundControl;
@@ -1109,6 +1110,7 @@ void gameDialog::init(void) {
 		ErrorDialog("Missing input line in main user interface");
 	fInputLine->AddReference();
 	fInputLine->Blur(); // Don't want a flashing cursor until player wants to input text.
+	gEntityComponentSystem.Init();
 
 	checkError("gameDialog::init");
 }
