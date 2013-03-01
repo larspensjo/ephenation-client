@@ -19,9 +19,9 @@
 #include <stdarg.h>
 #include <string.h>
 #include <GL/glew.h>
-
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+
 #include "msgwindow.h"
 #include "render.h"
 #include "DrawText.h"
@@ -30,6 +30,7 @@
 #include "Options.h"
 #include "primitives.h"
 #include "ScrollingMessages.h"
+#include "entitycomponentsystem.h"
 
 #define ILL_SENT 0xFFFFFFFF
 
@@ -65,7 +66,7 @@ void MsgWindow::Add(const char *fmt, ...) {
 		return;
 	}
 	if (fActivateDropMessage)
-		gScrollingMessages->AddMessage(fDropX, fDropY, buff);
+		Controller::gEntityComponentSystem.fEventManager.emit<MessageEvt>(fDropX, fDropY, buff);
 }
 
 void MsgWindow::SetAlternatePosition(int x, int y, bool enable) {

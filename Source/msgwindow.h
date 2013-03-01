@@ -23,6 +23,7 @@
 
 #include <string>
 #include <Rocket/Core.h>
+#include <entityx/Event.h>
 
 namespace View {
 
@@ -32,6 +33,15 @@ public:
 	void Add(const char *fmt, ...);
 	void Init(Rocket::Core::Element *rocketElement);
 	void SetAlternatePosition(int x, int y, bool enable=true);
+
+	/// Event generated when the player is hit by a monster
+	struct MessageEvt : public entityx::Event<MessageEvt> {
+		/// Add a message originating at an object
+		MessageEvt(int dropx, int dropy, const char *buff) : dropx(dropx), dropy(dropy), buff(buff) {}
+
+		int dropx, dropy;
+		const char *buff;
+	};
 private:
 	std::string fCompleteMessage;
 	Rocket::Core::Element *fRocketElement;

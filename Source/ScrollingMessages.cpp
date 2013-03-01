@@ -26,6 +26,7 @@
 #include "parse.h"
 #include "monsters.h"
 #include "Inventory.h"
+#include "msgwindow.h"
 
 using std::list;
 using std::shared_ptr;
@@ -36,12 +37,14 @@ struct receiver : public entityx::Receiver<receiver> {
 	void receive(const PlayerHitByMonsterEvt &evt);
 	void receive(const MonsterHitByPlayerEvt &evt);
 	void receive(const Inventory::AddObjectToPlayer &evt);
+	void receive(const MsgWindow::MessageEvt &evt);
 
 	/// Register self for events
 	void Init(entityx::EventManager &events) {
 		events.subscribe<PlayerHitByMonsterEvt>(*this);
 		events.subscribe<MonsterHitByPlayerEvt>(*this);
 		events.subscribe<Inventory::AddObjectToPlayer>(*this);
+		events.subscribe<MsgWindow::MessageEvt>(*this);
 	}
 };
 
@@ -169,4 +172,8 @@ void receiver::receive(const MonsterHitByPlayerEvt &evt) {
 
 void receiver::receive(const Inventory::AddObjectToPlayer &evt) {
 	gScrollingMessages->AddMessagePlayer(evt.map->descr);
+}
+
+void receiver::receive(const MsgWindow::MessageEvt &evt) {
+	gScrollingMessages->AddMessage(evt.dropx, evt.dropy, evt.buff);
 }
