@@ -60,12 +60,18 @@ public:
 
 	/// Called automatically after System initialization
 	virtual void configure(entityx::EventManager &events) override;
+
 private:
-	struct Message;
+	struct Message {
+		std::shared_ptr<const Model::Object> o; // A reference that is allocated and deallocated elsewhere
+		GLuint id;
+		double startTime;
+		glm::vec3 colorOffset;
+		std::shared_ptr<DrawFont> fFont;
+		~Message();
+	};
 	std::list<unique_ptr<Message>> fMessageList;
 	std::shared_ptr<DrawFont> fFont;
 };
-
-extern boost::shared_ptr<ScrollingMessages> gScrollingMessages;
 
 }

@@ -33,6 +33,7 @@ using std::shared_ptr;
 
 using namespace View;
 
+// @todo This receiver should be combined into the ScrollingMessages system?
 struct receiver : public entityx::Receiver<receiver> {
 	void receive(const PlayerHitByMonsterEvt &evt);
 	void receive(const MonsterHitByPlayerEvt &evt);
@@ -40,17 +41,20 @@ struct receiver : public entityx::Receiver<receiver> {
 	void receive(const MsgWindow::MessageEvt &evt);
 
 	/// Register self for events
-	void Init(entityx::EventManager &events) {
+	void Init(ScrollingMessages *pScrollingMessages, entityx::EventManager &events) {
+		fScrollingMessages = pScrollingMessages;
 		events.subscribe<PlayerHitByMonsterEvt>(*this);
 		events.subscribe<MonsterHitByPlayerEvt>(*this);
 		events.subscribe<Inventory::AddObjectToPlayer>(*this);
 		events.subscribe<MsgWindow::MessageEvt>(*this);
 	}
+
+	ScrollingMessages *fScrollingMessages; // Save pointer to the system that will use the event
+
+	receiver() : fScrollingMessages(0) {}
 };
 
 static receiver sEventReceiver;
-
-boost::shared_ptr<ScrollingMessages> View::gScrollingMessages = boost::make_shared<View::ScrollingMessages>();
 
 // This is used as a special object to denote a screen coordinate instead of a world position
 class ScreenObject : public Model::Object {
@@ -66,16 +70,9 @@ public:
 	glm::vec3 fScreen; // Only x and y will be used
 };
 
-struct ScrollingMessages::Message {
-	shared_ptr<const Model::Object> o; // A reference that is allocated and deallocated elsewhere
-	GLuint id;
-	double startTime;
-	glm::vec3 colorOffset;
-	shared_ptr<DrawFont> fFont;
-	~Message() {
-		fFont->vsfl.deleteSentence(id);
-	}
-};
+ScrollingMessages::Message::~Message() {
+	fFont->vsfl.deleteSentence(id);
+}
 
 void ScrollingMessages::AddMessage(shared_ptr<const Model::Object> o, const std::string &str, glm::vec3 colorOffset) {
 	unique_ptr<Message> m(new Message);
@@ -147,13 +144,13 @@ void ScrollingMessages::update(entityx::EntityManager &entities, entityx::EventM
 }
 
 void ScrollingMessages::configure(entityx::EventManager &events) {
-	sEventReceiver.Init(events);
+	sEventReceiver.Init(this, events);
 }
 
 void receiver::receive(const PlayerHitByMonsterEvt &evt) {
 	std::stringstream ss;
 	ss << int(evt.damage*100+0.5f);
-	gScrollingMessages->AddMessagePlayer(ss.str(), glm::vec3(0, -1, -1));
+	fScrollingMessages->AddMessagePlayer(ss.str(), glm::vec3(0, -1, -1));
 	// @todo Add an Entity instead.
 }
 
@@ -162,15 +159,15 @@ void receiver::receive(const MonsterHitByPlayerEvt &evt) {
 	if (m != nullptr) {
 		std::stringstream ss;
 		ss << int(evt.damage*100+0.5f);
-		gScrollingMessages->AddMessage(m, ss.str(), glm::vec3(0, 0, -1)); // Use yellow color for monster
+		fScrollingMessages->AddMessage(m, ss.str(), glm::vec3(0, 0, -1)); // Use yellow color for monster
 	}
 	// @todo Add an Entity instead.
 }
 
 void receiver::receive(const Inventory::AddObjectToPlayer &evt) {
-	gScrollingMessages->AddMessagePlayer(evt.map->descr);
+	fScrollingMessages->AddMessagePlayer(evt.map->descr);
 }
 
 void receiver::receive(const MsgWindow::MessageEvt &evt) {
-	gScrollingMessages->AddMessage(evt.dropx, evt.dropy, evt.buff);
+	fScrollingMessages->AddMessage(evt.dropx, evt.dropy, evt.buff);
 }
