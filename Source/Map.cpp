@@ -65,7 +65,7 @@ void Map::Create(AnimationShader *anim, StageOneShader *shader, float rotate, in
 	anim->EnableProgram();
 	Model::gPlayer.Draw(anim, shader, false, animationModels);
 	Model::gMonsters.RenderMonsters(false, false, animationModels);
-	Model::gOtherPlayers.RenderPlayers(anim, false);
+	Model::gOtherPlayers->RenderPlayers(anim, false);
 
 	gProjectionMatrix = saveProj;
 	maxRenderDistance = saveMaxDistance;

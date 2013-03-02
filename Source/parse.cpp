@@ -272,19 +272,11 @@ void Parse(const unsigned char *b, int n) {
 			float dir = b[17+i] / 256.0f * 365.0f; // Convert looking direction into degrees
 			// printf("%d,", b[15+i]);
 			if (type == 0 && state == 1) {
-#if 0
-				gDebugWindow.Add("Object id %d state %d type %d level %d hp %f moved to relative (%d,%d,%d) dir %f",
-				                 id, state, type, level, (double)hp/255, dx, dy, dz, dir);
-#endif
-				Model::gOtherPlayers.SetPlayer(id, hp, level, Model::gPlayer.x+dx, Model::gPlayer.y+dy, Model::gPlayer.z+dz, dir);
+				Model::gOtherPlayers->SetPlayer(id, hp, level, Model::gPlayer.x+dx, Model::gPlayer.y+dy, Model::gPlayer.z+dz, dir);
 
 				// Update this player as a creature in SoundControl
 				gSoundControl.SetCreatureSound(SoundControl::SOtherPlayer,id,dx,dy,dz,hp==0,0.0f);
 			} else {
-#if 0
-				gDebugWindow.Add("Object id %d state %d type %d level %d hp %f moved to relative (%d,%d,%d) dir %f",
-				                 id, state, type, level, (double)hp/255, dx, dy, dz, dir);
-#endif
 				// Coordinates are relative to the player feet, while Model::gPlayer keeps track of the player head.
 				Model::gMonsters.SetMonster(id, hp, level, Model::gPlayer.x+dx, Model::gPlayer.y+dy, Model::gPlayer.z+dz-(int)(PLAYER_HEIGHT*BLOCK_COORD_RES*2), dir);
 
@@ -389,7 +381,6 @@ void Parse(const unsigned char *b, int n) {
 			unsigned long id = ParseUint32(b+i);
 			unsigned long dmg = b[i+4];
 			gEntityComponentSystem.fEventManager.emit<MonsterHitByPlayerEvt>(float(dmg)/255.0f, id);
-			// View::gMsgWindow.Add("You hit monster %d by %d%% damage", id, dmg*100/255);
 			gSoundControl.RequestSound(SoundControl::SPlayerHits);
 		}
 		break;
@@ -473,7 +464,7 @@ void Parse(const unsigned char *b, int n) {
 	case CMD_RESP_PLAYER_NAME: {
 		unsigned long uid = ParseUint32(b+1);
 		int adminLevel = b[5];
-		Model::gOtherPlayers.SetPlayerName(uid, (const char *)b+6, n-6, adminLevel);
+		Model::gOtherPlayers->SetPlayerName(uid, (const char *)b+6, n-6, adminLevel);
 		break;
 	}
 	case CMD_SUPERCHUNK_ANSWER: {

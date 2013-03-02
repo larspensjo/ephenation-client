@@ -17,10 +17,13 @@
 
 #include <GL/glew.h>
 #include <GL/glfw.h>
+#include <glm/glm.hpp>
 
+#include "object.h"
 #include "entitycomponentsystem.h"
 #include "ScrollingMessages.h"
 #include "Inventory.h"
+#include "otherplayers.h"
 
 using namespace Controller;
 
@@ -30,9 +33,9 @@ EntityComponentSystem::EntityComponentSystem() : fEntityManager(fEventManager), 
 
 void EntityComponentSystem::Init() {
 	auto sm = boost::make_shared<View::ScrollingMessages>(fEntityManager);
-	fSystemManager.add<View::ScrollingMessages>(sm);
-
-	fSystemManager.add<Inventory>(gInventory);
+	fSystemManager.add(sm);
+	fSystemManager.add(gInventory);
+	fSystemManager.add(Model::gOtherPlayers);
 
 	// After all systems have been added, configure them.
 	fSystemManager.configure();
@@ -45,6 +48,7 @@ void EntityComponentSystem::Update() {
 	last = now;
 	fSystemManager.update<View::ScrollingMessages>(dt);
 	fSystemManager.update<Inventory>(dt);
+	fSystemManager.update<Model::OtherPlayers>(dt);
 }
 
 EntityComponentSystem Controller::gEntityComponentSystem;

@@ -127,7 +127,7 @@ void MainUserInterface::DrawCompassRose(void) const {
 
 	auto fHealthBar = HealthBar::Make(); // Singleton
 	Model::gMonsters.RenderMinimap(model, fHealthBar);
-	Model::gOtherPlayers.RenderMinimap(model, fHealthBar);
+	Model::gOtherPlayers->RenderMinimap(model, fHealthBar);
 }
 
 

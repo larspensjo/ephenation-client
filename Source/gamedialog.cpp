@@ -965,7 +965,7 @@ void gameDialog::render(bool hideGUI) {
 	if (fSelectedObject) {
 		fSelectedObject->RenderHealthBar(fHealthBar, _angleHor);
 	}
-	Model::gOtherPlayers.RenderPlayerStats(fHealthBar, _angleHor);
+	Model::gOtherPlayers->RenderPlayerStats(fHealthBar, _angleHor);
 	bool newHealing = false;
 	if (Model::gPlayer.fFlags & UserFlagHealed) {
 		newHealing = true;
@@ -1147,7 +1147,7 @@ void gameDialog::Update() {
 		this->ClickOnBlock(x, y);
 	}
 	Model::gMonsters.Cleanup();
-	Model::gOtherPlayers.Cleanup();
+	Model::gOtherPlayers->Cleanup();
 
 	// Determine if player head is under water
 	bl = View::Chunk::GetChunkAndBlock(Model::gPlayer.x, Model::gPlayer.y, Model::gPlayer.z);

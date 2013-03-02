@@ -17,9 +17,11 @@
 
 #pragma once
 
-
 #include <map>
 #include <string>
+#include <entityx/System.h>
+
+#include "client_prot.h"
 
 namespace View {
 	class HealthBar;
@@ -31,8 +33,7 @@ namespace Model {
 
 /// @brief Manages other players that we know of.
 /// The client will only know of near players, which may need to be drawn.
-/// @todo The Monsters class is very similar, with too much duplication
-class OtherPlayers {
+class OtherPlayers : public entityx::System<OtherPlayers> {
 private:
 	struct OneOtherPlayer : public Object {
 		unsigned long id;
@@ -67,9 +68,11 @@ public:
 	// 'angle' is the viewing angle, used to draw player data rotated correctly to the camera.
 	void RenderPlayerStats(View::HealthBar *hb, float angle) const;
 	void RenderMinimap(const glm::mat4 &miniMap, View::HealthBar *hb) const;
+	virtual void configure(entityx::EventManager &events) override;
+	virtual void update(entityx::EntityManager &entities, entityx::EventManager &events, double dt) override;
 };
 
-extern OtherPlayers gOtherPlayers;
+extern boost::shared_ptr<OtherPlayers> gOtherPlayers;
 
 }
 

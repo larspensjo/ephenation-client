@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -18,9 +18,9 @@
 #include <GL/glew.h>
 #include <GL/glfw.h>
 #include <sstream>
-
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+
 #include "object.h"
 #include "client_prot.h"
 #include "otherplayers.h"
@@ -43,7 +43,13 @@ using std::endl;
 
 using namespace Model;
 
-OtherPlayers Model::gOtherPlayers;
+boost::shared_ptr<OtherPlayers> Model::gOtherPlayers = boost::make_shared<OtherPlayers>();
+
+void OtherPlayers::update(entityx::EntityManager &entities, entityx::EventManager &events, double dt) {
+}
+
+void OtherPlayers::configure(entityx::EventManager &events) {
+}
 
 glm::vec3 OtherPlayers::OneOtherPlayer::GetSelectionColor() const {
 	return glm::vec3(-0.2f, 0.2f, -0.2f);

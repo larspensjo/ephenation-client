@@ -549,7 +549,7 @@ void RenderControl::ComputeShadowMap() {
 }
 
 void RenderControl::drawOtherPlayers(void) {
-	Model::gOtherPlayers.RenderPlayers(fAnimation, false);
+	Model::gOtherPlayers->RenderPlayers(fAnimation, false);
 }
 
 void RenderControl::drawSelection(const glm::vec3 &coord) {
