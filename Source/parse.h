@@ -90,3 +90,11 @@ struct OtherPlayerUpdateEvt : public entityx::Event<OtherPlayerUpdateEvt> {
 	signed long long x,y,z;
 	float dir;
 };
+
+struct OtherPlayerNameEvt : public entityx::Event<OtherPlayerNameEvt> {
+	OtherPlayerNameEvt(unsigned long id, const char *name, int adminLevel) :
+		id(id), name(name), adminLevel(adminLevel) {}
+	unsigned long id;
+	const char *name;
+	int adminLevel;
+};

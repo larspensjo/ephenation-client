@@ -57,10 +57,10 @@ private:
 		virtual bool InGame(void) const { return ingame;}
 	};
 	std::map<unsigned long, OneOtherPlayer> fPlayers;
-public:
 	void Cleanup(void);
+public:
 	void SetPlayer(unsigned long id, unsigned char hp, unsigned int level, signed long long x, signed long long y, signed long long z, float dir);
-	void SetPlayerName(unsigned long uid, const char *name, int n, int adminLevel);
+	void SetPlayerName(unsigned long uid, const char *name, int adminLevel);
 	// draw all near players.
 	// 'selectionMode' is true when actively selecting players.
 	void RenderPlayers(AnimationShader *animShader, bool selectionMode) const;

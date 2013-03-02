@@ -46,11 +46,13 @@ using namespace Model;
 // @todo This receiver should be combined into the OtherPlayers system?
 struct receiver : public entityx::Receiver<receiver> {
 	void receive(const OtherPlayerUpdateEvt &evt);
+	void receive(const OtherPlayerNameEvt &evt);
 
 	/// Register self for events
 	void Init(OtherPlayers *pOtherPlayers, entityx::EventManager &events) {
 		fOtherPlayers = pOtherPlayers;
 		events.subscribe<OtherPlayerUpdateEvt>(*this);
+		events.subscribe<OtherPlayerNameEvt>(*this);
 	}
 
 	OtherPlayers *fOtherPlayers; // Save pointer to the system that will use the event
@@ -64,9 +66,14 @@ void receiver::receive(const OtherPlayerUpdateEvt &evt) {
 	fOtherPlayers->SetPlayer(evt.id, evt.hp, evt.level, evt.x, evt.y, evt.z, evt.dir);
 }
 
+void receiver::receive(const OtherPlayerNameEvt &evt) {
+	fOtherPlayers->SetPlayerName(evt.id, evt.name, evt.adminLevel);
+}
+
 boost::shared_ptr<OtherPlayers> Model::gOtherPlayers = boost::make_shared<OtherPlayers>();
 
 void OtherPlayers::update(entityx::EntityManager &entities, entityx::EventManager &events, double dt) {
+	this->Cleanup();
 }
 
 void OtherPlayers::configure(entityx::EventManager &events) {
@@ -116,12 +123,12 @@ void OtherPlayers::SetPlayer(unsigned long id, unsigned char hp, unsigned int le
 	pl->fUpdateTime = gCurrentFrameTime;
 }
 
-void OtherPlayers::SetPlayerName(unsigned long uid, const char *name, int n, int adminLevel) {
+void OtherPlayers::SetPlayerName(unsigned long uid, const char *name, int adminLevel) {
 	auto it = fPlayers.find(uid);
 	if (it == fPlayers.end())
 		return; // Give it up. Should not happen
 	it->second.playerName = name;
-	// printf("Player %d got name %s and admin level %d\n", uid, fPlayers[ind].playerName, adminLevel);
+	// printf("Player %d got name %s and admin level %d\n", uid, it->second.playerName.c_str(), adminLevel);
 }
 
 void OtherPlayers::RenderPlayers(AnimationShader *animShader, bool selectionMode) const {

@@ -35,10 +35,6 @@
 #define M_PI		3.14159265358979323846
 #endif
 
-using std::string;
-
-string gParseMessageAtLogin;
-
 #include "Inventory.h"
 #include <glm/glm.hpp>
 #include "object.h"
@@ -50,7 +46,6 @@ string gParseMessageAtLogin;
 #include "player.h"
 #include "connection.h"
 #include "msgwindow.h"
-#include "otherplayers.h"
 #include "modes.h"
 #include "gamedialog.h"
 #include "monsters.h"
@@ -65,9 +60,15 @@ string gParseMessageAtLogin;
 
 #define NELEM(x) (sizeof x / sizeof x[0])
 
+/// @file parse.cpp
+/// Functions to parse the messages recived from the server.
+
+string gParseMessageAtLogin;
+
 using namespace Controller;
 using View::SoundControl;
 using View::gSoundControl;
+using std::string;
 
 void DumpBytes(const unsigned char *b, int n) {
 	char buff[1000];
@@ -210,8 +211,9 @@ static void ServerMessage(const char *msg) {
 	// printf("Parse: message '%s'\n", b+1);
 }
 
-// Parse a command from the server. Notice that the length bytes are not included, which means
-// 'n' is total message length - 2.
+/// Parse a command from the server. Notice that the length bytes are not included, which means
+/// 'n' is total message length - 2.
+/// It is presumed that there is a null byte after the last byte, to help interpretation as a string.
 void Parse(const unsigned char *b, int n) {
 	ChunkCoord cc;
 	// ChunkOffsetCoord coc;
@@ -464,7 +466,8 @@ void Parse(const unsigned char *b, int n) {
 	case CMD_RESP_PLAYER_NAME: {
 		unsigned long uid = ParseUint32(b+1);
 		int adminLevel = b[5];
-		Model::gOtherPlayers->SetPlayerName(uid, (const char *)b+6, n-6, adminLevel);
+		// The fact that there is a null terminator after the complete message is used for the string.
+		gEntityComponentSystem.fEventManager.emit<OtherPlayerNameEvt>(uid, (const char *)b+6, adminLevel);
 		break;
 	}
 	case CMD_SUPERCHUNK_ANSWER: {

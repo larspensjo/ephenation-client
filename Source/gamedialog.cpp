@@ -1147,7 +1147,6 @@ void gameDialog::Update() {
 		this->ClickOnBlock(x, y);
 	}
 	Model::gMonsters.Cleanup();
-	Model::gOtherPlayers->Cleanup();
 
 	// Determine if player head is under water
 	bl = View::Chunk::GetChunkAndBlock(Model::gPlayer.x, Model::gPlayer.y, Model::gPlayer.z);
