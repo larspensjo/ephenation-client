@@ -29,8 +29,7 @@ EntityComponentSystem::EntityComponentSystem() : fEntityManager(fEventManager), 
 }
 
 void EntityComponentSystem::Init() {
-	auto sm = boost::make_shared<View::ScrollingMessages>();
-	sm->Init();
+	auto sm = boost::make_shared<View::ScrollingMessages>(fEntityManager);
 	fSystemManager.add<View::ScrollingMessages>(sm);
 
 	fSystemManager.add<Inventory>(gInventory);

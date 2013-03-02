@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -16,7 +16,9 @@
 //
 
 #include <GL/glew.h>
+#include <GL/glfw.h>
 #include <stdio.h>
+#include <entityx/Components.h>
 
 #include "ScrollingMessages.h"
 #include "primitives.h"
@@ -28,10 +30,26 @@
 #include "Inventory.h"
 #include "msgwindow.h"
 
-using std::list;
 using std::shared_ptr;
 
 using namespace View;
+
+/// The message component added to entities used for scrolling texts.
+struct MessageCmp : entityx::Component<MessageCmp> {
+	MessageCmp(shared_ptr<const Model::Object> o, glm::vec3 colorOffset, shared_ptr<DrawFont> font, const std::string &str) :
+		o(o), startTime(glfwGetTime()), colorOffset(colorOffset), font(font), id(font->vsfl.genSentence())
+	{
+		font->vsfl.prepareSentence(id, str);
+	}
+	shared_ptr<const Model::Object> o; // A reference that is allocated and deallocated elsewhere
+	double startTime;
+	glm::vec3 colorOffset;
+	shared_ptr<DrawFont> font;
+	GLuint id; // Sentence Id
+	~MessageCmp() {
+		font->vsfl.deleteSentence(id);
+	}
+};
 
 // @todo This receiver should be combined into the ScrollingMessages system?
 struct receiver : public entityx::Receiver<receiver> {
@@ -70,19 +88,14 @@ public:
 	glm::vec3 fScreen; // Only x and y will be used
 };
 
-ScrollingMessages::Message::~Message() {
-	fFont->vsfl.deleteSentence(id);
+ScrollingMessages::ScrollingMessages(entityx::EntityManager &es) : fEntities(es) {
+	fFont = std::make_shared<DrawFont>();
+	fFont->Init("textures/gabriola18");
 }
 
 void ScrollingMessages::AddMessage(shared_ptr<const Model::Object> o, const std::string &str, glm::vec3 colorOffset) {
-	unique_ptr<Message> m(new Message);
-	m->o = o;
-	m->id = fFont->vsfl.genSentence();
-	m->startTime = gCurrentFrameTime;
-	m->colorOffset = colorOffset;
-	m->fFont = fFont;
-	fFont->vsfl.prepareSentence(m->id, str);
-	fMessageList.push_back(std::move(m));
+	auto entity = fEntities.create();
+	entity.assign<MessageCmp>(o, colorOffset, fFont, str);
 }
 
 void ScrollingMessages::AddMessagePlayer(const std::string &str, glm::vec3 colorOffset) {
@@ -96,38 +109,24 @@ void ScrollingMessages::AddMessage(float x, float y, const std::string &str, glm
 	auto so = std::make_shared<ScreenObject>();
 	so->fScreen.x = x;
 	so->fScreen.y = y;
-	unique_ptr<Message> m(new Message);
-	m->o = so;
-	m->id = fFont->vsfl.genSentence();
-	m->startTime = gCurrentFrameTime;
-	m->colorOffset = colorOffset;
-	m->fFont = fFont;
-	fFont->vsfl.prepareSentence(m->id, str);
-	fMessageList.push_back(std::move(m));
+	auto entity = fEntities.create();
+	entity.assign<MessageCmp>(so, colorOffset, fFont, str);
 }
 
-void ScrollingMessages::Init() {
-	fFont = std::make_shared<DrawFont>();
-	fFont->Init("textures/gabriola18");
-}
-
-void ScrollingMessages::update(entityx::EntityManager &entities, entityx::EventManager &events, double dt) {
-	// @todo Iterate through the entities instead
+void ScrollingMessages::update(entityx::EntityManager &, entityx::EventManager &events, double dt) {
 	fFont->Enable();
 	fFont->UpdateProjection();
 
-	// Iterate for each message
-	for (auto it=fMessageList.begin() ; it != fMessageList.end(); ) {
-		auto current = it;
-		it++; // Move iterator already now, as current item may be deleted
-		auto m = (*current).get(); // Get a temporary pointer to the message.
-		double delta = gCurrentFrameTime - m->startTime;
+	boost::shared_ptr<MessageCmp> message;
+	for (auto entity : fEntities.entities_with_components(message)) {
+		// Do things with entity ID, position and direction.
+		double delta = gCurrentFrameTime - message->startTime;
 		if (delta > 6.0) {
-			fMessageList.erase(current);
+			fEntities.destroy(entity);
 			continue;
 		}
-		glm::vec3 pos = m->o->GetPosition();
-		if (m->o->GetType() != -1) {
+		glm::vec3 pos = message->o->GetPosition();
+		if (message->o->GetType() != -1) {
 			glm::vec4 v = glm::vec4(pos.x, pos.y+2, pos.z, 1.0f);
 			glm::vec4 screen = gProjectionMatrix * gViewMatrix * v;
 			screen = screen / screen.w;
@@ -138,7 +137,7 @@ void ScrollingMessages::update(entityx::EntityManager &entities, entityx::EventM
 			fFont->SetOffset(pos.x, pos.y - delta*50);
 			// printf("ScrollingMessages::Update %f, %f\n", pos.x, pos.y - delta*50);
 		}
-		fFont->vsfl.renderSentence(m->id, m->colorOffset);
+		fFont->vsfl.renderSentence(message->id, message->colorOffset);
 	}
 	fFont->Disable();
 }

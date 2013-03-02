@@ -37,11 +37,13 @@ class DrawFont;
 namespace View {
 
 /// Implement a list of scrolling messages.
+///
 /// A message is added to a specific coordinate, and will scroll in real time up to the top
 /// of the screen where it will disappear.
+/// This class can not be instantiated unless OpenGL is initialized.
 class ScrollingMessages : public entityx::System<ScrollingMessages> {
 public:
-	void Init();
+	ScrollingMessages(entityx::EntityManager &es);
 
 	/// Apply System behavior.
 	///
@@ -62,15 +64,8 @@ public:
 	virtual void configure(entityx::EventManager &events) override;
 
 private:
-	struct Message {
-		std::shared_ptr<const Model::Object> o; // A reference that is allocated and deallocated elsewhere
-		GLuint id;
-		double startTime;
-		glm::vec3 colorOffset;
-		std::shared_ptr<DrawFont> fFont;
-		~Message();
-	};
-	std::list<unique_ptr<Message>> fMessageList;
+	/// @todo Should not create entities, but rather use entities based on Object.
+	entityx::EntityManager &fEntities;
 	std::shared_ptr<DrawFont> fFont;
 };
 
