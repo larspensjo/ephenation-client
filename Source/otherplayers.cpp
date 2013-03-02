@@ -43,12 +43,34 @@ using std::endl;
 
 using namespace Model;
 
+// @todo This receiver should be combined into the OtherPlayers system?
+struct receiver : public entityx::Receiver<receiver> {
+	void receive(const OtherPlayerUpdateEvt &evt);
+
+	/// Register self for events
+	void Init(OtherPlayers *pOtherPlayers, entityx::EventManager &events) {
+		fOtherPlayers = pOtherPlayers;
+		events.subscribe<OtherPlayerUpdateEvt>(*this);
+	}
+
+	OtherPlayers *fOtherPlayers; // Save pointer to the system that will use the event
+
+	receiver() : fOtherPlayers(0) {}
+};
+
+static receiver sEventReceiver;
+
+void receiver::receive(const OtherPlayerUpdateEvt &evt) {
+	fOtherPlayers->SetPlayer(evt.id, evt.hp, evt.level, evt.x, evt.y, evt.z, evt.dir);
+}
+
 boost::shared_ptr<OtherPlayers> Model::gOtherPlayers = boost::make_shared<OtherPlayers>();
 
 void OtherPlayers::update(entityx::EntityManager &entities, entityx::EventManager &events, double dt) {
 }
 
 void OtherPlayers::configure(entityx::EventManager &events) {
+	sEventReceiver.Init(this, events);
 }
 
 glm::vec3 OtherPlayers::OneOtherPlayer::GetSelectionColor() const {

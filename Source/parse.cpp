@@ -272,7 +272,7 @@ void Parse(const unsigned char *b, int n) {
 			float dir = b[17+i] / 256.0f * 365.0f; // Convert looking direction into degrees
 			// printf("%d,", b[15+i]);
 			if (type == 0 && state == 1) {
-				Model::gOtherPlayers->SetPlayer(id, hp, level, Model::gPlayer.x+dx, Model::gPlayer.y+dy, Model::gPlayer.z+dz, dir);
+				gEntityComponentSystem.fEventManager.emit<OtherPlayerUpdateEvt>(id, hp, level, Model::gPlayer.x+dx, Model::gPlayer.y+dy, Model::gPlayer.z+dz, dir);
 
 				// Update this player as a creature in SoundControl
 				gSoundControl.SetCreatureSound(SoundControl::SOtherPlayer,id,dx,dy,dz,hp==0,0.0f);

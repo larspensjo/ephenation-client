@@ -80,3 +80,13 @@ struct MonsterHitByPlayerEvt : public entityx::Event<MonsterHitByPlayerEvt> {
 	float damage;     /// The amount of damage
 	unsigned long id; /// Id of the monster
 };
+
+struct OtherPlayerUpdateEvt : public entityx::Event<OtherPlayerUpdateEvt> {
+	OtherPlayerUpdateEvt(unsigned long id, unsigned char hp, unsigned int level, signed long long x, signed long long y, signed long long z, float dir) :
+		id(id), hp(hp), level(level), x(x), y(y), z(z), dir(dir) {}
+	unsigned long id;
+	unsigned char hp;
+	unsigned int level;
+	signed long long x,y,z;
+	float dir;
+};
