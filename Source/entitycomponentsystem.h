@@ -32,15 +32,15 @@ public:
 	/// Do the actual initialization
 	void Init();
 
+	/// Update all systems with the new time
+	void Update();
+
 	/// @todo Make this private
 	entityx::EventManager fEventManager;
-
-	/// @todo Make this private
+private:
 	entityx::EntityManager fEntityManager;
 
-	/// @todo Make this private
 	entityx::SystemManager fSystemManager;
-private:
 };
 
 /// @todo This should not need be global, except during a period of transition.

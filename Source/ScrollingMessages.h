@@ -41,8 +41,7 @@ namespace View {
 /// of the screen where it will disappear.
 class ScrollingMessages : public entityx::System<ScrollingMessages> {
 public:
-	void Init(std::shared_ptr<DrawFont> font);
-	void Update(void);
+	void Init();
 
 	/// Apply System behavior.
 	///

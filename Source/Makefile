@@ -68,6 +68,7 @@ MY_LIBS   = -lGL\
 	-lRocketControls\
 	-lentityx\
 	-lboost_signals\
+	-lglog\
 	$(PROFILING)
 
 # The pre-processor options used by the cpp (man cpp for more).
@@ -96,8 +97,8 @@ HDREXTS = .h .H .hh .hpp .HPP .h++ .hxx .hp
 
 # The pre-processor and compiler options.
 # Users can override those variables from the command line.
-CFLAGS  = -g -O2 --std=c++0x
-CXXFLAGS= $(CFLAGS)
+CFLAGS  = -g -O2
+CXXFLAGS= $(CFLAGS) --std=c++11
 
 # The C program compiler.
 CC     = gcc
@@ -168,27 +169,27 @@ all: $(PROGRAM)
 
 %.d:%.cc
 	@echo -n $(dir $<) > $@
-	@$(DEPEND.d) $< >> $@
+	@$(DEPEND.d) $(CXXFLAGS) $< >> $@
 
 %.d:%.cpp
 	@echo -n $(dir $<) > $@
-	@$(DEPEND.d) $< >> $@
+	@$(DEPEND.d) $(CXXFLAGS) $< >> $@
 
 %.d:%.CPP
 	@echo -n $(dir $<) > $@
-	@$(DEPEND.d) $< >> $@
+	@$(DEPEND.d) $(CXXFLAGS) $< >> $@
 
 %.d:%.c++
 	@echo -n $(dir $<) > $@
-	@$(DEPEND.d) $< >> $@
+	@$(DEPEND.d) $(CXXFLAGS) $< >> $@
 
 %.d:%.cp
 	@echo -n $(dir $<) > $@
-	@$(DEPEND.d) $< >> $@
+	@$(DEPEND.d) $(CXXFLAGS) $< >> $@
 
 %.d:%.cxx
 	@echo -n $(dir $<) > $@
-	@$(DEPEND.d) $< >> $@
+	@$(DEPEND.d) $(CXXFLAGS) $< >> $@
 
 # Rules for generating object files (.o).
 #----------------------------------------

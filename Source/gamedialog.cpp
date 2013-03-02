@@ -43,7 +43,6 @@
 #include "modes.h"
 #include "monsters.h"
 #include "otherplayers.h"
-#include "DrawText.h"
 #include "shaders/ChunkShader.h"
 #include "shaders/ChunkShaderPicking.h"
 #include "shaders/DeferredLighting.h"
@@ -1026,9 +1025,9 @@ void gameDialog::render(bool hideGUI) {
 			sPrevFPS = buff;
 			fFPS_Element->SetInnerRML(buff);
 		}
-
-		View::gScrollingMessages->Update();
 	}
+
+	gEntityComponentSystem.Update();
 
 	if (!fDrawMap && !fShowInventory) {
 		if (gMode.Get() == GameMode::CONSTRUCT)
@@ -1059,9 +1058,6 @@ static int GLFWCALL CloseWindowCallback(void) {
 void gameDialog::init(void) {
 	fRenderControl.Init(8);
 
-	std::shared_ptr<DrawFont> gabriola18(new DrawFont);
-	gabriola18->Init("textures/gabriola18");
-	View::gScrollingMessages->Init(gabriola18);
 	Model::ChunkBlocks::InitStatic();
 	maxRenderDistance = (float)gOptions.fViewingDistance;
 	if (maxRenderDistance > MAXRENDERDISTANCE) {

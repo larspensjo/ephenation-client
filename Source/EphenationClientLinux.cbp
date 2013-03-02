@@ -52,6 +52,7 @@
 			<Add library="RocketControls" />
 			<Add library="boost_signals" />
 			<Add library="entityx" />
+			<Add library="glog" />
 		</Linker>
 		<Unit filename="BuildingBlocks.cpp" />
 		<Unit filename="BuildingBlocks.h" />

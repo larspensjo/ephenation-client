@@ -109,7 +109,13 @@ void ScrollingMessages::AddMessage(float x, float y, const std::string &str, glm
 	fMessageList.push_back(std::move(m));
 }
 
-void ScrollingMessages::Update(void) {
+void ScrollingMessages::Init() {
+	fFont = std::make_shared<DrawFont>();
+	fFont->Init("textures/gabriola18");
+}
+
+void ScrollingMessages::update(entityx::EntityManager &entities, entityx::EventManager &events, double dt) {
+	// @todo Iterate through the entities instead
 	fFont->Enable();
 	fFont->UpdateProjection();
 
@@ -138,15 +144,6 @@ void ScrollingMessages::Update(void) {
 		fFont->vsfl.renderSentence(m->id, m->colorOffset);
 	}
 	fFont->Disable();
-}
-
-void ScrollingMessages::Init(shared_ptr<DrawFont> font) {
-	fFont = font;
-}
-
-void ScrollingMessages::update(entityx::EntityManager &entities, entityx::EventManager &events, double dt) {
-	// @todo Iterate through the entities instead
-	this->Update();
 }
 
 void ScrollingMessages::configure(entityx::EventManager &events) {

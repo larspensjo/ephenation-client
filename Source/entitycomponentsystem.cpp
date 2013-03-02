@@ -15,6 +15,9 @@
 // along with Ephenation.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <GL/glew.h>
+#include <GL/glfw.h>
+
 #include "entitycomponentsystem.h"
 #include "ScrollingMessages.h"
 #include "Inventory.h"
@@ -26,11 +29,21 @@ EntityComponentSystem::EntityComponentSystem() : fEntityManager(fEventManager), 
 }
 
 void EntityComponentSystem::Init() {
-	fSystemManager.add(View::gScrollingMessages);
-	fSystemManager.add(gInventory);
+	View::gScrollingMessages->Init();
+	fSystemManager.add<View::ScrollingMessages>(View::gScrollingMessages);
+	fSystemManager.add<Inventory>(gInventory);
 
 	// After all systems have been added, configure them.
 	fSystemManager.configure();
+}
+
+void EntityComponentSystem::Update() {
+	static double last = 0.0;
+	double now = glfwGetTime();
+	double dt = now - last;
+	last = now;
+	fSystemManager.update<View::ScrollingMessages>(dt);
+	fSystemManager.update<Inventory>(dt);
 }
 
 EntityComponentSystem Controller::gEntityComponentSystem;
