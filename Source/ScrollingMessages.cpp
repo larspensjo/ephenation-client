@@ -51,8 +51,8 @@ struct MessageCmp : entityx::Component<MessageCmp> {
 	}
 };
 
-// @todo This receiver should be combined into the ScrollingMessages system?
-struct receiver : public entityx::Receiver<receiver> {
+// @todo This ScrollMsgReceiver should be combined into the ScrollingMessages system?
+struct ScrollMsgReceiver : public entityx::Receiver<ScrollMsgReceiver> {
 	void receive(const PlayerHitByMonsterEvt &evt);
 	void receive(const MonsterHitByPlayerEvt &evt);
 	void receive(const Inventory::AddObjectToPlayer &evt);
@@ -69,10 +69,10 @@ struct receiver : public entityx::Receiver<receiver> {
 
 	ScrollingMessages *fScrollingMessages; // Save pointer to the system that will use the event
 
-	receiver() : fScrollingMessages(0) {}
+	ScrollMsgReceiver() : fScrollingMessages(0) {}
 };
 
-static receiver sEventReceiver;
+static ScrollMsgReceiver sEventReceiver;
 
 // This is used as a special object to denote a screen coordinate instead of a world position
 class ScreenObject : public Model::Object {
@@ -146,14 +146,14 @@ void ScrollingMessages::configure(entityx::EventManager &events) {
 	sEventReceiver.Init(this, events);
 }
 
-void receiver::receive(const PlayerHitByMonsterEvt &evt) {
+void ScrollMsgReceiver::receive(const PlayerHitByMonsterEvt &evt) {
 	std::stringstream ss;
 	ss << int(evt.damage*100+0.5f);
 	fScrollingMessages->AddMessagePlayer(ss.str(), glm::vec3(0, -1, -1));
 	// @todo Add an Entity instead.
 }
 
-void receiver::receive(const MonsterHitByPlayerEvt &evt) {
+void ScrollMsgReceiver::receive(const MonsterHitByPlayerEvt &evt) {
 	auto m = Model::gMonsters.Find(evt.id);
 	if (m != nullptr) {
 		std::stringstream ss;
@@ -163,10 +163,10 @@ void receiver::receive(const MonsterHitByPlayerEvt &evt) {
 	// @todo Add an Entity instead.
 }
 
-void receiver::receive(const Inventory::AddObjectToPlayer &evt) {
+void ScrollMsgReceiver::receive(const Inventory::AddObjectToPlayer &evt) {
 	fScrollingMessages->AddMessagePlayer(evt.map->descr);
 }
 
-void receiver::receive(const MsgWindow::MessageEvt &evt) {
+void ScrollMsgReceiver::receive(const MsgWindow::MessageEvt &evt) {
 	fScrollingMessages->AddMessage(evt.dropx, evt.dropy, evt.buff);
 }

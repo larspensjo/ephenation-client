@@ -43,8 +43,8 @@ using std::endl;
 
 using namespace Model;
 
-// @todo This receiver should be combined into the OtherPlayers system?
-struct receiver : public entityx::Receiver<receiver> {
+// @todo This OtherPlayerEvtReceiver should be combined into the OtherPlayers system?
+struct OtherPlayerEvtReceiver : public entityx::Receiver<OtherPlayerEvtReceiver> {
 	void receive(const OtherPlayerUpdateEvt &evt);
 	void receive(const OtherPlayerNameEvt &evt);
 
@@ -57,16 +57,16 @@ struct receiver : public entityx::Receiver<receiver> {
 
 	OtherPlayers *fOtherPlayers; // Save pointer to the system that will use the event
 
-	receiver() : fOtherPlayers(0) {}
+	OtherPlayerEvtReceiver() : fOtherPlayers(0) {}
 };
 
-static receiver sEventReceiver;
+static OtherPlayerEvtReceiver sEventReceiver;
 
-void receiver::receive(const OtherPlayerUpdateEvt &evt) {
+void OtherPlayerEvtReceiver::receive(const OtherPlayerUpdateEvt &evt) {
 	fOtherPlayers->SetPlayer(evt.id, evt.hp, evt.level, evt.x, evt.y, evt.z, evt.dir);
 }
 
-void receiver::receive(const OtherPlayerNameEvt &evt) {
+void OtherPlayerEvtReceiver::receive(const OtherPlayerNameEvt &evt) {
 	fOtherPlayers->SetPlayerName(evt.id, evt.name, evt.adminLevel);
 }
 
