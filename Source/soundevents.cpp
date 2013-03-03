@@ -24,6 +24,7 @@
 #include "entitycomponentsystem.h"
 #include "parse.h"
 #include "player.h"
+#include "chunk.h"
 
 using namespace View;
 
@@ -34,7 +35,10 @@ struct SoundEventReceiver : public entityx::Receiver<SoundEventReceiver> {
 		events.subscribe<OtherPlayerUpdateEvt>(*this);
 		events.subscribe<MonsterUpdateEvt>(*this);
 		events.subscribe<NoticeEvt>(*this);
+		events.subscribe<PlayerHitByMonsterEvt>(*this);
+		events.subscribe<MonsterHitByPlayerEvt>(*this);
 		events.subscribe<PlayerStatsChangedEvt>(*this);
+		events.subscribe<BlockUpdateEvt>(*this);
 	}
 
 	SoundControl *fSoundControl; // Save pointer to the system that will use the event
@@ -49,7 +53,16 @@ struct SoundEventReceiver : public entityx::Receiver<SoundEventReceiver> {
 		fSoundControl->SetCreatureSound(SoundControl::SMonster, evt.id, evt.x-Model::gPlayer.x, evt.y-Model::gPlayer.y, evt.z-Model::gPlayer.z, evt.hp==0, evt.size);
 	}
 
+	void receive(const BlockUpdateEvt &evt) {
+		if (evt.type == BT_Air)
+			fSoundControl->RequestSound(SoundControl::SRemoveBlock);
+		else
+			fSoundControl->RequestSound(SoundControl::SBuildBlock);
+	}
+
 	void receive(const NoticeEvt &evt) { fSoundControl->RequestSound(SoundControl::SInterfacePing); }
+	void receive(const PlayerHitByMonsterEvt &evt) { fSoundControl->RequestSound(SoundControl::SMonsterHits); }
+	void receive(const MonsterHitByPlayerEvt &evt) { fSoundControl->RequestSound(SoundControl::SPlayerHits); }
 
 	void receive(const PlayerStatsChangedEvt &evt) {
 		SoundControl::Sound sound = SoundControl::SNone;

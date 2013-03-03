@@ -49,7 +49,6 @@
 #include "modes.h"
 #include "gamedialog.h"
 #include "monsters.h"
-#include "SoundControl.h"
 #include "ui/Error.h"
 #include "ChunkProcess.h"
 #include "ChunkBlocks.h"
@@ -66,8 +65,6 @@
 string gParseMessageAtLogin;
 
 using namespace Controller;
-using View::SoundControl;
-using View::gSoundControl;
 using std::string;
 
 void DumpBytes(const unsigned char *b, int n) {
@@ -294,10 +291,7 @@ void Parse(const unsigned char *b, int n) {
 			int dz = b[i+2];
 			int type = b[i+3];
 			cb->CommandBlockUpdate(cc, dx, dy, dz, type);
-			if (type == BT_Air)
-				gSoundControl.RequestSound(SoundControl::SRemoveBlock);
-			else
-				gSoundControl.RequestSound(SoundControl::SBuildBlock);
+			gEntityComponentSystem.fEventManager.emit<BlockUpdateEvt>(type);
 			if (type == BT_Text) {
 				Controller::gGameDialog.CreateActivatorMessage(dx, dy, dz, cc);
 			}
@@ -364,7 +358,6 @@ void Parse(const unsigned char *b, int n) {
 			std::stringstream ss;
 			ss << dmg*100/255;
 			View::gMsgWindow.Add("Monster hit you with %d%% damage", dmg*100/255);
-			gSoundControl.RequestSound(SoundControl::SMonsterHits);
 		}
 		break;
 	case CMD_RESP_PLAYER_HIT_MONSTER: {
@@ -372,7 +365,6 @@ void Parse(const unsigned char *b, int n) {
 			unsigned long id = ParseUint32(b+i);
 			unsigned long dmg = b[i+4];
 			gEntityComponentSystem.fEventManager.emit<MonsterHitByPlayerEvt>(float(dmg)/255.0f, id);
-			gSoundControl.RequestSound(SoundControl::SPlayerHits);
 		}
 		break;
 	}

@@ -118,3 +118,8 @@ struct PlayerStatsChangedEvt : public entityx::Event<PlayerStatsChangedEvt> {
 		healed(healed), levelUp(levelUp), touchDown(touchDown) {}
 	bool healed, levelUp, touchDown;
 };
+
+struct BlockUpdateEvt : public entityx::Event<BlockUpdateEvt> {
+	BlockUpdateEvt(int type) : type(type) {}
+	int type;
+};
