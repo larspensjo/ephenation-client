@@ -200,12 +200,12 @@ static void ServerMessage(const char *msg) {
 		// Found a space.
 		int cmp = s.compare(n+1, 5, "says:");
 		if (cmp == 0) {
-			View::gSoundControl.RequestSound(SoundControl::SInterfacePing);
+			gEntityComponentSystem.fEventManager.emit<NoticeEvt>();
 		}
 
 		cmp = s.compare(n+1, 10, "tells you:");
 		if (cmp == 0) {
-			View::gSoundControl.RequestSound(SoundControl::SInterfacePing);
+			gEntityComponentSystem.fEventManager.emit<NoticeEvt>();
 		}
 	}
 	// printf("Parse: message '%s'\n", b+1);
@@ -240,15 +240,7 @@ void Parse(const unsigned char *b, int n) {
 			Model::gPlayer.fPreviousHp = hp;
 		}
 		Model::gPlayer.fMana = b[11] / 255.0f;
-		SoundControl::Sound sound = SoundControl::SNone;
-		if (Model::gPlayer.fFlags & UserFlagHealed)
-			sound |= SoundControl::SHealingSelf;
-		if (prevLevel < Model::gPlayer.fLevel && Model::gPlayer.fStatsAvailable)
-			sound |= SoundControl::SLevelUp;
-		if (Model::gPlayer.fFlags & UserFlagJump)
-			sound |= SoundControl::SPlayerLand;
-		if (sound != SoundControl::SNone)
-			gSoundControl.RequestSound(sound);
+		gEntityComponentSystem.fEventManager.emit<PlayerStatsChangedEvt>(Model::gPlayer.fFlags & UserFlagHealed, prevLevel < Model::gPlayer.fLevel && Model::gPlayer.fStatsAvailable, Model::gPlayer.fFlags & UserFlagJump);
 		Model::gPlayer.fStatsAvailable = true;
 		// printf("parse: New player stats hp %f, exp %f lvl %d, flags 0x%lx\n", Model::gPlayer.fHp, Model::gPlayer.fExp, Model::gPlayer.fLevel, Model::gPlayer.fFlags);
 		break;
@@ -275,16 +267,13 @@ void Parse(const unsigned char *b, int n) {
 			// printf("%d,", b[15+i]);
 			if (type == 0 && state == 1) {
 				gEntityComponentSystem.fEventManager.emit<OtherPlayerUpdateEvt>(id, hp, level, Model::gPlayer.x+dx, Model::gPlayer.y+dy, Model::gPlayer.z+dz, dir);
-
-				// Update this player as a creature in SoundControl
-				gSoundControl.SetCreatureSound(SoundControl::SOtherPlayer,id,dx,dy,dz,hp==0,0.0f);
 			} else {
+				float size = Model::Monsters::Size(level)/5.0f; // Value is from 0.2 to 1.0
 				// Coordinates are relative to the player feet, while Model::gPlayer keeps track of the player head.
+				gEntityComponentSystem.fEventManager.emit<MonsterUpdateEvt>(id, hp, level, Model::gPlayer.x+dx, Model::gPlayer.y+dy, Model::gPlayer.z+dz-(int)(PLAYER_HEIGHT*BLOCK_COORD_RES*2), dir, size);
 				Model::gMonsters.SetMonster(id, hp, level, Model::gPlayer.x+dx, Model::gPlayer.y+dy, Model::gPlayer.z+dz-(int)(PLAYER_HEIGHT*BLOCK_COORD_RES*2), dir);
 
 				// Update this monster as a creature in SoundControl
-				float size = Model::Monsters::Size(level)/5.0f; // Value is from 0.2 to 1.0
-				gSoundControl.SetCreatureSound(SoundControl::SMonster,id,dx,dy,dz,hp==0,size);
 			}
 		}
 		break;

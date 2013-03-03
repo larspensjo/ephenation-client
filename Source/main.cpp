@@ -64,6 +64,7 @@
 #include "worsttime.h"
 #include "contrib/glsw.h"
 #include "errormanager.h"
+#include "entitycomponentsystem.h"
 
 #ifndef GL_VERSION_3_2
 #define GL_CONTEXT_CORE_PROFILE_BIT       0x00000001
@@ -331,7 +332,7 @@ int main(int argc, char** argv) {
 	glswInit();
 	glswSetPath("shaders/", ".glsl");
 	ConnectToServer(host, port);
-	View::gSoundControl.Init();
+	View::gSoundControl.Init(Controller::gEntityComponentSystem.fEventManager);
 	TSExec::gTSExec.Init(); // This must be called after initiating gSoundControl.
 
 	if (gDebugOpenGL)

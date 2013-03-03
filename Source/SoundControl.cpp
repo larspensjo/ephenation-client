@@ -194,7 +194,8 @@ SoundControl::SoundControl() : fFeetInWater(false), fFeetInAir(false), fUnderWat
 }
 
 // SoundControl initialization
-void SoundControl::Init(void) {
+void SoundControl::Init(entityx::EventManager &em) {
+	this->InitializeEvents(em);
 	int idx;
 
 	//TODO: Error handling - if OpenAL can not be initialized, allow the game to be played anyway?

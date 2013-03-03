@@ -33,6 +33,10 @@
 #include <ogg/ogg.h>
 #include <vorbis/vorbisfile.h>
 
+namespace entityx {
+	class EventManager;
+}
+
 namespace View {
 
 /// @brief Manage the sound effects and music
@@ -60,7 +64,7 @@ public:
 
 	typedef int SoundControlObject;
 
-	void Init(void);
+	void Init(entityx::EventManager &em);
 
 	// Play a sound. The request may fail, unless 'force' is true.
 	void RequestSound(Sound, bool force = false);
@@ -83,6 +87,7 @@ public:
 	static TrigSoundItem fTrigSoundList[];
 
 private:
+	void InitializeEvents(entityx::EventManager &em);
 	Sound fRequestedSound;		// The sound scheduled for being played
 	char fRequestedTrigSound[4];
 

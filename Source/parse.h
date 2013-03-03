@@ -91,10 +91,30 @@ struct OtherPlayerUpdateEvt : public entityx::Event<OtherPlayerUpdateEvt> {
 	float dir;
 };
 
+struct MonsterUpdateEvt : public entityx::Event<MonsterUpdateEvt> {
+	MonsterUpdateEvt(unsigned long id, unsigned char hp, unsigned int level, signed long long x, signed long long y, signed long long z, float dir, float size) :
+		id(id), hp(hp), level(level), x(x), y(y), z(z), dir(dir), size(size) {}
+	unsigned long id;
+	unsigned char hp;
+	unsigned int level;
+	signed long long x,y,z;
+	float dir, size;
+};
+
 struct OtherPlayerNameEvt : public entityx::Event<OtherPlayerNameEvt> {
 	OtherPlayerNameEvt(unsigned long id, const char *name, int adminLevel) :
 		id(id), name(name), adminLevel(adminLevel) {}
 	unsigned long id;
 	const char *name;
 	int adminLevel;
+};
+
+// This event is generated when we want to attract the attention of the player
+struct NoticeEvt : public entityx::Event<NoticeEvt> {
+};
+
+struct PlayerStatsChangedEvt : public entityx::Event<PlayerStatsChangedEvt> {
+	PlayerStatsChangedEvt(bool healed, bool levelUp, bool touchDown) :
+		healed(healed), levelUp(levelUp), touchDown(touchDown) {}
+	bool healed, levelUp, touchDown;
 };
