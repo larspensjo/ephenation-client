@@ -55,7 +55,7 @@ struct MessageCmp : entityx::Component<MessageCmp> {
 struct ScrollMsgReceiver : public entityx::Receiver<ScrollMsgReceiver> {
 	void receive(const PlayerHitByMonsterEvt &evt);
 	void receive(const MonsterHitByPlayerEvt &evt);
-	void receive(const Inventory::AddObjectToPlayer &evt);
+	void receive(const Inventory::AddObjectToPlayerEvt &evt);
 	void receive(const MsgWindow::MessageEvt &evt);
 
 	/// Register self for events
@@ -63,7 +63,7 @@ struct ScrollMsgReceiver : public entityx::Receiver<ScrollMsgReceiver> {
 		fScrollingMessages = pScrollingMessages;
 		events.subscribe<PlayerHitByMonsterEvt>(*this);
 		events.subscribe<MonsterHitByPlayerEvt>(*this);
-		events.subscribe<Inventory::AddObjectToPlayer>(*this);
+		events.subscribe<Inventory::AddObjectToPlayerEvt>(*this);
 		events.subscribe<MsgWindow::MessageEvt>(*this);
 	}
 
@@ -163,7 +163,7 @@ void ScrollMsgReceiver::receive(const MonsterHitByPlayerEvt &evt) {
 	// @todo Add an Entity instead.
 }
 
-void ScrollMsgReceiver::receive(const Inventory::AddObjectToPlayer &evt) {
+void ScrollMsgReceiver::receive(const Inventory::AddObjectToPlayerEvt &evt) {
 	fScrollingMessages->AddMessagePlayer(evt.map->descr);
 }
 

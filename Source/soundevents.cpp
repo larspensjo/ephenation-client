@@ -25,6 +25,7 @@
 #include "parse.h"
 #include "player.h"
 #include "chunk.h"
+#include "Inventory.h"
 
 using namespace View;
 
@@ -34,6 +35,7 @@ struct SoundEventReceiver : public entityx::Receiver<SoundEventReceiver> {
 		fSoundControl = pSoundControl;
 		events.subscribe<OtherPlayerUpdateEvt>(*this);
 		events.subscribe<MonsterUpdateEvt>(*this);
+		events.subscribe<Inventory::AddObjectToPlayerEvt>(*this);
 		events.subscribe<NoticeEvt>(*this);
 		events.subscribe<PlayerHitByMonsterEvt>(*this);
 		events.subscribe<MonsterHitByPlayerEvt>(*this);
@@ -51,6 +53,18 @@ struct SoundEventReceiver : public entityx::Receiver<SoundEventReceiver> {
 
 	void receive(const MonsterUpdateEvt &evt) {
 		fSoundControl->SetCreatureSound(SoundControl::SMonster, evt.id, evt.x-Model::gPlayer.x, evt.y-Model::gPlayer.y, evt.z-Model::gPlayer.z, evt.hp==0, evt.size);
+	}
+
+	void receive(const Inventory::AddObjectToPlayerEvt &evt) {
+		SoundControl::Sound sound = SoundControl::SNone;
+		switch(evt.map->category) {
+			case Inventory::ICWeapon: sound = SoundControl::SDropWeapon; break;
+			case Inventory::ICArmor:  sound = SoundControl::SDropArmor; break;
+			case Inventory::ICHead:   sound = SoundControl::SDropArmor; break;
+			case Inventory::ICPotion: sound = SoundControl::SDropPotion; break;
+			case Inventory::ICScroll: sound = SoundControl::SDropScroll; break;
+		}
+		fSoundControl->RequestSound(sound);
 	}
 
 	void receive(const BlockUpdateEvt &evt) {

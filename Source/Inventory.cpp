@@ -23,9 +23,9 @@
 #include <string>
 #include <iostream>
 #include <sstream>
-
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+
 #include "Inventory.h"
 #include "modes.h"
 #include "textures.h"
@@ -68,21 +68,21 @@ boost::shared_ptr<Inventory> gInventory = boost::make_shared<Inventory>();
 // The offsets are offsets into the EquipmentIcons.bmp bitmap, where to find a corresponding icon for the item.
 Inventory::ObjectMap Inventory::fsObjectMap[] = {
 	{ " ", 0, 0, 3/IS,  4/IS}, // null element to allow the use of no objects.
-	{ "healing potion",                        "POTH", SoundControl::SDropPotion, 0/IS, 6/IS, false, ICPotion },
-	{ "mana potion",                           "POTM", SoundControl::SDropPotion, 1/IS, 6/IS, false, ICPotion },
-	{ "scroll of resurrection point",          "S001", SoundControl::SDropScroll, 0/IS, 4/IS, true, ICScroll },
-	{ "sword",                                 "WEP1", SoundControl::SDropWeapon, 0/IS, 7/IS, true, ICWeapon },
-	{ "fine sword",                            "WEP2", SoundControl::SDropWeapon, 1/IS, 7/IS, true, ICWeapon },
-	{ "mighty sword",                          "WEP3", SoundControl::SDropWeapon, 2/IS, 7/IS, true, ICWeapon },
-	{ "shining blue sword with engraved gems", "WEP4", SoundControl::SDropWeapon, 3/IS, 7/IS, true, ICWeapon },
-	{ "shirt",                                 "ARM1", SoundControl::SDropArmor,  0/IS, 5/IS, true, ICArmor },
-	{ "armor",                                 "ARM2", SoundControl::SDropArmor,  1/IS, 5/IS, true, ICArmor },
-	{ "shiny armor",                           "ARM3", SoundControl::SDropArmor,  2/IS, 5/IS, true, ICArmor },
-	{ "plate mail with magic reinforcement",   "ARM4", SoundControl::SDropArmor,  3/IS, 5/IS, true, ICArmor },
-	{ "straw hat",                             "HLM1", SoundControl::SDropArmor,  0/IS, 0/IS, true, ICHead },
-	{ "helmet",                                "HLM2", SoundControl::SDropArmor,  1/IS, 0/IS, true, ICHead },
-	{ "shiny helmet",                          "HLM3", SoundControl::SDropArmor,  2/IS, 0/IS, true, ICHead },
-	{ "dragon helmet",                         "HLM4", SoundControl::SDropArmor,  3/IS, 0/IS, true, ICHead },
+	{ "healing potion",                        "POTH", 0/IS, 6/IS, false, ICPotion },
+	{ "mana potion",                           "POTM", 1/IS, 6/IS, false, ICPotion },
+	{ "scroll of resurrection point",          "S001", 0/IS, 4/IS, true, ICScroll },
+	{ "sword",                                 "WEP1", 0/IS, 7/IS, true, ICWeapon },
+	{ "fine sword",                            "WEP2", 1/IS, 7/IS, true, ICWeapon },
+	{ "mighty sword",                          "WEP3", 2/IS, 7/IS, true, ICWeapon },
+	{ "shining blue sword with engraved gems", "WEP4", 3/IS, 7/IS, true, ICWeapon },
+	{ "shirt",                                 "ARM1", 0/IS, 5/IS, true, ICArmor },
+	{ "armor",                                 "ARM2", 1/IS, 5/IS, true, ICArmor },
+	{ "shiny armor",                           "ARM3", 2/IS, 5/IS, true, ICArmor },
+	{ "plate mail with magic reinforcement",   "ARM4", 3/IS, 5/IS, true, ICArmor },
+	{ "straw hat",                             "HLM1", 0/IS, 0/IS, true, ICHead },
+	{ "helmet",                                "HLM2", 1/IS, 0/IS, true, ICHead },
+	{ "shiny helmet",                          "HLM3", 2/IS, 0/IS, true, ICHead },
+	{ "dragon helmet",                         "HLM4", 3/IS, 0/IS, true, ICHead },
 };
 
 #define NUM_OBJECTS (sizeof Inventory::fsObjectMap / sizeof Inventory::fsObjectMap[0])
@@ -138,8 +138,7 @@ void Inventory::SetAmount(const char *code, int n, unsigned lvl) {
 		fItemList[i].fAmount = n;
 		// Give a sound feed back to the player, but not if this is the initial list sent in the login process.
 		if (n > prevAmount && gMode.Get() != GameMode::WAIT_ACK) {
-			View::gSoundControl.RequestSound(fItemList[i].fInfo->song);
-			Controller::gEntityComponentSystem.fEventManager.emit<AddObjectToPlayer>(fItemList[i].fInfo);
+			Controller::gEntityComponentSystem.fEventManager.emit<AddObjectToPlayerEvt>(fItemList[i].fInfo);
 		}
 		// printf("Inventory::SetAmount code '%s': count %d descr '%s' level %d\n", code, n, fsObjectMap[i].descr, lvl);
 		if (n == 0) {
@@ -160,8 +159,7 @@ void Inventory::SetAmount(const char *code, int n, unsigned lvl) {
 	fItemList[fNumItems].fLevel = lvl;
 	fItemList[fNumItems].fInfo = info;
 	if (gMode.Get() != GameMode::WAIT_ACK) {
-		View::gSoundControl.RequestSound(fItemList[fNumItems].fInfo->song);
-		Controller::gEntityComponentSystem.fEventManager.emit<AddObjectToPlayer>(fItemList[fNumItems].fInfo);
+		Controller::gEntityComponentSystem.fEventManager.emit<AddObjectToPlayerEvt>(fItemList[fNumItems].fInfo);
 	}
 	fNumItems++;
 	return;

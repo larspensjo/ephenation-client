@@ -32,7 +32,7 @@ public:
 	Inventory(void);
 	~Inventory(void);
 	enum InventoryCategory { ICWeapon, ICArmor, ICHead, ICPotion, ICScroll };
-	struct ObjectMap { const char *descr, *code; View::SoundControl::Sound song; float xOffset; float yOffset; bool dependOnLevel; InventoryCategory category; };
+	struct ObjectMap { const char *descr, *code; float xOffset; float yOffset; bool dependOnLevel; InventoryCategory category; };
 	static struct ObjectMap fsObjectMap[];
 	static size_t fsObjectMapSize;
 
@@ -59,9 +59,9 @@ public:
 	virtual void configure(entityx::EventManager &events) override;
 
 	/// Event generated when the player is hit by a monster
-	struct AddObjectToPlayer : public entityx::Event<AddObjectToPlayer> {
+	struct AddObjectToPlayerEvt : public entityx::Event<AddObjectToPlayerEvt> {
 		/// Add a message originating at an object
-		AddObjectToPlayer(ObjectMap *map) : map(map) {}
+		AddObjectToPlayerEvt(ObjectMap *map) : map(map) {}
 
 		ObjectMap *map; /// Describes the object
 	};
