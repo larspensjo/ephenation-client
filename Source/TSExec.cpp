@@ -22,7 +22,7 @@
 #include "SoundControl.h"
 #include "modes.h"
 
-TSExec::TSExec() {
+TSExec::TSExec() : fShutdown(false) {
 	pthread_attr_init(&fAttr);
 }
 
@@ -31,19 +31,28 @@ TSExec::~TSExec() {
 	pthread_attr_destroy(&fAttr);
 }
 
-void TSExec::Init(void) {
+void TSExec::Init(entityx::EventManager &events) {
 	/* For portability, explicitly create threads in a joinable state */
 	pthread_attr_setdetachstate(&fAttr, PTHREAD_CREATE_JOINABLE);
 	pthread_create(&fThread, &fAttr, TSExec::Thread, (void *)this); // This starts the child thread
+	events.subscribe<GameMode::ChangeEvt>(*this);
+}
+
+void TSExec::receive(const GameMode::ChangeEvt &evt) {
+	// There is a process in another thread going, so we can't shut down from here. Just set a flag.
+	if (evt.mode == GameMode::EXIT) {
+		fShutdown = true;
+	}
 }
 
 // This is executed in the sound thread.
 void *TSExec::Thread(void *p) {
-	// TSExec *context = (TSExec *)p;
+	TSExec *context = (TSExec *)p;
 	while(1) {
 		glfwSleep(0.1);
-		if (gMode.Get() == GameMode::EXIT)
+		if (context->fShutdown) {
 			pthread_exit(0);
+		}
 		// printf("TSExec::Thread %d\n", context->fThread);
 		View::gSoundControl.RequestSound(View::SoundControl::STSExec); // This will wakeup this process
 	}

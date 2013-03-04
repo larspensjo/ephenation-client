@@ -18,18 +18,24 @@
 #pragma once
 
 #include <pthread.h>
+#include <entityx/Event.h>
 
-// This class will instantiate a thread scheduler, which is itself a thread. It is a singleton class.
-// Init must be called once.
-class TSExec {
+#include "modes.h"
+
+/// Instantiate a thread scheduler, which is itself a thread. It is a singleton class.
+/// Init must be called once.
+class TSExec : public entityx::Receiver<TSExec> {
 public:
-	void Init(void);
+	void Init(entityx::EventManager &events);
 	static TSExec gTSExec;
+
+	/// Catch game mode change events.
+	void receive(const GameMode::ChangeEvt &evt);
 private:
 	TSExec();
 	~TSExec();
 	pthread_attr_t fAttr;		// Used to setup the child thread
 	pthread_t fThread;			// Identifies the child thread
+	bool fShutdown;
 	static void *Thread(void *p);	// This is the child thread
 };
-

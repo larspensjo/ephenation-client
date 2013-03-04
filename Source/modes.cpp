@@ -18,17 +18,18 @@
 #include <stdio.h>
 
 #include "modes.h"
+#include "entitycomponentsystem.h"
 
 GameMode gMode;
 
 void GameMode::Set(Mode m) {
 	fMode = m;
+	Controller::gEntityComponentSystem.fEventManager.emit<ChangeEvt>(m);
 }
 
 GameMode::Mode GameMode::Get(void) const {
 	return fMode;
 }
 
-GameMode::GameMode() {
-	fMode = INIT;
+GameMode::GameMode() : fMode(INIT) {
 }

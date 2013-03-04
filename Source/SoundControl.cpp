@@ -29,7 +29,6 @@
 #include "SoundControl.h"
 #include "errormanager.h"
 #include "Options.h"
-#include "modes.h"
 #include "player.h"
 
 //#define MUSIC_DEBUG
@@ -1435,7 +1434,7 @@ void *SoundControl::Thread(void *p) {
 			//printf("---END OF TRIG REQUEST---\n");
 		}
 
-		if (ss->fRequestedSound & SoundControl::STerminate || gMode.Get() == GameMode::EXIT) {
+		if (ss->fRequestedSound & SoundControl::STerminate) {
 			// This is not a sound, it is used to request that the child thread terminates.
 			pthread_mutex_unlock(&ss->fMutex);
 			pthread_exit(0);

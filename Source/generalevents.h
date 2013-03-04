@@ -24,7 +24,6 @@
 #include <string>
 
 struct FailureMessageEvt : public entityx::Event<FailureMessageEvt> {
-	/// Add a message originating at an object
 	FailureMessageEvt(const std::string &msg) : msg(msg) {}
 
 	const std::string &msg; /// Describes the object

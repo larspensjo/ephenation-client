@@ -17,14 +17,17 @@
 
 #pragma once
 
+#include <entityx/Event.h>
+
+/// Manage the game mode
 class GameMode {
 public:
 	enum Mode {
 		INIT,		// Starting mode
 		LOGIN,		// Login dialog, wait for player to click Ok.
-		REQ_PASSWD,// There has been a request from the server
+		REQ_PASSWD, // There has been a request from the server
 		PASSWORD,	// Login name has been sent, waiting for password request
-		WAIT_ACK,  // Waiting for login ack from the server (or reject).
+		WAIT_ACK,   // Waiting for login ack from the server (or reject).
 		LOGIN_FAILED,
 		GAME,		// Full game running.
 		CONSTRUCT,	// Like game mode, but change the surroundings.
@@ -39,6 +42,13 @@ public:
 	bool CommunicationAllowed(void) const {
 		return fMode == GAME || fMode == CONSTRUCT || fMode == TELEPORT;
 	}
+
+	/// Event generated everytime the game mode changes
+	struct ChangeEvt : public entityx::Event<ChangeEvt> {
+		ChangeEvt(Mode mode) : mode(mode) {}
+
+		Mode mode; /// The new game mode
+	};
 private:
 	Mode fMode;
 };

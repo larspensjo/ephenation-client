@@ -333,7 +333,7 @@ int main(int argc, char** argv) {
 	glswSetPath("shaders/", ".glsl");
 	ConnectToServer(host, port);
 	View::gSoundControl.Init(Controller::gEntityComponentSystem.fEventManager);
-	TSExec::gTSExec.Init(); // This must be called after initiating gSoundControl.
+	TSExec::gTSExec.Init(Controller::gEntityComponentSystem.fEventManager); // This must be called after initiating gSoundControl.
 
 	if (gDebugOpenGL)
 		printf("Number of threads: %d\n", maxThreads);
