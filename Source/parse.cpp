@@ -56,6 +56,7 @@
 #include "primitives.h"
 #include "SuperChunkManager.h"
 #include "entitycomponentsystem.h"
+#include "SoundControl.h"
 
 #define NELEM(x) (sizeof x / sizeof x[0])
 

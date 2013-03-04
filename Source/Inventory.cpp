@@ -41,9 +41,9 @@
 #include "gamedialog.h"
 #include "msgwindow.h"
 #include "entitycomponentsystem.h"
+#include "generalevents.h"
 
 using namespace std;
-using View::SoundControl;
 
 enum DragAndDropState {
 	DadNone,     // No Drag and drop in progress
@@ -192,7 +192,7 @@ void Inventory::UseObjectFunctionKey(int key) {
 		}
 	}
 
-	View::gSoundControl.RequestTrigSound("FAIL");
+	Controller::gEntityComponentSystem.fEventManager.emit<FailureMessageEvt>("You don't have any object of that type");
 	View::gMsgWindow.Add("You don't have any object of that type");
 }
 

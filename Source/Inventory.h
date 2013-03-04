@@ -20,8 +20,6 @@
 #include <entityx/System.h>
 #include <entityx/Event.h>
 
-#include "SoundControl.h"
-
 class DrawTexture;
 class DrawFont;
 

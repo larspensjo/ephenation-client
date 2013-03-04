@@ -129,6 +129,7 @@
 		<Unit filename="fboflat.h" />
 		<Unit filename="gamedialog.cpp" />
 		<Unit filename="gamedialog.h" />
+		<Unit filename="generalevents.h" />
 		<Unit filename="imageloader.cpp" />
 		<Unit filename="imageloader.h" />
 		<Unit filename="main.cpp" />

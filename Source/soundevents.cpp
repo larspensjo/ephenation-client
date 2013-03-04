@@ -1,4 +1,4 @@
-// Copyright 2012-2013 The Ephenation Authors
+// Copyright 2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -26,6 +26,7 @@
 #include "player.h"
 #include "chunk.h"
 #include "Inventory.h"
+#include "generalevents.h"
 
 using namespace View;
 
@@ -41,6 +42,7 @@ struct SoundEventReceiver : public entityx::Receiver<SoundEventReceiver> {
 		events.subscribe<MonsterHitByPlayerEvt>(*this);
 		events.subscribe<PlayerStatsChangedEvt>(*this);
 		events.subscribe<BlockUpdateEvt>(*this);
+		events.subscribe<FailureMessageEvt>(*this);
 	}
 
 	SoundControl *fSoundControl; // Save pointer to the system that will use the event
@@ -77,6 +79,7 @@ struct SoundEventReceiver : public entityx::Receiver<SoundEventReceiver> {
 	void receive(const NoticeEvt &evt) { fSoundControl->RequestSound(SoundControl::SInterfacePing); }
 	void receive(const PlayerHitByMonsterEvt &evt) { fSoundControl->RequestSound(SoundControl::SMonsterHits); }
 	void receive(const MonsterHitByPlayerEvt &evt) { fSoundControl->RequestSound(SoundControl::SPlayerHits); }
+	void receive(const FailureMessageEvt &evt) { fSoundControl->RequestTrigSound("FAIL"); }
 
 	void receive(const PlayerStatsChangedEvt &evt) {
 		SoundControl::Sound sound = SoundControl::SNone;
