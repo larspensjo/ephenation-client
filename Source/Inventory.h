@@ -69,6 +69,7 @@ private:
 	int fNumItems;
 
 	int IdentifyInv(int x, int y);
+	/// Request the server to use the object.
 	void UseObjectMessage(Item *item, unsigned char cmd);
 };
 

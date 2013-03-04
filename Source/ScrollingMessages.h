@@ -36,7 +36,7 @@ class DrawFont;
 
 namespace View {
 
-/// Implement a list of scrolling messages.
+/// Implement a list of free scrolling messages, anywhere on screen.
 ///
 /// A message is added to a specific coordinate, and will scroll in real time up to the top
 /// of the screen where it will disappear.

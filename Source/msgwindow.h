@@ -16,10 +16,6 @@
 //
 
 #pragma once
-//
-// This is a class that will manage a window with scrolling messages on the screen.
-// It is also called the chat window, as defined by the Rocket main context.
-//
 
 #include <string>
 #include <Rocket/Core.h>
@@ -27,6 +23,8 @@
 
 namespace View {
 
+/// Manage a window with scrolling messages on the screen.
+/// It is also called the chat window, as defined by the Rocket main context.
 class MsgWindow {
 public:
 	MsgWindow(); // Draw the window at x,y.
@@ -34,9 +32,8 @@ public:
 	void Init(Rocket::Core::Element *rocketElement);
 	void SetAlternatePosition(int x, int y, bool enable=true);
 
-	/// Event generated when the player is hit by a monster
+	/// Event generated when a message also should go to a screen position.
 	struct MessageEvt : public entityx::Event<MessageEvt> {
-		/// Add a message originating at an object
 		MessageEvt(int dropx, int dropy, const char *buff) : dropx(dropx), dropy(dropy), buff(buff) {}
 
 		int dropx, dropy;

@@ -166,8 +166,7 @@ void Inventory::SetAmount(const char *code, int n, unsigned lvl) {
 }
 
 void Inventory::UseObjectMessage(Item *item, unsigned char cmd) {
-	// Request the server to use the object. This may change the amount, in which case the server will
-	// send an message update.
+	// This may change the amount, in which case the server will send a message update.
 	unsigned char b[11];
 	b[0] = sizeof b; b[1] = 0; b[2] = cmd;
 	for (int j=0; j<4; j++)
@@ -185,8 +184,7 @@ void Inventory::UseObjectFunctionKey(int key) {
 	// Find if there is such an object in the inventory list
 	for (int i=0; i<fNumItems; i++) {
 		if (fItemList[i].fInfo == info) {
-			// Request the server to use the object. This may change the amount, in which case the server will
-			// send an message update.
+			// This may change the amount, in which case the server will send an message update.
 			this->UseObjectMessage(&fItemList[i], CMD_USE_ITEM);
 			return;
 		}
