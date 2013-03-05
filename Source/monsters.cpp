@@ -119,7 +119,7 @@ boost::shared_ptr<const Object> Monsters::Find(unsigned long id) const {
 	return mon;
 }
 
-void Monsters::RenderMonsters(bool forShadows, bool selectionMode, const View::AnimationModels *animationModels) const {
+void Monsters::RenderMonsters(bool forShadows, const View::AnimationModels *animationModels) const {
 	float sun = 1.0f;
 	if (gPlayer.BelowGround()) {
 		// A gross simplification. If underground, disable all sun.

@@ -350,7 +350,7 @@ void RenderControl::drawMonsters(void) {
 	tm.Start();
 	GLenum windowBuffOpaque[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
 	glDrawBuffers(3, windowBuffOpaque); // Nothing is transparent here, do not produce any blending data on the 4:th render target.
-	Model::gMonsters->RenderMonsters(false, false, &fAnimationModels);
+	Model::gMonsters->RenderMonsters(false, &fAnimationModels);
 	tm.Stop();
 }
 

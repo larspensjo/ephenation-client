@@ -49,7 +49,7 @@ public:
 	// Monster information, identified by 'id'. The coordinates are absolute world coordinates.
 	void SetMonster(unsigned long id, unsigned char hp, unsigned int level, signed long long x, signed long long y, signed long long z, float dir);
 	boost::shared_ptr<const Object> Find(unsigned long id) const; // Get a pointer to a monster, or nullptr if not found.
-	void RenderMonsters(bool forShadows, bool selectionMode, const View::AnimationModels *) const; // draw all near monsters
+	void RenderMonsters(bool forShadows, const View::AnimationModels *) const; // draw all near monsters
 	void RenderMinimap(const glm::mat4 &model, View::HealthBar *hb) const; // draw all near monsters
 
 	// Find the next monster after 'current', based on distance from player.

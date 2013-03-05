@@ -112,7 +112,7 @@ void ShadowRender::Render(int width, int height, const AnimationModels *animatio
 		AnimationShader *anim = AnimationShader::Make();
 		anim->EnableProgram();
 		anim->Shadowmap(true, fProjViewMatrix);
-		Model::gMonsters->RenderMonsters(true, false, animationModels);
+		Model::gMonsters->RenderMonsters(true, animationModels);
 		Model::gPlayer.Draw(anim, fShader.get(), false, animationModels);
 		anim->EnableProgram(); // This is lost in the player drawing for weapons.
 		anim->Shadowmap(false, fProjViewMatrix);
