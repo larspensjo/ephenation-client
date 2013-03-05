@@ -126,7 +126,7 @@ void MainUserInterface::DrawCompassRose(void) const {
 	// glBindTexture(GL_TEXTURE_2D, 0);  // Deprecated
 
 	auto fHealthBar = HealthBar::Make(); // Singleton
-	Model::gMonsters.RenderMinimap(model, fHealthBar);
+	Model::gMonsters->RenderMinimap(model, fHealthBar);
 	Model::gOtherPlayers->RenderMinimap(model, fHealthBar);
 }
 

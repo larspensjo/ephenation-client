@@ -24,6 +24,7 @@
 #include "rendercontrol.h"
 #include "chunk.h"
 #include "UndoOp.h"
+#include <boost/shared_ptr.hpp>
 
 namespace View {
 	class Chunk;
@@ -82,7 +83,7 @@ public:
 	void CreateActivatorMessage(int dx, int dy, int dz, const ChunkCoord &cc);
 	void GetActivator(int &dx, int &dy, int &dz, ChunkCoord &cc); // Get the current activator location
 	void ClearSelection(void); // Clear the selected object
-	void AggroFrom(std::shared_ptr<const Model::Object>); // The player now has aggro from this monster
+	void AggroFrom(boost::shared_ptr<const Model::Object>); // The player now has aggro from this monster
 	enum Calibration { CALIB_EXPOSURE, CALIB_WHITE_POINT, CALIB_AMBIENT, CALIB_NONE };
 	void CalibrateMode(Calibration);
 
@@ -128,7 +129,7 @@ private:
 	/// Call this when a dialog will be showed, to stop movement, etc.
 	/// All key presses will henceforth be forwarded to the dialog, so the player can't stop moving.
 	void ClearForDialog(void);
-	std::shared_ptr<const Model::Object> fSelectedObject; // Pointer to the object (monster, player, ...) that is selected
+	boost::shared_ptr<const Model::Object> fSelectedObject; // Pointer to the object (monster, player, ...) that is selected
 	ChunkShader *fShader;
 	View::BuildingBlocks *fBuildingBlocks;
 	View::HealthBar *fHealthBar;

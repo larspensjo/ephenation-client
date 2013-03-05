@@ -232,7 +232,7 @@ void RenderControl::Resize(GLsizei width, GLsizei height) {
 
 enum { STENCIL_NOSKY = 1 };
 
-void RenderControl::Draw(bool underWater, shared_ptr<const Model::Object> selectedObject, bool showMap, int mapWidth, MainUserInterface *ui) {
+void RenderControl::Draw(bool underWater, boost::shared_ptr<const Model::Object> selectedObject, bool showMap, int mapWidth, MainUserInterface *ui) {
 	if (!Model::gPlayer.BelowGround())
 		this->ComputeShadowMap();
 
@@ -350,7 +350,7 @@ void RenderControl::drawMonsters(void) {
 	tm.Start();
 	GLenum windowBuffOpaque[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
 	glDrawBuffers(3, windowBuffOpaque); // Nothing is transparent here, do not produce any blending data on the 4:th render target.
-	Model::gMonsters.RenderMonsters(false, false, &fAnimationModels);
+	Model::gMonsters->RenderMonsters(false, false, &fAnimationModels);
 	tm.Stop();
 }
 

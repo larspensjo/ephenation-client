@@ -24,6 +24,7 @@
 #include "ScrollingMessages.h"
 #include "Inventory.h"
 #include "otherplayers.h"
+#include "monsters.h"
 
 using namespace Controller;
 
@@ -36,6 +37,8 @@ void EntityComponentSystem::Init() {
 	fSystemManager.add(sm);
 	fSystemManager.add(gInventory);
 	fSystemManager.add(Model::gOtherPlayers);
+	Model::gMonsters->Init(fEntityManager);
+	fSystemManager.add(Model::gMonsters);
 
 	// After all systems have been added, configure them.
 	fSystemManager.configure();
@@ -49,6 +52,7 @@ void EntityComponentSystem::Update() {
 	fSystemManager.update<View::ScrollingMessages>(dt);
 	fSystemManager.update<Inventory>(dt);
 	fSystemManager.update<Model::OtherPlayers>(dt);
+	fSystemManager.update<Model::Monsters>(dt);
 }
 
 EntityComponentSystem Controller::gEntityComponentSystem;

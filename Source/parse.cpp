@@ -269,7 +269,7 @@ void Parse(const unsigned char *b, int n) {
 				float size = Model::Monsters::Size(level)/5.0f; // Value is from 0.2 to 1.0
 				// Coordinates are relative to the player feet, while Model::gPlayer keeps track of the player head.
 				gEntityComponentSystem.fEventManager.emit<MonsterUpdateEvt>(id, hp, level, Model::gPlayer.x+dx, Model::gPlayer.y+dy, Model::gPlayer.z+dz-(int)(PLAYER_HEIGHT*BLOCK_COORD_RES*2), dir, size);
-				Model::gMonsters.SetMonster(id, hp, level, Model::gPlayer.x+dx, Model::gPlayer.y+dy, Model::gPlayer.z+dz-(int)(PLAYER_HEIGHT*BLOCK_COORD_RES*2), dir);
+				Model::gMonsters->SetMonster(id, hp, level, Model::gPlayer.x+dx, Model::gPlayer.y+dy, Model::gPlayer.z+dz-(int)(PLAYER_HEIGHT*BLOCK_COORD_RES*2), dir);
 
 				// Update this monster as a creature in SoundControl
 			}
@@ -372,7 +372,7 @@ void Parse(const unsigned char *b, int n) {
 	case CMD_RESP_AGGRO_FROM_MONSTER:
 		for (int i=1; i<n; i += 4) {
 			unsigned long id = ParseUint32(b+i);
-			Controller::gGameDialog.AggroFrom(Model::gMonsters.Find(id));
+			Controller::gGameDialog.AggroFrom(Model::gMonsters->Find(id));
 		}
 		break;
 	case CMD_UPD_INV:

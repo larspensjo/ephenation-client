@@ -289,7 +289,7 @@ void gameDialog::GetActivator(int &dx, int &dy, int &dz, ChunkCoord &cc) {
 // allow for rebuilding the environment, or attack monsters.
 // TODO: For now, can only use TAB to select objects
 void gameDialog::ClickOnObject(int x, int y) {
-	fSelectedObject = nullptr;
+	this->ClearSelection();
 }
 
 // The player clicked one something. Depending on mode, we either
@@ -633,7 +633,7 @@ void gameDialog::HandleKeyPress(int key) {
 			break;
 		}
 		// Find next monster after the selected one.
-		fSelectedObject = Model::gMonsters.GetNext(fSelectedObject);
+		fSelectedObject = Model::gMonsters->GetNext(fSelectedObject);
 		break;
 	case GLFW_KEY_LALT: // ALT key
 		if (gMode.Get() == GameMode::CONSTRUCT) {
@@ -644,10 +644,9 @@ void gameDialog::HandleKeyPress(int key) {
 		}
 		break;
 	case '1': // Autoattack
-		if (!fSelectedObject) {
-			// Find next monster after the selected one.
-			fSelectedObject = Model::gMonsters.GetNext(nullptr);
-		}
+		// Find next monster after the selected one. Works fine even if nothing is currently selected
+		if (!fSelectedObject)
+			fSelectedObject = Model::gMonsters->GetNext(fSelectedObject);
 		if (fSelectedObject) { // Initiate attack on a monster, if any.
 			unsigned char b[] = { 7, 0, CMD_ATTACK_MONSTER, 0, 0, 0, 0 };
 			EncodeUint32(b+3, fSelectedObject->GetId());
@@ -875,16 +874,15 @@ void gameDialog::HandleKeyRelease(int key) {
 }
 
 void gameDialog::ClearSelection(void) {
-	fSelectedObject = nullptr;
+	fSelectedObject.reset();
 }
 
 // This function is called every time the player gets aggro
-void gameDialog::AggroFrom(shared_ptr<const Model::Object> o) {
+void gameDialog::AggroFrom(boost::shared_ptr<const Model::Object> o) {
 	// It may be called from more than one monster. For now, use the information to set a selection for the first monster.
-	if (fSelectedObject == nullptr)
+	if (!fSelectedObject)
 		fSelectedObject = o;
 }
-
 
 static void revive(void) {
 	char msg[] = "   /revive";
@@ -1146,7 +1144,6 @@ void gameDialog::Update() {
 		glfwGetMousePos(&x, &y);
 		this->ClickOnBlock(x, y);
 	}
-	Model::gMonsters.Cleanup();
 
 	// Determine if player head is under water
 	bl = View::Chunk::GetChunkAndBlock(Model::gPlayer.x, Model::gPlayer.y, Model::gPlayer.z);
@@ -1288,7 +1285,7 @@ void gameDialog::ClearForDialog(void) {
 		gAdminTP = false;
 	}
 	gGameDialog.UpdateRunningStatus(false);
-	fSelectedObject = nullptr;
+	this->ClearSelection();
 }
 
 // Manage the running status of the player

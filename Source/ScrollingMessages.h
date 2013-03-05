@@ -51,7 +51,7 @@ public:
 	virtual void update(entityx::EntityManager &entities, entityx::EventManager &events, double dt) override;
 
 	/// Add a message originating at an object
-	void AddMessage(std::shared_ptr<const Model::Object>, const std::string &, glm::vec3 colorOffset = glm::vec3(0,0,0));
+	void AddMessage(boost::shared_ptr<const Model::Object>, const std::string &, glm::vec3 colorOffset = glm::vec3(0,0,0));
 
 	/// Add a message originating at the player
 	void AddMessagePlayer(const std::string &, glm::vec3 colorOffset = glm::vec3(0,0,0));
