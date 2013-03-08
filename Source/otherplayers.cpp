@@ -43,6 +43,28 @@ using std::endl;
 
 using namespace Model;
 
+struct OneOtherPlayer : public entityx::Component<OneOtherPlayer>, public Object {
+	unsigned long id;
+	signed long long x;
+	signed long long y;
+	signed long long z;
+	bool ingame;
+	unsigned char hp;
+	unsigned int level;
+	float fDir; // The direction the player is facing, in degrees
+	double fUpdateTime; // The last time when this player was updated from the server.
+	double lastTimeMoved; // The time when the monster last moved
+	std::string playerName;
+	virtual unsigned long GetId() const { return this->id; }
+	virtual int GetType() const { return ObjTypePlayer; }
+	virtual int GetLevel() const { return this->level; }
+	virtual glm::vec3 GetPosition() const;
+	virtual glm::vec3 GetSelectionColor() const; // The color to draw on the ground when object selected
+	virtual bool IsDead(void) const { return hp == 0; }
+	virtual void RenderHealthBar(View::HealthBar *, float angle) const;
+	virtual bool InGame(void) const { return ingame;}
+};
+
 // @todo This OtherPlayerEvtReceiver should be combined into the OtherPlayers system?
 struct OtherPlayerEvtReceiver : public entityx::Receiver<OtherPlayerEvtReceiver> {
 	void receive(const OtherPlayerUpdateEvt &evt);
@@ -80,11 +102,11 @@ void OtherPlayers::configure(entityx::EventManager &events) {
 	sEventReceiver.Init(this, events);
 }
 
-glm::vec3 OtherPlayers::OneOtherPlayer::GetSelectionColor() const {
+glm::vec3 OneOtherPlayer::GetSelectionColor() const {
 	return glm::vec3(-0.2f, 0.2f, -0.2f);
 }
 
-glm::vec3 OtherPlayers::OneOtherPlayer::GetPosition() const {
+glm::vec3 OneOtherPlayer::GetPosition() const {
 	ChunkCoord cc;
 	gPlayer.GetChunkCoord(&cc);
 	float dx = (this->x - (signed long long)cc.x*BLOCK_COORD_RES * CHUNK_SIZE)/(float)BLOCK_COORD_RES;
@@ -95,7 +117,14 @@ glm::vec3 OtherPlayers::OneOtherPlayer::GetPosition() const {
 }
 
 void OtherPlayers::SetPlayer(unsigned long id, unsigned char hp, unsigned int level, signed long long x, signed long long y, signed long long z, float dir) {
-	OneOtherPlayer *pl = &fPlayers[id];
+	auto it = fEntities.find(id);
+	if (it == fEntities.end()) {
+		auto ent = fEntityManager->create();
+		ent.assign<OneOtherPlayer>();
+		fEntities[id] = ent;
+	}
+	auto ent = fEntityManager->get(fEntities[id]);
+	boost::shared_ptr<OneOtherPlayer> pl = ent.component<OneOtherPlayer>();
 
 	if (pl->id == 0) {
 		unsigned char b[7];
@@ -124,10 +153,13 @@ void OtherPlayers::SetPlayer(unsigned long id, unsigned char hp, unsigned int le
 }
 
 void OtherPlayers::SetPlayerName(unsigned long uid, const char *name, int adminLevel) {
-	auto it = fPlayers.find(uid);
-	if (it == fPlayers.end())
-		return; // Give it up. Should not happen
-	it->second.playerName = name;
+	auto it = fEntities.find(uid);
+	if (it == fEntities.end()) {
+		return;
+	}
+	auto ent = fEntityManager->get(it->second);
+	boost::shared_ptr<OneOtherPlayer> pl = ent.component<OneOtherPlayer>();
+	pl->playerName = name;
 	// printf("Player %d got name %s and admin level %d\n", uid, it->second.playerName.c_str(), adminLevel);
 }
 
@@ -139,18 +171,19 @@ void OtherPlayers::RenderPlayers(AnimationShader *animShader, bool selectionMode
 	}
 	glBindTexture(GL_TEXTURE_2D, GameTexture::RedColor);
 	animShader->EnableProgram();
-	for (const auto &pl : fPlayers) {
-		if (!pl.second.ingame)
+	boost::shared_ptr<OneOtherPlayer> pl;
+	for (auto entity : fEntityManager->entities_with_components(pl)) {
+		if (!pl->ingame)
 			continue;
-		glm::vec3 pos = pl.second.GetPosition();
+		glm::vec3 pos = pl->GetPosition();
 
 		glm::mat4 model = glm::translate(glm::mat4(1.0f), pos);
-		model = glm::rotate(model, -pl.second.fDir, glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::rotate(model, -pl->fDir, glm::vec3(0.0f, 1.0f, 0.0f));
 		model = glm::scale(model, glm::vec3(PLAYER_HEIGHT, PLAYER_HEIGHT, PLAYER_HEIGHT));
 
-		if (pl.second.IsDead())
-			View::gFrog.DrawAnimation(animShader, model, pl.second.lastTimeMoved, true, 0);
-		else if (pl.second.lastTimeMoved + 0.2 > gCurrentFrameTime)
+		if (pl->IsDead())
+			View::gFrog.DrawAnimation(animShader, model, pl->lastTimeMoved, true, 0);
+		else if (pl->lastTimeMoved + 0.2 > gCurrentFrameTime)
 			View::gFrog.DrawAnimation(animShader, model, 0.0, false, 0);
 		else
 			View::gFrog.DrawAnimation(animShader, model, gCurrentFrameTime-0.22, false, 0); // Offset in time where model is not in a stride.
@@ -162,18 +195,20 @@ void OtherPlayers::RenderPlayers(AnimationShader *animShader, bool selectionMode
 }
 
 void OtherPlayers::RenderPlayerStats(View::HealthBar *hb, float angle) const {
-	for (const auto &pl : fPlayers) {
-		if (pl.second.ingame) {
-			pl.second.RenderHealthBar(hb, angle);
+	boost::shared_ptr<OneOtherPlayer> pl;
+	for (auto entity : fEntityManager->entities_with_components(pl)) {
+		if (pl->ingame) {
+			pl->RenderHealthBar(hb, angle);
 		}
 	}
 }
 
 void OtherPlayers::RenderMinimap(const glm::mat4 &miniMap,View:: HealthBar *hb) const {
-	for (const auto &pl : fPlayers) {
-		if (!pl.second.ingame || pl.second.IsDead())
+	boost::shared_ptr<OneOtherPlayer> pl;
+	for (auto entity : fEntityManager->entities_with_components(pl)) {
+		if (!pl->ingame || pl->IsDead())
 			continue;
-		auto pos = pl.second.GetPosition()/2.0f/float(CHUNK_SIZE);
+		auto pos = pl->GetPosition()/2.0f/float(CHUNK_SIZE);
 		if (pos.x > 1.0f || pos.x < -1.0f || pos.y > 1.0f || pos.y < -1.0f || pos.z > 1.0f || pos.z < -1.0f)
 			continue; // To far away on the radar
 		// printf("OtherPlayers::RenderMinimap (%f, %f, %f)\n", pos.x, pos.y, pos.z);
@@ -183,7 +218,7 @@ void OtherPlayers::RenderMinimap(const glm::mat4 &miniMap,View:: HealthBar *hb) 
 	}
 }
 
-void OtherPlayers::OneOtherPlayer::RenderHealthBar(View::HealthBar *hb, float angle) const {
+void OneOtherPlayer::RenderHealthBar(View::HealthBar *hb, float angle) const {
 	auto pos = this->GetPosition() + glm::vec3(0.0f, 1.0f, 0.0f);
 	glm::mat4 model = glm::translate(glm::mat4(1.0f), pos);
 	model = glm::rotate(model, -angle, glm::vec3(0.0f, 1.0f, 0.0f)); // Need to counter the rotation from the view matrix
@@ -219,15 +254,18 @@ void OtherPlayers::OneOtherPlayer::RenderHealthBar(View::HealthBar *hb, float an
 // least every 4s. So players that have not had any update in 5s are stale, and should be removed.
 void OtherPlayers::Cleanup(void) {
 	double now = gCurrentFrameTime;
-	for (auto &pl : fPlayers) {
-		if (!pl.second.ingame)
+	boost::shared_ptr<OneOtherPlayer> pl;
+	for (auto entity : fEntityManager->entities_with_components(pl)) {
+		if (!pl->ingame)
 			continue;
-		if (now - pl.second.fUpdateTime < 5.0)
+		if (now - pl->fUpdateTime < 5.0)
 			continue;
-		// printf("Found stale player: index %d, id %ld\n", i, pl.second.id);
-		pl.second.ingame = false;
+		// printf("Found stale player: index %d, id %ld\n", i, pl->id);
+		pl->ingame = false;
 
 		// Remove this players as a creature in SoundControl
-		View::gSoundControl.RemoveCreatureSound(View::SoundControl::SOtherPlayer, pl.second.id);
+		View::gSoundControl.RemoveCreatureSound(View::SoundControl::SOtherPlayer, pl->id);
+		fEntities.erase(pl->id);
+		fEntityManager->destroy(entity);
 	}
 }

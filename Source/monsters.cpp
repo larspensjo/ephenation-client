@@ -79,6 +79,7 @@ void Monsters::update(entityx::EntityManager &entities, entityx::EventManager &e
 	this->Cleanup();
 }
 
+// @todo Should be done through event
 void Monsters::SetMonster(unsigned long id, unsigned char hp, unsigned int level, signed long long x, signed long long y, signed long long z, float dir) {
 	auto it = fEntities.find(id);
 	if (it == fEntities.end()) {

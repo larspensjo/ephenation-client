@@ -36,6 +36,7 @@ void EntityComponentSystem::Init() {
 	auto sm = boost::make_shared<View::ScrollingMessages>(fEntityManager);
 	fSystemManager.add(sm);
 	fSystemManager.add(gInventory);
+	Model::gOtherPlayers->Init(fEntityManager);
 	fSystemManager.add(Model::gOtherPlayers);
 	Model::gMonsters->Init(fEntityManager);
 	fSystemManager.add(Model::gMonsters);

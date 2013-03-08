@@ -35,37 +35,20 @@ namespace Model {
 /// The client will only know of near players, which may need to be drawn.
 class OtherPlayers : public entityx::System<OtherPlayers> {
 private:
-	struct OneOtherPlayer : public Object {
-		unsigned long id;
-		signed long long x;
-		signed long long y;
-		signed long long z;
-		bool ingame;
-		unsigned char hp;
-		unsigned int level;
-		float fDir; // The direction the player is facing, in degrees
-		double fUpdateTime; // The last time when this player was updated from the server.
-		double lastTimeMoved; // The time when the monster last moved
-		std::string playerName;
-		virtual unsigned long GetId() const { return this->id; }
-		virtual int GetType() const { return ObjTypePlayer; }
-		virtual int GetLevel() const { return this->level; }
-		virtual glm::vec3 GetPosition() const;
-		virtual glm::vec3 GetSelectionColor() const; // The color to draw on the ground when object selected
-		virtual bool IsDead(void) const { return hp == 0; }
-		virtual void RenderHealthBar(View::HealthBar *, float angle) const;
-		virtual bool InGame(void) const { return ingame;}
-	};
-	std::map<unsigned long, OneOtherPlayer> fPlayers;
+	/// A convenience map, to make it easy to find the monster entity for the id given by the server
+	std::map<unsigned long, entityx::Entity::Id > fEntities;
+	entityx::EntityManager *fEntityManager; /// @todo Change this into a reference instead of a pointer
 	void Cleanup(void);
 public:
+	OtherPlayers() : fEntityManager(0) {}
+	void Init(entityx::EntityManager &em) { fEntityManager = &em; }
 	void SetPlayer(unsigned long id, unsigned char hp, unsigned int level, signed long long x, signed long long y, signed long long z, float dir);
 	void SetPlayerName(unsigned long uid, const char *name, int adminLevel);
-	// draw all near players.
-	// 'selectionMode' is true when actively selecting players.
+	/// draw all near players.
+	/// 'selectionMode' is true when actively selecting players.
 	void RenderPlayers(AnimationShader *animShader, bool selectionMode) const;
-	// Render the stats of players. This has to be done after the deferred shader.
-	// 'angle' is the viewing angle, used to draw player data rotated correctly to the camera.
+	/// Render the stats of players. This has to be done after the deferred shader.
+	/// 'angle' is the viewing angle, used to draw player data rotated correctly to the camera.
 	void RenderPlayerStats(View::HealthBar *hb, float angle) const;
 	void RenderMinimap(const glm::mat4 &miniMap, View::HealthBar *hb) const;
 	virtual void configure(entityx::EventManager &events) override;
