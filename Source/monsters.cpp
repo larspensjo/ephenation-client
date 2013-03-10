@@ -40,7 +40,7 @@ using namespace Model;
 boost::shared_ptr<Monsters> Model::gMonsters = boost::make_shared<Monsters>();
 
 /// @todo The goal is to only use entities, and not inherit from the Object.
-struct OneMonster : public entityx::Component<OneMonster>, public Model::Object {
+struct OneMonster : entityx::Component<OneMonster>, public Model::Object {
 	unsigned long id; // The server unique ID of the monster.
 	// The coordinate in the server system.
 	signed long long x;
@@ -75,6 +75,15 @@ glm::vec3 OneMonster::GetPosition() const {
 	return glm::vec3(dx, dz, -dy);
 }
 
+glm::vec3 GetRelativePosition(boost::shared_ptr<const PositionCmp> pos) {
+	ChunkCoord cc;
+	gPlayer.GetChunkCoord(&cc);
+	float dx = (pos->x - (signed long long)cc.x*BLOCK_COORD_RES * CHUNK_SIZE)/float(BLOCK_COORD_RES);
+	float dy = (pos->y - (signed long long)cc.y*BLOCK_COORD_RES * CHUNK_SIZE)/float(BLOCK_COORD_RES);
+	float dz = (pos->z - (signed long long)cc.z*BLOCK_COORD_RES * CHUNK_SIZE)/float(BLOCK_COORD_RES);
+	return glm::vec3(dx, dz, -dy);
+}
+
 void Monsters::update(entityx::EntityManager &entities, entityx::EventManager &events, double dt) {
 	this->Cleanup();
 }
@@ -85,10 +94,12 @@ void Monsters::SetMonster(unsigned long id, unsigned char hp, unsigned int level
 	if (it == fEntities.end()) {
 		auto ent = fEntityManager->create();
 		ent.assign<OneMonster>();
+		ent.assign<PositionCmp>();
 		fEntities[id] = ent;
 	}
 	auto ent = fEntityManager->get(fEntities[id]);
-	boost::shared_ptr<OneMonster> mon = ent.component<OneMonster>();
+	auto mon = ent.component<OneMonster>();
+	auto pos = ent.component<PositionCmp>();
 
 	// printf("Store info for monster %d in slot %d (max: %d, fMaxIndex %d)\n", id, i, max, fMaxIndex);
 	if (hp != mon->hp)
@@ -98,6 +109,9 @@ void Monsters::SetMonster(unsigned long id, unsigned char hp, unsigned int level
 	if (mon->x != x || mon->y != y || mon->z != z) {
 		if (!mon->IsDead()) {
 			// TODO: There is a server bug that will make dead monsters move.
+			pos->x = x;
+			pos->y = y;
+			pos->z = z;
 			mon->x = x;
 			mon->y = y;
 			mon->z = z;
@@ -127,9 +141,10 @@ void Monsters::RenderMonsters(bool forShadows, const View::AnimationModels *anim
 		sun = 0.0f;
 	}
 	boost::shared_ptr<OneMonster> mon;
-	for (auto entity : fEntityManager->entities_with_components(mon)) {
+	boost::shared_ptr<PositionCmp> posCmp;
+	for (auto entity : fEntityManager->entities_with_components(mon, posCmp)) {
 		unsigned int level = mon->level;
-		glm::vec3 pos = mon->GetPosition();
+		glm::vec3 pos = GetRelativePosition(posCmp);
 		float size = this->Size(level);
 
 		glm::mat4 model = glm::translate(glm::mat4(1.0f), pos);
@@ -161,6 +176,7 @@ void Monsters::RenderMonsters(bool forShadows, const View::AnimationModels *anim
 			continue;
 		if (!gOptions.fDynamicShadows || sun == 0)
 			gShadows.Add(pos.x, pos.y, pos.z, size);
+		(void)entity; // Unused variable
 	}
 }
 
@@ -178,6 +194,7 @@ void Monsters::RenderMinimap(const glm::mat4 &miniMap, View::HealthBar *hb) cons
 		glm::mat4 model = glm::translate(miniMap, glm::vec3(0.5f-dx, 0.5f-dy, 0.0f));
 		model = glm::scale(model, glm::vec3(0.05f, 0.05f, 0.05f));
 		hb->DrawSquare(model, 1.0f, 0.4f, 0.4f, 1.0f);
+		(void)entity; // Unused variable
 	}
 }
 
@@ -211,16 +228,23 @@ void OneMonster::RenderHealthBar(View::HealthBar *hb, float angle) const {
 
 boost::shared_ptr<const Object> Monsters::GetNext(boost::shared_ptr<const Object> current) const {
 	float curr_z = 0.0f;
-	if (current)
-		curr_z = glm::project(current->GetPosition(), gViewMatrix, gProjectionMatrix, gViewport).z;
+	if (current) {
+		auto it = fEntities.find(current->GetId());
+		if (it != fEntities.end()) {
+			auto ent = fEntityManager->get(it->second);
+			auto posCmp = ent.component<PositionCmp>();
+			curr_z = glm::project(GetRelativePosition(posCmp), gViewMatrix, gProjectionMatrix, gViewport).z;
+		}
+	}
 	boost::shared_ptr<const Object> best, first;
 	float best_z = 1.0f, first_z = 1.0f;
 	boost::shared_ptr<OneMonster> mon;
-	for (auto entity : fEntityManager->entities_with_components(mon)) {
+	boost::shared_ptr<PositionCmp> posCmp;
+	for (auto entity : fEntityManager->entities_with_components(mon, posCmp)) {
 		if (current == mon || mon->IsDead())
 			continue; // No monster at this slot, or it was the one already selected
 		// Transform monster coordinates into projection coordinates
-		glm::vec3 pos = mon->GetPosition();
+		glm::vec3 pos = GetRelativePosition(posCmp);
 		glm::vec3 screen = glm::project(pos, gViewMatrix, gProjectionMatrix, gViewport);
 		if (screen.z < 0.0f || screen.z > 1.0f)
 			continue;
@@ -238,6 +262,7 @@ boost::shared_ptr<const Object> Monsters::GetNext(boost::shared_ptr<const Object
 			continue; // Not as good as best found yet
 		best = mon;
 		best_z = screen.z;
+		(void)entity; // Unused variable
 	}
 	// If there was no monster after the current selection, choose the one nearest to the player.
 	if (first == 0)

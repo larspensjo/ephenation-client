@@ -17,6 +17,8 @@
 
 #pragma once
 
+#include <entityx/Entity.h>
+
 namespace View {
 	class HealthBar;
 }
@@ -36,6 +38,13 @@ public:
 	virtual bool InGame(void) const = 0; // Return true if this object is still i the game.
 	virtual ~Object() {} // Virtual destructor needed for inherited classes
 private:
+};
+
+struct PositionCmp : entityx::Component<PositionCmp> {
+	PositionCmp(signed long long x=0, signed long long y=0, signed long long z=0) : x(x), y(y), z(z) {}
+	signed long long x;
+	signed long long y;
+	signed long long z;
 };
 
 }

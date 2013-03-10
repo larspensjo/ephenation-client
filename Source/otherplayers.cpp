@@ -190,6 +190,7 @@ void OtherPlayers::RenderPlayers(AnimationShader *animShader, bool selectionMode
 
 		if (!gOptions.fDynamicShadows || sun == 0)
 			gShadows.Add(pos.x, pos.y, pos.z, 1.5f);
+		(void)entity; // Unused
 	}
 	animShader->DisableProgram();
 }
@@ -200,6 +201,7 @@ void OtherPlayers::RenderPlayerStats(View::HealthBar *hb, float angle) const {
 		if (pl->ingame) {
 			pl->RenderHealthBar(hb, angle);
 		}
+		(void)entity; // Unused
 	}
 }
 
@@ -215,6 +217,7 @@ void OtherPlayers::RenderMinimap(const glm::mat4 &miniMap,View:: HealthBar *hb) 
 		glm::mat4 model = glm::translate(miniMap, 0.5f-pos);
 		model = glm::scale(model, glm::vec3(0.05f, 0.05f, 0.05f));
 		hb->DrawSquare(model, 0.0f, 1.0f, 1.0f, 1.0f);
+		(void)entity; // Unused
 	}
 }
 
