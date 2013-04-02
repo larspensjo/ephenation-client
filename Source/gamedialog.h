@@ -18,13 +18,13 @@
 #pragma once
 
 #include <memory>
+#include <entityx/Entity.h>
 
 #include "ui/mainuserinterface.h"
 #include "ui/RocketGui.h"
 #include "rendercontrol.h"
 #include "chunk.h"
 #include "UndoOp.h"
-#include <boost/shared_ptr.hpp>
 
 namespace View {
 	class Chunk;
@@ -59,13 +59,16 @@ namespace Controller {
 /// - manage construction of activator blocks
 /// @todo This class has grown to be rather fat. A refactoring is needed.
 /// @todo Some things here remains from old, and is not really part of the controller class.
-class gameDialog {
+class gameDialog : public entityx::Receiver<gameDialog> {
 public:
 	gameDialog();
 	/// Render many things.
 	/// @todo Nothing should be renderred from here, it should all go into the View of the MVC.
 	void render(bool hideGUI);
-	void init();
+	void Init(entityx::EventManager &events);
+
+	/// Catch the event when an entity is destroyed
+	void receive(const entityx::EntityDestroyedEvent &evt);
 	~gameDialog();
 	void handleMouse(int button, int action);
 	/// Polled to update various states
@@ -83,7 +86,7 @@ public:
 	void CreateActivatorMessage(int dx, int dy, int dz, const ChunkCoord &cc);
 	void GetActivator(int &dx, int &dy, int &dz, ChunkCoord &cc); // Get the current activator location
 	void ClearSelection(void); // Clear the selected object
-	void AggroFrom(boost::shared_ptr<const Model::Object>); // The player now has aggro from this monster
+	void AggroFrom(entityx::Entity); // The player now has aggro from this monster
 	enum Calibration { CALIB_EXPOSURE, CALIB_WHITE_POINT, CALIB_AMBIENT, CALIB_NONE };
 	void CalibrateMode(Calibration);
 
@@ -129,7 +132,7 @@ private:
 	/// Call this when a dialog will be showed, to stop movement, etc.
 	/// All key presses will henceforth be forwarded to the dialog, so the player can't stop moving.
 	void ClearForDialog(void);
-	boost::shared_ptr<const Model::Object> fSelectedObject; // Pointer to the object (monster, player, ...) that is selected
+	entityx::Entity fSelectedObject; // Pointer to the monster that is selected
 	ChunkShader *fShader;
 	View::BuildingBlocks *fBuildingBlocks;
 	View::HealthBar *fHealthBar;

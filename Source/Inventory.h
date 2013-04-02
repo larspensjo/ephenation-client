@@ -74,4 +74,4 @@ private:
 };
 
 // Only one inventory instance is needed.
-extern boost::shared_ptr<Inventory> gInventory;
+extern std::shared_ptr<Inventory> gInventory;

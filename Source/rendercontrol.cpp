@@ -232,7 +232,7 @@ void RenderControl::Resize(GLsizei width, GLsizei height) {
 
 enum { STENCIL_NOSKY = 1 };
 
-void RenderControl::Draw(bool underWater, boost::shared_ptr<const Model::Object> selectedObject, bool showMap, int mapWidth, MainUserInterface *ui) {
+void RenderControl::Draw(bool underWater, entityx::Entity selectedObject, bool showMap, int mapWidth, MainUserInterface *ui) {
 	if (!Model::gPlayer.BelowGround())
 		this->ComputeShadowMap();
 
@@ -283,8 +283,8 @@ void RenderControl::Draw(bool underWater, boost::shared_ptr<const Model::Object>
 	// Do some post processing
 	if (!underWater)
 		drawPointShadows();
-	if (selectedObject)
-		drawSelection(selectedObject->GetPosition());
+	if (selectedObject.valid())
+		drawSelection(Model::GetRelativePosition(selectedObject));
 	drawColoredLights();
 	if (!underWater)
 		drawLocalFog(); // This should come late in the drawing process, as we don't want light effects added to fog

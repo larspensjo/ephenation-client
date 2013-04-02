@@ -36,7 +36,7 @@ namespace Model {
 class OtherPlayers : public entityx::System<OtherPlayers> {
 private:
 	/// A convenience map, to make it easy to find the monster entity for the id given by the server
-	std::map<unsigned long, entityx::Entity::Id > fEntities;
+	std::map<unsigned long, entityx::Entity > fEntities;
 	entityx::EntityManager *fEntityManager; /// @todo Change this into a reference instead of a pointer
 	void Cleanup(void);
 public:
@@ -55,7 +55,7 @@ public:
 	virtual void update(entityx::EntityManager &entities, entityx::EventManager &events, double dt) override;
 };
 
-extern boost::shared_ptr<OtherPlayers> gOtherPlayers;
+extern std::shared_ptr<OtherPlayers> gOtherPlayers;
 
 }
 

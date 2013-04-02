@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -32,50 +32,26 @@
 #include "manageanimation.h"
 #include "Options.h"
 #include "animationmodels.h"
+#include "parse.h"
+#include "connection.h"
 
 using std::stringstream;
 
 using namespace Model;
-
-boost::shared_ptr<Monsters> Model::gMonsters = boost::make_shared<Monsters>();
+std::shared_ptr<Monsters> Model::gMonsters = std::make_shared<Monsters>();
 
 /// @todo The goal is to only use entities, and not inherit from the Object.
-struct OneMonster : entityx::Component<OneMonster>, public Model::Object {
+struct OneMonster : entityx::Component<OneMonster> {
 	unsigned long id; // The server unique ID of the monster.
-	// The coordinate in the server system.
-	signed long long x;
-	signed long long y;
-	signed long long z;
 	unsigned int level;
 	unsigned char hp;
 	unsigned char prevHp; // Used to measure delta hp for presentation
 	float fDir; // The direction, in degrees, the monster is facing
 	double fUpdateTime; // The last time when this monster was updated from the server.
 	double lastTimeMoved; // The time when the monster last moved
-	virtual unsigned long GetId() const { return this->id; }
-	virtual int GetType() const { return ObjTypeMonster; }
-	virtual int GetLevel() const { return this->level; }
-	virtual glm::vec3 GetPosition() const; // Get relative coordinate compared to player chunk, in OpenGL coordinates
-	virtual glm::vec3 GetSelectionColor() const; // The color to draw on the ground when object selected
-	virtual bool IsDead(void) const { return hp == 0; }
-	virtual void RenderHealthBar(View::HealthBar *, float angle) const;
-	virtual bool InGame(void) const { return true;}
 };
 
-glm::vec3 OneMonster::GetSelectionColor() const {
-	return glm::vec3(0.2f, -0.2f, -0.2f);
-}
-
-glm::vec3 OneMonster::GetPosition() const {
-	ChunkCoord cc;
-	gPlayer.GetChunkCoord(&cc);
-	float dx = (this->x - (signed long long)cc.x*BLOCK_COORD_RES * CHUNK_SIZE)/float(BLOCK_COORD_RES);
-	float dy = (this->y - (signed long long)cc.y*BLOCK_COORD_RES * CHUNK_SIZE)/float(BLOCK_COORD_RES);
-	float dz = (this->z - (signed long long)cc.z*BLOCK_COORD_RES * CHUNK_SIZE)/float(BLOCK_COORD_RES);
-	return glm::vec3(dx, dz, -dy);
-}
-
-glm::vec3 GetRelativePosition(boost::shared_ptr<const PositionCmp> pos) {
+static glm::vec3 GetRelativePositionFromCmp(std::shared_ptr<const PositionCmp> pos) {
 	ChunkCoord cc;
 	gPlayer.GetChunkCoord(&cc);
 	float dx = (pos->x - (signed long long)cc.x*BLOCK_COORD_RES * CHUNK_SIZE)/float(BLOCK_COORD_RES);
@@ -92,29 +68,30 @@ void Monsters::update(entityx::EntityManager &entities, entityx::EventManager &e
 void Monsters::SetMonster(unsigned long id, unsigned char hp, unsigned int level, signed long long x, signed long long y, signed long long z, float dir) {
 	auto it = fEntities.find(id);
 	if (it == fEntities.end()) {
-		auto ent = fEntityManager->create();
-		ent.assign<OneMonster>();
-		ent.assign<PositionCmp>();
-		fEntities[id] = ent;
+		auto tmpEnt = fEntityManager->create();
+		tmpEnt.assign<OneMonster>();
+		tmpEnt.assign<PositionCmp>();
+		fEntities[id] = tmpEnt;
+		printf("Created entity %d for monster %d\n", tmpEnt.id(), id);
 	}
-	auto ent = fEntityManager->get(fEntities[id]);
+	auto ent = fEntities[id];
+	assert(ent.valid());
 	auto mon = ent.component<OneMonster>();
+	assert(mon != nullptr);
 	auto pos = ent.component<PositionCmp>();
+	assert(pos != nullptr);
 
 	// printf("Store info for monster %d in slot %d (max: %d, fMaxIndex %d)\n", id, i, max, fMaxIndex);
 	if (hp != mon->hp)
 		mon->prevHp = mon->hp; // New hp value, remember the old
 	if (mon->prevHp < hp)
 		mon->prevHp = hp;			   // The hp was increasing, only remember old if it was bigger
-	if (mon->x != x || mon->y != y || mon->z != z) {
-		if (!mon->IsDead()) {
+	if (pos->x != x || pos->y != y || pos->z != z) {
+		if (mon->hp > 0) {
 			// TODO: There is a server bug that will make dead monsters move.
 			pos->x = x;
 			pos->y = y;
 			pos->z = z;
-			mon->x = x;
-			mon->y = y;
-			mon->z = z;
 			mon->lastTimeMoved = gCurrentFrameTime;
 		}
 	}
@@ -125,13 +102,11 @@ void Monsters::SetMonster(unsigned long id, unsigned char hp, unsigned int level
 	mon->fUpdateTime = gCurrentFrameTime;
 }
 
-boost::shared_ptr<const Object> Monsters::Find(unsigned long id) const {
+entityx::Entity Monsters::Find(unsigned long id) const {
 	auto it = fEntities.find(id);
 	if (it == fEntities.end())
-		return boost::shared_ptr<Object>();
-	auto ent = fEntityManager->get(it->second);
-	boost::shared_ptr<OneMonster> mon = ent.component<OneMonster>();
-	return mon;
+		return entityx::Entity(); // This will be an invalid entity.
+	return it->second;
 }
 
 void Monsters::RenderMonsters(bool forShadows, const View::AnimationModels *animationModels) const {
@@ -140,11 +115,11 @@ void Monsters::RenderMonsters(bool forShadows, const View::AnimationModels *anim
 		// A gross simplification. If underground, disable all sun.
 		sun = 0.0f;
 	}
-	boost::shared_ptr<OneMonster> mon;
-	boost::shared_ptr<PositionCmp> posCmp;
+	std::shared_ptr<OneMonster> mon;
+	std::shared_ptr<PositionCmp> posCmp;
 	for (auto entity : fEntityManager->entities_with_components(mon, posCmp)) {
 		unsigned int level = mon->level;
-		glm::vec3 pos = GetRelativePosition(posCmp);
+		auto pos = GetRelativePositionFromCmp(posCmp);
 		float size = this->Size(level);
 
 		glm::mat4 model = glm::translate(glm::mat4(1.0f), pos);
@@ -165,7 +140,7 @@ void Monsters::RenderMonsters(bool forShadows, const View::AnimationModels *anim
 			break;
 		}
 
-		if (mon->IsDead())
+		if (mon->hp == 0)
 			animationModels->Draw(anim, model, mon->lastTimeMoved, true);
 		else if (mon->lastTimeMoved + 0.2 > gCurrentFrameTime)
 			animationModels->Draw(anim, model, 0.0, false);
@@ -181,13 +156,14 @@ void Monsters::RenderMonsters(bool forShadows, const View::AnimationModels *anim
 }
 
 void Monsters::RenderMinimap(const glm::mat4 &miniMap, View::HealthBar *hb) const {
-	boost::shared_ptr<OneMonster> mon;
-	for (auto entity : fEntityManager->entities_with_components(mon)) {
-		if (mon->IsDead())
+	std::shared_ptr<OneMonster> mon;
+	std::shared_ptr<PositionCmp> pos;
+	for (auto entity : fEntityManager->entities_with_components(mon, pos)) {
+		if (mon->hp == 0)
 			continue;
-		float dx = float(gPlayer.x - mon->x)/CHUNK_SIZE/BLOCK_COORD_RES/2;
-		float dy = float(gPlayer.y - mon->y)/CHUNK_SIZE/BLOCK_COORD_RES/2;
-		float dz = float(gPlayer.z - mon->z)/CHUNK_SIZE/BLOCK_COORD_RES/2;
+		float dx = float(gPlayer.x - pos->x)/CHUNK_SIZE/BLOCK_COORD_RES/2;
+		float dy = float(gPlayer.y - pos->y)/CHUNK_SIZE/BLOCK_COORD_RES/2;
+		float dz = float(gPlayer.z - pos->z)/CHUNK_SIZE/BLOCK_COORD_RES/2;
 		if (dx > 1.0f || dx < -1.0f || dy > 1.0f || dy < -1.0f || dz > 1.0f || dz < -1.0f)
 			continue; // To far away on the radar
 		// printf("Monsters::RenderMinimap (%.2f, %.2f, %.2f)\n", dx, dy, dz);
@@ -198,13 +174,97 @@ void Monsters::RenderMinimap(const glm::mat4 &miniMap, View::HealthBar *hb) cons
 	}
 }
 
-void OneMonster::RenderHealthBar(View::HealthBar *hb, float angle) const {
-	auto pos = this->GetPosition() + glm::vec3(0.0f, 3.0f, 0.0f);
+entityx::Entity Monsters::GetNext(entityx::Entity current) const {
+	float curr_z = 0.0f;
+	if (current.valid()) {
+		auto posCmp = current.component<PositionCmp>();
+		if (posCmp)
+			curr_z = glm::project(GetRelativePositionFromCmp(posCmp), gViewMatrix, gProjectionMatrix, gViewport).z;
+	}
+	entityx::Entity best, first;
+	float best_z = 1.0f, first_z = 1.0f;
+	std::shared_ptr<OneMonster> mon;
+	std::shared_ptr<PositionCmp> posCmp;
+	for (auto entity : fEntityManager->entities_with_components(mon, posCmp)) {
+		if (current == entity || mon->hp == 0)
+			continue; // No monster at this slot, or it was the one already selected
+		// Transform monster coordinates into projection coordinates
+		glm::vec3 pos = GetRelativePositionFromCmp(posCmp);
+		glm::vec3 screen = glm::project(pos, gViewMatrix, gProjectionMatrix, gViewport);
+		if (screen.z < 0.0f || screen.z > 1.0f)
+			continue;
+		// TODO: This test will actually cut off some monsters that are partly visible.
+		if (screen.x < 0.0f || screen.x > gViewport[2] || screen.y < 0.0f || screen.y > gViewport[3])
+			continue;
+		if (screen.z < first_z) {
+			first_z = screen.z;
+			first = entity;
+		}
+		// Found a monster visible in the projection. Check the distance
+		if (screen.z < curr_z)
+			continue; // Before the current monster
+		if (screen.z > best_z)
+			continue; // Not as good as best found yet
+		best = entity;
+		best_z = screen.z;
+	}
+	// If there was no monster after the current selection, choose the one nearest to the player.
+	if (!first.valid())
+		first = current;
+	if (!best.valid())
+		best = first;
+	return best;
+}
+
+// The server doesn't explicitely tell the client when a monster shall be removed. The reason for this is
+// that the client only gets information about changed monsters that are near enough. The way to go is to
+// measure the time that the monster was last updated, and discard the monster after 5s. The server will normally
+// only update monster information every time there is a change, but there will also be a complete update at
+// least every 4s. So monsters that have not had any update in 5s are stale, and should be removed.
+void Monsters::Cleanup(void) {
+	double now = gCurrentFrameTime;
+	std::shared_ptr<OneMonster> mon;
+	for (auto entity : fEntityManager->entities_with_components(mon)) {
+		if (now - mon->fUpdateTime > 5.0) {
+			// Remove this monster as a creature in SoundControl
+			// printf("Remove monster %d\n", mon->id);
+			View::gSoundControl.RemoveCreatureSound(View::SoundControl::SMonster, mon->id);
+			fEntities.erase(mon->id);
+			entity.destroy();
+		}
+	}
+}
+
+bool Monsters::Dead(entityx::Entity ent) {
+	if (ent.valid()) { // Initiate attack on a monster, if any.
+		auto monsterCmp = ent.component<OneMonster>();
+		assert(monsterCmp != nullptr);
+		return monsterCmp->hp == 0;
+	}
+	return true;
+}
+
+void Monsters::Attack(entityx::Entity ent) {
+	if (ent.valid()) { // Initiate attack on a monster, if any.
+		auto monsterCmp = ent.component<OneMonster>();
+		assert(monsterCmp != nullptr);
+		unsigned char b[] = { 7, 0, CMD_ATTACK_MONSTER, 0, 0, 0, 0 };
+		EncodeUint32(b+3, monsterCmp->id);
+		SendMsg(b, sizeof b);
+	}
+}
+
+void Monsters::RenderHealthbar(entityx::Entity ent, View::HealthBar *bar, float angle) {
+	if (!ent.valid())
+		return;
+	auto monsterCmp = ent.component<OneMonster>();
+	assert(monsterCmp != nullptr);
+	auto pos = GetRelativePosition(ent) + glm::vec3(0.0f, 3.0f, 0.0f);
 	glm::mat4 model = glm::translate(glm::mat4(1.0f), pos);
 	model = glm::rotate(model, -angle, glm::vec3(0.0f, 1.0f, 0.0f)); // Need to counter the rotation from the view matrix
 	model = glm::scale(model, glm::vec3(2.0f, 0.2f, 1.0f));
-	float dmg = (this->prevHp - this->hp)/255.0f;
-	hb->DrawHealth(gProjectionMatrix, gViewMatrix * model, this->hp/255.0f, dmg, true);
+	float dmg = (monsterCmp->prevHp - monsterCmp->hp)/255.0f;
+	bar->DrawHealth(gProjectionMatrix, gViewMatrix * model, monsterCmp->hp/255.0f, dmg, true);
 
 	glm::vec4 v = glm::vec4(pos, 1.0f);
 	v.y += 4.0f; // Just above
@@ -217,78 +277,13 @@ void OneMonster::RenderHealthBar(View::HealthBar *hb, float angle) const {
 	gDrawFont.UpdateProjection();
 	gDrawFont.SetOffset(gViewport[2] * (screen.x+1)/2, gViewport[3] * (1-screen.y)/2);
 	stringstream ss;
-	ss << "Level " << this->level;
+	ss << "Level " << monsterCmp->level;
 	glm::vec3 offs(0.0f, -0.8f, -0.8f);
-	if (this->level+3 < gPlayer.fLevel)
+	if (monsterCmp->level+3 < gPlayer.fLevel)
 		offs = glm::vec3(-0.2f, -0.2f, -0.2f); // Gray
-	else if (this->level < gPlayer.fLevel+3)
+	else if (monsterCmp->level < gPlayer.fLevel+3)
 		offs = glm::vec3(-0.8f, -0.0f, -0.8f); // Green
 	gDrawFont.vsfl.renderAndDiscard(ss.str(), offs);
-}
-
-boost::shared_ptr<const Object> Monsters::GetNext(boost::shared_ptr<const Object> current) const {
-	float curr_z = 0.0f;
-	if (current) {
-		auto it = fEntities.find(current->GetId());
-		if (it != fEntities.end()) {
-			auto ent = fEntityManager->get(it->second);
-			auto posCmp = ent.component<PositionCmp>();
-			curr_z = glm::project(GetRelativePosition(posCmp), gViewMatrix, gProjectionMatrix, gViewport).z;
-		}
-	}
-	boost::shared_ptr<const Object> best, first;
-	float best_z = 1.0f, first_z = 1.0f;
-	boost::shared_ptr<OneMonster> mon;
-	boost::shared_ptr<PositionCmp> posCmp;
-	for (auto entity : fEntityManager->entities_with_components(mon, posCmp)) {
-		if (current == mon || mon->IsDead())
-			continue; // No monster at this slot, or it was the one already selected
-		// Transform monster coordinates into projection coordinates
-		glm::vec3 pos = GetRelativePosition(posCmp);
-		glm::vec3 screen = glm::project(pos, gViewMatrix, gProjectionMatrix, gViewport);
-		if (screen.z < 0.0f || screen.z > 1.0f)
-			continue;
-		// TODO: This test will actually cut off some monsters that are partly visible.
-		if (screen.x < 0.0f || screen.x > gViewport[2] || screen.y < 0.0f || screen.y > gViewport[3])
-			continue;
-		if (screen.z < first_z) {
-			first_z = screen.z;
-			first = mon;
-		}
-		// Found a monster visible in the projection. Check the distance
-		if (screen.z < curr_z)
-			continue; // Before the current monster
-		if (screen.z > best_z)
-			continue; // Not as good as best found yet
-		best = mon;
-		best_z = screen.z;
-		(void)entity; // Unused variable
-	}
-	// If there was no monster after the current selection, choose the one nearest to the player.
-	if (first == 0)
-		first = current;
-	if (best == 0)
-		best = first;
-	return best;
-}
-
-// The server doesn't explicitely tell the client when a monster shall be removed. The reason for this is
-// that the client only gets information about changed monsters that are near enough. The way to go is to
-// measure the time that the monster was last updated, and discard the monster after 5s. The server will normally
-// only update monster information every time there is a change, but there will also be a complete update at
-// least every 4s. So monsters that have not had any update in 5s are stale, and should be removed.
-void Monsters::Cleanup(void) {
-	double now = gCurrentFrameTime;
-	boost::shared_ptr<OneMonster> mon;
-	for (auto entity : fEntityManager->entities_with_components(mon)) {
-		if (now - mon->fUpdateTime > 5.0) {
-			// Remove this monster as a creature in SoundControl
-			// printf("Remove monster %d\n", mon->id);
-			View::gSoundControl.RemoveCreatureSound(View::SoundControl::SMonster, mon->id);
-			fEntities.erase(mon->id);
-			fEntityManager->destroy(entity);
-		}
-	}
 }
 
 float Monsters::Size(unsigned int level) {

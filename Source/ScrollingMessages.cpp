@@ -36,12 +36,12 @@ using namespace View;
 
 /// The message component added to entities used for scrolling texts.
 struct MessageCmp : entityx::Component<MessageCmp> {
-	MessageCmp(boost::shared_ptr<const Model::Object> o, glm::vec3 colorOffset, shared_ptr<DrawFont> font, const std::string &str) :
+	MessageCmp(std::shared_ptr<const Model::Object> o, glm::vec3 colorOffset, shared_ptr<DrawFont> font, const std::string &str) :
 		o(o), startTime(glfwGetTime()), colorOffset(colorOffset), font(font), id(font->vsfl.genSentence())
 	{
 		font->vsfl.prepareSentence(id, str);
 	}
-	boost::shared_ptr<const Model::Object> o; // A reference that is allocated and deallocated elsewhere
+	std::shared_ptr<const Model::Object> o; // A reference that is allocated and deallocated elsewhere
 	double startTime;
 	glm::vec3 colorOffset;
 	shared_ptr<DrawFont> font;
@@ -93,7 +93,7 @@ ScrollingMessages::ScrollingMessages(entityx::EntityManager &es) : fEntities(es)
 	fFont->Init("textures/gabriola18");
 }
 
-void ScrollingMessages::AddMessage(boost::shared_ptr<const Model::Object> o, const std::string &str, glm::vec3 colorOffset) {
+void ScrollingMessages::AddMessage(std::shared_ptr<const Model::Object> o, const std::string &str, glm::vec3 colorOffset) {
 	auto entity = fEntities.create();
 	entity.assign<MessageCmp>(o, colorOffset, fFont, str);
 }
@@ -101,12 +101,12 @@ void ScrollingMessages::AddMessage(boost::shared_ptr<const Model::Object> o, con
 void ScrollingMessages::AddMessagePlayer(const std::string &str, glm::vec3 colorOffset) {
 	// Some tricks are used here. A shared_ptr to an object is required, but gPlayer is a global variable.
 	auto DummyDelete = [](Model::Player*) {}; // This is a deleter function that will do nothing.
-	auto pl = boost::shared_ptr<Model::Player>(&Model::gPlayer, DummyDelete); // Create a shared_ptr to gPlayer, which must not be deleted
+	auto pl = std::shared_ptr<Model::Player>(&Model::gPlayer, DummyDelete); // Create a shared_ptr to gPlayer, which must not be deleted
 	this->AddMessage(pl, str, colorOffset);
 }
 
 void ScrollingMessages::AddMessage(float x, float y, const std::string &str, glm::vec3 colorOffset) {
-	auto so = boost::make_shared<ScreenObject>();
+	auto so = std::make_shared<ScreenObject>();
 	so->fScreen.x = x;
 	so->fScreen.y = y;
 	auto entity = fEntities.create();
@@ -117,12 +117,12 @@ void ScrollingMessages::update(entityx::EntityManager &, entityx::EventManager &
 	fFont->Enable();
 	fFont->UpdateProjection();
 
-	boost::shared_ptr<MessageCmp> message;
+	std::shared_ptr<MessageCmp> message;
 	for (auto entity : fEntities.entities_with_components(message)) {
 		// Do things with entity ID, position and direction.
 		double delta = gCurrentFrameTime - message->startTime;
 		if (delta > 6.0) {
-			fEntities.destroy(entity);
+			entity.destroy();
 			continue;
 		}
 		glm::vec3 pos = message->o->GetPosition();
@@ -155,10 +155,10 @@ void ScrollMsgReceiver::receive(const PlayerHitByMonsterEvt &evt) {
 
 void ScrollMsgReceiver::receive(const MonsterHitByPlayerEvt &evt) {
 	auto m = Model::gMonsters->Find(evt.id);
-	if (m != nullptr) {
+	if (m.valid()) {
 		std::stringstream ss;
 		ss << int(evt.damage*100+0.5f);
-		fScrollingMessages->AddMessage(m, ss.str(), glm::vec3(0, 0, -1)); // Use yellow color for monster
+		// fScrollingMessages->AddMessage(m, ss.str(), glm::vec3(0, 0, -1)); // Use yellow color for monster
 	}
 	// @todo Add an Entity instead.
 }

@@ -59,7 +59,7 @@ struct Inventory::Item {
 	unsigned long fAmount;
 };
 
-boost::shared_ptr<Inventory> gInventory = boost::make_shared<Inventory>();
+std::shared_ptr<Inventory> gInventory = std::make_shared<Inventory>();
 
 #define IS 8.0f // The icon scaling. Has to be a float.
 

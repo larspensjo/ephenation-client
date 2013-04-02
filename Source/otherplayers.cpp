@@ -92,7 +92,7 @@ void OtherPlayerEvtReceiver::receive(const OtherPlayerNameEvt &evt) {
 	fOtherPlayers->SetPlayerName(evt.id, evt.name, evt.adminLevel);
 }
 
-boost::shared_ptr<OtherPlayers> Model::gOtherPlayers = boost::make_shared<OtherPlayers>();
+std::shared_ptr<OtherPlayers> Model::gOtherPlayers = std::make_shared<OtherPlayers>();
 
 void OtherPlayers::update(entityx::EntityManager &entities, entityx::EventManager &events, double dt) {
 	this->Cleanup();
@@ -123,8 +123,8 @@ void OtherPlayers::SetPlayer(unsigned long id, unsigned char hp, unsigned int le
 		ent.assign<OneOtherPlayer>();
 		fEntities[id] = ent;
 	}
-	auto ent = fEntityManager->get(fEntities[id]);
-	boost::shared_ptr<OneOtherPlayer> pl = ent.component<OneOtherPlayer>();
+	auto ent = fEntities[id];
+	std::shared_ptr<OneOtherPlayer> pl = ent.component<OneOtherPlayer>();
 
 	if (pl->id == 0) {
 		unsigned char b[7];
@@ -157,8 +157,8 @@ void OtherPlayers::SetPlayerName(unsigned long uid, const char *name, int adminL
 	if (it == fEntities.end()) {
 		return;
 	}
-	auto ent = fEntityManager->get(it->second);
-	boost::shared_ptr<OneOtherPlayer> pl = ent.component<OneOtherPlayer>();
+	auto ent = it->second;
+	auto pl = ent.component<OneOtherPlayer>();
 	pl->playerName = name;
 	// printf("Player %d got name %s and admin level %d\n", uid, it->second.playerName.c_str(), adminLevel);
 }
@@ -171,7 +171,7 @@ void OtherPlayers::RenderPlayers(AnimationShader *animShader, bool selectionMode
 	}
 	glBindTexture(GL_TEXTURE_2D, GameTexture::RedColor);
 	animShader->EnableProgram();
-	boost::shared_ptr<OneOtherPlayer> pl;
+	std::shared_ptr<OneOtherPlayer> pl;
 	for (auto entity : fEntityManager->entities_with_components(pl)) {
 		if (!pl->ingame)
 			continue;
@@ -196,7 +196,7 @@ void OtherPlayers::RenderPlayers(AnimationShader *animShader, bool selectionMode
 }
 
 void OtherPlayers::RenderPlayerStats(View::HealthBar *hb, float angle) const {
-	boost::shared_ptr<OneOtherPlayer> pl;
+	std::shared_ptr<OneOtherPlayer> pl;
 	for (auto entity : fEntityManager->entities_with_components(pl)) {
 		if (pl->ingame) {
 			pl->RenderHealthBar(hb, angle);
@@ -206,7 +206,7 @@ void OtherPlayers::RenderPlayerStats(View::HealthBar *hb, float angle) const {
 }
 
 void OtherPlayers::RenderMinimap(const glm::mat4 &miniMap,View:: HealthBar *hb) const {
-	boost::shared_ptr<OneOtherPlayer> pl;
+	std::shared_ptr<OneOtherPlayer> pl;
 	for (auto entity : fEntityManager->entities_with_components(pl)) {
 		if (!pl->ingame || pl->IsDead())
 			continue;
@@ -257,7 +257,7 @@ void OneOtherPlayer::RenderHealthBar(View::HealthBar *hb, float angle) const {
 // least every 4s. So players that have not had any update in 5s are stale, and should be removed.
 void OtherPlayers::Cleanup(void) {
 	double now = gCurrentFrameTime;
-	boost::shared_ptr<OneOtherPlayer> pl;
+	std::shared_ptr<OneOtherPlayer> pl;
 	for (auto entity : fEntityManager->entities_with_components(pl)) {
 		if (!pl->ingame)
 			continue;
@@ -269,6 +269,6 @@ void OtherPlayers::Cleanup(void) {
 		// Remove this players as a creature in SoundControl
 		View::gSoundControl.RemoveCreatureSound(View::SoundControl::SOtherPlayer, pl->id);
 		fEntities.erase(pl->id);
-		fEntityManager->destroy(entity);
+		entity.destroy();
 	}
 }

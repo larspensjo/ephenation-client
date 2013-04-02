@@ -33,7 +33,7 @@ EntityComponentSystem::EntityComponentSystem() : fEntityManager(fEventManager), 
 }
 
 void EntityComponentSystem::Init() {
-	auto sm = boost::make_shared<View::ScrollingMessages>(fEntityManager);
+	auto sm = std::make_shared<View::ScrollingMessages>(fEntityManager);
 	fSystemManager.add(sm);
 	fSystemManager.add(gInventory);
 	Model::gOtherPlayers->Init(fEntityManager);

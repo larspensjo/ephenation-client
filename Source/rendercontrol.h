@@ -20,6 +20,7 @@
 #include <memory>
 #include <glm/glm.hpp>
 #include <boost/shared_ptr.hpp>
+#include <entityx/Entity.h>
 
 #include "animationmodels.h"
 
@@ -71,7 +72,7 @@ public:
 	/// @param showMap True if a map shall be shown
 	/// @param mapWidth Pixels in width used when drawing a map
 	/// @param ui Pointer to the user interface
-	void Draw(bool underWater, boost::shared_ptr<const Model::Object> selectedObject, bool showMap, int mapWidth, MainUserInterface *ui);
+	void Draw(bool underWater, entityx::Entity selectedObject, bool showMap, int mapWidth, MainUserInterface *ui);
 
 	/// Update the camera position.
 	/// Check if camera position is inside a wall.

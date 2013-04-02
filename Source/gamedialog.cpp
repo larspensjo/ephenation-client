@@ -645,13 +645,10 @@ void gameDialog::HandleKeyPress(int key) {
 		break;
 	case '1': // Autoattack
 		// Find next monster after the selected one. Works fine even if nothing is currently selected
-		if (!fSelectedObject)
+		if (!fSelectedObject.valid())
 			fSelectedObject = Model::gMonsters->GetNext(fSelectedObject);
-		if (fSelectedObject) { // Initiate attack on a monster, if any.
-			unsigned char b[] = { 7, 0, CMD_ATTACK_MONSTER, 0, 0, 0, 0 };
-			EncodeUint32(b+3, fSelectedObject->GetId());
-			SendMsg(b, sizeof b);
-		}
+		if (fSelectedObject.valid())
+			Model::Monsters::Attack(fSelectedObject);
 		break;
 	case '2': { // Heal self
 		unsigned char b[] = { 0x04, 0x00, CMD_PLAYER_ACTION, UserActionHeal };
@@ -874,13 +871,14 @@ void gameDialog::HandleKeyRelease(int key) {
 }
 
 void gameDialog::ClearSelection(void) {
-	fSelectedObject.reset();
+	if (fSelectedObject.valid())
+		fSelectedObject.destroy();
 }
 
 // This function is called every time the player gets aggro
-void gameDialog::AggroFrom(boost::shared_ptr<const Model::Object> o) {
+void gameDialog::AggroFrom(entityx::Entity o) {
 	// It may be called from more than one monster. For now, use the information to set a selection for the first monster.
-	if (!fSelectedObject)
+	if (!fSelectedObject.valid())
 		fSelectedObject = o;
 }
 
@@ -907,7 +905,7 @@ void gameDialog::render(bool hideGUI) {
 	gFogs.Clear();
 
 	// Can't select objects that are dead
-	if (fSelectedObject && fSelectedObject->IsDead())
+	if (fSelectedObject.valid() && Model::Monsters::Dead(fSelectedObject))
 		ClearSelection();
 	glm::vec3 playerOffset = Model::gPlayer.GetOffsetToChunk();
 
@@ -960,8 +958,8 @@ void gameDialog::render(bool hideGUI) {
 		map->Draw(alpha);
 	}
 
-	if (fSelectedObject) {
-		fSelectedObject->RenderHealthBar(fHealthBar, _angleHor);
+	if (fSelectedObject.valid()) {
+		Model::Monsters::RenderHealthbar(fSelectedObject, fHealthBar, _angleHor);
 	}
 	Model::gOtherPlayers->RenderPlayerStats(fHealthBar, _angleHor);
 	bool newHealing = false;
@@ -1053,7 +1051,8 @@ static int GLFWCALL CloseWindowCallback(void) {
 	return GL_FALSE;          // Prevent the window from closing immediately.
 }
 
-void gameDialog::init(void) {
+void gameDialog::Init(entityx::EventManager &events) {
+	events.subscribe<entityx::EntityDestroyedEvent>(*this);
 	fRenderControl.Init(8);
 
 	Model::ChunkBlocks::InitStatic();
@@ -1469,4 +1468,9 @@ void gameDialog::CalibrateMode(Calibration cal) {
 
 void gameDialog::ClearInputRedirect(void) {
 	fCurrentRocketContextInput = 0;
+}
+
+void gameDialog::receive(const entityx::EntityDestroyedEvent &evt) {
+	if (evt.entity == fSelectedObject)
+		fSelectedObject.invalidate();
 }

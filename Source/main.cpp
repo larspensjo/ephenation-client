@@ -400,7 +400,7 @@ int main(int argc, char** argv) {
 	gUniformBuffer.Init();
 	gDrawFont.Init("textures/georgia12"); // Must be done before gGameDialog.
 	GameTexture::Init();
-	Controller::gGameDialog.init();
+	Controller::gGameDialog.Init(Controller::gEntityComponentSystem.fEventManager);
 	ChunkShader *shader = ChunkShader::Make();
 	gChunkShaderPicking.Init();
 	Tree::InitStatic();

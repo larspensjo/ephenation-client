@@ -18,6 +18,7 @@
 #pragma once
 
 #include <entityx/Entity.h>
+#include <glm/glm.hpp>
 
 namespace View {
 	class HealthBar;
@@ -46,5 +47,8 @@ struct PositionCmp : entityx::Component<PositionCmp> {
 	signed long long y;
 	signed long long z;
 };
+
+/// Get the relative position in the current chunk.
+extern glm::vec3 GetRelativePosition(entityx::Entity entity);
 
 }
