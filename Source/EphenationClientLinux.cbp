@@ -33,10 +33,10 @@
 		</Build>
 		<Compiler>
 			<Add option="-Wall" />
+			<Add directory="contrib/libovr/include" />
 		</Compiler>
 		<Linker>
 			<Add library="GL" />
-			<Add library="X11" />
 			<Add library="GLEW" />
 			<Add library="assimp" />
 			<Add library="glfw" />
@@ -50,6 +50,10 @@
 			<Add library="RocketCore" />
 			<Add library="RocketDebugger" />
 			<Add library="RocketControls" />
+			<Add library="contrib/libovr/lib/Debug/libovr.a" />
+			<Add library="X11" />
+			<Add library="udev" />
+			<Add library="Xinerama" />
 		</Linker>
 		<Unit filename="BuildingBlocks.cpp" />
 		<Unit filename="BuildingBlocks.h" />
@@ -71,6 +75,8 @@
 		<Unit filename="Makefile.mingw" />
 		<Unit filename="Map.cpp" />
 		<Unit filename="Map.h" />
+		<Unit filename="OculusRift.cpp" />
+		<Unit filename="OculusRift.h" />
 		<Unit filename="Options.cpp" />
 		<Unit filename="Options.h" />
 		<Unit filename="ScrollingMessages.cpp" />
@@ -256,13 +262,17 @@
 		<Unit filename="worsttime.cpp" />
 		<Unit filename="worsttime.h" />
 		<Extensions>
-			<code_completion />
+			<code_completion>
+				<search_path add="contrib/glm" />
+				<search_path add="contrib/libovr/include" />
+				<search_path add="contrib" />
+			</code_completion>
 			<debugger>
-				<remote_debugging target="Debug">
-					<options conn_type="0" serial_baud="115200" additional_cmds_before="set args --debug  --singlethread --testuser localhost" />
-				</remote_debugging>
 				<remote_debugging target="Release">
 					<options conn_type="0" serial_baud="115200" additional_cmds_before="set args --debug" />
+				</remote_debugging>
+				<remote_debugging target="Debug">
+					<options conn_type="0" serial_baud="115200" additional_cmds_before="set args --debug  --singlethread --testuser localhost" />
 				</remote_debugging>
 			</debugger>
 			<envvars />
