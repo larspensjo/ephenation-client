@@ -266,13 +266,14 @@
 				<search_path add="contrib/glm" />
 				<search_path add="contrib/libovr/include" />
 				<search_path add="contrib" />
+				<search_path add="contrib/libovr/Src" />
 			</code_completion>
 			<debugger>
+				<remote_debugging target="Debug">
+					<options conn_type="0" serial_baud="115200" additional_cmds_before="set args --debug  --singlethread server1.ephenation.net" />
+				</remote_debugging>
 				<remote_debugging target="Release">
 					<options conn_type="0" serial_baud="115200" additional_cmds_before="set args --debug" />
-				</remote_debugging>
-				<remote_debugging target="Debug">
-					<options conn_type="0" serial_baud="115200" additional_cmds_before="set args --debug  --singlethread --testuser localhost" />
 				</remote_debugging>
 			</debugger>
 			<envvars />

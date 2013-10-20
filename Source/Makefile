@@ -67,6 +67,9 @@ MY_LIBS   = -lGL\
 	-lRocketDebugger\
 	-lRocketControls\
 	contrib/libovr/lib/Release/libovr.a\
+	-lX11\
+	-ludev\
+	-lXinerama\
 	$(PROFILING)
 
 # The pre-processor options used by the cpp (man cpp for more).
