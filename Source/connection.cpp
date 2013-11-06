@@ -138,7 +138,7 @@ static int ReadBytes(int offset, int n) {
 #ifdef WIN32
 			ss << "ListenForServerMessages1: Error " << errno << " length " << count;
 #else
-			ss << "ListenForServerMessages1: Error " << errno << "(" << sys_errlist[errno] << "), length" << count;
+			ss << "ListenForServerMessages1: Error " << errno << "(" << strerror(errno) << "), length" << count;
 #endif
 		}
 		count = 0; // This is not a fatal error, need to try again
