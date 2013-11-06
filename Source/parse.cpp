@@ -147,7 +147,7 @@ static void ParseChunk(const unsigned char *b, int n) {
 	nc->fChecksumTestNeeded = false;
 	nc->fChecksumTimeout = 0.0;
 	nc->fOwner = ParseUint32(b+8);
-	nc->fCompressedChunk.reset(new(unsigned char[n-24]));
+	nc->fCompressedChunk.reset(new unsigned char[n-24]);
 	memcpy(nc->fCompressedChunk.get(), b+24, n-24);
 	nc->compressSize = n-24;
 	gChunkProcess.AddTaskNewChunk(std::move(nc));
