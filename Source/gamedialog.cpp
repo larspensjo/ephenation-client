@@ -451,7 +451,6 @@ glm::mat4 gProjectionMatrix;
 void gameDialog::handleResize(int w, int h) {
 	fScreenWidth = w;
 	fScreenHeight = h;
-	fUpdateProjection = true;
 }
 
 static void handleCharacter(int character, int action) {
@@ -764,7 +763,6 @@ void gameDialog::HandleKeyPress(int key) {
 			maxRenderDistance = 5.0f;
 		if (maxRenderDistance < 40.0f && !gDebugOpenGL)
 			maxRenderDistance = 40.0f;
-		fUpdateProjection = true;
 		gMsgWindow.Add("Viewing distance: %f m", maxRenderDistance/2);
 		break;
 	}
@@ -791,7 +789,6 @@ void gameDialog::HandleKeyPress(int key) {
 		maxRenderDistance += 5.0;
 		if (maxRenderDistance > MAXRENDERDISTANCE)
 			maxRenderDistance = MAXRENDERDISTANCE;
-		fUpdateProjection = true;
 		gMsgWindow.Add("Viewing distance: %f m", maxRenderDistance/2);
 		break;
 	}
@@ -888,41 +885,12 @@ static void revive(void) {
 glm::mat4 gViewMatrix; // Store the view matrix
 
 void gameDialog::render(bool hideGUI) {
-	if (fUpdateProjection) {
-		fUpdateProjection = false;
-		float aspectRatio = (float)fScreenWidth / (float)fScreenHeight;
-		// In full screen mode, the window is stretched to match the desktop mode.
-		if (gOptions.fFullScreen)
-			aspectRatio = gDesktopAspectRatio;
-		gProjectionMatrix  = glm::perspective(renderViewAngle, aspectRatio, 0.01f, maxRenderDistance);  // Create our perspective projection matrix
-		glViewport(0, 0, fScreenWidth, fScreenHeight);
-		gViewport = glm::vec4(0.0f, 0.0f, (float)fScreenWidth, (float)fScreenHeight );
-		fRenderControl.Resize(fScreenWidth, fScreenHeight);
-		fMainUserInterface.Resize(fScreenWidth, fScreenHeight);
-		Options::sfSave.fWindowWidth = gViewport[2]; // This will override any option dialog changes.
-		Options::sfSave.fWindowHeight = gViewport[3];
-	}
-
-	if (fCurrentRocketContextInput == 0 && gMode.Get() == GameMode::LOGIN) {
-		// Login mode, get the login dialog.
-		fCurrentRocketContextInput = fMainUserInterface.GetRocketContext();
-		gDialogFactory.Make(fCurrentRocketContextInput, "login.rml");
-	}
-
 	static bool first = true; // Only true first time function is called
 	// Clear list of special effects. It will be added again automatically every frame
 	gShadows.Clear();
 	gFogs.Clear();
 
-	// Can't select objects that are dead
-	if (fSelectedObject && fSelectedObject->IsDead())
-		ClearSelection();
-	glm::vec3 playerOffset = Model::gPlayer.GetOffsetToChunk();
-
-	gDrawnQuads = 0;
-	gNumDraw = 0;
-
-	gUniformBuffer.Update();
+	gUniformBuffer.Update(); // Transfer settings to the graphics card
 
 	if (first) {
 		gBillboard.InitializeTextures(fShader);
@@ -1021,6 +989,7 @@ void gameDialog::render(bool hideGUI) {
 					uid = cb->fOwner;
 			}
 			// This will override other the other text
+			glm::vec3 playerOffset = Model::gPlayer.GetOffsetToChunk();
 			sprintf(buff, "Construction mode, Chunk (%d,%d,%d) offset: %.1f,%.1f,%.1f, coord(%.1f,%.1f,%.1f) owner %d",
 			        cc.x, cc.y, cc.z, playerOffset.x, playerOffset.y, playerOffset.z, Model::gPlayer.x/100.0, Model::gPlayer.y/100.0, Model::gPlayer.z/100.0, uid);
 		}
@@ -1051,7 +1020,6 @@ void gameDialog::render(bool hideGUI) {
 			prevPrint = gCurrentFrameTime;
 		}
 	}
-	View::Chunk::DegradeBusyList_gl();
 	first = false;
 }
 
@@ -1211,6 +1179,33 @@ void gameDialog::Update() {
 
 	this->UpdateEffect();
 	gChunkProcess.Poll(); // Update all results
+
+	gDrawnQuads = 0;
+	gNumDraw = 0;
+
+	if (fCurrentRocketContextInput == 0 && gMode.Get() == GameMode::LOGIN) {
+		// Login mode, get the login dialog.
+		fCurrentRocketContextInput = fMainUserInterface.GetRocketContext();
+		gDialogFactory.Make(fCurrentRocketContextInput, "login.rml");
+	}
+
+	// Can't select objects that are dead
+	if (fSelectedObject && fSelectedObject->IsDead())
+		ClearSelection();
+}
+
+void gameDialog::UpdateProjection() {
+	float aspectRatio = (float)fScreenWidth / (float)fScreenHeight;
+	// In full screen mode, the window is stretched to match the desktop mode.
+	if (gOptions.fFullScreen)
+		aspectRatio = gDesktopAspectRatio;
+	gProjectionMatrix  = glm::perspective(renderViewAngle, aspectRatio, 0.01f, maxRenderDistance);  // Create our perspective projection matrix
+	glViewport(0, 0, fScreenWidth, fScreenHeight);
+	gViewport = glm::vec4(0.0f, 0.0f, (float)fScreenWidth, (float)fScreenHeight );
+	fRenderControl.Resize(fScreenWidth, fScreenHeight);
+	fMainUserInterface.Resize(fScreenWidth, fScreenHeight);
+	Options::sfSave.fWindowWidth = gViewport[2]; // This will override any option dialog changes.
+	Options::sfSave.fWindowHeight = gViewport[3];
 }
 
 void gameDialog::SetMessage(const char *str) {
@@ -1344,7 +1339,6 @@ void gameDialog::CancelCurrentEffect(void) {
 	case EFFECT_ZOOM1: // Fall through
 	case EFFECT_ZOOM2:
 		renderViewAngle = defaultRenderViewAngle;   // Restore default view angle
-		fUpdateProjection = true;
 		break;
 	}
 	fCurrentEffect = EFFECT_NONE;
@@ -1454,7 +1448,6 @@ void gameDialog::UpdateEffect(void) {
 		if (deltaStart < sZoomTime) {
 			// Active for a limited time.
 			renderViewAngle = defaultRenderViewAngle - deltaStart*50.0/sZoomTime;
-			fUpdateProjection = true;
 		} else {
 			this->CancelCurrentEffect();
 		}
@@ -1464,7 +1457,6 @@ void gameDialog::UpdateEffect(void) {
 		if (deltaStart < 0) {
 			// Active for a limited time.
 			renderViewAngle = defaultRenderViewAngle - deltaStart*50.0/sZoomTime;
-			fUpdateProjection = true;
 		} else {
 			this->CancelCurrentEffect();
 		}

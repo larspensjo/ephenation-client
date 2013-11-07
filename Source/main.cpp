@@ -446,7 +446,9 @@ int main(int argc, char** argv) {
 		}
 
 		Controller::gGameDialog.Update();
+		Controller::gGameDialog.UpdateProjection();
 		Controller::gGameDialog.render(sHideGUI);
+		View::Chunk::DegradeBusyList_gl();
 
 		glfwSwapBuffers();
 
@@ -461,8 +463,8 @@ int main(int argc, char** argv) {
 	unsigned char b[] = { 0x03, 0x00, CMD_QUIT };
 	SendMsg(b, sizeof b);
 
-	// The logout acknowledge from the server may take sime time. Take the opportunity to
-	// halt the process pool.ss
+	// The logout acknowledge from the server may take some time. Take the opportunity to
+	// halt the process pool.
 	gChunkProcess.RequestTerminate();
 	glswShutdown();
 

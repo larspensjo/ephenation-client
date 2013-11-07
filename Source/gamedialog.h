@@ -62,8 +62,10 @@ class gameDialog {
 public:
 	gameDialog();
 	/// Render many things.
-	/// @todo Nothing should be renderred from here, it should all go into the View of the MVC.
+	/// @todo Nothing should be rendered from here, it should all go into the View of the MVC.
 	void render(bool hideGUI);
+	/// Compute the projection matrix.
+	void UpdateProjection();
 	void init();
 	~gameDialog();
 	void handleMouse(int button, int action);
@@ -105,6 +107,7 @@ public:
 	void ClearInputRedirect(void);
 
 private:
+
 	Effect fCurrentEffect;
 	bool fMovingFwd;
 	bool fMovingBwd;
@@ -148,7 +151,6 @@ private:
 	//
 	// TODO: The following parameters should be moved to the View.
 	//
-	bool fUpdateProjection = true;
 	int fScreenWidth = 0, fScreenHeight = 0;
 	int fMapWidth;
 
