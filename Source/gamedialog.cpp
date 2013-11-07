@@ -449,17 +449,9 @@ void handleResize(int w, int h) {
 
 glm::mat4 gProjectionMatrix;
 void gameDialog::handleResize(int w, int h) {
-	float aspectRatio = (float)w / (float)h;
-	// In full screen mode, the window is stretched to match the desktop mode.
-	if (gOptions.fFullScreen)
-		aspectRatio = gDesktopAspectRatio;
-	gProjectionMatrix  = glm::perspective(renderViewAngle, aspectRatio, 0.01f, maxRenderDistance);  // Create our perspective projection matrix
-	glViewport(0, 0, w, h);
-	gViewport = glm::vec4(0.0f, 0.0f, (float)w, (float)h );
-	fRenderControl.Resize(w, h);
-	fMainUserInterface.Resize(w, h);
-	Options::sfSave.fWindowWidth = gViewport[2]; // This will override any option dialog changes.
-	Options::sfSave.fWindowHeight = gViewport[3];
+	fScreenWidth = w;
+	fScreenHeight = h;
+	fUpdateProjection = true;
 }
 
 static void handleCharacter(int character, int action) {
@@ -772,7 +764,7 @@ void gameDialog::HandleKeyPress(int key) {
 			maxRenderDistance = 5.0f;
 		if (maxRenderDistance < 40.0f && !gDebugOpenGL)
 			maxRenderDistance = 40.0f;
-		handleResize(gViewport[2], gViewport[3]);
+		fUpdateProjection = true;
 		gMsgWindow.Add("Viewing distance: %f m", maxRenderDistance/2);
 		break;
 	}
@@ -799,7 +791,7 @@ void gameDialog::HandleKeyPress(int key) {
 		maxRenderDistance += 5.0;
 		if (maxRenderDistance > MAXRENDERDISTANCE)
 			maxRenderDistance = MAXRENDERDISTANCE;
-		handleResize(gViewport[2], gViewport[3]);
+		fUpdateProjection = true;
 		gMsgWindow.Add("Viewing distance: %f m", maxRenderDistance/2);
 		break;
 	}
@@ -885,7 +877,6 @@ void gameDialog::AggroFrom(shared_ptr<const Model::Object> o) {
 		fSelectedObject = o;
 }
 
-
 static void revive(void) {
 	char msg[] = "   /revive";
 	msg[0] = 10;
@@ -897,6 +888,21 @@ static void revive(void) {
 glm::mat4 gViewMatrix; // Store the view matrix
 
 void gameDialog::render(bool hideGUI) {
+	if (fUpdateProjection) {
+		fUpdateProjection = false;
+		float aspectRatio = (float)fScreenWidth / (float)fScreenHeight;
+		// In full screen mode, the window is stretched to match the desktop mode.
+		if (gOptions.fFullScreen)
+			aspectRatio = gDesktopAspectRatio;
+		gProjectionMatrix  = glm::perspective(renderViewAngle, aspectRatio, 0.01f, maxRenderDistance);  // Create our perspective projection matrix
+		glViewport(0, 0, fScreenWidth, fScreenHeight);
+		gViewport = glm::vec4(0.0f, 0.0f, (float)fScreenWidth, (float)fScreenHeight );
+		fRenderControl.Resize(fScreenWidth, fScreenHeight);
+		fMainUserInterface.Resize(fScreenWidth, fScreenHeight);
+		Options::sfSave.fWindowWidth = gViewport[2]; // This will override any option dialog changes.
+		Options::sfSave.fWindowHeight = gViewport[3];
+	}
+
 	if (fCurrentRocketContextInput == 0 && gMode.Get() == GameMode::LOGIN) {
 		// Login mode, get the login dialog.
 		fCurrentRocketContextInput = fMainUserInterface.GetRocketContext();
@@ -1075,15 +1081,13 @@ void gameDialog::init(void) {
 	fShader = ChunkShader::Make(); // Singleton
 	fHealthBar = View::HealthBar::Make(); // Singleton
 	fDrawTexture = DrawTexture::Make();
-	glGetFloatv(GL_VIEWPORT, &gViewport[0]);
-	handleResize(gViewport[2], gViewport[3]); // Simple way to set the projection
 	glEnable(GL_DEPTH_TEST);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); //Set the blend function
 
 	glEnable(GL_CULL_FACE); // Always enabled by default
 
 	glfwDisable(GLFW_KEY_REPEAT);
-	glfwSetWindowSizeCallback(::handleResize);
+	glfwSetWindowSizeCallback(::handleResize); // This will generate an immediate callback with current size
 	glfwSetMousePosCallback(::handleMouseActiveMotion);
 	glfwSetKeyCallback(handleKeypress);
 	glfwSetCharCallback(handleCharacter);
@@ -1340,7 +1344,7 @@ void gameDialog::CancelCurrentEffect(void) {
 	case EFFECT_ZOOM1: // Fall through
 	case EFFECT_ZOOM2:
 		renderViewAngle = defaultRenderViewAngle;   // Restore default view angle
-		this->handleResize(gViewport[2], gViewport[3]); // Restore normal projection
+		fUpdateProjection = true;
 		break;
 	}
 	fCurrentEffect = EFFECT_NONE;
@@ -1450,7 +1454,7 @@ void gameDialog::UpdateEffect(void) {
 		if (deltaStart < sZoomTime) {
 			// Active for a limited time.
 			renderViewAngle = defaultRenderViewAngle - deltaStart*50.0/sZoomTime;
-			this->handleResize(gViewport[2], gViewport[3]);
+			fUpdateProjection = true;
 		} else {
 			this->CancelCurrentEffect();
 		}
@@ -1460,7 +1464,7 @@ void gameDialog::UpdateEffect(void) {
 		if (deltaStart < 0) {
 			// Active for a limited time.
 			renderViewAngle = defaultRenderViewAngle - deltaStart*50.0/sZoomTime;
-			this->handleResize(gViewport[2], gViewport[3]);
+			fUpdateProjection = true;
 		} else {
 			this->CancelCurrentEffect();
 		}

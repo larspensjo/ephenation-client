@@ -111,7 +111,6 @@ private:
 	bool fMovingLeft;
 	bool fMovingRight;
 	bool fUsingTorch;
-	int fMapWidth;
 	Calibration fCalibrationMode;
 
 	bool fEnterDebugText;
@@ -119,12 +118,6 @@ private:
 	bool fShowWeapon;
 	bool fUnderWater; // True when player is below water
 	View::Chunk *FindSelectedSurface(int x, int y, ChunkOffsetCoord *, int *surfaceDir);
-	/// Draw the player weapon
-	/// @todo Should go int the View of the MVC.
-	void DrawWeapon(void) const;
-	/// Draw a healing self animation
-	/// @todo Should go into the View of the MVC.
-	void DrawHealingAnimation(bool restart) const;
 	/// Call this when a dialog will be showed, to stop movement, etc.
 	/// All key presses will henceforth be forwarded to the dialog, so the player can't stop moving.
 	void ClearForDialog(void);
@@ -151,6 +144,20 @@ private:
 
 	/// Save the game screen to a file
 	void SaveScreen();
+
+	//
+	// TODO: The following parameters should be moved to the View.
+	//
+	bool fUpdateProjection = true;
+	int fScreenWidth = 0, fScreenHeight = 0;
+	int fMapWidth;
+
+	/// Draw the player weapon
+	/// @todo Should go int the View of the MVC.
+	void DrawWeapon(void) const;
+	/// Draw a healing self animation
+	/// @todo Should go into the View of the MVC.
+	void DrawHealingAnimation(bool restart) const;
 };
 
 extern gameDialog gGameDialog;
