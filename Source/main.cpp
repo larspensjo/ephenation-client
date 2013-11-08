@@ -64,6 +64,7 @@
 #include "worsttime.h"
 #include "contrib/glsw.h"
 #include "errormanager.h"
+#include "OculusRift.h"
 
 #ifndef GL_VERSION_3_2
 #define GL_CONTEXT_CORE_PROFILE_BIT       0x00000001
@@ -318,7 +319,14 @@ int main(int argc, char** argv) {
 
 	//printf("Game Path: %s\n", dataDir);
 
-	gOptions.Init(optionsFilename); // This one should come early, as it is used to initalize things.
+	OculusRift oculus;
+
+	gOptions.Init(optionsFilename); // This one should come early, as it is used to initialize things.
+	if (gOptions.fOculusRift) {
+		if (gDebugOpenGL)
+			printf("main: Oculus Rift mode\n");
+		oculus.Create();
+	}
 
 	// If there was a saved position, use it for imnitialization.
 	if (gOptions.fPlayerX != 0 || gOptions.fPlayerY != 0 || gOptions.fPlayerZ != 0)
