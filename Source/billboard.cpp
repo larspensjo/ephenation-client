@@ -82,7 +82,7 @@ again:
 	glDrawBuffers(1, windowBuffer);
 	glClearColor(1,0,0,1);
 	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-	glViewport(0, 0, gViewport[2], gViewport[3]); // Restore default viewport.
+	glViewport(gViewport[0], gViewport[1], gViewport[2], gViewport[3]); // Restore default viewport.
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -147,7 +147,7 @@ void Billboard::UppdateBillboard(int picture) {
 	glBlitFramebuffer(0,0,fPixelWidth,fPixelWidth, dstX0, dstY0, dstX0+fPixelWidth, dstY0+fPixelWidth, GL_COLOR_BUFFER_BIT, GL_NEAREST);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-	glViewport(0, 0, gViewport[2], gViewport[3]); // Restore default viewport.
+	glViewport(gViewport[0], gViewport[1], gViewport[2], gViewport[3]); // Restore default viewport.
 }
 
 void Billboard::BindTexture(void) {

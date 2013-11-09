@@ -140,7 +140,7 @@ void RenderControl::Resize(GLsizei width, GLsizei height) {
 
 	//==============================================================================
 	// Create the G-buffers used by the deferred shader. Linear sampling is enabled
-	// as there are some filters that downsample the textures.
+	// as there are some filters that down sample the textures.
 	//==============================================================================
 
 	// Generate and bind the texture depth information
@@ -241,6 +241,7 @@ void RenderControl::Draw(bool underWater, shared_ptr<const Model::Object> select
 	// Create all bitmaps setup in the frame buffer. This is all stage one shaders.
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fboName);
 	drawClearFBO();
+	glViewport(0, 0, fWidth, fHeight);
 	glEnable(GL_STENCIL_TEST);
 	glStencilFunc(GL_ALWAYS, STENCIL_NOSKY, STENCIL_NOSKY); // Set bit for no sky
 	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE); // Replace bits when something is drawn
@@ -266,6 +267,7 @@ void RenderControl::Draw(bool underWater, shared_ptr<const Model::Object> select
 	glDisable(GL_BLEND);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0); // Frame buffer has done its job now, results are in the diffuse image.
 	glDisable(GL_STENCIL_TEST);
+	glViewport(gViewport[0], gViewport[1], gViewport[2], gViewport[3]); // Restore default viewport.
 
 	// At this point, there is no depth buffer representing the geometry and no stencil. They are only valid inside the FBO.
 	drawClear(underWater);
@@ -777,7 +779,7 @@ void RenderControl::ComputeAverageLighting(bool underWater) {
 
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
-	glViewport(0, 0, gViewport[2], gViewport[3]); // Restore default viewport.
+	glViewport(gViewport[0], gViewport[1], gViewport[2], gViewport[3]); // Restore default viewport.
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 	tm.Stop();
 }
