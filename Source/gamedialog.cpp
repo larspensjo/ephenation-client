@@ -534,8 +534,14 @@ void gameDialog::HandleKeyPress(int key) {
 	}
 
 	if (key == GLFW_KEY_KP_0 && gDebugOpenGL) {
+		static bool sViewRocketDebugger = false;
+		sViewRocketDebugger = !sViewRocketDebugger;
+		Rocket::Debugger::SetVisible(sViewRocketDebugger);
+		return;
+	}
+
+	if (key == GLFW_KEY_F10 && gDebugOpenGL) {
 		gToggleTesting = !gToggleTesting;
-		Rocket::Debugger::SetVisible(gToggleTesting);
 		return;
 	}
 
@@ -884,15 +890,34 @@ static void revive(void) {
 
 glm::mat4 gViewMatrix; // Store the view matrix
 
-void gameDialog::DrawScreen(bool hideGUI) {
+void gameDialog::DrawScreen(bool hideGUI, bool stereoView) {
+	static double slAverageFps = 0.0;
+	double tm = gCurrentFrameTime;
+	static double prevTime = 0.0;
+	double deltaTime = tm - prevTime;
+	// Use a decay filter on the FPS
+	slAverageFps = 0.97*slAverageFps + 0.03/deltaTime;
+	prevTime = tm;
+
 	this->Update();
-	this->UpdateProjection(Controller::gameDialog::ViewType::single);
-	// this->UpdateProjection(Controller::gameDialog::ViewType::right);
-	this->render(hideGUI);
+	fRenderControl.drawClear(fUnderWater); // Clear the screen
+	if (stereoView) {
+		this->UpdateProjection(Controller::gameDialog::ViewType::left);
+		if (!Model::gPlayer.BelowGround())
+			fRenderControl.ComputeShadowMap();
+		this->render(hideGUI, int(slAverageFps));
+		this->UpdateProjection(Controller::gameDialog::ViewType::right);
+		this->render(hideGUI, int(slAverageFps));
+	} else {
+		this->UpdateProjection(Controller::gameDialog::ViewType::single);
+		if (!Model::gPlayer.BelowGround())
+			fRenderControl.ComputeShadowMap();
+		this->render(hideGUI, int(slAverageFps));
+	}
 	glfwSwapBuffers();
 }
 
-void gameDialog::render(bool hideGUI) {
+void gameDialog::render(bool hideGUI, int fps) {
 	static bool first = true; // Only true first time function is called
 	// Clear list of special effects. It will be added again automatically every frame
 	gShadows.Clear();
@@ -904,10 +929,6 @@ void gameDialog::render(bool hideGUI) {
 		gBillboard.InitializeTextures(fShader);
 	}
 
-	if (!Model::gPlayer.BelowGround())
-		fRenderControl.ComputeShadowMap();
-
-	fRenderControl.drawClear(fUnderWater); // Clear the screen
 	fRenderControl.Draw(fUnderWater, fSelectedObject, fDrawMap && !gDebugOpenGL, fMapWidth, (hideGUI && fCurrentRocketContextInput == 0) ? 0 : &fMainUserInterface);
 
 	//=========================================================================
@@ -959,14 +980,6 @@ void gameDialog::render(bool hideGUI) {
 	}
 	this->DrawHealingAnimation(newHealing);
 
-	static double slAverageFps = 0.0;
-	double tm = gCurrentFrameTime;
-	static double prevTime = 0.0;
-	double deltaTime = tm - prevTime;
-	// Use a decay filter on the FPS
-	slAverageFps = 0.97*slAverageFps + 0.03/deltaTime;
-	prevTime = tm;
-
 	if (gMode.Get() == GameMode::TELEPORT) {
 		// Draw the teleport mode
 		TeleportClick(fHealthBar, _angleHor, renderViewAngle, 0, 0, false);
@@ -986,9 +999,9 @@ void gameDialog::render(bool hideGUI) {
 		}
 
 		if (gCurrentPing == 0.0 || !gShowPing)
-			sprintf(buff, "Triangles %7d, draw calls %d. Fps %03d", gDrawnQuads, gNumDraw, int(slAverageFps));
+			sprintf(buff, "Triangles %7d, draw calls %d. Fps %03d", gDrawnQuads, gNumDraw, fps);
 		else
-			sprintf(buff, "Triangles %7d, draw calls %d. Fps %03d, ping %.1f ms", gDrawnQuads, gNumDraw, int(slAverageFps), gCurrentPing*1000.0);
+			sprintf(buff, "Triangles %7d, draw calls %d. Fps %03d, ping %.1f ms", gDrawnQuads, gNumDraw, fps, gCurrentPing*1000.0);
 
 		if (gMode.Get() == GameMode::CONSTRUCT) {
 			ChunkCoord cc;
@@ -1389,7 +1402,7 @@ void gameDialog::SaveScreen() {
     // Make the BYTE array, factor of 3 because it's RBG.
     // unsigned char pixels[ 4 * w * h*2];
     std::unique_ptr<unsigned char[]> pixels(new unsigned char[3*w*h]);
-    this->render(true);
+    this->render(true, 0);
 
     glReadPixels(0, 0, w, h, GL_BGR, GL_UNSIGNED_BYTE, pixels.get());
 

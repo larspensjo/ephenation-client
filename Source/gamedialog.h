@@ -62,10 +62,10 @@ class gameDialog {
 public:
 	gameDialog();
 	/// Call every frame
-	void DrawScreen(bool hideGUI);
+	void DrawScreen(bool hideGUI, bool stereoView);
 	/// Render many things.
 	/// @todo Nothing should be rendered from here, it should all go into the View of the MVC.
-	void render(bool hideGUI);
+	void render(bool hideGUI, int fps);
 	/// Compute the projection matrix.
 	enum class ViewType { left, right, single };
 	void UpdateProjection(ViewType v);
