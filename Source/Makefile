@@ -251,8 +251,6 @@ endif
 clean:
 	$(RM) $(OBJS) $(PROGRAM) $(PROGRAM).exe $(DEPS)
 
-cleanDebug: clean
-
 distclean: clean
 	$(RM) $(DEPS) TAGS
 

@@ -18,6 +18,14 @@
 					<Add option="-Dunix" />
 					<Add directory="contrib/glm" />
 				</Compiler>
+				<MakeCommands>
+					<Build command="$make -j7 -f $makefile $target" />
+					<CompileFile command="$make -f $makefile $file" />
+					<Clean command="$make -f $makefile clean" />
+					<DistClean command="$make -f $makefile distclean$target" />
+					<AskRebuildNeeded command="$make -q -f $makefile $target" />
+					<SilentBuild command="$make -j7 -f $makefile $target &gt; $(CMD_NULL)" />
+				</MakeCommands>
 			</Target>
 			<Target title="Release">
 				<Option output="bin/Release/EphenationClient" prefix_auto="1" extension_auto="1" />
