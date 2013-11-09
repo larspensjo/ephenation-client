@@ -61,11 +61,14 @@ namespace Controller {
 class gameDialog {
 public:
 	gameDialog();
+	/// Call every frame
+	void DrawScreen(bool hideGUI);
 	/// Render many things.
 	/// @todo Nothing should be rendered from here, it should all go into the View of the MVC.
 	void render(bool hideGUI);
 	/// Compute the projection matrix.
-	void UpdateProjection();
+	enum class ViewType { left, right, single };
+	void UpdateProjection(ViewType v);
 	void init();
 	~gameDialog();
 	void handleMouse(int button, int action);

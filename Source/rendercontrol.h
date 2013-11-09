@@ -79,6 +79,9 @@ public:
 
 	/// Return true if the player is using third person view
 	bool ThirdPersonView() const { return fCameraDistance > 2.0f; }
+
+	void ComputeShadowMap(void);
+	void drawClear(bool underWater); // Clear the main window
 private:
 
 	GLuint fboName;
@@ -108,11 +111,9 @@ private:
 	float fCameraDistance; /// Actual camera distance behind the player
 	float fRequestedCameraDistance; /// Requested camera distance behind the player
 
-	void ComputeShadowMap(void);
 	void ComputeAverageLighting(bool underWater);
 
 	void drawClearFBO(void); // Initialize all images in the FBO
-	void drawClear(bool underWater); // Clear the main window
 	void drawNonTransparentLandscape(void);
 	void drawDynamicShadows(void);
 	void drawDeferredLighting(bool underWater, float whitepoint);

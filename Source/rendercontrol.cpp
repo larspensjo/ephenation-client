@@ -233,9 +233,6 @@ void RenderControl::Resize(GLsizei width, GLsizei height) {
 enum { STENCIL_NOSKY = 1 };
 
 void RenderControl::Draw(bool underWater, shared_ptr<const Model::Object> selectedObject, bool showMap, int mapWidth, MainUserInterface *ui) {
-	if (!Model::gPlayer.BelowGround())
-		this->ComputeShadowMap();
-
 	if (gShowFramework)
 		glPolygonMode(GL_FRONT, GL_LINE);
 	// Create all bitmaps setup in the frame buffer. This is all stage one shaders.
@@ -270,7 +267,6 @@ void RenderControl::Draw(bool underWater, shared_ptr<const Model::Object> select
 	glViewport(gViewport[0], gViewport[1], gViewport[2], gViewport[3]); // Restore default viewport.
 
 	// At this point, there is no depth buffer representing the geometry and no stencil. They are only valid inside the FBO.
-	drawClear(underWater);
 
     // If the player is dead, he will get a gray sky.
 	if (!Model::gPlayer.IsDead() && !Model::gPlayer.BelowGround() && !underWater)

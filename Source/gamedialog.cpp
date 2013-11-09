@@ -884,6 +884,14 @@ static void revive(void) {
 
 glm::mat4 gViewMatrix; // Store the view matrix
 
+void gameDialog::DrawScreen(bool hideGUI) {
+	this->Update();
+	this->UpdateProjection(Controller::gameDialog::ViewType::single);
+	// this->UpdateProjection(Controller::gameDialog::ViewType::right);
+	this->render(hideGUI);
+	glfwSwapBuffers();
+}
+
 void gameDialog::render(bool hideGUI) {
 	static bool first = true; // Only true first time function is called
 	// Clear list of special effects. It will be added again automatically every frame
@@ -896,6 +904,10 @@ void gameDialog::render(bool hideGUI) {
 		gBillboard.InitializeTextures(fShader);
 	}
 
+	if (!Model::gPlayer.BelowGround())
+		fRenderControl.ComputeShadowMap();
+
+	fRenderControl.drawClear(fUnderWater); // Clear the screen
 	fRenderControl.Draw(fUnderWater, fSelectedObject, fDrawMap && !gDebugOpenGL, fMapWidth, (hideGUI && fCurrentRocketContextInput == 0) ? 0 : &fMainUserInterface);
 
 	//=========================================================================
@@ -1194,18 +1206,36 @@ void gameDialog::Update() {
 		ClearSelection();
 }
 
-void gameDialog::UpdateProjection() {
-	float aspectRatio = (float)fScreenWidth / (float)fScreenHeight;
+void gameDialog::UpdateProjection(ViewType v) {
+	int width = fScreenWidth;
+	int xOffset = 0;
+	switch (v) {
+	case ViewType::left:
+		width /= 2;
+		break;
+	case ViewType::right:
+		width /= 2;
+		xOffset = width;
+		break;
+	case ViewType::single:
+		break;
+	}
+	glViewport(xOffset, 0, width, fScreenHeight);
+	gViewport = glm::vec4((float)xOffset, 0.0f, (float)width, (float)fScreenHeight );
+	float aspectRatio = (float)width / (float)fScreenHeight;
 	// In full screen mode, the window is stretched to match the desktop mode.
 	if (gOptions.fFullScreen)
 		aspectRatio = gDesktopAspectRatio;
 	gProjectionMatrix  = glm::perspective(renderViewAngle, aspectRatio, 0.01f, maxRenderDistance);  // Create our perspective projection matrix
-	glViewport(0, 0, fScreenWidth, fScreenHeight);
-	gViewport = glm::vec4(0.0f, 0.0f, (float)fScreenWidth, (float)fScreenHeight );
-	fRenderControl.Resize(fScreenWidth, fScreenHeight);
-	fMainUserInterface.Resize(fScreenWidth, fScreenHeight);
-	Options::sfSave.fWindowWidth = gViewport[2]; // This will override any option dialog changes.
-	Options::sfSave.fWindowHeight = gViewport[3];
+	static int prevWidth = 0, prevHeight = 0;
+	if (prevWidth != width || prevHeight != fScreenHeight) {
+		prevWidth = width;
+		prevHeight = fScreenHeight;
+		fRenderControl.Resize(width, fScreenHeight);
+		fMainUserInterface.Resize(width, fScreenHeight);
+		Options::sfSave.fWindowWidth = fScreenWidth; // This will override any option dialog changes.
+		Options::sfSave.fWindowHeight = fScreenHeight;
+	}
 }
 
 void gameDialog::SetMessage(const char *str) {

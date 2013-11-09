@@ -453,12 +453,9 @@ int main(int argc, char** argv) {
 				ListenForServerMessages();
 		}
 
-		Controller::gGameDialog.Update();
-		Controller::gGameDialog.UpdateProjection();
-		Controller::gGameDialog.render(sHideGUI);
-		View::Chunk::DegradeBusyList_gl();
+		Controller::gGameDialog.DrawScreen(sHideGUI);
 
-		glfwSwapBuffers();
+		View::Chunk::DegradeBusyList_gl();
 
 		if (gMode.Get() == GameMode::ESC)
 			glfwCloseWindow();
