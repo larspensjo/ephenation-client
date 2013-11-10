@@ -325,7 +325,9 @@ int main(int argc, char** argv) {
 	OculusRift oculus;
 
 	gOptions.Init(optionsFilename); // This one should come early, as it is used to initialize things.
-	if (gOptions.fOculusRift) {
+	if (gOptions.fOculusRift)
+		sOculusRiftMode = 1;
+	if (sOculusRiftMode) {
 		if (gDebugOpenGL)
 			printf("main: Oculus Rift mode\n");
 		oculus.Create();
