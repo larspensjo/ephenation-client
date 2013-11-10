@@ -906,6 +906,7 @@ void gameDialog::DrawScreen(bool hideGUI, bool stereoView) {
 		if (!Model::gPlayer.BelowGround())
 			fRenderControl.ComputeShadowMap();
 		this->render(hideGUI, int(slAverageFps));
+		// gViewMatrix = glm::translate(gViewMatrix, glm::vec3(-1.0f, 0.0f, 0.0f));
 		this->UpdateProjection(Controller::gameDialog::ViewType::right);
 		this->render(hideGUI, int(slAverageFps));
 	} else {
@@ -1107,7 +1108,7 @@ void gameDialog::init(void) {
 	fInputLine->AddReference();
 	fInputLine->Blur(); // Don't want a flashing cursor until player wants to input text.
 
-	checkError("gameDialog::init");
+	checkError("gameDialog::init", !gDebugOpenGL);
 }
 
 void gameDialog::Update() {

@@ -111,6 +111,8 @@
 		<Unit filename="Makefile.mingw" />
 		<Unit filename="Map.cpp" />
 		<Unit filename="Map.h" />
+		<Unit filename="OculusRift.cpp" />
+		<Unit filename="OculusRift.h" />
 		<Unit filename="Options.cpp" />
 		<Unit filename="Options.h" />
 		<Unit filename="ScrollingMessages.cpp" />
