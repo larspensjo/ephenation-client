@@ -16,6 +16,8 @@
 //
 
 #include <iostream>
+#undef __STRICT_ANSI__ // To get definition of M_PI
+#include <math.h>
 
 using namespace std;
 
@@ -37,13 +39,20 @@ void OculusRift::Create() {
 	Ptr<HMDDevice> pHMD;
 	Ptr<SensorDevice> pSensor;
 	SensorFusion *pFusionResult = new SensorFusion();
-	HMDInfo Info;
+	// Get some default values
+	fInfo.EyeToScreenDistance = 0.041f;
+	fInfo.DistortionK[0] = 1.0f;
+	fInfo.DistortionK[1] = 0.22f;
+	fInfo.DistortionK[2] = 0.24f;
+	fInfo.DistortionK[3] = 0.0f;
+	fInfo.InterpupillaryDistance = 0.064f;
+	fInfo.VScreenSize = 0.16f;
 	bool InfoLoaded = false;
 	pManager = *DeviceManager::Create();
 	pHMD = *pManager->EnumerateDevices<HMDDevice>().CreateDevice();
 
 	if (pHMD) {
-		InfoLoaded = pHMD->GetDeviceInfo(&Info);
+		InfoLoaded = pHMD->GetDeviceInfo(&fInfo);
 		pSensor = *pHMD->GetSensor();
 	} else {
 	   pSensor = *pManager->EnumerateDevices<SensorDevice>().CreateDevice();
@@ -70,21 +79,21 @@ void OculusRift::Create() {
 	cout << "--------------------------" << endl;
 
 	if (InfoLoaded) {
-		cout << " DisplayDeviceName: " << Info.DisplayDeviceName << endl;
-		cout << " ProductName: " << Info.ProductName << endl;
-		cout << " Manufacturer: " << Info.Manufacturer << endl;
-		cout << " Version: " << Info.Version << endl;
-		cout << " HResolution: " << Info.HResolution<< endl;
-		cout << " VResolution: " << Info.VResolution<< endl;
-		cout << " HScreenSize: " << Info.HScreenSize<< endl;
-		cout << " VScreenSize: " << Info.VScreenSize<< endl;
-		cout << " VScreenCenter: " << Info.VScreenCenter<< endl;
-		cout << " EyeToScreenDistance: " << Info.EyeToScreenDistance << endl;
-		cout << " LensSeparationDistance: " << Info.LensSeparationDistance << endl;
-		cout << " InterpupillaryDistance: " << Info.InterpupillaryDistance << endl;
-		cout << " DistortionK[0]: " << Info.DistortionK[0] << endl;
-		cout << " DistortionK[1]: " << Info.DistortionK[1] << endl;
-		cout << " DistortionK[2]: " << Info.DistortionK[2] << endl;
+		cout << " DisplayDeviceName: " << fInfo.DisplayDeviceName << endl;
+		cout << " ProductName: " << fInfo.ProductName << endl;
+		cout << " Manufacturer: " << fInfo.Manufacturer << endl;
+		cout << " Version: " << fInfo.Version << endl;
+		cout << " HResolution: " << fInfo.HResolution<< endl;
+		cout << " VResolution: " << fInfo.VResolution<< endl;
+		cout << " HScreenSize: " << fInfo.HScreenSize<< endl;
+		cout << " VScreenSize: " << fInfo.VScreenSize<< endl;
+		cout << " VScreenCenter: " << fInfo.VScreenCenter<< endl;
+		cout << " EyeToScreenDistance: " << fInfo.EyeToScreenDistance << endl;
+		cout << " LensSeparationDistance: " << fInfo.LensSeparationDistance << endl;
+		cout << " InterpupillaryDistance: " << fInfo.InterpupillaryDistance << endl;
+		cout << " DistortionK[0]: " << fInfo.DistortionK[0] << endl;
+		cout << " DistortionK[1]: " << fInfo.DistortionK[1] << endl;
+		cout << " DistortionK[2]: " << fInfo.DistortionK[2] << endl;
 		cout << "--------------------------" << endl;
 	}
 
@@ -107,4 +116,8 @@ void OculusRift::Create() {
 		if (_kbhit()) exit(0);
 	}
 #endif
+}
+
+float OculusRift::GetFieldOfView() const {
+	return 2.0f * atanf(fInfo.VScreenSize / 2.0f / fInfo.EyeToScreenDistance) * 180.0f / M_PI;
 }

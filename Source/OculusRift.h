@@ -25,7 +25,9 @@ public:
 	OculusRift();
 	~OculusRift();
 	void Create();
+	float GetFieldOfView() const;
 protected:
 private:
 	OVR::System fSystem;
+	OVR::HMDInfo fInfo;
 };

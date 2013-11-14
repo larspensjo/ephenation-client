@@ -306,7 +306,9 @@
 		<Unit filename="worsttime.cpp" />
 		<Unit filename="worsttime.h" />
 		<Extensions>
-			<code_completion />
+			<code_completion>
+				<search_path add="contrib\libovr\include" />
+			</code_completion>
 			<envvars />
 			<debugger>
 				<remote_debugging target="Debug">
