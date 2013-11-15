@@ -75,9 +75,6 @@ using View::gMsgWindow;
 
 using std::string;
 
-const float defaultRenderViewAngle = 60.0f;
-float renderViewAngle = defaultRenderViewAngle;
-
 // The time stamp when the player clicked on a magical portal.
 static double sStartZoom;
 
@@ -424,7 +421,7 @@ void gameDialog::handleMouse(int button, int action) {
 	} else if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS && gMode.Get() == GameMode::TELEPORT) {
 		int x, y;
 		glfwGetMousePos(&x, &y);
-		const ChunkCoord *cc = TeleportClick(fHealthBar, _angleHor, renderViewAngle, x, y, true);
+		const ChunkCoord *cc = TeleportClick(fHealthBar, _angleHor, fRenderViewAngle, x, y, true);
 		if (cc != 0) {
 			// printf("TP to chunk %d,%d,%d\n", cc->x, cc->y, cc->z);
 			unsigned char b[6];
@@ -983,7 +980,7 @@ void gameDialog::render(bool hideGUI, int fps) {
 
 	if (gMode.Get() == GameMode::TELEPORT) {
 		// Draw the teleport mode
-		TeleportClick(fHealthBar, _angleHor, renderViewAngle, 0, 0, false);
+		TeleportClick(fHealthBar, _angleHor, fRenderViewAngle, 0, 0, false);
 	}
 
 	//=========================================================================
@@ -1240,7 +1237,7 @@ void gameDialog::UpdateProjection(ViewType v) {
 	// In full screen mode, the window is stretched to match the desktop mode.
 	if (gOptions.fFullScreen)
 		aspectRatio = gDesktopAspectRatio;
-	gProjectionMatrix  = glm::perspective(renderViewAngle, aspectRatio, 0.01f, maxRenderDistance);  // Create our perspective projection matrix
+	gProjectionMatrix  = glm::perspective(fRenderViewAngle, aspectRatio, 0.01f, maxRenderDistance);  // Create our perspective projection matrix
 	static int prevWidth = 0, prevHeight = 0;
 	if (prevWidth != width || prevHeight != fScreenHeight) {
 		prevWidth = width;
@@ -1382,7 +1379,7 @@ void gameDialog::CancelCurrentEffect(void) {
 		break;
 	case EFFECT_ZOOM1: // Fall through
 	case EFFECT_ZOOM2:
-		renderViewAngle = defaultRenderViewAngle;   // Restore default view angle
+		fRenderViewAngle = fDefaultRenderViewAngle;   // Restore default view angle
 		break;
 	}
 	fCurrentEffect = EFFECT_NONE;
@@ -1491,7 +1488,7 @@ void gameDialog::UpdateEffect(void) {
 		// Modify viewing angle to get zooming effects.
 		if (deltaStart < sZoomTime) {
 			// Active for a limited time.
-			renderViewAngle = defaultRenderViewAngle - deltaStart*50.0/sZoomTime;
+			fRenderViewAngle = fDefaultRenderViewAngle - deltaStart*50.0/sZoomTime;
 		} else {
 			this->CancelCurrentEffect();
 		}
@@ -1500,7 +1497,7 @@ void gameDialog::UpdateEffect(void) {
 		// Modify viewing angle to get zooming effects.
 		if (deltaStart < 0) {
 			// Active for a limited time.
-			renderViewAngle = defaultRenderViewAngle - deltaStart*50.0/sZoomTime;
+			fRenderViewAngle = fDefaultRenderViewAngle - deltaStart*50.0/sZoomTime;
 		} else {
 			this->CancelCurrentEffect();
 		}

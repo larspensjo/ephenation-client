@@ -156,6 +156,8 @@ private:
 	//
 	int fScreenWidth = 0, fScreenHeight = 0;
 	int fMapWidth;
+	float fDefaultRenderViewAngle = 60.0f;
+	float fRenderViewAngle = fDefaultRenderViewAngle;
 
 	/// Draw the player weapon
 	/// @todo Should go int the View of the MVC.
