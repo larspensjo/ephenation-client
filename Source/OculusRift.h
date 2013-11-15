@@ -26,6 +26,7 @@ public:
 	~OculusRift();
 	void Create();
 	float GetFieldOfView() const;
+	float GetInterpupillaryDistance() const;
 protected:
 private:
 	OVR::System fSystem;

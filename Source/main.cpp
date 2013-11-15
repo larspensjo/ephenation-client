@@ -327,14 +327,15 @@ int main(int argc, char** argv) {
 	gOptions.Init(optionsFilename); // This one should come early, as it is used to initialize things.
 	if (gOptions.fOculusRift)
 		sOculusRiftMode = 1;
-	float fieldOfView = 60.0f;
+	float fieldOfView = 60.0f, interpupillaryDistance = 0.064f;
 	if (sOculusRiftMode) {
 		if (gDebugOpenGL)
 			printf("main: Oculus Rift mode\n");
 		oculus.Create();
 		fieldOfView = oculus.GetFieldOfView();
+		interpupillaryDistance = oculus.GetInterpupillaryDistance();
 	}
-	printf("Fov: %f\n", oculus.GetFieldOfView());
+	printf("Fov: %f, pupillary separation %f\n", fieldOfView, interpupillaryDistance);
 
 	// If there was a saved position, use it for imnitialization.
 	if (gOptions.fPlayerX != 0 || gOptions.fPlayerY != 0 || gOptions.fPlayerZ != 0)
@@ -461,7 +462,7 @@ int main(int argc, char** argv) {
 				ListenForServerMessages();
 		}
 
-		Controller::gGameDialog.DrawScreen(sHideGUI, sOculusRiftMode);
+		Controller::gGameDialog.DrawScreen(sHideGUI, sOculusRiftMode, interpupillaryDistance);
 
 		View::Chunk::DegradeBusyList_gl();
 

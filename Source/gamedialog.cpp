@@ -887,7 +887,7 @@ static void revive(void) {
 
 glm::mat4 gViewMatrix; // Store the view matrix
 
-void gameDialog::DrawScreen(bool hideGUI, bool stereoView) {
+void gameDialog::DrawScreen(bool hideGUI, bool stereoView, float interpupillaryDistance) {
 	static double slAverageFps = 0.0;
 	double tm = gCurrentFrameTime;
 	static double prevTime = 0.0;
@@ -902,8 +902,9 @@ void gameDialog::DrawScreen(bool hideGUI, bool stereoView) {
 		this->UpdateProjection(Controller::gameDialog::ViewType::left);
 		if (!Model::gPlayer.BelowGround())
 			fRenderControl.ComputeShadowMap();
+		gViewMatrix = glm::translate(gViewMatrix, glm::vec3(interpupillaryDistance/2.0f, 0.0f, 0.0f));
 		this->render(hideGUI, int(slAverageFps));
-		// gViewMatrix = glm::translate(gViewMatrix, glm::vec3(-1.0f, 0.0f, 0.0f));
+		gViewMatrix = glm::translate(gViewMatrix, glm::vec3(-interpupillaryDistance, 0.0f, 0.0f));
 		this->UpdateProjection(Controller::gameDialog::ViewType::right);
 		this->render(hideGUI, int(slAverageFps));
 	} else {

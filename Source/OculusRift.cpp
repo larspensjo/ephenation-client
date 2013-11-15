@@ -97,9 +97,6 @@ void OculusRift::Create() {
 		cout << "--------------------------" << endl;
 	}
 
-	cout << endl << " Press ENTER to continue" << endl;
-
-	cin.get();
 #if 0
 	while(pSensor) {
 		Quatf quaternion = pFusionResult->GetOrientation();
@@ -120,4 +117,8 @@ void OculusRift::Create() {
 
 float OculusRift::GetFieldOfView() const {
 	return 2.0f * atanf(fInfo.VScreenSize / 2.0f / fInfo.EyeToScreenDistance) * 180.0f / M_PI;
+}
+
+float OculusRift::GetInterpupillaryDistance() const {
+	return fInfo.InterpupillaryDistance;
 }
