@@ -1052,7 +1052,8 @@ static int GLFWCALL CloseWindowCallback(void) {
 	return GL_FALSE;          // Prevent the window from closing immediately.
 }
 
-void gameDialog::init(void) {
+void gameDialog::init(float fieldOfView) {
+	fRenderViewAngle  = fieldOfView;
 	fRenderControl.Init(8);
 
 	std::shared_ptr<DrawFont> gabriola18(new DrawFont);

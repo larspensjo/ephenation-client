@@ -327,11 +327,14 @@ int main(int argc, char** argv) {
 	gOptions.Init(optionsFilename); // This one should come early, as it is used to initialize things.
 	if (gOptions.fOculusRift)
 		sOculusRiftMode = 1;
+	float fieldOfView = 60.0f;
 	if (sOculusRiftMode) {
 		if (gDebugOpenGL)
 			printf("main: Oculus Rift mode\n");
 		oculus.Create();
+		fieldOfView = oculus.GetFieldOfView();
 	}
+	printf("Fov: %f\n", oculus.GetFieldOfView());
 
 	// If there was a saved position, use it for imnitialization.
 	if (gOptions.fPlayerX != 0 || gOptions.fPlayerY != 0 || gOptions.fPlayerZ != 0)
@@ -412,7 +415,7 @@ int main(int argc, char** argv) {
 	gUniformBuffer.Init();
 	gDrawFont.Init("textures/georgia12"); // Must be done before gGameDialog.
 	GameTexture::Init();
-	Controller::gGameDialog.init();
+	Controller::gGameDialog.init(fieldOfView);
 	ChunkShader *shader = ChunkShader::Make();
 	gChunkShaderPicking.Init();
 	Tree::InitStatic();

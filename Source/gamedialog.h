@@ -69,7 +69,7 @@ public:
 	/// Compute the projection matrix.
 	enum class ViewType { left, right, single };
 	void UpdateProjection(ViewType v);
-	void init();
+	void init(float fieldOfView);
 	~gameDialog();
 	void handleMouse(int button, int action);
 	/// Polled to update various states
