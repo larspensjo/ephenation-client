@@ -113,6 +113,22 @@ void OculusRift::Create() {
 		if (_kbhit()) exit(0);
 	}
 #endif
+	using namespace OVR::Util::Render;
+	StereoConfig stereo;
+	float renderScale;
+	int Width = 1200, Height = 800;
+	// Obtain setup data from the HMD and initialize StereoConfig for stereo rendering.
+	stereo.SetFullViewport(Viewport(0,0, Width, Height));
+	stereo.SetStereoMode(Stereo_LeftRight_Multipass);
+	stereo.SetDistortionFitPointVP(-1.0f, 0.0f);
+	renderScale = stereo.GetDistortionScale();
+
+	StereoEyeParams leftEye = stereo.GetEyeRenderParams(StereoEye_Left);
+	StereoEyeParams rightEye = stereo.GetEyeRenderParams(StereoEye_Right);
+	// Left eye rendering parameters
+	Viewport leftVP = leftEye.VP;
+	Matrix4f leftProjection = leftEye.Projection;
+	Matrix4f leftViewAdjust = leftEye.ViewAdjust;
 }
 
 float OculusRift::GetFieldOfView() const {

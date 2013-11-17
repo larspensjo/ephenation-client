@@ -40,7 +40,8 @@ public:
 
 	/// Update all data in the uniform buffer
 	/// It is a const function as no parameters in the class are changed.
-	void Update(void) const;
+	/// @param ovrMode true if screen is adapted for Oculus Rift display
+	void Update(bool ovrMode) const;
 
 	/// Call once for each program during initialization
 	void UniformBlockBinding(GLuint program, GLuint idx);

@@ -68,7 +68,7 @@ void UniformBuffer::Init(void) {
 	checkError("UniformBuffer::Init");
 }
 
-void UniformBuffer::Update(void) const {
+void UniformBuffer::Update(bool ovrMode) const {
 	Data data;
 	data.performance = gOptions.fPerformance;
 	if (gOptions.fDynamicShadows)
@@ -89,7 +89,7 @@ void UniformBuffer::Update(void) const {
 	data.belowGround = Model::gPlayer.BelowGround();
 	data.ovrDistortion = fDistortion;
 	data.ovrlenscenter = fOvrLensCenter;
-	data.enabledistortion = 0;
+	data.enabledistortion = ovrMode;
 
 	glBindBuffer(GL_UNIFORM_BUFFER, fUBOBuffer);
 	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(Data), &data);

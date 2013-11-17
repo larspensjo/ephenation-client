@@ -903,14 +903,17 @@ void gameDialog::DrawScreen(bool hideGUI, bool stereoView, float interpupillaryD
 		if (!Model::gPlayer.BelowGround())
 			fRenderControl.ComputeShadowMap();
 		gViewMatrix = glm::translate(gViewMatrix, glm::vec3(interpupillaryDistance/2.0f, 0.0f, 0.0f));
+		gUniformBuffer.Update(true); // Transfer settings to the graphics card
 		this->render(hideGUI, int(slAverageFps));
 		gViewMatrix = glm::translate(gViewMatrix, glm::vec3(-interpupillaryDistance, 0.0f, 0.0f));
 		this->UpdateProjection(Controller::gameDialog::ViewType::right);
+		gUniformBuffer.Update(true); // Transfer settings to the graphics card
 		this->render(hideGUI, int(slAverageFps));
 	} else {
 		this->UpdateProjection(Controller::gameDialog::ViewType::single);
 		if (!Model::gPlayer.BelowGround())
 			fRenderControl.ComputeShadowMap();
+		gUniformBuffer.Update(false); // Transfer settings to the graphics card
 		this->render(hideGUI, int(slAverageFps));
 	}
 	glfwSwapBuffers();
@@ -921,8 +924,6 @@ void gameDialog::render(bool hideGUI, int fps) {
 	// Clear list of special effects. It will be added again automatically every frame
 	gShadows.Clear();
 	gFogs.Clear();
-
-	gUniformBuffer.Update(); // Transfer settings to the graphics card
 
 	if (first) {
 		gBillboard.InitializeTextures(fShader);

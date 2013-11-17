@@ -57,8 +57,9 @@ vec2 rand(vec2 a, vec2 b) {
 void main(void)
 {
 	vec2 screen = Ascreen;
-	if (UBOToggleTesting)
+	if (UBOEnableDistortion) {
 		screen = HmdWarp(Ascreen);
+	}
 	// Load data, stored in textures, from the first stage rendering.
 	normal = texture(normalTex, screen);
 	vec4 diffuse = texture(diffuseTex, screen) * 0.95; // Downscale a little, 1.0 can't be mapped to HDR.
