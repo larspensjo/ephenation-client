@@ -54,6 +54,8 @@ private:
 	GLuint fUBOBuffer;
 
 	glm::vec4 fCamera;
+	glm::vec4 fDistortion = glm::vec4(1.0f, 0.22f, 0.24f, 0.0f);
+	glm::vec2 fOvrLensCenter = glm::vec2(0.5f, 0.5f);
 };
 
 extern UniformBuffer gUniformBuffer;

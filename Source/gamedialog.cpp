@@ -1037,10 +1037,8 @@ void gameDialog::render(bool hideGUI, int fps) {
 		checkError("gameDialog::render debug", false);
 		static double prevPrint = 0.0;
 		if (gCurrentFrameTime > prevPrint + 5.0) {
-			if (gToggleTesting)
-				WorstTime::Report();
-			else
-				TimeMeasure::Report();
+			WorstTime::Report();
+			TimeMeasure::Report();
 			prevPrint = gCurrentFrameTime;
 		}
 	}
