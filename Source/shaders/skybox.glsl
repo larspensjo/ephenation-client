@@ -38,6 +38,7 @@ void main(void)
 -- Fragment
 
 uniform sampler2D UTextureSampler;
+uniform bool UDisableDistortion = true;
 in vec3 worldPos;       // The model coordinate, as given by the vertex shader
 in vec2 TexCoord;
 
@@ -46,7 +47,11 @@ layout(location = 1) out vec4 posOutput;
 
 void main(void)
 {
-	vec3 color = texture(UTextureSampler, TexCoord).rgb;
+	vec2 coord = TexCoord;
+	if (UBOEnableDistortion == 1 && !UDisableDistortion) {
+		coord = HmdWarp(TexCoord);
+	}
+	vec3 color = texture(UTextureSampler, coord).rgb;
 	// Use a vertical fog gradient to add fog to all pixels below a certain height.
 	vec3 cameraToWorld = UBOCamera.xyz-worldPos.xyz;
 	vec3 eyeDir = normalize(cameraToWorld);

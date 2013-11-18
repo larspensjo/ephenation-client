@@ -250,7 +250,7 @@ void RenderControl::Draw(bool underWater, shared_ptr<const Model::Object> select
 	drawMonsters();
 	drawTransparentLandscape();
 	glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP); // Make stencil read-only
-	drawSkyBox(GL_NONE, GL_COLOR_ATTACHMENT1); // Only output positional data.
+	drawSkyBox(GL_NONE, GL_COLOR_ATTACHMENT1, true); // Only output positional data.
 
 	// Apply deferred shader filters.
 	glStencilFunc(GL_EQUAL, STENCIL_NOSKY, STENCIL_NOSKY); // Only execute when no sky and no UI
@@ -270,7 +270,7 @@ void RenderControl::Draw(bool underWater, shared_ptr<const Model::Object> select
 
     // If the player is dead, he will get a gray sky.
 	if (!Model::gPlayer.IsDead() && !Model::gPlayer.BelowGround() && !underWater)
-        drawSkyBox(GL_BACK_LEFT, GL_NONE); // Draw the sky texture, but ignore position data.
+        drawSkyBox(GL_BACK_LEFT, GL_NONE, false); // Draw the sky texture, but ignore position data.
 
 	ComputeAverageLighting(underWater);
 	if (gShowFramework)
@@ -613,7 +613,7 @@ void RenderControl::drawColoredLights() const {
 // 1. Drawing the skybox color
 // 2. Drawing the skybox position data
 // Specify color target with 'diffuse' and position data target with 'position'.
-void RenderControl::drawSkyBox(GLenum diffuse, GLenum position) {
+void RenderControl::drawSkyBox(GLenum diffuse, GLenum position, bool disableDistortion) {
     static TimeMeasure tm("SkyBox");
     tm.Start();
     GLenum windowBuffOpaque[] = { diffuse, position };
@@ -621,7 +621,7 @@ void RenderControl::drawSkyBox(GLenum diffuse, GLenum position) {
     glDepthRange(1, 1); // This will move the sky box to the far plane, exactly
     glDepthFunc(GL_LEQUAL); // Seems to be needed, or depth value 1.0 will not be shown.
     glDisable(GL_CULL_FACE); // Skybox is drawn with the wrong culling order.
-    fSkyBox->Draw();
+    fSkyBox->Draw(disableDistortion);
     glEnable(GL_CULL_FACE);
     glDepthFunc(GL_LESS);
     glDepthRange(0, 1);

@@ -123,7 +123,7 @@ private:
 	void drawPointShadows(void);
 	void drawPlayer(void);
 	void drawOtherPlayers(void);
-	void drawSkyBox(GLenum diffuse, GLenum position);
+	void drawSkyBox(GLenum diffuse, GLenum position, bool disableDistortion);
 	void drawLocalFog(void);
 	void drawSelection(const glm::vec3 &);
 	void drawUI(MainUserInterface *ui);
