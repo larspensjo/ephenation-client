@@ -60,7 +60,7 @@ public:
 
 	/// Initialize
 	/// @param lumSamplingFactor The windows size is divided by this to get the size of the luminance map
-	void Init(int lightSamplingFactor);
+	void Init(int lightSamplingFactor, bool stereoView);
 
 	void ShadowMapMatrix(const glm::mat4 &) const;
 

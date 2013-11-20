@@ -88,7 +88,7 @@ RenderControl::~RenderControl() {
 	}
 }
 
-void RenderControl::Init(int lightSamplingFactor) {
+void RenderControl::Init(int lightSamplingFactor, bool stereoView) {
 	// This only has to be done first time
 	glGenRenderbuffers(1, &fDepthBuffer);
 	// glGenTextures(1, &fDownSampleLumTextureBlurred); gDebugTextures.push_back(fDownSampleLumTextureBlurred); // Add this texture to the debugging list of textures
@@ -123,6 +123,8 @@ void RenderControl::Init(int lightSamplingFactor) {
 	fDownSamplingLuminance->Init();
 	fAnimationModels.Init();
 	fRequestedCameraDistance = gOptions.fCameraDistance;
+	if (stereoView)
+		fRequestedCameraDistance = 0.0f;
 	fGaussianBlur.reset(new GaussianBlur);
 	fGaussianBlur->Init();
 

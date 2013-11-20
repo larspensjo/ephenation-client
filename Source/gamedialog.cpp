@@ -897,7 +897,7 @@ void gameDialog::DrawScreen(bool hideGUI, bool stereoView) {
 	slAverageFps = 0.97*slAverageFps + 0.03/deltaTime;
 	prevTime = tm;
 
-	this->Update();
+	this->Update(stereoView);
 	fRenderControl.drawClear(fUnderWater); // Clear the screen
 	if (stereoView) {
 		this->UpdateProjection(Controller::gameDialog::ViewType::left);
@@ -906,22 +906,22 @@ void gameDialog::DrawScreen(bool hideGUI, bool stereoView) {
 		float ipd = OculusRift::sfOvr.GetInterpupillaryDistance() * 2.0f; // Multiply with two as there are two units to every meter
 		gViewMatrix = glm::translate(gViewMatrix, glm::vec3(ipd/2.0f, 0.0f, 0.0f));
 		gUniformBuffer.Update(true); // Transfer settings to the graphics card
-		this->render(hideGUI, int(slAverageFps));
+		this->render(hideGUI, int(slAverageFps), true);
 		gViewMatrix = glm::translate(gViewMatrix, glm::vec3(-ipd/2.0f, 0.0f, 0.0f));
 		this->UpdateProjection(Controller::gameDialog::ViewType::right);
 		gUniformBuffer.Update(true); // Transfer settings to the graphics card
-		this->render(hideGUI, int(slAverageFps));
+		this->render(hideGUI, int(slAverageFps), true);
 	} else {
 		this->UpdateProjection(Controller::gameDialog::ViewType::single);
 		if (!Model::gPlayer.BelowGround())
 			fRenderControl.ComputeShadowMap();
 		gUniformBuffer.Update(false); // Transfer settings to the graphics card
-		this->render(hideGUI, int(slAverageFps));
+		this->render(hideGUI, int(slAverageFps), false);
 	}
 	glfwSwapBuffers();
 }
 
-void gameDialog::render(bool hideGUI, int fps) {
+void gameDialog::render(bool hideGUI, int fps, bool stereoView) {
 	static bool first = true; // Only true first time function is called
 	// Clear list of special effects. It will be added again automatically every frame
 	gShadows.Clear();
@@ -1059,7 +1059,7 @@ void gameDialog::init(bool useOvr) {
 		fRenderViewAngle  = OculusRift::sfOvr.GetFieldOfView();
 	else
 		fRenderViewAngle  = 60.0f;
-	fRenderControl.Init(8);
+	fRenderControl.Init(8, useOvr);
 
 	std::shared_ptr<DrawFont> gabriola18(new DrawFont);
 	gabriola18->Init("textures/gabriola18");
@@ -1114,7 +1114,7 @@ void gameDialog::init(bool useOvr) {
 	checkError("gameDialog::init", !gDebugOpenGL);
 }
 
-void gameDialog::Update() {
+void gameDialog::Update(bool stereoView) {
 	static int wheel = 0;
 	static bool inWater = false;
 	static bool inAir = false;
@@ -1124,7 +1124,7 @@ void gameDialog::Update() {
 	// Detect usage of the mouse wheel
 	int newWheel = glfwGetMouseWheel();
 	int zoomDelta = 0;
-	if (newWheel != wheel) {
+	if (!stereoView && newWheel != wheel) {
 		if (fCurrentRocketContextInput) {
 			fCurrentRocketContextInput->ProcessMouseWheel(wheel-newWheel, rocketKeyModifiers);
 		} else if (gMode.Get() == GameMode::CONSTRUCT) {
@@ -1422,7 +1422,7 @@ void gameDialog::SaveScreen() {
     // Make the BYTE array, factor of 3 because it's RBG.
     // unsigned char pixels[ 4 * w * h*2];
     std::unique_ptr<unsigned char[]> pixels(new unsigned char[3*w*h]);
-    this->render(true, 0);
+    this->render(true, 0, false);
 
     glReadPixels(0, 0, w, h, GL_BGR, GL_UNSIGNED_BYTE, pixels.get());
 

@@ -67,7 +67,8 @@ public:
 	void DrawScreen(bool hideGUI, bool stereoView);
 	/// Render many things.
 	/// @todo Nothing should be rendered from here, it should all go into the View of the MVC.
-	void render(bool hideGUI, int fps);
+	/// @param stereoView Will disable some UI and other effects.
+	void render(bool hideGUI, int fps, bool stereoView);
 	/// Compute the projection matrix.
 	enum class ViewType { left, right, single };
 	void UpdateProjection(ViewType v);
@@ -75,7 +76,7 @@ public:
 	~gameDialog();
 	void handleMouse(int button, int action);
 	/// Polled to update various states
-	void Update();
+	void Update(bool stereoView);
 	void SetMessage(const char *);
 	void HandleKeyRelease(int key); // Keyboard event
 	void HandleKeyPress(int key);	// Keyboard event
