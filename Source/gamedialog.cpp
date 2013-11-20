@@ -1093,7 +1093,7 @@ void gameDialog::init(bool useOvr) {
 
 	fRocketGui.Init();
 
-	fMainUserInterface.Init();
+	fMainUserInterface.Init(useOvr);
 	gMsgWindow.Init(fMainUserInterface.GetElement("chat"));
 	fFPS_Element = fMainUserInterface.GetElement("fps");
 	if (fFPS_Element == 0)

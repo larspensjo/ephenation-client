@@ -22,13 +22,7 @@
 	<link type="text/rcss" href="ephenation.rcss"/>
 	<link type="text/rcss" href="userinterface-base.rcss"/>
 	<style>
-		/* A big display that will show graphical representations of player data */
 		/* Override defaults */
-		.playerstats
-		{
-			background-decorator: image;
-			background-image: InGameUI.bmp;
-		}
 	</style>
 </head>
 <body id="body">

@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -44,10 +44,9 @@ using std::string;
 
 class MainUserInterface {
 public:
-	MainUserInterface();
 	~MainUserInterface();
 	void Resize(int w, int h);
-	void Init(void);
+	void Init(bool stereoView);
 
 	// Draw the complete context. The main UI, managed from this class, can be explicitely enabled with 'showGUI'.
 	void Draw(bool showGUI);
@@ -55,9 +54,9 @@ public:
 
 	Rocket::Core::Element *GetElement(string);
 private:
-	Rocket::Core::Context *fRocketContext;
-	Rocket::Core::ElementDocument *fDocument;
-	bool fShowGUI;
+	Rocket::Core::Context *fRocketContext = 0;
+	Rocket::Core::ElementDocument *fDocument = 0;
+	bool fShowGUI = false;
 
 	void DrawCompassRose(void) const;
 	void DrawPlayerStats(void) const;
