@@ -46,7 +46,12 @@ void OculusRift::Create() {
 	fInfo.DistortionK[2] = 0.24f;
 	fInfo.DistortionK[3] = 0.0f;
 	fInfo.InterpupillaryDistance = 0.064f;
-	fInfo.VScreenSize = 0.16f;
+	fInfo.VScreenSize = 0.0935f;
+	fInfo.HScreenSize = 0.14976f;
+	fInfo.VScreenCenter = fInfo.VScreenSize/2.0f;
+	fInfo.LensSeparationDistance = 0.064f;
+	fInfo.HResolution = 1200;
+	fInfo.VResolution = 800;
 	bool InfoLoaded = false;
 	pManager = *DeviceManager::Create();
 	pHMD = *pManager->EnumerateDevices<HMDDevice>().CreateDevice();
@@ -129,6 +134,11 @@ void OculusRift::Create() {
 	Viewport leftVP = leftEye.VP;
 	Matrix4f leftProjection = leftEye.Projection;
 	Matrix4f leftViewAdjust = leftEye.ViewAdjust;
+
+	printf("OculusRift::Create FoV: %f\n", GetFieldOfView());
+	printf("OculusRift::Create IPD: %f\n", GetInterpupillaryDistance());
+	printf("OculusRift::Create HScreenSize: %f\n", GetHorScreenSize());
+	printf("OculusRift::Create LSD: %f\n", GetLensSeparationDistance());
 }
 
 float OculusRift::GetFieldOfView() const {
@@ -138,3 +148,13 @@ float OculusRift::GetFieldOfView() const {
 float OculusRift::GetInterpupillaryDistance() const {
 	return fInfo.InterpupillaryDistance;
 }
+
+float OculusRift::GetHorScreenSize() const {
+	return fInfo.HScreenSize;
+}
+
+float OculusRift::GetLensSeparationDistance() const {
+	return fInfo.LensSeparationDistance;
+}
+
+OculusRift OculusRift::sfOvr; // An instance of this class.

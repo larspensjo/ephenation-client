@@ -27,6 +27,9 @@ public:
 	void Create();
 	float GetFieldOfView() const;
 	float GetInterpupillaryDistance() const;
+	float GetHorScreenSize() const;
+	float GetLensSeparationDistance() const;
+	static OculusRift sfOvr; // An instance of this class.
 protected:
 private:
 	OVR::System fSystem;

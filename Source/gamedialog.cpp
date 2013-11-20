@@ -67,6 +67,7 @@
 #include "timemeasure.h"
 #include "worsttime.h"
 #include "ChunkProcess.h"
+#include "OculusRift.h"
 
 using namespace Controller;
 using View::SoundControl;
@@ -887,7 +888,7 @@ static void revive(void) {
 
 glm::mat4 gViewMatrix; // Store the view matrix
 
-void gameDialog::DrawScreen(bool hideGUI, bool stereoView, float interpupillaryDistance) {
+void gameDialog::DrawScreen(bool hideGUI, bool stereoView) {
 	static double slAverageFps = 0.0;
 	double tm = gCurrentFrameTime;
 	static double prevTime = 0.0;
@@ -902,10 +903,11 @@ void gameDialog::DrawScreen(bool hideGUI, bool stereoView, float interpupillaryD
 		this->UpdateProjection(Controller::gameDialog::ViewType::left);
 		if (!Model::gPlayer.BelowGround())
 			fRenderControl.ComputeShadowMap();
-		gViewMatrix = glm::translate(gViewMatrix, glm::vec3(interpupillaryDistance/2.0f, 0.0f, 0.0f));
+		float ipd = OculusRift::sfOvr.GetInterpupillaryDistance() * 2.0f; // Multiply with two as there are two units to every meter
+		gViewMatrix = glm::translate(gViewMatrix, glm::vec3(ipd/2.0f, 0.0f, 0.0f));
 		gUniformBuffer.Update(true); // Transfer settings to the graphics card
 		this->render(hideGUI, int(slAverageFps));
-		gViewMatrix = glm::translate(gViewMatrix, glm::vec3(-interpupillaryDistance, 0.0f, 0.0f));
+		gViewMatrix = glm::translate(gViewMatrix, glm::vec3(-ipd/2.0f, 0.0f, 0.0f));
 		this->UpdateProjection(Controller::gameDialog::ViewType::right);
 		gUniformBuffer.Update(true); // Transfer settings to the graphics card
 		this->render(hideGUI, int(slAverageFps));
@@ -1052,8 +1054,11 @@ static int GLFWCALL CloseWindowCallback(void) {
 	return GL_FALSE;          // Prevent the window from closing immediately.
 }
 
-void gameDialog::init(float fieldOfView) {
-	fRenderViewAngle  = fieldOfView;
+void gameDialog::init(bool useOvr) {
+	if (useOvr)
+		fRenderViewAngle  = OculusRift::sfOvr.GetFieldOfView();
+	else
+		fRenderViewAngle  = 60.0f;
 	fRenderControl.Init(8);
 
 	std::shared_ptr<DrawFont> gabriola18(new DrawFont);
@@ -1236,9 +1241,25 @@ void gameDialog::UpdateProjection(ViewType v) {
 	gViewport = glm::vec4((float)xOffset, 0.0f, (float)width, (float)fScreenHeight );
 	float aspectRatio = (float)width / (float)fScreenHeight;
 	// In full screen mode, the window is stretched to match the desktop mode.
-	if (gOptions.fFullScreen)
+	if (gOptions.fFullScreen) {
 		aspectRatio = gDesktopAspectRatio;
+		if (v == ViewType::left || v == ViewType::right)
+			aspectRatio /= 2;
+	}
 	gProjectionMatrix  = glm::perspective(fRenderViewAngle, aspectRatio, 0.01f, maxRenderDistance);  // Create our perspective projection matrix
+	float viewCenter = OculusRift::sfOvr.GetHorScreenSize() * 0.25f;
+	float eyeProjectionShift = viewCenter - OculusRift::sfOvr.GetLensSeparationDistance()*0.5f;
+	float projectionCenterOffset = 2.0f * 4.0f * eyeProjectionShift / OculusRift::sfOvr.GetHorScreenSize(); // Multiply by two as a block in Ephenation is 0.5m
+	switch(v) {
+	case ViewType::left:
+		gProjectionMatrix = glm::translate(glm::mat4(1), glm::vec3(projectionCenterOffset, 0, 0)) * gProjectionMatrix;
+		break;
+	case ViewType::right:
+		gProjectionMatrix = glm::translate(glm::mat4(1), glm::vec3(-projectionCenterOffset, 0, 0)) * gProjectionMatrix;
+		break;
+	case ViewType::single:
+		break;
+	}
 	static int prevWidth = 0, prevHeight = 0;
 	if (prevWidth != width || prevHeight != fScreenHeight) {
 		prevWidth = width;

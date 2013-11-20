@@ -322,22 +322,16 @@ int main(int argc, char** argv) {
 
 	//printf("Game Path: %s\n", dataDir);
 
-	OculusRift oculus;
-
 	gOptions.Init(optionsFilename); // This one should come early, as it is used to initialize things.
 	if (gOptions.fOculusRift)
 		sOculusRiftMode = 1;
-	float fieldOfView = 60.0f, interpupillaryDistance = 0.064f;
 	if (sOculusRiftMode) {
 		if (gDebugOpenGL)
 			printf("main: Oculus Rift mode\n");
-		oculus.Create();
-		fieldOfView = oculus.GetFieldOfView();
-		interpupillaryDistance = oculus.GetInterpupillaryDistance();
+		OculusRift::sfOvr.Create();
 	}
-	printf("Fov: %f, pupillary separation %f\n", fieldOfView, interpupillaryDistance);
 
-	// If there was a saved position, use it for imnitialization.
+	// If there was a saved position, use it for initialization.
 	if (gOptions.fPlayerX != 0 || gOptions.fPlayerY != 0 || gOptions.fPlayerZ != 0)
 		Model::gPlayer.SetPosition(gOptions.fPlayerX, gOptions.fPlayerY, gOptions.fPlayerZ);
 	unsigned maxThreads = gOptions.fNumThreads;
@@ -416,7 +410,7 @@ int main(int argc, char** argv) {
 	gUniformBuffer.Init();
 	gDrawFont.Init("textures/georgia12"); // Must be done before gGameDialog.
 	GameTexture::Init();
-	Controller::gGameDialog.init(fieldOfView);
+	Controller::gGameDialog.init(sOculusRiftMode);
 	ChunkShader *shader = ChunkShader::Make();
 	gChunkShaderPicking.Init();
 	Tree::InitStatic();
@@ -462,7 +456,7 @@ int main(int argc, char** argv) {
 				ListenForServerMessages();
 		}
 
-		Controller::gGameDialog.DrawScreen(sHideGUI, sOculusRiftMode, interpupillaryDistance);
+		Controller::gGameDialog.DrawScreen(sHideGUI, sOculusRiftMode);
 
 		View::Chunk::DegradeBusyList_gl();
 

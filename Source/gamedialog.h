@@ -64,15 +64,14 @@ public:
 	/// Called every frame
 	/// @param hideGUI Hide all GUI, for use when taking pictures, etc.
 	/// @param stereoView Used for Oculus Rift (OVR).
-	/// @param interpupillaryDistance The distance between the pupils when using OVR.
-	void DrawScreen(bool hideGUI, bool stereoView, float interpupillaryDistance);
+	void DrawScreen(bool hideGUI, bool stereoView);
 	/// Render many things.
 	/// @todo Nothing should be rendered from here, it should all go into the View of the MVC.
 	void render(bool hideGUI, int fps);
 	/// Compute the projection matrix.
 	enum class ViewType { left, right, single };
 	void UpdateProjection(ViewType v);
-	void init(float fieldOfView);
+	void init(bool useOvr);
 	~gameDialog();
 	void handleMouse(int button, int action);
 	/// Polled to update various states

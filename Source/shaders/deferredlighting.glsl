@@ -29,8 +29,8 @@ void main(void)
 uniform sampler2D diffuseTex; // The color information
 uniform sampler2D posTex;     // World position
 uniform sampler2D normalTex;  // Normals
-uniform sampler2D blendTex;   // A bitmap with colors to blend with, afterwars.
-uniform sampler2D lightTex;   // A bitmap with colors to blend with, afterwars.
+uniform sampler2D blendTex;   // A bitmap with colors to blend with, afterwards.
+uniform sampler2D lightTex;
 uniform sampler1D poissondisk;
 uniform bool Udead;            // True if the player is dead
 uniform bool Uwater;           // True when head is in water
