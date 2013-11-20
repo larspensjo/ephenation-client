@@ -19,6 +19,8 @@
 
 #include "OVR.h"
 
+namespace Controller {
+
 class OculusRift
 {
 public:
@@ -34,4 +36,6 @@ protected:
 private:
 	OVR::System fSystem;
 	OVR::HMDInfo fInfo;
+};
+
 };

@@ -328,7 +328,7 @@ int main(int argc, char** argv) {
 	if (sOculusRiftMode) {
 		if (gDebugOpenGL)
 			printf("main: Oculus Rift mode\n");
-		OculusRift::sfOvr.Create();
+		Controller::OculusRift::sfOvr.Create();
 	}
 
 	// If there was a saved position, use it for initialization.

@@ -24,6 +24,7 @@ using namespace std;
 #include "OculusRift.h"
 
 using namespace OVR;
+using namespace Controller;
 
 OculusRift::OculusRift() : fSystem(Log::ConfigureDefaultLog(LogMask_All))
 {
