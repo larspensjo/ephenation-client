@@ -58,7 +58,7 @@ void main(void)
 {
 	vec2 screen = Ascreen;
 	if (UBOEnableDistortion) {
-		screen = HmdWarp(Ascreen);
+		screen = HmdWarp(Ascreen-vec2(0.5, 0.5)) + vec2(0.5, 0.5);
 	}
 	// Load data, stored in textures, from the first stage rendering.
 	normal = texture(normalTex, screen);

@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -24,7 +24,10 @@ layout (location=1) in vec4 Acolor;  // Location must match COLOR_INDEX
 out vec4 color;
 void main(void)
 {
-	gl_Position = UprojectionMatrix * UmodelViewMatrix * vec4(Avertex,1.0);
+	vec4 pos = UprojectionMatrix * UmodelViewMatrix * vec4(Avertex,1.0);
+	if (UBOEnableDistortion == 1)
+		pos.xy = HmdWarp(pos.xy);
+	gl_Position = pos;
 	color = Acolor;
 }
 
