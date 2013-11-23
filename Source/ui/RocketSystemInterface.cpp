@@ -20,6 +20,7 @@
 
 #include "RocketSystemInterface.h"
 #include "../primitives.h"
+#include "../Debug.h"
 
 bool RocketSystemInterface::LogMessage(Rocket::Core::Log::Type error_type, const Rocket::Core::String& message)
 {
@@ -55,7 +56,7 @@ bool RocketSystemInterface::LogMessage(Rocket::Core::Log::Type error_type, const
 		break;
 	};
 
-	printf("%s - %s\n", type.c_str(), message.CString());
+	LPLOG("%s - %s", type.c_str(), message.CString());
 
 	return true;
 }

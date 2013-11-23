@@ -22,6 +22,7 @@
 using namespace std;
 
 #include "OculusRift.h"
+#include "Debug.h"
 
 using namespace OVR;
 using namespace Controller;
@@ -68,21 +69,17 @@ void OculusRift::Create() {
 	   pFusionResult->AttachToSensor(pSensor);
 	}
 
-	cout << "----- Oculus Console -----" << endl;
-
 	if (pHMD) {
-		cout << " [x] HMD Found" << endl;
+		LPLOG(" [x] HMD Found");
 	} else {
-		cout << " [ ] HMD Not Found" << endl;
+		LPLOG(" [ ] HMD Not Found");
 	}
 
 	if (pSensor) {
-		cout << " [x] Sensor Found" << endl;
+		LPLOG(" [x] Sensor Found");
 	} else {
-		cout << " [ ] Sensor Not Found" << endl;
+		LPLOG(" [ ] Sensor not found");
 	}
-
-	cout << "--------------------------" << endl;
 
 	if (InfoLoaded) {
 		cout << " DisplayDeviceName: " << fInfo.DisplayDeviceName << endl;
@@ -136,10 +133,10 @@ void OculusRift::Create() {
 	Matrix4f leftProjection = leftEye.Projection;
 	Matrix4f leftViewAdjust = leftEye.ViewAdjust;
 
-	printf("OculusRift::Create FoV: %f\n", GetFieldOfView());
-	printf("OculusRift::Create IPD: %f\n", GetInterpupillaryDistance());
-	printf("OculusRift::Create HScreenSize: %f\n", GetHorScreenSize());
-	printf("OculusRift::Create LSD: %f\n", GetLensSeparationDistance());
+	LPLOG("OculusRift::Create FoV: %f", GetFieldOfView());
+	LPLOG("OculusRift::Create IPD: %f", GetInterpupillaryDistance());
+	LPLOG("OculusRift::Create HScreenSize: %f", GetHorScreenSize());
+	LPLOG("OculusRift::Create LSD: %f", GetLensSeparationDistance());
 }
 
 float OculusRift::GetFieldOfView() const {

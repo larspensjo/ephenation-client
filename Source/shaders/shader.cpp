@@ -28,6 +28,7 @@
 #include "../uniformbuffer.h"
 #include "../ui/Error.h"
 #include "../contrib/glsw.h"
+#include "../Debug.h"
 
 void ShaderBase::Initglsw(const char *debug, int vertexShaderLines, const char **vertexShaderSource, int fragmentShaderLines, const char **fragmentShaderSource) {
 	const char *loadedVertexLines[vertexShaderLines+1];
@@ -38,7 +39,7 @@ void ShaderBase::Initglsw(const char *debug, int vertexShaderLines, const char *
 			p = glswGetShader(p); // Directives are not translated
 		if (p == 0)
 			ErrorDialog("ShaderBase::Initglsw %s failed to load '%s'\n", debug, vertexShaderSource[i]);
-		// printf("%s", p);
+		// LPLOG("%s", p);
 		loadedVertexLines[i+1] = p;
 	}
 
@@ -50,7 +51,7 @@ void ShaderBase::Initglsw(const char *debug, int vertexShaderLines, const char *
 			p = glswGetShader(p); // Directives are not translated
 		if (p == 0)
 			ErrorDialog("ShaderBase::Initglsw %s failed to load '%s'\n", debug, fragmentShaderSource[i]);
-		// printf("%s", p);
+		// LPLOG("%s", p);
 		loadedFragmnetLines[i+1] = p;
 	}
 
@@ -65,7 +66,7 @@ void ShaderBase::Init(const char *debug, int vertexShaderLines, const char **ver
 	// TODO: glDeleteShader() could probably be called here.
 	glUseProgram(fProgram);
 
-#if 0
+#if 1
 	// Enable this to show the list of attrib parameters
 	GLint numAttrib;
 	glGetProgramiv(fProgram, GL_ACTIVE_ATTRIBUTES, &numAttrib);
@@ -75,7 +76,7 @@ void ShaderBase::Init(const char *debug, int vertexShaderLines, const char **ver
 		GLint size;
 		GLenum type;
 		glGetActiveAttrib(fProgram, i, sizeof buff, &len, &size, &type, buff);
-		printf("ShaderBase::Init Attribute %d: '%s', len %d, size %d, type %d\n", i, buff, len, size, type);
+		LPLOG("ShaderBase::Init %s Attribute %d: '%s', size %d, type %d", debug, i, buff, size, type);
 	}
 #endif
 

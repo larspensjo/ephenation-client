@@ -1092,7 +1092,7 @@ void gameDialog::init(bool useOvr) {
 	glfwSetMouseButtonCallback(dialogHandleMouse);
 	glfwSetWindowCloseCallback(CloseWindowCallback);
 
-	fRocketGui.Init(true, fRenderViewAngle);
+	fRocketGui.Init(useOvr, fRenderViewAngle);
 
 	fMainUserInterface.Init(useOvr);
 	gMsgWindow.Init(fMainUserInterface.GetElement("chat"));
