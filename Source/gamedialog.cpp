@@ -1002,9 +1002,9 @@ void gameDialog::render(bool hideGUI, int fps, bool stereoView) {
 		}
 
 		if (gCurrentPing == 0.0 || !gShowPing)
-			sprintf(buff, "Triangles %7d, draw calls %d. Fps %03d", gDrawnQuads, gNumDraw, fps);
+			sprintf(buff, "Tri %7d draw %d Fps %03d", gDrawnQuads, gNumDraw, fps);
 		else
-			sprintf(buff, "Triangles %7d, draw calls %d. Fps %03d, ping %.1f ms", gDrawnQuads, gNumDraw, fps, gCurrentPing*1000.0);
+			sprintf(buff, "Tri %7d draw %d Fps %03d ping %.1f ms", gDrawnQuads, gNumDraw, fps, gCurrentPing*1000.0);
 
 		if (gMode.Get() == GameMode::CONSTRUCT) {
 			ChunkCoord cc;
@@ -1216,7 +1216,10 @@ void gameDialog::Update(bool stereoView) {
 	if (fCurrentRocketContextInput == 0 && gMode.Get() == GameMode::LOGIN) {
 		// Login mode, get the login dialog.
 		fCurrentRocketContextInput = fMainUserInterface.GetRocketContext();
-		gDialogFactory.Make(fCurrentRocketContextInput, "login.rml");
+		const char *rml = "login.rml";
+		if (stereoView)
+			rml = "login-ovr.rml";
+		gDialogFactory.Make(fCurrentRocketContextInput, rml);
 	}
 
 	// Can't select objects that are dead

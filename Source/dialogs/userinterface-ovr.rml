@@ -23,6 +23,17 @@
 	<link type="text/rcss" href="userinterface-base.rcss"/>
 	<style>
 		/* Override defaults */
+		body
+		{
+			width: 66%;
+			height: 66%;
+			left: 17%;
+			top: 17%;
+		}
+		.inputarea { font-size: 15px; }
+		.chatwindow { font-size: 12px; }
+		.playerstatsoneliner { font-size: 12px; }
+		.fpsdisplay { font-size: 12px; }
 	</style>
 </head>
 <body id="body">
@@ -30,7 +41,7 @@
 		<div id="chat" class="chatwindow"></div>
 	</handle>
 	<div class="playerstats">
-		<div style="position: absolute; left:50%;bottom:10%;font-size:22;white-space:pre;">ESC:Menu      TAB:Select monster      1:Attack</div>
+		<div style="position: absolute; left:50%;bottom:10%;white-space:pre;">ESC:Menu      TAB:Select monster      1:Attack</div>
 	</div>
 	<div id="fps" class="fpsdisplay"></div>
 	<div id="playerstatsoneliner" class="playerstatsoneliner"></div>

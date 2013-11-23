@@ -29,6 +29,21 @@
 			background-decorator: image;
 			background-image: InGameUI.bmp;
 		}
+		.fpsdisplay
+		{
+			background-color: rgba(0,0,0,30%); /* Semi transparent black background */
+		}
+		.playerstatsoneliner
+		{
+			background-color: rgba(0,0,0,30%); /* Semi transparent black background */
+		}
+		.chatwindow
+		{
+			background-color: rgba(0,0,0,30%); /* Semi transparent black background */
+		}
+		.inputarea {
+			background-color: rgba(0,0,0,30%);
+		}
 	</style>
 </head>
 <body id="body">
@@ -36,7 +51,7 @@
 		<div id="chat" class="chatwindow"></div>
 	</handle>
 	<div class="playerstats">
-		<div style="position: absolute; left:50%;bottom:10%;font-size:22;white-space:pre;">ESC:Menu      TAB:Select monster      1:Attack</div>
+		<div style="position: absolute; left:50%;bottom:10%;white-space:pre;">ESC:Menu      TAB:Select monster      1:Attack</div>
 	</div>
 	<div id="fps" class="fpsdisplay"></div>
 	<div id="playerstatsoneliner" class="playerstatsoneliner"></div>

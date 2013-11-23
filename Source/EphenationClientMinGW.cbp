@@ -160,6 +160,7 @@
 		<Unit filename="dialogs/credits.rml" />
 		<Unit filename="dialogs/ephenation.rcss" />
 		<Unit filename="dialogs/help.rml" />
+		<Unit filename="dialogs/login-ovr.rml" />
 		<Unit filename="dialogs/login.rml" />
 		<Unit filename="dialogs/messagedialog.rml" />
 		<Unit filename="dialogs/popup.rcss" />

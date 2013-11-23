@@ -18,7 +18,6 @@ body
 	font-family: Georgia;
 	font-size: 15px;
 	color: white;
-	background-color: rgba(0,0,0,30%); /* Semi transparent black background */
 }
 
 /* A big display that will show graphical representations of player data */
@@ -30,7 +29,7 @@ body
 	bottom: 0;
 }
 
-/* A small display that shiows the player stats in numbers */
+/* A small display that shows the player stats in numbers */
 .playerstatsoneliner
 {
 	height: 1.5em;
@@ -41,7 +40,6 @@ body
 	right: 0;
 	top: 0;
 	font-family: Georgia;
-	background-color: rgba(0,0,0,30%); /* Semi transparent black background */
 	z-index: 0;
 }
 
@@ -52,7 +50,6 @@ body
 	position: absolute;
 	right: 5;
 	bottom: 10%;
-	background-color: rgba(0,0,0,30%); /* Semi transparent black background */
 	font-family: Georgia;
 	font-size: 15px;
 	color: white;
@@ -63,7 +60,6 @@ body
 
 .inputarea {
 	font-size: 22px;
-	background-color: rgba(0,0,0,30%);
 	bottom: 0px;
 	left: 5px;
 	position: absolute;
