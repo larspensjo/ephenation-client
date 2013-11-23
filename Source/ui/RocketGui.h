@@ -23,7 +23,7 @@
 class RocketGui
 {
 public:
-	void Init();
+	void Init(bool stereoView);
 
 	void LoadFonts(const std::string& dir);
 

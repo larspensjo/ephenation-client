@@ -137,9 +137,9 @@ Rocket::Core::Input::KeyIdentifier RocketGui::KeyMap(int key) {
 	return key_identifier_map[key];
 }
 
-void RocketGui::Init()
+void RocketGui::Init(bool stereoView)
 {
-	fRocketRenderInterface.Init();
+	fRocketRenderInterface.Init(stereoView);
 	Rocket::Core::SetRenderInterface(&fRocketRenderInterface);
 	Rocket::Core::SetSystemInterface(&fRocketSystemInterface);
 

@@ -26,9 +26,7 @@
 class RocketRenderInterface: public Rocket::Core::RenderInterface
 {
 public:
-	RocketRenderInterface();
-
-	void Init();
+	void Init(bool stereoView);
 
 	virtual void RenderGeometry(Rocket::Core::Vertex* vertices, int num_vertices, int* indices, int num_indices, Rocket::Core::TextureHandle texture, const Rocket::Core::Vector2f& translation);
 
@@ -59,6 +57,7 @@ private:
 		GLuint vbi;
 	};
 
-	ColorShader *fColorShader; // Pointer to singleton, do not delete
+	ColorShader *fColorShader = 0; // Pointer to singleton, do not delete
 	ModulatedTextureShader fModulatedTextureShader;
+	bool fStereoView = false;
 };

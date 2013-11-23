@@ -24,14 +24,12 @@
 #include "../textures.h"
 #include "../imageloader.h"
 #include "RocketRenderInterface.h"
+#include "../Debug.h"
 
-RocketRenderInterface::RocketRenderInterface() : fColorShader(0)
-{
-}
-
-void RocketRenderInterface::Init() {
+void RocketRenderInterface::Init(bool stereoView) {
 	fColorShader = ColorShader::Make();
 	fModulatedTextureShader.Init();
+	fStereoView = stereoView;
 }
 
 void RocketRenderInterface::RenderGeometry(Rocket::Core::Vertex* vertices,  int num_vertices, int* indices, int num_indices, const Rocket::Core::TextureHandle texture, const Rocket::Core::Vector2f& translation)
@@ -41,11 +39,12 @@ void RocketRenderInterface::RenderGeometry(Rocket::Core::Vertex* vertices,  int 
 
 Rocket::Core::CompiledGeometryHandle RocketRenderInterface::CompileGeometry(Rocket::Core::Vertex* vertices, int num_vertices, int* indices, int num_indices, const Rocket::Core::TextureHandle texturehandle)
 {
+	Geometry* geometry = new Geometry;
+	// LPLOG("geo %x vertices %d indices %d texture %d", geometry, num_vertices, num_indices, texturehandle);
+
 	// Invert texture y, to match OpenGL.
 	for (int i=0; i<num_vertices; i++)
 		vertices[i].tex_coord.y = 1-vertices[i].tex_coord.y;
-
-	Geometry* geometry = new Geometry;
 
 	geometry->texture = (GLuint)texturehandle;
 
@@ -88,10 +87,24 @@ Rocket::Core::CompiledGeometryHandle RocketRenderInterface::CompileGeometry(Rock
 
 void RocketRenderInterface::RenderCompiledGeometry(Rocket::Core::CompiledGeometryHandle geometry_ptr, const Rocket::Core::Vector2f& translation)
 {
-	glm::mat4 proj = glm::ortho(0.0f, gViewport[2], gViewport[3], 0.0f, -1.0f, 1.0f);
-	glm::vec3 offset(translation.x, translation.y, 0.0f);
-	glm::mat4 model = glm::translate(glm::mat4(1.0), offset);
+	glm::mat4 proj, model;
+	if (fStereoView) {
+		// We want to draw the GUI as if it is placed out in the world.
+		float aspect = float(gViewport[2]) / float(gViewport[3]);
+		proj = glm::perspective(90.0f, aspect, 10.0f, 10000.0f);
+		glm::vec3 offset(translation.x-gViewport[2]/2, translation.y-gViewport[3]/2, -500.0f);
+		glm::mat4 scale = glm::scale(glm::mat4(1), glm::vec3(1.0f, -1.0f, 1.0f));
+		glm::mat4 translate = glm::translate(glm::mat4(1.0), offset);
+		model = scale * translate;
+	} else {
+		proj = glm::ortho(0.0f, gViewport[2], gViewport[3], 0.0f, -1.0f, 1.0f);
+		glm::vec3 offset(translation.x, translation.y, 0.0f);
+		glm::mat4 translate = glm::translate(glm::mat4(1.0), offset);
+		model = translate;
+	}
+
 	Geometry* geometry = reinterpret_cast<Geometry*>(geometry_ptr);
+	// LPLOG("Geo 0x%x, texture %d, numInd %d, translX %.1f translY %.1f", geometry, geometry->texture, geometry->numIndices, translation.x, translation.y);
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_CULL_FACE);
 	glBindVertexArray(geometry->vao);
@@ -134,6 +147,7 @@ void RocketRenderInterface::EnableScissorRegion(bool enable)
 
 void RocketRenderInterface::SetScissorRegion(int x, int y, int width, int height)
 {
+	LPLOG("%d, %d, %d, %d", x, y, width, height);
 	glScissor(x, gViewport[3]-(y+height), width, height);
 }
 
