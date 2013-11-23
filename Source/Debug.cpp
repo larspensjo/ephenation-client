@@ -21,14 +21,28 @@
 
 #include "Debug.h"
 
+static std::FILE *out = stdout;
+
 void LPLog(const char *func, const char *file, int line, const char *fmt, ...) {
 	std::time_t result = std::time(NULL);
 	char buff[30];
 	std::strftime(buff, sizeof buff, "%c", std::localtime(&result));
-	std::printf("%s %s:%s:%d ", buff, file, func, line);
+	std::fprintf(out, "%s %s:%s:%d ", buff, file, func, line);
 	std::va_list args;
 	va_start(args, fmt);
-	std::vprintf(fmt, args);
-	std::printf("\n");
-	std::fflush(stdout);
+	std::vfprintf(out, fmt, args);
+	std::fprintf(out, "\n");
+	std::fflush(out);
+}
+
+/// Select output file for logging.
+/// Default is stdout
+void LPLogFile(const char *file) {
+#ifdef DEBUG
+	std::FILE *f = std::fopen(file, "w");
+	if (f == nullptr)
+		LPLOG("Failed to open %s", file);
+	else
+		out = f;
+#endif // DEBUG
 }

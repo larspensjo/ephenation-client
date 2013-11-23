@@ -246,6 +246,11 @@ static struct option long_options[] = {
 };
 
 int main(int argc, char** argv) {
+#ifdef _WIN32
+	LPLogFile("ephenation.log");
+#else
+	LPLogFile("/tmp/ephenation.log");
+#endif
 	if (!glfwInit()) {
 		ErrorDialog("Failed to initialize GLFW\n");
 		exit(EXIT_FAILURE);
