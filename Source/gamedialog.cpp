@@ -68,6 +68,7 @@
 #include "worsttime.h"
 #include "ChunkProcess.h"
 #include "OculusRift.h"
+#include "Debug.h"
 
 using namespace Controller;
 using View::SoundControl;
@@ -424,7 +425,7 @@ void gameDialog::handleMouse(int button, int action) {
 		glfwGetMousePos(&x, &y);
 		const ChunkCoord *cc = TeleportClick(fHealthBar, _angleHor, fRenderViewAngle, x, y, true);
 		if (cc != 0) {
-			// printf("TP to chunk %d,%d,%d\n", cc->x, cc->y, cc->z);
+			LPLOG("TP to chunk %d,%d,%d\n", cc->x, cc->y, cc->z);
 			unsigned char b[6];
 			b[0] = 6;
 			b[1] = 0;
@@ -439,7 +440,7 @@ void gameDialog::handleMouse(int button, int action) {
 }
 
 void handleResize(int w, int h) {
-	// printf("::handleResize: %dx%d", w, h);
+	LPLOG("%dx%d", w, h);
 	if (w == 0 || h == 0)
 		return; // This will happen when window is iconified.
 	gGameDialog.handleResize(w, h);
@@ -1476,7 +1477,7 @@ void gameDialog::SaveScreen() {
 		return;
 	}
 	filename = string(home) + "\\EphenationSnapShot.bmp";
-	printf("File: '%s'\n", filename.c_str());
+	LPLOG("File: '%s'\n", filename.c_str());
 #endif // unix
 
     f = fopen(filename.c_str(),"wb");

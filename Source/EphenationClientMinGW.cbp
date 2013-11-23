@@ -99,6 +99,8 @@
 		<Unit filename="ChunkObject.h" />
 		<Unit filename="ChunkProcess.cpp" />
 		<Unit filename="ChunkProcess.h" />
+		<Unit filename="Debug.cpp" />
+		<Unit filename="Debug.h" />
 		<Unit filename="DrawText.cpp" />
 		<Unit filename="DrawText.h" />
 		<Unit filename="DrawTexture.cpp" />

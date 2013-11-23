@@ -307,7 +307,7 @@ show:
 	@echo 'link.cxx    :' $(LINK.cxx)
 
 Debug:
-	$(MAKE) -f Makefile.mingw CFLAGS="-g --std=c++11"
+	$(MAKE) -f Makefile.mingw CFLAGS="-g --std=c++11 -DDEBUG"
 
 ## End of the Makefile ##  Suggestions are welcome  ## All rights reserved ##
 #############################################################################
