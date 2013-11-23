@@ -92,9 +92,12 @@ void RocketRenderInterface::RenderCompiledGeometry(Rocket::Core::CompiledGeometr
 	if (fStereoView) {
 		// We want to draw the GUI as if it is placed out in the world.
 		float aspect = float(gViewport[2]) / float(gViewport[3]);
-		proj = glm::perspective(fFieldOfView, aspect, 10.0f, 10000.0f);
-		glm::vec3 offset(translation.x-gViewport[2]/2, translation.y-gViewport[3]/2, -500.0f);
-		glm::mat4 scale = glm::scale(glm::mat4(1), glm::vec3(1.0f, -1.0f, 1.0f));
+		proj = glm::perspective(fFieldOfView, aspect, 0.1f, 10.0f);
+		glm::vec3 offset(translation.x-gViewport[2]/2, translation.y-gViewport[3]/2, -fGuiDistance);
+		glm::vec4 p = proj * glm::vec4(0.0f, 1.0f, -fGuiDistance, 1.0f);
+		p /= p.w;
+		float fact = 2.0f/p.y/gViewport[3];
+		glm::mat4 scale = glm::scale(glm::mat4(1), glm::vec3(fact, -fact, 1.0f));
 		glm::mat4 translate = glm::translate(glm::mat4(1.0), offset);
 		model = scale * translate;
 	} else {

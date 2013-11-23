@@ -63,4 +63,5 @@ private:
 	ModulatedTextureShader fModulatedTextureShader;
 	bool fStereoView = false;
 	float fFieldOfView = 90.0f;
+	float fGuiDistance = 2.0f; // A distance that feels good for the eyes.
 };
