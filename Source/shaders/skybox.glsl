@@ -49,7 +49,7 @@ void main(void)
 {
 	vec2 coord = TexCoord;
 	if (UBOEnableDistortion == 1 && !UDisableDistortion) {
-		coord = HmdWarp(TexCoord);
+		coord = HmdWarp(TexCoord-vec2(0.5, 0.5)) + vec2(0.5, 0.5);
 	}
 	vec3 color = texture(UTextureSampler, coord).rgb;
 	// Use a vertical fog gradient to add fog to all pixels below a certain height.
