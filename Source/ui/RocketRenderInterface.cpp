@@ -26,10 +26,11 @@
 #include "RocketRenderInterface.h"
 #include "../Debug.h"
 
-void RocketRenderInterface::Init(bool stereoView) {
+void RocketRenderInterface::Init(bool stereoView, float fieldOfView) {
 	fColorShader = ColorShader::Make();
 	fModulatedTextureShader.Init();
 	fStereoView = stereoView;
+	fFieldOfView = fieldOfView;
 }
 
 void RocketRenderInterface::RenderGeometry(Rocket::Core::Vertex* vertices,  int num_vertices, int* indices, int num_indices, const Rocket::Core::TextureHandle texture, const Rocket::Core::Vector2f& translation)
@@ -91,7 +92,7 @@ void RocketRenderInterface::RenderCompiledGeometry(Rocket::Core::CompiledGeometr
 	if (fStereoView) {
 		// We want to draw the GUI as if it is placed out in the world.
 		float aspect = float(gViewport[2]) / float(gViewport[3]);
-		proj = glm::perspective(90.0f, aspect, 10.0f, 10000.0f);
+		proj = glm::perspective(fFieldOfView, aspect, 10.0f, 10000.0f);
 		glm::vec3 offset(translation.x-gViewport[2]/2, translation.y-gViewport[3]/2, -500.0f);
 		glm::mat4 scale = glm::scale(glm::mat4(1), glm::vec3(1.0f, -1.0f, 1.0f));
 		glm::mat4 translate = glm::translate(glm::mat4(1.0), offset);
