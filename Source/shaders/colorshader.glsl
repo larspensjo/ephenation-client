@@ -25,8 +25,10 @@ out vec4 color;
 void main(void)
 {
 	vec4 pos = UprojectionMatrix * UmodelViewMatrix * vec4(Avertex,1.0);
-	if (UBOEnableDistortion == 1)
+	if (UBOEnableDistortion == 1) {
+		pos /= pos.w;
 		pos.xy = HmdWarp(pos.xy);
+	}
 	gl_Position = pos;
 	color = Acolor;
 }

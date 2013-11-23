@@ -28,8 +28,10 @@ void main(void)
 	fragmentTexCoord = AtexCoord;
 	colorFactor = AcolorFactor;
 	vec4 pos = UprojectionMatrix * UmodelViewMatrix * vec4(Avertex,1.0);
-	if (UBOEnableDistortion == 1)
+	if (UBOEnableDistortion == 1) {
+		pos /= pos.w;
 		pos.xy = HmdWarp(pos.xy);
+	}
 	gl_Position = pos;
 }
 

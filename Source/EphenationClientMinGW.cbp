@@ -165,6 +165,8 @@
 		<Unit filename="dialogs/popup.rcss" />
 		<Unit filename="dialogs/topleveldialog.rml" />
 		<Unit filename="dialogs/topoptions.rml" />
+		<Unit filename="dialogs/userinterface-base.rcss" />
+		<Unit filename="dialogs/userinterface-ovr.rml" />
 		<Unit filename="dialogs/userinterface.rml" />
 		<Unit filename="ephenation.rc">
 			<Option compilerVar="WINDRES" />
