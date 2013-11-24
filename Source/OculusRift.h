@@ -31,11 +31,16 @@ public:
 	float GetInterpupillaryDistance() const;
 	float GetHorScreenSize() const;
 	float GetLensSeparationDistance() const;
+
+	void UseLeftEeye() { fLeftEyeSelected = true; }
+	void UseRightEye() { fLeftEyeSelected = false; }
 	static OculusRift sfOvr; // An instance of this class.
 protected:
 private:
 	OVR::System fSystem;
 	OVR::HMDInfo fInfo;
+
+	bool fLeftEyeSelected = true;
 };
 
 };

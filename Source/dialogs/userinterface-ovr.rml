@@ -34,6 +34,7 @@
 		.chatwindow { font-size: 12px; }
 		.playerstatsoneliner { font-size: 12px; }
 		.fpsdisplay { font-size: 12px; }
+		.playerstats { font-size: 12px; }
 	</style>
 </head>
 <body id="body">
@@ -41,7 +42,7 @@
 		<div id="chat" class="chatwindow"></div>
 	</handle>
 	<div class="playerstats">
-		<div style="position: absolute; left:50%;bottom:10%;white-space:pre;">ESC:Menu      TAB:Select monster      1:Attack</div>
+		<div style="position: absolute; left:20%;bottom:10%;white-space:pre;">ESC:Menu, TAB:Select monster, 1:Attack</div>
 	</div>
 	<div id="fps" class="fpsdisplay"></div>
 	<div id="playerstatsoneliner" class="playerstatsoneliner"></div>

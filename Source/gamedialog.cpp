@@ -901,14 +901,17 @@ void gameDialog::DrawScreen(bool hideGUI, bool stereoView) {
 	this->Update(stereoView);
 	fRenderControl.drawClear(fUnderWater); // Clear the screen
 	if (stereoView) {
+		OculusRift::sfOvr.UseLeftEeye();
 		this->UpdateProjection(Controller::gameDialog::ViewType::left);
 		if (!Model::gPlayer.BelowGround())
 			fRenderControl.ComputeShadowMap();
 		float ipd = OculusRift::sfOvr.GetInterpupillaryDistance() * 2.0f; // Multiply with two as there are two units to every meter
-		gViewMatrix = glm::translate(gViewMatrix, glm::vec3(ipd/2.0f, 0.0f, 0.0f));
+		gViewMatrix = glm::translate(gViewMatrix, glm::vec3(ipd/2.0f, 0.0f, 0.0f)); // Move half distance from center to left eye
 		gUniformBuffer.Update(true); // Transfer settings to the graphics card
 		this->render(hideGUI, int(slAverageFps), true);
-		gViewMatrix = glm::translate(gViewMatrix, glm::vec3(-ipd/2.0f, 0.0f, 0.0f));
+
+		OculusRift::sfOvr.UseRightEye();
+		gViewMatrix = glm::translate(gViewMatrix, glm::vec3(-ipd, 0.0f, 0.0f)); // Move full distance, from left eye to right eye
 		this->UpdateProjection(Controller::gameDialog::ViewType::right);
 		gUniformBuffer.Update(true); // Transfer settings to the graphics card
 		this->render(hideGUI, int(slAverageFps), true);
