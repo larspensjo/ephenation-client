@@ -25,6 +25,7 @@
 #include "../imageloader.h"
 #include "RocketRenderInterface.h"
 #include "../Debug.h"
+#include "../OculusRift.h"
 
 void RocketRenderInterface::Init(bool stereoView, float fieldOfView) {
 	fColorShader = ColorShader::Make();
@@ -89,17 +90,20 @@ Rocket::Core::CompiledGeometryHandle RocketRenderInterface::CompileGeometry(Rock
 void RocketRenderInterface::RenderCompiledGeometry(Rocket::Core::CompiledGeometryHandle geometry_ptr, const Rocket::Core::Vector2f& translation)
 {
 	glm::mat4 proj, model;
+	glm::mat4 view(1);
 	if (fStereoView) {
 		// We want to draw the GUI as if it is placed out in the world.
 		float aspect = float(gViewport[2]) / float(gViewport[3]);
-		proj = glm::perspective(fFieldOfView, aspect, 0.1f, 10.0f);
+		float adj = Controller::OculusRift::sfOvr.GetHorProjectionAdjustment();
+		proj = glm::translate(glm::mat4(1), glm::vec3(adj, 0.0f, 0.0f)) * glm::perspective(fFieldOfView, aspect, 0.1f, 10.0f);
 		glm::vec3 offset(translation.x-gViewport[2]/2, translation.y-gViewport[3]/2, -fGuiDistance);
 		glm::vec4 p = proj * glm::vec4(0.0f, 1.0f, -fGuiDistance, 1.0f);
 		p /= p.w;
 		float fact = 2.0f/p.y/gViewport[3];
 		glm::mat4 scale = glm::scale(glm::mat4(1), glm::vec3(fact, -fact, 1.0f));
 		glm::mat4 translate = glm::translate(glm::mat4(1.0), offset);
-		model = scale * translate;
+		view = glm::translate(glm::mat4(1), glm::vec3(Controller::OculusRift::sfOvr.GetHorViewAdjustment(), 0.0f, 0.0f));
+		model = view * scale * translate;
 	} else {
 		proj = glm::ortho(0.0f, gViewport[2], gViewport[3], 0.0f, -1.0f, 1.0f);
 		glm::vec3 offset(translation.x, translation.y, 0.0f);
