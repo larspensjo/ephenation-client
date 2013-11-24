@@ -394,7 +394,7 @@ int main(int argc, char** argv) {
 
 	if (gDebugOpenGL) {
 		dumpInfo(major, minor, revision); // Enable this to show some version information about the OpenGL and the graphics card.
-		// dumpGraphicsMemoryStats();
+		dumpGraphicsMemoryStats();
 		// const GLubyte* sExtensions = glGetString(GL_EXTENSIONS);
 		// LPLOG("GL extensions: %s", sExtensions);
 		// glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB);
@@ -464,8 +464,11 @@ int main(int argc, char** argv) {
 
 		View::Chunk::DegradeBusyList_gl();
 
-		if (gMode.Get() == GameMode::ESC)
+		if (gMode.Get() == GameMode::ESC) {
+			if (gDebugOpenGL)
+				dumpGraphicsMemoryStats();
 			glfwCloseWindow();
+		}
 		tm.Stop();
 	}
 

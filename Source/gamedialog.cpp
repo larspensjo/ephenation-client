@@ -901,17 +901,17 @@ void gameDialog::DrawScreen(bool hideGUI, bool stereoView) {
 	this->Update(stereoView);
 	fRenderControl.drawClear(fUnderWater); // Clear the screen
 	if (stereoView) {
-		OculusRift::sfOvr.UseLeftEeye();
+		OculusRift::sfOvr.UseLeftEye();
 		this->UpdateProjection(Controller::gameDialog::ViewType::left);
 		if (!Model::gPlayer.BelowGround())
 			fRenderControl.ComputeShadowMap();
-		float ipd = OculusRift::sfOvr.GetInterpupillaryDistance() * 2.0f; // Multiply with two as there are two units to every meter
-		gViewMatrix = glm::translate(gViewMatrix, glm::vec3(ipd/2.0f, 0.0f, 0.0f)); // Move half distance from center to left eye
+		float horViewAdjust = OculusRift::sfOvr.GetHorViewAdjustment() * 2.0f; // Multiply with two as there are two units to every meter
+		gViewMatrix = glm::translate(glm::mat4(1), glm::vec3(horViewAdjust, 0.0f, 0.0f)) * gViewMatrix; // Move half distance from center to left eye
 		gUniformBuffer.Update(true); // Transfer settings to the graphics card
 		this->render(hideGUI, int(slAverageFps), true);
 
 		OculusRift::sfOvr.UseRightEye();
-		gViewMatrix = glm::translate(gViewMatrix, glm::vec3(-ipd, 0.0f, 0.0f)); // Move full distance, from left eye to right eye
+		gViewMatrix = glm::translate(glm::mat4(1), glm::vec3(-horViewAdjust*2.0f, 0.0f, 0.0f)) * gViewMatrix; // Move double distance, from left eye to right eye
 		this->UpdateProjection(Controller::gameDialog::ViewType::right);
 		gUniformBuffer.Update(true); // Transfer settings to the graphics card
 		this->render(hideGUI, int(slAverageFps), true);
@@ -1254,15 +1254,11 @@ void gameDialog::UpdateProjection(ViewType v) {
 			aspectRatio /= 2;
 	}
 	gProjectionMatrix  = glm::perspective(fRenderViewAngle, aspectRatio, 0.01f, maxRenderDistance);  // Create our perspective projection matrix
-	float viewCenter = OculusRift::sfOvr.GetHorScreenSize() * 0.25f;
-	float eyeProjectionShift = viewCenter - OculusRift::sfOvr.GetLensSeparationDistance()*0.5f;
-	float projectionCenterOffset = 2.0f * 4.0f * eyeProjectionShift / OculusRift::sfOvr.GetHorScreenSize(); // Multiply by two as a block in Ephenation is 0.5m
+	float projectionCenterOffset = OculusRift::sfOvr.GetHorProjectionAdjustment();
 	switch(v) {
 	case ViewType::left:
-		gProjectionMatrix = glm::translate(glm::mat4(1), glm::vec3(projectionCenterOffset, 0, 0)) * gProjectionMatrix;
-		break;
 	case ViewType::right:
-		gProjectionMatrix = glm::translate(glm::mat4(1), glm::vec3(-projectionCenterOffset, 0, 0)) * gProjectionMatrix;
+		gProjectionMatrix = glm::translate(glm::mat4(1), glm::vec3(projectionCenterOffset, 0, 0)) * gProjectionMatrix;
 		break;
 	case ViewType::single:
 		break;

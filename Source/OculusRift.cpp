@@ -133,10 +133,12 @@ void OculusRift::Create() {
 	Matrix4f leftProjection = leftEye.Projection;
 	Matrix4f leftViewAdjust = leftEye.ViewAdjust;
 
-	LPLOG("OculusRift::Create FoV: %f", GetFieldOfView());
-	LPLOG("OculusRift::Create IPD: %f", GetInterpupillaryDistance());
-	LPLOG("OculusRift::Create HScreenSize: %f", GetHorScreenSize());
-	LPLOG("OculusRift::Create LSD: %f", GetLensSeparationDistance());
+	LPLOG("FoV: %f", GetFieldOfView());
+	LPLOG("IPD: %f", GetInterpupillaryDistance());
+	LPLOG("HScreenSize: %f", GetHorScreenSize());
+	LPLOG("LSD: %f", GetLensSeparationDistance());
+	LPLOG("Left eye proj adj: %f", GetHorProjectionAdjustment());
+	LPLOG("Left eye view adj: %f m", GetHorViewAdjustment());
 }
 
 float OculusRift::GetFieldOfView() const {
@@ -153,6 +155,29 @@ float OculusRift::GetHorScreenSize() const {
 
 float OculusRift::GetLensSeparationDistance() const {
 	return fInfo.LensSeparationDistance;
+}
+
+float OculusRift::GetHorViewAdjustment() const {
+	if (fLeftEyeSelected)
+		return fInfo.LensSeparationDistance/2.0f;
+	else
+		return -fInfo.LensSeparationDistance/2.0f;
+}
+
+float OculusRift::GetHorProjectionAdjustment() const {
+	// The screen is divided into left and right side, so we get the distance, in meter, to the center of the left side.
+	// Post-projection viewport coordinates range from (-1.0, 1.0), with the
+	// center of the left viewport falling at (1/4) of horizontal screen size.
+	// We need to shift this projection center to match with the lens center.
+	// We compute this shift in physical units (meters) to correct
+	// for different screen sizes and then rescale to viewport coordinates.
+	float viewCenter = fInfo.HScreenSize * 0.25f;
+	float eyeProjectionShift = viewCenter - fInfo.LensSeparationDistance*0.5f;
+	float projectionCenterOffset = 4.0f * eyeProjectionShift / fInfo.HScreenSize;
+	if (fLeftEyeSelected)
+		return projectionCenterOffset;
+	else
+		return -projectionCenterOffset;
 }
 
 OculusRift OculusRift::sfOvr; // An instance of this class.

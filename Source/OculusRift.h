@@ -32,10 +32,14 @@ public:
 	float GetHorScreenSize() const;
 	float GetLensSeparationDistance() const;
 
-	void UseLeftEeye() { fLeftEyeSelected = true; }
+	void UseLeftEye() { fLeftEyeSelected = true; }
 	void UseRightEye() { fLeftEyeSelected = false; }
+
+	/// Compute the horizontal project adjustment in screen coordinates, depending on current eye selection.
+	float GetHorProjectionAdjustment() const;
+	float GetHorViewAdjustment() const;
+
 	static OculusRift sfOvr; // An instance of this class.
-protected:
 private:
 	OVR::System fSystem;
 	OVR::HMDInfo fInfo;
