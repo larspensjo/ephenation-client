@@ -16,8 +16,8 @@
 
 -- Vertex
 
-layout(location=0) in vec2 vertex;
-layout(location=0) out vec2 Ascreen;                          // Screen coordinate
+in vec2 vertex;
+out vec2 Ascreen;                          // Screen coordinate
 void main(void)
 {
 	gl_Position = vec4(vertex*2-1, 0, 1); // Transform from interval 0 to 1, to interval -1 to 1.
@@ -36,8 +36,8 @@ uniform bool Udead;            // True if the player is dead
 uniform bool Uwater;           // True when head is in water
 uniform bool Uteleport;        // Special mode when inside a teleport
 uniform float UwhitePoint = 3.0;
-layout(location=0) in vec2 Ascreen;               // The screen position
-layout(location=0) out vec4 fragColorFinal;
+in vec2 Ascreen;               // The screen position
+out vec4 fragColorFinal;
 
 bool skyPixel = false;
 vec4 worldPos;
@@ -57,7 +57,7 @@ vec2 rand(vec2 a, vec2 b) {
 void main(void)
 {
 	vec2 screen = Ascreen;
-	if (UBOEnableDistortion) {
+	if (UBOEnableDistortion == 1) {
 		screen = HmdWarp(Ascreen-vec2(0.5, 0.5)) + vec2(0.5, 0.5);
 	}
 	// Load data, stored in textures, from the first stage rendering.
