@@ -1146,7 +1146,12 @@ void gameDialog::Update(bool stereoView) {
 
 	Model::gPlayer.UpdatePositionSmooth();
 
-	fRenderControl.UpdateCameraPosition(zoomDelta);
+	float yawPitchRoll[3] = { 0.0f, 0.0f, 0.0f };
+	if (stereoView) {
+		OculusRift::sfOvr.GetYawPitchRoll(yawPitchRoll);
+		// LPLOG("Yaw %f pitch %f roll %f", yawPitchRoll[0], yawPitchRoll[1], yawPitchRoll[2]);
+	}
+	fRenderControl.UpdateCameraPosition(zoomDelta, stereoView, yawPitchRoll[0], yawPitchRoll[1], yawPitchRoll[2]);
 
 	if (gMode.Get() == GameMode::CONSTRUCT && (glfwGetKey(GLFW_KEY_DEL) == GLFW_PRESS || glfwGetKey('V') == GLFW_PRESS) && glfwGetMouseButton(GLFW_MOUSE_BUTTON_1) == GLFW_PRESS) {
 		int x, y;

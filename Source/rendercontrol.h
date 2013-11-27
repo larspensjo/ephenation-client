@@ -75,7 +75,11 @@ public:
 	/// Update the camera position.
 	/// Check if camera position is inside a wall.
 	/// @param wheelDelta How much the player used the wheel
-	void UpdateCameraPosition(int wheelDelta);
+	/// @param stereoView Using Oculus Rift
+	/// @param yaw Horizontal orientation when using OVR
+	/// @param pitch Vertical orientation when using OVR
+	/// @param roll Roll when using OVR
+	void UpdateCameraPosition(int wheelDelta, bool stereoView, float yaw, float pitch, float roll);
 
 	/// Return true if the player is using third person view
 	bool ThirdPersonView() const { return fCameraDistance > 2.0f; }

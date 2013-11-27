@@ -39,12 +39,17 @@ public:
 	float GetHorProjectionAdjustment() const;
 	float GetHorViewAdjustment() const;
 
+	void GetYawPitchRoll(float[3]);
+
 	static OculusRift sfOvr; // An instance of this class.
 private:
 	OVR::System fSystem;
 	OVR::HMDInfo fInfo;
-
+	OVR::SensorFusion *mFusionResult = nullptr;
 	bool fLeftEyeSelected = true;
+	OVR::Ptr<OVR::DeviceManager> pManager;
+	OVR::Ptr<OVR::HMDDevice> pHMD;
+	OVR::Ptr<OVR::SensorDevice> pSensor;
 };
 
 };

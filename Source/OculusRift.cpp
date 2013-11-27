@@ -37,10 +37,7 @@ OculusRift::~OculusRift()
 }
 
 void OculusRift::Create() {
-	Ptr<DeviceManager> pManager;
-	Ptr<HMDDevice> pHMD;
-	Ptr<SensorDevice> pSensor;
-	SensorFusion *pFusionResult = new SensorFusion();
+	mFusionResult = new SensorFusion();
 	// Get some default values
 	fInfo.EyeToScreenDistance = 0.041f;
 	fInfo.DistortionK[0] = 1.0f;
@@ -66,7 +63,7 @@ void OculusRift::Create() {
 	}
 
 	if (pSensor) {
-	   pFusionResult->AttachToSensor(pSensor);
+	   mFusionResult->AttachToSensor(pSensor);
 	}
 
 	if (pHMD) {
@@ -82,27 +79,29 @@ void OculusRift::Create() {
 	}
 
 	if (InfoLoaded) {
-		cout << " DisplayDeviceName: " << fInfo.DisplayDeviceName << endl;
-		cout << " ProductName: " << fInfo.ProductName << endl;
-		cout << " Manufacturer: " << fInfo.Manufacturer << endl;
-		cout << " Version: " << fInfo.Version << endl;
-		cout << " HResolution: " << fInfo.HResolution<< endl;
-		cout << " VResolution: " << fInfo.VResolution<< endl;
-		cout << " HScreenSize: " << fInfo.HScreenSize<< endl;
-		cout << " VScreenSize: " << fInfo.VScreenSize<< endl;
-		cout << " VScreenCenter: " << fInfo.VScreenCenter<< endl;
-		cout << " EyeToScreenDistance: " << fInfo.EyeToScreenDistance << endl;
-		cout << " LensSeparationDistance: " << fInfo.LensSeparationDistance << endl;
-		cout << " InterpupillaryDistance: " << fInfo.InterpupillaryDistance << endl;
-		cout << " DistortionK[0]: " << fInfo.DistortionK[0] << endl;
-		cout << " DistortionK[1]: " << fInfo.DistortionK[1] << endl;
-		cout << " DistortionK[2]: " << fInfo.DistortionK[2] << endl;
-		cout << "--------------------------" << endl;
+		LPLOG("Info loaded");
+		LPLOG(" DisplayDeviceName: %s", fInfo.DisplayDeviceName);
+		LPLOG(" ProductName: %s", fInfo.ProductName);
+		LPLOG(" Manufacturer: %s", fInfo.Manufacturer);
+		LPLOG(" Version: %d", fInfo.Version);
+		LPLOG(" HResolution: %d", fInfo.HResolution);
+		LPLOG(" VResolution: %d", fInfo.VResolution);
+		LPLOG(" HScreenSize: %f", fInfo.HScreenSize);
+		LPLOG(" VScreenSize: %f", fInfo.VScreenSize);
+		LPLOG(" VScreenCenter: %f", fInfo.VScreenCenter);
+		LPLOG(" EyeToScreenDistance: %f", fInfo.EyeToScreenDistance);
+		LPLOG(" LensSeparationDistance: %f", fInfo.LensSeparationDistance);
+		LPLOG(" InterpupillaryDistance: %f", fInfo.InterpupillaryDistance);
+		LPLOG(" DistortionK[0]: %f", fInfo.DistortionK[0]);
+		LPLOG(" DistortionK[1]: %f", fInfo.DistortionK[1]);
+		LPLOG(" DistortionK[2]: %f", fInfo.DistortionK[2]);
+		LPLOG(" DistortionK[3]: %f", fInfo.DistortionK[3]);
+		LPLOG("--------------------------");
 	}
 
 #if 0
 	while(pSensor) {
-		Quatf quaternion = pFusionResult->GetOrientation();
+		Quatf quaternion = mFusionResult->GetOrientation();
 
 		float yaw, pitch, roll;
 		quaternion.GetEulerAngles<Axis_Y, Axis_X, Axis_Z>(&yaw, &pitch, &roll);
@@ -112,8 +111,6 @@ void OculusRift::Create() {
 			", Roll: " << RadToDegree(roll) << endl;
 
 		Sleep(50);
-
-		if (_kbhit()) exit(0);
 	}
 #endif
 	using namespace OVR::Util::Render;
@@ -139,6 +136,16 @@ void OculusRift::Create() {
 	LPLOG("LSD: %f", GetLensSeparationDistance());
 	LPLOG("Left eye proj adj: %f", GetHorProjectionAdjustment());
 	LPLOG("Left eye view adj: %f m", GetHorViewAdjustment());
+}
+
+void OculusRift::GetYawPitchRoll(float ret[3]) {
+	Quatf quaternion = mFusionResult->GetOrientation();
+
+	float yaw, pitch, roll;
+	quaternion.GetEulerAngles<Axis_Y, Axis_X, Axis_Z>(&yaw, &pitch, &roll);
+	ret[0] = RadToDegree(yaw);
+	ret[1] = RadToDegree(pitch);
+	ret[2] = RadToDegree(roll);
 }
 
 float OculusRift::GetFieldOfView() const {
