@@ -95,14 +95,19 @@ void RocketRenderInterface::RenderCompiledGeometry(Rocket::Core::CompiledGeometr
 		// We want to draw the GUI as if it is placed out in the world.
 		float aspect = float(gViewport[2]) / float(gViewport[3]);
 		float adj = Controller::OculusRift::sfOvr.GetHorProjectionAdjustment();
-		proj = glm::translate(glm::mat4(1), glm::vec3(adj, 0.0f, 0.0f)) * glm::perspective(fFieldOfView, aspect, 0.1f, 10.0f);
+		proj = glm::translate(glm::mat4(1), glm::vec3(adj, 0.0f, 0.0f)) * glm::perspective(fFieldOfView, aspect, 0.1f, 100.0f);
 		glm::vec3 offset(translation.x-gViewport[2]/2, translation.y-gViewport[3]/2, -fGuiDistance);
 		glm::vec4 p = proj * glm::vec4(0.0f, 1.0f, -fGuiDistance, 1.0f);
 		p /= p.w;
 		float fact = 2.0f/p.y/gViewport[3];
 		glm::mat4 scale = glm::scale(glm::mat4(1), glm::vec3(fact, -fact, 1.0f));
 		glm::mat4 translate = glm::translate(glm::mat4(1.0), offset);
-		view = glm::translate(glm::mat4(1), glm::vec3(Controller::OculusRift::sfOvr.GetHorViewAdjustment(), 0.0f, 0.0f));
+		float yawPitchRoll[3] = { 0.0f, 0.0f, 0.0f };
+		Controller::OculusRift::sfOvr.GetYawPitchRoll(yawPitchRoll);
+		view = glm::rotate(view, yawPitchRoll[2], glm::vec3(0.0f, 0.0f, -1.0f));
+		view = glm::rotate(view, -yawPitchRoll[1], glm::vec3(1.0f, 0.0f, 0.0f));
+		view = glm::rotate(view, -yawPitchRoll[0], glm::vec3(0.0f, 1.0f, 0.0f));
+		view = glm::translate(view, glm::vec3(Controller::OculusRift::sfOvr.GetHorViewAdjustment(), 0.0f, 0.0f));
 		model = view * scale * translate;
 	} else {
 		proj = glm::ortho(0.0f, gViewport[2], gViewport[3], 0.0f, -1.0f, 1.0f);
@@ -155,7 +160,7 @@ void RocketRenderInterface::EnableScissorRegion(bool enable)
 
 void RocketRenderInterface::SetScissorRegion(int x, int y, int width, int height)
 {
-	LPLOG("%d, %d, %d, %d", x, y, width, height);
+	// LPLOG("%d, %d, %d, %d", x, y, width, height);
 	glScissor(x, gViewport[3]-(y+height), width, height);
 }
 
