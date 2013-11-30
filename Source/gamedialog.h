@@ -63,12 +63,10 @@ public:
 	gameDialog();
 	/// Called every frame
 	/// @param hideGUI Hide all GUI, for use when taking pictures, etc.
-	/// @param stereoView Used for Oculus Rift (OVR).
-	void DrawScreen(bool hideGUI, bool stereoView);
+	void DrawScreen(bool hideGUI);
 	/// Render many things.
 	/// @todo Nothing should be rendered from here, it should all go into the View of the MVC.
-	/// @param stereoView Will disable some UI and other effects.
-	void render(bool hideGUI, int fps, bool stereoView);
+	void render(bool hideGUI, int fps);
 	/// Compute the projection matrix.
 	enum class ViewType { left, right, single };
 	void UpdateProjection(ViewType v);
@@ -76,7 +74,7 @@ public:
 	~gameDialog();
 	void handleMouse(int button, int action);
 	/// Polled to update various states
-	void Update(bool stereoView);
+	void Update(void);
 	void SetMessage(const char *);
 	void HandleKeyRelease(int key); // Keyboard event
 	void HandleKeyPress(int key);	// Keyboard event
@@ -153,6 +151,8 @@ private:
 
 	/// Save the game screen to a file
 	void SaveScreen();
+
+	bool fStereoView = false;
 
 	//
 	// TODO: The following parameters should be moved to the View.

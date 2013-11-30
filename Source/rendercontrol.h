@@ -70,7 +70,8 @@ public:
 	/// @param showMap True if a map shall be shown
 	/// @param mapWidth Pixels in width used when drawing a map
 	/// @param ui Pointer to the user interface
-	void Draw(bool underWater, std::shared_ptr<const Model::Object> selectedObject, bool showMap, int mapWidth, MainUserInterface *ui);
+	/// @param stereoView True when using OVR
+	void Draw(bool underWater, std::shared_ptr<const Model::Object> selectedObject, bool showMap, int mapWidth, MainUserInterface *ui, bool stereoView);
 
 	/// Update the camera position.
 	/// Check if camera position is inside a wall.
@@ -118,12 +119,12 @@ private:
 	void ComputeAverageLighting(bool underWater);
 
 	void drawClearFBO(void); // Initialize all images in the FBO
-	void drawNonTransparentLandscape(void);
+	void drawNonTransparentLandscape(bool stereoView);
 	void drawDynamicShadows(void);
 	void drawDeferredLighting(bool underWater, float whitepoint);
 	void drawPointLights(void);
 	void drawMonsters(void);
-	void drawTransparentLandscape(void);
+	void drawTransparentLandscape(bool stereoView);
 	void drawPointShadows(void);
 	void drawPlayer(void);
 	void drawOtherPlayers(void);

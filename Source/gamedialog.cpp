@@ -139,7 +139,7 @@ View::Chunk *gameDialog::FindSelectedSurface(int x, int y, ChunkOffsetCoord *coc
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f); // Use black sky for picking
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	DrawLandscape(0, DL_Picking);
+	DrawLandscape(0, DL_Picking, fStereoView);
 	gChunkShaderPicking.DisableProgram();
 
 	unsigned char pixel[4];
@@ -889,7 +889,7 @@ static void revive(void) {
 
 glm::mat4 gViewMatrix; // Store the view matrix
 
-void gameDialog::DrawScreen(bool hideGUI, bool stereoView) {
+void gameDialog::DrawScreen(bool hideGUI) {
 	static double slAverageFps = 0.0;
 	double tm = gCurrentFrameTime;
 	static double prevTime = 0.0;
@@ -898,9 +898,9 @@ void gameDialog::DrawScreen(bool hideGUI, bool stereoView) {
 	slAverageFps = 0.97*slAverageFps + 0.03/deltaTime;
 	prevTime = tm;
 
-	this->Update(stereoView);
+	this->Update();
 	fRenderControl.drawClear(fUnderWater); // Clear the screen
-	if (stereoView) {
+	if (fStereoView) {
 		OculusRift::sfOvr.UseLeftEye();
 		this->UpdateProjection(Controller::gameDialog::ViewType::left);
 		if (!Model::gPlayer.BelowGround())
@@ -908,24 +908,24 @@ void gameDialog::DrawScreen(bool hideGUI, bool stereoView) {
 		float horViewAdjust = OculusRift::sfOvr.GetHorViewAdjustment() * 2.0f; // Multiply with two as there are two units to every meter
 		gViewMatrix = glm::translate(glm::mat4(1), glm::vec3(horViewAdjust, 0.0f, 0.0f)) * gViewMatrix; // Move half distance from center to left eye
 		gUniformBuffer.Update(true); // Transfer settings to the graphics card
-		this->render(hideGUI, int(slAverageFps), true);
+		this->render(hideGUI, int(slAverageFps));
 
 		OculusRift::sfOvr.UseRightEye();
 		gViewMatrix = glm::translate(glm::mat4(1), glm::vec3(-horViewAdjust*2.0f, 0.0f, 0.0f)) * gViewMatrix; // Move double distance, from left eye to right eye
 		this->UpdateProjection(Controller::gameDialog::ViewType::right);
 		gUniformBuffer.Update(true); // Transfer settings to the graphics card
-		this->render(hideGUI, int(slAverageFps), true);
+		this->render(hideGUI, int(slAverageFps));
 	} else {
 		this->UpdateProjection(Controller::gameDialog::ViewType::single);
 		if (!Model::gPlayer.BelowGround())
 			fRenderControl.ComputeShadowMap();
 		gUniformBuffer.Update(false); // Transfer settings to the graphics card
-		this->render(hideGUI, int(slAverageFps), false);
+		this->render(hideGUI, int(slAverageFps));
 	}
 	glfwSwapBuffers();
 }
 
-void gameDialog::render(bool hideGUI, int fps, bool stereoView) {
+void gameDialog::render(bool hideGUI, int fps) {
 	static bool first = true; // Only true first time function is called
 	// Clear list of special effects. It will be added again automatically every frame
 	gShadows.Clear();
@@ -935,7 +935,7 @@ void gameDialog::render(bool hideGUI, int fps, bool stereoView) {
 		gBillboard.InitializeTextures(fShader);
 	}
 
-	fRenderControl.Draw(fUnderWater, fSelectedObject, fDrawMap && !gDebugOpenGL, fMapWidth, (hideGUI && fCurrentRocketContextInput == 0) ? 0 : &fMainUserInterface);
+	fRenderControl.Draw(fUnderWater, fSelectedObject, fDrawMap && !gDebugOpenGL, fMapWidth, (hideGUI && fCurrentRocketContextInput == 0) ? 0 : &fMainUserInterface, fStereoView);
 
 	//=========================================================================
 	// Various effects drawn after the deferred shader
@@ -1059,6 +1059,7 @@ static int GLFWCALL CloseWindowCallback(void) {
 }
 
 void gameDialog::init(bool useOvr) {
+	fStereoView = useOvr;
 	if (useOvr)
 		fRenderViewAngle  = OculusRift::sfOvr.GetFieldOfView();
 	else
@@ -1118,7 +1119,7 @@ void gameDialog::init(bool useOvr) {
 	checkError("gameDialog::init", !gDebugOpenGL);
 }
 
-void gameDialog::Update(bool stereoView) {
+void gameDialog::Update() {
 	static int wheel = 0;
 	static bool inWater = false;
 	static bool inAir = false;
@@ -1147,11 +1148,11 @@ void gameDialog::Update(bool stereoView) {
 	Model::gPlayer.UpdatePositionSmooth();
 
 	float yawPitchRoll[3] = { 0.0f, 0.0f, 0.0f };
-	if (stereoView) {
+	if (fStereoView) {
 		OculusRift::sfOvr.GetYawPitchRoll(yawPitchRoll);
 		// LPLOG("Yaw %f pitch %f roll %f", yawPitchRoll[0], yawPitchRoll[1], yawPitchRoll[2]);
 	}
-	fRenderControl.UpdateCameraPosition(zoomDelta, stereoView, yawPitchRoll[0], yawPitchRoll[1], yawPitchRoll[2]);
+	fRenderControl.UpdateCameraPosition(zoomDelta, fStereoView, yawPitchRoll[0], yawPitchRoll[1], yawPitchRoll[2]);
 
 	if (gMode.Get() == GameMode::CONSTRUCT && (glfwGetKey(GLFW_KEY_DEL) == GLFW_PRESS || glfwGetKey('V') == GLFW_PRESS) && glfwGetMouseButton(GLFW_MOUSE_BUTTON_1) == GLFW_PRESS) {
 		int x, y;
@@ -1225,7 +1226,7 @@ void gameDialog::Update(bool stereoView) {
 		// Login mode, get the login dialog.
 		fCurrentRocketContextInput = fMainUserInterface.GetRocketContext();
 		const char *rml = "login.rml";
-		if (stereoView)
+		if (fStereoView)
 			rml = "login-ovr.rml";
 		gDialogFactory.Make(fCurrentRocketContextInput, rml);
 	}
@@ -1430,7 +1431,7 @@ void gameDialog::SaveScreen() {
     // Make the BYTE array, factor of 3 because it's RBG.
     // unsigned char pixels[ 4 * w * h*2];
     std::unique_ptr<unsigned char[]> pixels(new unsigned char[3*w*h]);
-    this->render(true, 0, false);
+    this->render(true, 0);
 
     glReadPixels(0, 0, w, h, GL_BGR, GL_UNSIGNED_BYTE, pixels.get());
 

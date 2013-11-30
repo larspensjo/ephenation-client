@@ -234,7 +234,7 @@ void RenderControl::Resize(GLsizei width, GLsizei height) {
 
 enum { STENCIL_NOSKY = 1 };
 
-void RenderControl::Draw(bool underWater, shared_ptr<const Model::Object> selectedObject, bool showMap, int mapWidth, MainUserInterface *ui) {
+void RenderControl::Draw(bool underWater, shared_ptr<const Model::Object> selectedObject, bool showMap, int mapWidth, MainUserInterface *ui, bool stereoView) {
 	if (gShowFramework)
 		glPolygonMode(GL_FRONT, GL_LINE);
 	// Create all bitmaps setup in the frame buffer. This is all stage one shaders.
@@ -245,12 +245,12 @@ void RenderControl::Draw(bool underWater, shared_ptr<const Model::Object> select
 	glStencilFunc(GL_ALWAYS, STENCIL_NOSKY, STENCIL_NOSKY); // Set bit for no sky
 	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE); // Replace bits when something is drawn
 	gDrawObjectList.clear();
-	drawNonTransparentLandscape();
+	drawNonTransparentLandscape(stereoView);
 	if (this->ThirdPersonView() && gMode.Get() != GameMode::LOGIN)
 		drawPlayer(); // Draw self, but not if camera is too close
 	drawOtherPlayers();
 	drawMonsters();
-	drawTransparentLandscape();
+	drawTransparentLandscape(stereoView);
 	glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP); // Make stencil read-only
 	drawSkyBox(GL_NONE, GL_COLOR_ATTACHMENT1, true); // Only output positional data.
 
@@ -314,17 +314,17 @@ void RenderControl::drawClearFBO(void) {
 	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
 }
 
-void RenderControl::drawNonTransparentLandscape(void) {
+void RenderControl::drawNonTransparentLandscape(bool stereoView) {
 	static TimeMeasure tm("Landsc");
 	tm.Start();
 	GLenum windowBuffOpaque[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_NONE };
 	glDrawBuffers(4, windowBuffOpaque); // Nothing is transparent here, do not produce any blending data on the 4:th render target.
 	fShader->EnableProgram(); // Get program back again after the skybox.
-	DrawLandscape(fShader, DL_NoTransparent);
+	DrawLandscape(fShader, DL_NoTransparent, stereoView);
 	tm.Stop();
 }
 
-void RenderControl::drawTransparentLandscape(void) {
+void RenderControl::drawTransparentLandscape(bool stereoView) {
 	static TimeMeasure tm("Transp");
 	tm.Start();
 	GLenum windowBuffOpaque[] = { GL_COLOR_ATTACHMENT3 }; // Only draw to the transparent buffer
@@ -337,7 +337,7 @@ void RenderControl::drawTransparentLandscape(void) {
 	glActiveTexture(GL_TEXTURE0);
 	gTranspShader.EnableProgram();
 	gTranspShader.View(float(gCurrentFrameTime));
-	DrawLandscape(&gTranspShader, DL_OnlyTransparent);
+	DrawLandscape(&gTranspShader, DL_OnlyTransparent, stereoView);
 	gTranspShader.DisableProgram();
 	glDepthMask(GL_TRUE);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // Restore to default

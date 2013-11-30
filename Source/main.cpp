@@ -462,7 +462,7 @@ int main(int argc, char** argv) {
 				ListenForServerMessages();
 		}
 
-		Controller::gGameDialog.DrawScreen(sHideGUI, sOculusRiftMode);
+		Controller::gGameDialog.DrawScreen(sHideGUI);
 
 		View::Chunk::DegradeBusyList_gl();
 
