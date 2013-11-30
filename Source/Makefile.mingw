@@ -58,6 +58,7 @@ MY_CFLAGS = -L/usr/lib -L/usr/local/lib -I/usr/local/include -I/usr/include\
 	-Icontrib/win32/assimp3/include\
 	-Icontrib/glm\
 	-DOV_EXCLUDE_STATIC_CALLBACKS\
+	-D__NO_MINGW_LFS\
 	-DWIN32\
 	-DSTATIC_LIB
 
