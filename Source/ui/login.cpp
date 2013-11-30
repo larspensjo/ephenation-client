@@ -72,7 +72,9 @@ void LoginDialog::FormEvent(Rocket::Core::Event& event, const string &action) {
 	BaseDialog::FormEvent(event, action); // Needed to perform some common preparations
 
 	if (action == "login") {
-		PerformLoginProcedure(fFormResultValues["Login.email"], fFormResultValues["Login.licensekey"], fFormResultValues["Login.password"], false);
+		Options::sfSave.fLicenseKey = fFormResultValues["Login.licensekey"];
+		Options::sfSave.fEmail = fFormResultValues["Login.email"];
+		PerformLoginProcedure(Options::sfSave.fEmail, Options::sfSave.fLicenseKey, fFormResultValues["Login.password"], false);
 		// printf("Login %s, %s, %s\n", fFormResultValues["Login.licensekey"].c_str(), fFormResultValues["Login.email"].c_str(), fFormResultValues["Login.password"].c_str());
 
 		if (!this->Pop())
