@@ -82,6 +82,7 @@
 
 using namespace std;
 
+#ifdef DEBUG
 static const char* get_profile_name(GLint mask) {
 	if (mask & GL_CONTEXT_COMPATIBILITY_PROFILE_BIT)
 		return "compatibility";
@@ -90,6 +91,7 @@ static const char* get_profile_name(GLint mask) {
 
 	return "unknown";
 }
+#endif
 
 // Used for NVIDIA
 #define GPU_MEMORY_INFO_DEDICATED_VIDMEM_NVX          0x9047
