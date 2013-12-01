@@ -4,7 +4,6 @@ IDEAS
 Oculus Rift
 -----------
 * Draw the experience, hp and mana bar in the HUD
-* Remove the weapon from the display
 * Use bold font for better readability
 * When OVR is selected, force screen size matching the display, and full screen view
 * Remove mouse and draw a special one instead that depends on distortion and stereo view
@@ -13,8 +12,8 @@ Oculus Rift
 * Some calibration is wrong, leading to screen moving when head turns
 * Use super sampling for improved picture quality
 * Split the HealthBar into several triangles
-* Get selection marker to work. Some ideas [here](http://mtnphil.wordpress.com/2012/09/12/faking-water-reflections-with-fourier-coefficients/)
-* Implement SSAO
+* Get selection marker to work.
+* Skybox is incorrect, it is possible to see the joints.
 
 Graphical effects
 -----------------
@@ -31,7 +30,8 @@ at shallow angles and translucent at near perpendicular angles.
 * libRocket Dialogs projected on blocks (a special case of the action block)
 * For underground, use automatic green tints for positive up normals
 * Make three sets of skyboxes, for different time of day
-* Better looking water
+* Better looking water. Some ideas [here](http://mtnphil.wordpress.com/2012/09/12/faking-water-reflections-with-fourier-coefficients/)
+* Implement SSAO
 
 Sound
 -----

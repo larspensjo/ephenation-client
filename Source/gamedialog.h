@@ -122,7 +122,7 @@ private:
 
 	bool fEnterDebugText;
 	bool fDrawMap;
-	bool fShowWeapon;
+	bool fShowWeapon = true;
 	bool fUnderWater; // True when player is below water
 	View::Chunk *FindSelectedSurface(int x, int y, ChunkOffsetCoord *, int *surfaceDir);
 	/// Call this when a dialog will be showed, to stop movement, etc.

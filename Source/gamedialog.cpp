@@ -103,7 +103,6 @@ gameDialog::gameDialog() {
 	fEnterDebugText = false;
 	fDrawMap = false;
 	fShowInventory = false;
-	fShowWeapon = true;
 	fShader = 0;
 	fBuildingBlocks = 0;
 	fHealthBar = 0;
@@ -1060,9 +1059,10 @@ static int GLFWCALL CloseWindowCallback(void) {
 
 void gameDialog::init(bool useOvr) {
 	fStereoView = useOvr;
-	if (useOvr)
+	if (useOvr) {
 		fRenderViewAngle  = OculusRift::sfOvr.GetFieldOfView();
-	else
+		fShowWeapon = false;
+	} else
 		fRenderViewAngle  = 60.0f;
 	fRenderControl.Init(8, useOvr);
 
