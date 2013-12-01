@@ -75,14 +75,14 @@ private:
     SignalLink *next, *prev;
     CbFunction  function;
     int         ref_count;
-    explicit    SignalLink (const CbFunction &cbf) : next (NULL), prev (NULL), function (cbf), ref_count (1) {}
+    explicit    SignalLink (const CbFunction &cbf) : next (nullptr), prev (nullptr), function (cbf), ref_count (1) {}
     /*dtor*/   ~SignalLink ()           { assert (ref_count == 0); }
     void        incref     ()           { ref_count += 1; assert (ref_count > 0); }
     void        decref     ()           { ref_count -= 1; if (!ref_count) delete this; else assert (ref_count > 0); }
     void
     unlink ()
     {
-      function = NULL;
+      function = nullptr;
       if (next)
         next->prev = prev;
       if (prev)
@@ -106,7 +106,7 @@ private:
     {
       if (cbf == function)
         {
-          function = NULL;      // deactivate static head
+          function = nullptr;      // deactivate static head
           return true;
         }
       for (SignalLink *link = this->next ? this->next : this; link != this; link = link->next)
@@ -144,11 +144,11 @@ private:
       }
   }
 public:
-  /// ProtoSignal constructor, connects default callback if non-NULL.
+  /// ProtoSignal constructor, connects default callback if non-nullptr.
   ProtoSignal (const CbFunction &method) :
-    callback_ring_ (NULL)
+    callback_ring_ (nullptr)
   {
-    if (method != NULL)
+    if (method != nullptr)
       {
         ensure_ring();
         callback_ring_->function = method;
@@ -181,7 +181,7 @@ public:
     link->incref();
     do
       {
-        if (link->function != NULL)
+        if (link->function != nullptr)
           {
             const bool continue_emission = this->invoke (collector, link->function, args...);
             if (!continue_emission)
@@ -489,7 +489,7 @@ bench_simple_signal()
   uint64_t i;
   for (i = 0; i < 999999; i++)
     {
-      sig_increment.emit (NULL, 1);
+      sig_increment.emit (nullptr, 1);
     }
   const uint64_t benchdone = timestamp_benchmark();
   const uint64_t end_counter = TestCounter::get();
@@ -507,7 +507,7 @@ bench_callback_loop()
   uint64_t i;
   for (i = 0; i < 999999; i++)
     {
-      counter_increment (NULL, 1);
+      counter_increment (nullptr, 1);
     }
   const uint64_t benchdone = timestamp_benchmark();
   const uint64_t end_counter = TestCounter::get();
