@@ -58,7 +58,6 @@ MY_CFLAGS = -L/usr/lib -L/usr/local/lib -I/usr/local/include -I/usr/include\
 	-Icontrib/win32/assimp3/include\
 	-Icontrib/glm\
 	-DOV_EXCLUDE_STATIC_CALLBACKS\
-	-D__NO_MINGW_LFS\
 	-DWIN32\
 	-Icontrib/libovr/include\
 	-DSTATIC_LIB
@@ -107,7 +106,7 @@ HDREXTS = .h .H .hh .hpp .HPP .h++ .hxx .hp
 
 # The pre-processor and compiler options.
 # Users can override those variables from the command line.
-CFLAGS  = -g -O2 -std=c++0x
+CFLAGS  = -g -O2 -std=gnu++11
 CXXFLAGS= $(CFLAGS)
 
 # The C program compiler.
@@ -307,7 +306,7 @@ show:
 	@echo 'link.cxx    :' $(LINK.cxx)
 
 Debug:
-	$(MAKE) -j -f Makefile.mingw CFLAGS="-g -O2 --std=c++11 -DDEBUG"
+	$(MAKE) -j -f Makefile.mingw CFLAGS="-g -O2 --std=gnu++11 -DDEBUG"
 
 ## End of the Makefile ##  Suggestions are welcome  ## All rights reserved ##
 #############################################################################
