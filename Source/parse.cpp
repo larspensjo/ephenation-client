@@ -59,12 +59,20 @@ string gParseMessageAtLogin;
 #include "ChunkProcess.h"
 #include "ChunkBlocks.h"
 #include "assert.h"
-#include "ScrollingMessages.h"
 #include "primitives.h"
 #include "SuperChunkManager.h"
 #include "Debug.h"
 
 #define NELEM(x) (sizeof x / sizeof x[0])
+
+/// Event generated when the player is hit by a monster
+/// @param dmg The damage in the hit
+/// @param id The id of the monster
+Simple::Signal<void (float dmg, unsigned long id)> gMonsterHitByPlayerEvt;
+
+/// Event generated when the player is hit by a monster
+/// @param dmg The amount of damage
+Simple::Signal<void (float dmg)> gPlayerHitByMonsterEvt;
 
 using namespace Controller;
 using View::SoundControl;
@@ -378,25 +386,14 @@ void Parse(const unsigned char *b, int n) {
 		for (int i=1; i<n; i += 5) {
 			// unsigned long id = ParseUint32(b+i);
 			unsigned long dmg = b[i+4];
-			std::stringstream ss;
-			ss << dmg*100/255;
-			gScrollingMessages.AddMessagePlayer(ss.str(), glm::vec3(0, -1, -1)); // Use red color for player
-			View::gMsgWindow.Add("Monster hit you with %d%% damage", dmg*100/255);
-			gSoundControl.RequestSound(SoundControl::SMonsterHits);
+			gPlayerHitByMonsterEvt.emit(float(dmg)/255.0f);
 		}
 		break;
 	case CMD_RESP_PLAYER_HIT_MONSTER: {
 		for (int i=1; i<n; i += 5) {
 			unsigned long id = ParseUint32(b+i);
 			unsigned long dmg = b[i+4];
-			// View::gMsgWindow.Add("You hit monster %d by %d%% damage", id, dmg*100/255);
-			gSoundControl.RequestSound(SoundControl::SPlayerHits);
-			auto m = Model::gMonsters.Find(id);
-			if (m != nullptr) {
-				std::stringstream ss;
-				ss << dmg*100/255;
-				gScrollingMessages.AddMessage(m, ss.str(), glm::vec3(0, 0, -1)); // Use yellow color for monster
-			}
+			gMonsterHitByPlayerEvt.emit(float(dmg)/255.0f, id);
 		}
 		break;
 	}

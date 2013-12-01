@@ -30,16 +30,22 @@
 #include "Options.h"
 #include "primitives.h"
 #include "ScrollingMessages.h"
+#include "parse.h"
 
 #define ILL_SENT 0xFFFFFFFF
 
 using namespace View;
+
+static void PlayerHitByMonster(float dmg) {
+	gMsgWindow.Add("Monster hit you with %d%% damage", int(dmg*100+0.5f));
+}
 
 MsgWindow::MsgWindow(): fRocketElement(0), fActivateDropMessage(false), fDropX(0), fDropY(0) {
 }
 
 void MsgWindow::Init(Rocket::Core::Element *rocketElement) {
 	fRocketElement = rocketElement;
+	gPlayerHitByMonsterEvt.connect(PlayerHitByMonster);
 }
 
 void MsgWindow::Add(const char *fmt, ...) {

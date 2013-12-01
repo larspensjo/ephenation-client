@@ -24,6 +24,10 @@
 
 #include <string>
 #include <vector>
+#include "contrib/SimpleSignal.h"
+
+extern Simple::Signal<void (float dmg, unsigned long id)> gMonsterHitByPlayerEvt;
+extern Simple::Signal<void (float dmg)> gPlayerHitByMonsterEvt;
 
 /**
  * @brief Parse a message from the server
