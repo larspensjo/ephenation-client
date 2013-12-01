@@ -320,34 +320,29 @@ private:
 #include <stdarg.h>
 #include <time.h>
 #include <sys/time.h>
+#include <stdio.h>
+#include <ctime>
+#include <cstdlib>
 
 static std::string string_printf (const char *format, ...) __attribute__ ((__format__ (__printf__, 1, 2)));
 static std::string
 string_printf (const char *format, ...)
 {
   std::string result;
-  char *str = NULL;
+  char str[1000];
   va_list args;
   va_start (args, format);
-  if (vasprintf (&str, format, args) >= 0)
+  if (vsnprintf (str, sizeof str, format, args) >= 0)
     result = str;
   va_end (args);
-  if (str)
-    free (str);
   return result;
 }
 
 static uint64_t
 timestamp_benchmark ()
 {
-  struct timespec tp = { 0, 0 };
-  if (__builtin_expect (clock_gettime (CLOCK_MONOTONIC, &tp) < 0, 0))
-    {
-      perror ("failed in clock_gettime");
-      exit (-1);
-    }
-  uint64_t stamp = tp.tv_sec * 1000000000ULL + tp.tv_nsec;
-  return stamp;
+  auto now = std::clock();
+  return 1.0e9 / CLOCKS_PER_SEC * now;
 }
 
 struct TestCounter {
@@ -442,7 +437,7 @@ class TestCollectorUntil0 {
   TestCollectorUntil0() : check1 (0), check2 (0) {}
   bool handler_true  ()  { check1 = true; return true; }
   bool handler_false ()  { check2 = true; return false; }
-  bool handler_abort ()  { abort(); }
+  bool handler_abort ()  { std::abort(); }
   public:
   static void
   run ()
@@ -463,7 +458,7 @@ class TestCollectorWhile0 {
   TestCollectorWhile0() : check1 (0), check2 (0) {}
   bool handler_0     ()  { check1 = true; return false; }
   bool handler_1     ()  { check2 = true; return true; }
-  bool handler_abort ()  { abort(); }
+  bool handler_abort ()  { std::abort(); }
   public:
   static void
   run ()
@@ -494,7 +489,7 @@ bench_simple_signal()
   const uint64_t benchdone = timestamp_benchmark();
   const uint64_t end_counter = TestCounter::get();
   assert (end_counter - start_counter == i);
-  printf ("OK\n  Benchmark: Simple::Signal: %fns per emission (size=%zu): ", size_t (benchdone - benchstart) * 1.0 / size_t (i),
+  printf ("OK\n  Benchmark: Simple::Signal: %fns per emission (size=%u): ", size_t (benchdone - benchstart) * 1.0 / size_t (i),
           sizeof (sig_increment));
 }
 
@@ -566,4 +561,4 @@ main (int   argc,
 
 #endif // DISABLE_TESTS
 
-// g++ -Wall -O2 -std=gnu++0x -pthread simplesignal.cc -lrt && ./a.out
+// g++ -Wall -O2 -std=gnu++11 -pthread test.cpp && ./a.out
