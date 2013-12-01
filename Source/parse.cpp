@@ -59,11 +59,20 @@ string gParseMessageAtLogin;
 #include "ChunkProcess.h"
 #include "ChunkBlocks.h"
 #include "assert.h"
-#include "ScrollingMessages.h"
 #include "primitives.h"
 #include "SuperChunkManager.h"
+#include "Debug.h"
 
 #define NELEM(x) (sizeof x / sizeof x[0])
+
+/// Event generated when the player is hit by a monster
+/// @param dmg The damage in the hit
+/// @param id The id of the monster
+Simple::Signal<void (float dmg, unsigned long id)> gMonsterHitByPlayerEvt;
+
+/// Event generated when the player is hit by a monster
+/// @param dmg The amount of damage
+Simple::Signal<void (float dmg)> gPlayerHitByMonsterEvt;
 
 using namespace Controller;
 using View::SoundControl;
@@ -139,7 +148,7 @@ static void ParseChunk(const unsigned char *b, int n) {
 	cc.x = ParseUint32(b+12);
 	cc.y = ParseUint32(b+16);
 	cc.z = ParseUint32(b+20);
-	// printf("ParseChunk: Got chunk (%d,%d,%d)\n", cc.x, cc.y, cc.z);
+	// LPLOG("ParseChunk: Got chunk (%d,%d,%d)", cc.x, cc.y, cc.z);
 	nc->fChunk = ChunkFind(&cc, true); // Server only sends chunk data on demand, which means there should always be a chunk found at this time.
 	// ASSERT(nc->fChunk != 0);        // This assertion did fail, sometimes. Because of that 'true' is used as argument above.
 	nc->flag = ParseUint32(b);
@@ -207,7 +216,7 @@ static void ServerMessage(const char *msg) {
 			View::gSoundControl.RequestSound(SoundControl::SInterfacePing);
 		}
 	}
-	// printf("Parse: message '%s'\n", b+1);
+	// LPLOG("Parse: message '%s'", b+1);
 }
 
 // Parse a command from the server. Notice that the length bytes are not included, which means
@@ -248,7 +257,7 @@ void Parse(const unsigned char *b, int n) {
 		if (sound != SoundControl::SNone)
 			gSoundControl.RequestSound(sound);
 		Model::gPlayer.fStatsAvailable = true;
-		// printf("parse: New player stats hp %f, exp %f lvl %d, flags 0x%lx\n", Model::gPlayer.fHp, Model::gPlayer.fExp, Model::gPlayer.fLevel, Model::gPlayer.fFlags);
+		// LPLOG("parse: New player stats hp %f, exp %f lvl %d, flags 0x%lx", Model::gPlayer.fHp, Model::gPlayer.fExp, Model::gPlayer.fLevel, Model::gPlayer.fFlags);
 		break;
 	}
 	case CMD_REPORT_COORDINATE:
@@ -256,7 +265,7 @@ void Parse(const unsigned char *b, int n) {
 		break;
 	case CMD_CHUNK_ANSWER:
 		ParseChunk(b+1, n-1);
-		// printf("Parse: Chunk answer %d,%d,%d\n", pc->cc.x, pc->cc.y, pc->cc.z);
+		// LPLOG("Parse: Chunk answer %d,%d,%d", pc->cc.x, pc->cc.y, pc->cc.z);
 		break;
 	case CMD_OBJECT_LIST:
 		// Report of various objects. Usually monsters or other players.
@@ -344,7 +353,7 @@ void Parse(const unsigned char *b, int n) {
 			Model::gPlayer.fAdmin = b[9];
 		else
 			Model::gPlayer.fAdmin = 0;
-		// printf("Player ID: %ld, admin %d\n", Model::gPlayer.GetId(), Model::gPlayer.fAdmin);
+		LPLOG("Player ID: %ld, admin %d", Model::gPlayer.GetId(), Model::gPlayer.fAdmin);
 		gMode.Set(GameMode::GAME);
 		break;
 	}
@@ -364,11 +373,11 @@ void Parse(const unsigned char *b, int n) {
 			ss << "Using wrong communication prot version " << PROT_VER_MAJOR << "." << PROT_VER_MINOR <<
 				"; but current is " << major << "." << minor << ".";
 			gParseMessageAtLogin = ss.str();
-			printf("%s\n", gParseMessageAtLogin.c_str());
+			LPLOG("%s", gParseMessageAtLogin.c_str());
 		}
 		gClientAvailMinor = Parseuint16(b+5);
 		gClientAvailMajor = Parseuint16(b+7);
-		// printf("Current available client version is %d.%d\n", gClientAvailMajor, gClientAvailMinor);
+		LPLOG("Current available client version is %d.%d", gClientAvailMajor, gClientAvailMinor);
 		if (gMode.Get() == GameMode::INIT)
 			gMode.Set(GameMode::LOGIN);
 		break;
@@ -377,25 +386,14 @@ void Parse(const unsigned char *b, int n) {
 		for (int i=1; i<n; i += 5) {
 			// unsigned long id = ParseUint32(b+i);
 			unsigned long dmg = b[i+4];
-			std::stringstream ss;
-			ss << dmg*100/255;
-			gScrollingMessages.AddMessagePlayer(ss.str(), glm::vec3(0, -1, -1)); // Use red color for player
-			View::gMsgWindow.Add("Monster hit you with %d%% damage", dmg*100/255);
-			gSoundControl.RequestSound(SoundControl::SMonsterHits);
+			gPlayerHitByMonsterEvt.emit(float(dmg)/255.0f);
 		}
 		break;
 	case CMD_RESP_PLAYER_HIT_MONSTER: {
 		for (int i=1; i<n; i += 5) {
 			unsigned long id = ParseUint32(b+i);
 			unsigned long dmg = b[i+4];
-			// View::gMsgWindow.Add("You hit monster %d by %d%% damage", id, dmg*100/255);
-			gSoundControl.RequestSound(SoundControl::SPlayerHits);
-			auto m = Model::gMonsters.Find(id);
-			if (m != nullptr) {
-				std::stringstream ss;
-				ss << dmg*100/255;
-				gScrollingMessages.AddMessage(m, ss.str(), glm::vec3(0, 0, -1)); // Use yellow color for monster
-			}
+			gMonsterHitByPlayerEvt.emit(float(dmg)/255.0f, id);
 		}
 		break;
 	}

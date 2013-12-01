@@ -31,6 +31,7 @@
 #include "Options.h"
 #include "modes.h"
 #include "player.h"
+#include "parse.h"
 
 //#define MUSIC_DEBUG
 
@@ -44,6 +45,14 @@
 #define SOUND_DISTANCE_MAX 9500000.0f
 
 using namespace View;
+
+static void MonsterHitByPlayer(float dmg, unsigned long id) {
+	gSoundControl.RequestSound(SoundControl::SPlayerHits);
+}
+
+static void PlayerHitByMonster(float) {
+	gSoundControl.RequestSound(SoundControl::SMonsterHits);
+}
 
 SoundControl View::gSoundControl;
 
@@ -195,6 +204,8 @@ SoundControl::SoundControl() : fFeetInWater(false), fFeetInAir(false), fUnderWat
 
 // SoundControl initialization
 void SoundControl::Init(void) {
+	gPlayerHitByMonsterEvt.connect(PlayerHitByMonster);
+	gMonsterHitByPlayerEvt.connect(MonsterHitByPlayer);
 	int idx;
 
 	//TODO: Error handling - if OpenAL can not be initialized, allow the game to be played anyway?

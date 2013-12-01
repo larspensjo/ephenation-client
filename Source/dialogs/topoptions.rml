@@ -39,6 +39,7 @@
 						<tr><td class="longlabel">Enable music:</td><td class="description"><input type="checkbox" name="Audio.musicon" value="1"/></td></tr>
 						<tr><td class="longlabel">Enable ping:</td><td class="description"><input type="checkbox" name="ping" value="1"/></td></tr>
 						<tr><td class="longlabel">Use full screen:</td><td class="description"><input type="checkbox" name="Graphics.fullscreen" value="1"/></td></tr>
+						<tr><td class="longlabel">Oculus rift:</td><td class="description"><input type="checkbox" name="Display.oculusrift" value="1"/></td></tr>
 						<tr><td class="longlabel">Graphical mode:</td><td class="description"><select name="Options.graphicalmode" /></td></tr>
 						<tr><td class="longlabel">System performance:</td><td class="description">
 							<select name="Graphics.performance">

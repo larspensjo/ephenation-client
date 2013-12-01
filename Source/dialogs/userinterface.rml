@@ -20,79 +20,29 @@
 <head>
 	<title>userinterface.rml</title>
 	<link type="text/rcss" href="ephenation.rcss"/>
+	<link type="text/rcss" href="userinterface-base.rcss"/>
 	<style>
-		/* Definition of the complete document */
-		body
-		{
-			font-family: georgia;
-			font-size: 30px;
-			width: 100%; /* The document will use the whole display */
-			height: 100%;
-		}
-
-		/* A small display that shows the FPS */
-		.fpsdisplay
-		{
-			/* height: 1.5em; */
-			width: 300px;
-			position: absolute;
-			top: 0px;
-			left: 0px;
-			font-family: Georgia;
-			font-size: 15px;
-			color: white;
-			background-color: rgba(0,0,0,30%); /* Semi transparent black background */
-		}
-
 		/* A big display that will show graphical representations of player data */
+		/* Override defaults */
 		.playerstats
 		{
-			width: 100%;
-			height: 25%;
-			position: absolute;
-			bottom: 0;
 			background-decorator: image;
 			background-image: InGameUI.bmp;
 		}
-
-		/* A small display that shiows the player stats in numbers */
+		.fpsdisplay
+		{
+			background-color: rgba(0,0,0,30%); /* Semi transparent black background */
+		}
 		.playerstatsoneliner
 		{
-			height: 1.5em;
-			width: 200px;
-			font-family: Georgia;
-			font-size: 15px;
-			position: absolute;
-			right: 0;
-			top: 0;
-			font-family: Georgia;
 			background-color: rgba(0,0,0,30%); /* Semi transparent black background */
-			z-index: 0;
 		}
-
 		.chatwindow
 		{
-			width: 35%;
-			height: 30%;
-			position: absolute;
-			right: 5;
-			bottom: 10%;
 			background-color: rgba(0,0,0,30%); /* Semi transparent black background */
-			font-family: Georgia;
-			font-size: 15px;
-			color: white;
-			white-space: pre-wrap; /* Preserve newlines, but wrap also when needed */
-			overflow: scroll; /* Text flowing outside the area is not shown */
-			z-index: 1;
 		}
-
 		.inputarea {
-			font-size: 22px;
 			background-color: rgba(0,0,0,30%);
-			bottom: 0px;
-			left: 5px;
-			position: absolute;
-			z-index: 1;
 		}
 	</style>
 </head>
@@ -101,7 +51,7 @@
 		<div id="chat" class="chatwindow"></div>
 	</handle>
 	<div class="playerstats">
-		<div style="position: absolute; left:50%;bottom:10%;font-size:22;white-space:pre;">ESC:Menu      TAB:Select monster      1:Attack</div>
+		<div style="position: absolute; left:50%;bottom:10%;white-space:pre;">ESC:Menu      TAB:Select monster      1:Attack</div>
 	</div>
 	<div id="fps" class="fpsdisplay"></div>
 	<div id="playerstatsoneliner" class="playerstatsoneliner"></div>

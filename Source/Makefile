@@ -49,7 +49,7 @@
 ##==========================================================================
 
 # The pre-processor and compiler options.
-MY_CFLAGS = -Dunix -Icontrib/glm
+MY_CFLAGS = -Dunix -Icontrib/glm -Icontrib/libovr/include
 
 # The linker options.
 MY_LIBS   = -lGL\
@@ -66,6 +66,10 @@ MY_LIBS   = -lGL\
 	-lRocketCore\
 	-lRocketDebugger\
 	-lRocketControls\
+	contrib/libovr/lib/Release/libovr.a\
+	-lX11\
+	-ludev\
+	-lXinerama\
 	$(PROFILING)
 
 # The pre-processor options used by the cpp (man cpp for more).
@@ -94,7 +98,7 @@ HDREXTS = .h .H .hh .hpp .HPP .h++ .hxx .hp
 
 # The pre-processor and compiler options.
 # Users can override those variables from the command line.
-CFLAGS  = -g -O2 --std=c++0x
+CFLAGS  = -g -O2 --std=gnu++11
 CXXFLAGS= $(CFLAGS)
 
 # The C program compiler.
@@ -152,6 +156,9 @@ LINK.cxx    = $(CXX) $(MY_CFLAGS) $(CXXFLAGS) $(CPPFLAGS) $(LDFLAGS)
 .SUFFIXES:
 
 all: $(PROGRAM)
+
+Debug:
+	$(MAKE) -j8 CFLAGS='-O2 -g --std=gnu++11'
 
 # Rules for creating dependency files (.d).
 #------------------------------------------

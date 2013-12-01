@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -34,9 +34,6 @@
 
 using namespace View;
 
-MainUserInterface::MainUserInterface() : fRocketContext(0), fDocument(0), fShowGUI(false) {
-}
-
 MainUserInterface::~MainUserInterface() {
 	if (fDocument)
 		fDocument->RemoveReference();
@@ -44,7 +41,7 @@ MainUserInterface::~MainUserInterface() {
 		fRocketContext->RemoveReference();
 }
 
-void MainUserInterface::Init() {
+void MainUserInterface::Init(bool stereoView) {
 	// Create the main Rocket context and set it on the shell's input layer.
 	fRocketContext = Rocket::Core::CreateContext("main", Rocket::Core::Vector2i(gViewport[2], gViewport[3]));
 	if (fRocketContext == NULL)
@@ -58,7 +55,10 @@ void MainUserInterface::Init() {
 		Rocket::Debugger::Initialise(fRocketContext);
 
 	// Load and show the UI.
-	fDocument = fRocketContext->LoadDocument("dialogs/userinterface.rml");
+	if (stereoView)
+		fDocument = fRocketContext->LoadDocument("dialogs/userinterface-ovr.rml");
+	else
+		fDocument = fRocketContext->LoadDocument("dialogs/userinterface.rml");
 	// LoadDocument will add one to reference already.
 	if (fDocument == 0)
 		ErrorDialog("MainUserInterface::Init: Failed to load user interface");

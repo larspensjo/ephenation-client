@@ -17,17 +17,35 @@
 
 #include <GL/glew.h>
 #include <stdio.h>
+#include <sstream>
 
 #include "ScrollingMessages.h"
 #include "primitives.h"
 #include "object.h"
 #include "DrawText.h"
 #include "player.h"
+#include "parse.h"
+#include "monsters.h"
 
 using std::list;
 using std::shared_ptr;
 
 ScrollingMessages gScrollingMessages;
+
+static void MonsterHitByPlayer(float dmg, unsigned long id) {
+	auto m = Model::gMonsters.Find(id);
+	if (m != nullptr) {
+		std::stringstream ss;
+		ss << int(dmg*100+0.5f);
+		gScrollingMessages.AddMessage(m, ss.str(), glm::vec3(0, 0, -1)); // Use yellow color for monster
+	}
+}
+
+static void PlayerHitByMonster(float dmg) {
+	std::stringstream ss;
+	ss << int(dmg*100+0.5f);
+	gScrollingMessages.AddMessagePlayer(ss.str(), glm::vec3(0, -1, -1)); // Use red color for player
+}
 
 // This is used as a special object to denote a screen coordinate instead of a world position
 class ScreenObject : public Model::Object {
@@ -128,4 +146,6 @@ void ScrollingMessages::Update(void) {
 
 void ScrollingMessages::Init(shared_ptr<DrawFont> font) {
 	fFont = font;
+	gMonsterHitByPlayerEvt.connect(MonsterHitByPlayer);
+	gPlayerHitByMonsterEvt.connect(PlayerHitByMonster);
 }

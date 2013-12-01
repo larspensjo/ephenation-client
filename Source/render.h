@@ -37,7 +37,7 @@ enum DL_Type {
 };
 
 // Draw all the blocks in the world
-void DrawLandscape(StageOneShader *shader, DL_Type);
+void DrawLandscape(StageOneShader *shader, DL_Type, bool stereoView);
 
 // Like DrawLandscape, but used for finding shadows. Draw from top to bottom.
 // If 'forceload' is true, then missing chunks will be requested to be loaded.

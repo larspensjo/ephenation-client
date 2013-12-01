@@ -25,6 +25,8 @@
 /// Minimum program for drawing text
 /// Using GLSW to define shader
 static const GLchar *vertexShaderSource[] = {
+	"common.UniformBuffer",
+	"common.OvrDistortion",
 	"colorshader.Vertex"
 };
 
@@ -68,12 +70,6 @@ void ColorShader::Projection(const glm::mat4 &mat) {
 
 void ColorShader::ModelView(const glm::mat4 &mat) {
 	glUniformMatrix4fv(fModelViewMatrixIndex, 1, GL_FALSE, &mat[0][0]); // Send our modelView matrix to the shader
-}
-
-ColorShader::ColorShader() {
-	fProjectionMatrixIndex = -1;
-	fColorIndex = -1;
-	fModelViewMatrixIndex = -1;
 }
 
 ColorShader ColorShader::fgSingleton;

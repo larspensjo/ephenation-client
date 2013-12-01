@@ -60,7 +60,7 @@ public:
 
 	/// Initialize
 	/// @param lumSamplingFactor The windows size is divided by this to get the size of the luminance map
-	void Init(int lightSamplingFactor);
+	void Init(int lightSamplingFactor, bool stereoView);
 
 	void ShadowMapMatrix(const glm::mat4 &) const;
 
@@ -70,15 +70,23 @@ public:
 	/// @param showMap True if a map shall be shown
 	/// @param mapWidth Pixels in width used when drawing a map
 	/// @param ui Pointer to the user interface
-	void Draw(bool underWater, std::shared_ptr<const Model::Object> selectedObject, bool showMap, int mapWidth, MainUserInterface *ui);
+	/// @param stereoView True when using OVR
+	void Draw(bool underWater, std::shared_ptr<const Model::Object> selectedObject, bool showMap, int mapWidth, MainUserInterface *ui, bool stereoView);
 
 	/// Update the camera position.
 	/// Check if camera position is inside a wall.
 	/// @param wheelDelta How much the player used the wheel
-	void UpdateCameraPosition(int wheelDelta);
+	/// @param stereoView Using Oculus Rift
+	/// @param yaw Horizontal orientation when using OVR
+	/// @param pitch Vertical orientation when using OVR
+	/// @param roll Roll when using OVR
+	void UpdateCameraPosition(int wheelDelta, bool stereoView, float yaw, float pitch, float roll);
 
 	/// Return true if the player is using third person view
 	bool ThirdPersonView() const { return fCameraDistance > 2.0f; }
+
+	void ComputeShadowMap(void);
+	void drawClear(bool underWater); // Clear the main window
 private:
 
 	GLuint fboName;
@@ -108,21 +116,19 @@ private:
 	float fCameraDistance; /// Actual camera distance behind the player
 	float fRequestedCameraDistance; /// Requested camera distance behind the player
 
-	void ComputeShadowMap(void);
 	void ComputeAverageLighting(bool underWater);
 
 	void drawClearFBO(void); // Initialize all images in the FBO
-	void drawClear(bool underWater); // Clear the main window
-	void drawNonTransparentLandscape(void);
+	void drawNonTransparentLandscape(bool stereoView);
 	void drawDynamicShadows(void);
 	void drawDeferredLighting(bool underWater, float whitepoint);
 	void drawPointLights(void);
 	void drawMonsters(void);
-	void drawTransparentLandscape(void);
+	void drawTransparentLandscape(bool stereoView);
 	void drawPointShadows(void);
 	void drawPlayer(void);
 	void drawOtherPlayers(void);
-	void drawSkyBox(GLenum diffuse, GLenum position);
+	void drawSkyBox(GLenum diffuse, GLenum position, bool disableDistortion);
 	void drawLocalFog(void);
 	void drawSelection(const glm::vec3 &);
 	void drawUI(MainUserInterface *ui);

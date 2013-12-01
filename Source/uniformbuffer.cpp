@@ -32,7 +32,7 @@ UniformBuffer::~UniformBuffer() {
 }
 
 // This data description must match the content of the UBO.
-// The content and layout must match UNIFORMBUFFER.
+// The content and layout must match UniformBuffer in common.glsl.
 // "bool" didn't work, probably because of alignment definitions of layout(std140).
 struct Data {
 	glm::mat4 projectionmatrix;
@@ -47,6 +47,12 @@ struct Data {
 	int belowGround; // True when player is below ground
 	float exposure;
 	float ambientLight;
+	//
+	// Oculus rift parameters
+	//
+	glm::vec4 ovrDistortion;
+	glm::vec2 ovrlenscenter;
+	int enabledistortion;
 };
 
 // Use index 0 always
@@ -62,7 +68,7 @@ void UniformBuffer::Init(void) {
 	checkError("UniformBuffer::Init");
 }
 
-void UniformBuffer::Update(void) const {
+void UniformBuffer::Update(bool ovrMode) const {
 	Data data;
 	data.performance = gOptions.fPerformance;
 	if (gOptions.fDynamicShadows)
@@ -81,6 +87,9 @@ void UniformBuffer::Update(void) const {
 	data.exposure = gOptions.fExposure;
 	data.ambientLight = gOptions.fAmbientLight / 200.0f;
 	data.belowGround = Model::gPlayer.BelowGround();
+	data.ovrDistortion = fDistortion;
+	data.ovrlenscenter = fOvrLensCenter;
+	data.enabledistortion = ovrMode;
 
 	glBindBuffer(GL_UNIFORM_BUFFER, fUBOBuffer);
 	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(Data), &data);

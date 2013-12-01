@@ -3,11 +3,12 @@
 	<FileVersion major="1" minor="6" />
 	<Project>
 		<Option title="EphenationClient" />
+		<Option makefile_is_custom="1" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
 		<Build>
 			<Target title="Debug">
-				<Option output="bin/Debug/EphenationClient" prefix_auto="1" extension_auto="1" />
+				<Option output="ephenation" prefix_auto="1" extension_auto="1" />
 				<Option object_output="obj/Debug/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
@@ -17,6 +18,14 @@
 					<Add option="-Dunix" />
 					<Add directory="contrib/glm" />
 				</Compiler>
+				<MakeCommands>
+					<Build command="$make -j7 -f $makefile $target" />
+					<CompileFile command="$make -f $makefile $file" />
+					<Clean command="$make -f $makefile clean" />
+					<DistClean command="$make -f $makefile distclean$target" />
+					<AskRebuildNeeded command="$make -q -f $makefile $target" />
+					<SilentBuild command="$make -j7 -f $makefile $target &gt; $(CMD_NULL)" />
+				</MakeCommands>
 			</Target>
 			<Target title="Release">
 				<Option output="bin/Release/EphenationClient" prefix_auto="1" extension_auto="1" />
@@ -33,10 +42,10 @@
 		</Build>
 		<Compiler>
 			<Add option="-Wall" />
+			<Add directory="contrib/libovr/include" />
 		</Compiler>
 		<Linker>
 			<Add library="GL" />
-			<Add library="X11" />
 			<Add library="GLEW" />
 			<Add library="assimp" />
 			<Add library="glfw" />
@@ -50,6 +59,10 @@
 			<Add library="RocketCore" />
 			<Add library="RocketDebugger" />
 			<Add library="RocketControls" />
+			<Add library="contrib/libovr/lib/Debug/libovr.a" />
+			<Add library="X11" />
+			<Add library="udev" />
+			<Add library="Xinerama" />
 		</Linker>
 		<Unit filename="BuildingBlocks.cpp" />
 		<Unit filename="BuildingBlocks.h" />
@@ -71,6 +84,8 @@
 		<Unit filename="Makefile.mingw" />
 		<Unit filename="Map.cpp" />
 		<Unit filename="Map.h" />
+		<Unit filename="OculusRift.cpp" />
+		<Unit filename="OculusRift.h" />
 		<Unit filename="Options.cpp" />
 		<Unit filename="Options.h" />
 		<Unit filename="ScrollingMessages.cpp" />
@@ -256,13 +271,18 @@
 		<Unit filename="worsttime.cpp" />
 		<Unit filename="worsttime.h" />
 		<Extensions>
-			<code_completion />
+			<code_completion>
+				<search_path add="contrib/glm" />
+				<search_path add="contrib/libovr/include" />
+				<search_path add="contrib" />
+				<search_path add="contrib/libovr/Src" />
+			</code_completion>
 			<debugger>
-				<remote_debugging target="Debug">
-					<options conn_type="0" serial_baud="115200" additional_cmds_before="set args --debug  --singlethread --testuser localhost" />
-				</remote_debugging>
 				<remote_debugging target="Release">
 					<options conn_type="0" serial_baud="115200" additional_cmds_before="set args --debug" />
+				</remote_debugging>
+				<remote_debugging target="Debug">
+					<options conn_type="0" serial_baud="115200" additional_cmds_before="set args --debug  --singlethread server1.ephenation.net" />
 				</remote_debugging>
 			</debugger>
 			<envvars />

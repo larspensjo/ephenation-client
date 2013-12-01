@@ -16,12 +16,12 @@
 
 -- Vertex
 
-layout (location=0) in vec2 vertex;
-out vec2 screen;                           // Screen coordinate
+in vec2 vertex;
+out vec2 Ascreen;                          // Screen coordinate
 void main(void)
 {
 	gl_Position = vec4(vertex*2-1, 0, 1); // Transform from interval 0 to 1, to interval -1 to 1.
-	screen = vertex;                         // Copy position to the fragment shader. Only x and y is needed.
+	Ascreen = vertex;                      // Copy position to the fragment shader. Only x and y is needed.
 }
 
 -- Fragment
@@ -29,15 +29,15 @@ void main(void)
 uniform sampler2D diffuseTex; // The color information
 uniform sampler2D posTex;     // World position
 uniform sampler2D normalTex;  // Normals
-uniform sampler2D blendTex;   // A bitmap with colors to blend with, afterwars.
-uniform sampler2D lightTex;   // A bitmap with colors to blend with, afterwars.
+uniform sampler2D blendTex;   // A bitmap with colors to blend with, afterwards.
+uniform sampler2D lightTex;
 uniform sampler1D poissondisk;
 uniform bool Udead;            // True if the player is dead
 uniform bool Uwater;           // True when head is in water
 uniform bool Uteleport;        // Special mode when inside a teleport
 uniform float UwhitePoint = 3.0;
-in vec2 screen;               // The screen position
-layout(location = 0) out vec4 fragColorFinal;
+in vec2 Ascreen;               // The screen position
+out vec4 fragColorFinal;
 
 bool skyPixel = false;
 vec4 worldPos;
@@ -50,12 +50,16 @@ float linearToSRGB(float linear) {
 
 vec2 seed;
 vec2 rand(vec2 a, vec2 b) {
-	seed = fract(a*10.23 + b*123.1232+screen*3.123 + seed*82.12354); // A value from 0 to 1
+	seed = fract(a*10.23 + b*123.1232+Ascreen*3.123 + seed*82.12354); // A value from 0 to 1
 	return seed;
 }
 
 void main(void)
 {
+	vec2 screen = Ascreen;
+	if (UBOEnableDistortion == 1) {
+		screen = HmdWarp(Ascreen-vec2(0.5, 0.5)) + vec2(0.5, 0.5);
+	}
 	// Load data, stored in textures, from the first stage rendering.
 	normal = texture(normalTex, screen);
 	vec4 diffuse = texture(diffuseTex, screen) * 0.95; // Downscale a little, 1.0 can't be mapped to HDR.

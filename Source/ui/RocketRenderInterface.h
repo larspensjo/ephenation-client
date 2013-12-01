@@ -26,9 +26,9 @@
 class RocketRenderInterface: public Rocket::Core::RenderInterface
 {
 public:
-	RocketRenderInterface();
-
-	void Init();
+	/// @param stereoView True if a stereoscopic view is requested
+	/// @param fieldOfView The field of view used for the GUI in stereoscopic view
+	void Init(bool stereoView, float fieldOfView);
 
 	virtual void RenderGeometry(Rocket::Core::Vertex* vertices, int num_vertices, int* indices, int num_indices, Rocket::Core::TextureHandle texture, const Rocket::Core::Vector2f& translation);
 
@@ -59,6 +59,9 @@ private:
 		GLuint vbi;
 	};
 
-	ColorShader *fColorShader; // Pointer to singleton, do not delete
+	ColorShader *fColorShader = 0; // Pointer to singleton, do not delete
 	ModulatedTextureShader fModulatedTextureShader;
+	bool fStereoView = false;
+	float fFieldOfView = 90.0f;
+	float fGuiDistance = 20.0f; // A distance that feels good for the eyes.
 };

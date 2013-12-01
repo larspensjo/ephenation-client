@@ -88,7 +88,7 @@ RenderControl::~RenderControl() {
 	}
 }
 
-void RenderControl::Init(int lightSamplingFactor) {
+void RenderControl::Init(int lightSamplingFactor, bool stereoView) {
 	// This only has to be done first time
 	glGenRenderbuffers(1, &fDepthBuffer);
 	// glGenTextures(1, &fDownSampleLumTextureBlurred); gDebugTextures.push_back(fDownSampleLumTextureBlurred); // Add this texture to the debugging list of textures
@@ -123,6 +123,8 @@ void RenderControl::Init(int lightSamplingFactor) {
 	fDownSamplingLuminance->Init();
 	fAnimationModels.Init();
 	fRequestedCameraDistance = gOptions.fCameraDistance;
+	if (stereoView)
+		fRequestedCameraDistance = 0.0f;
 	fGaussianBlur.reset(new GaussianBlur);
 	fGaussianBlur->Init();
 
@@ -140,7 +142,7 @@ void RenderControl::Resize(GLsizei width, GLsizei height) {
 
 	//==============================================================================
 	// Create the G-buffers used by the deferred shader. Linear sampling is enabled
-	// as there are some filters that downsample the textures.
+	// as there are some filters that down sample the textures.
 	//==============================================================================
 
 	// Generate and bind the texture depth information
@@ -151,9 +153,9 @@ void RenderControl::Resize(GLsizei width, GLsizei height) {
 	glBindTexture(GL_TEXTURE_2D, fDiffuseTexture);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER); // Get a black border when outside
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 
 	// Generate and bind the texture for positions
 	glBindTexture(GL_TEXTURE_2D, fPositionTexture);
@@ -175,9 +177,9 @@ void RenderControl::Resize(GLsizei width, GLsizei height) {
 	glBindTexture(GL_TEXTURE_2D, fBlendTexture);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER); // Get a black border when outside
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 
 	// Generate and bind the texture for lights
 	glBindTexture(GL_TEXTURE_2D, fLightsTexture);
@@ -232,27 +234,25 @@ void RenderControl::Resize(GLsizei width, GLsizei height) {
 
 enum { STENCIL_NOSKY = 1 };
 
-void RenderControl::Draw(bool underWater, shared_ptr<const Model::Object> selectedObject, bool showMap, int mapWidth, MainUserInterface *ui) {
-	if (!Model::gPlayer.BelowGround())
-		this->ComputeShadowMap();
-
+void RenderControl::Draw(bool underWater, shared_ptr<const Model::Object> selectedObject, bool showMap, int mapWidth, MainUserInterface *ui, bool stereoView) {
 	if (gShowFramework)
 		glPolygonMode(GL_FRONT, GL_LINE);
 	// Create all bitmaps setup in the frame buffer. This is all stage one shaders.
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fboName);
 	drawClearFBO();
+	glViewport(0, 0, fWidth, fHeight);
 	glEnable(GL_STENCIL_TEST);
 	glStencilFunc(GL_ALWAYS, STENCIL_NOSKY, STENCIL_NOSKY); // Set bit for no sky
 	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE); // Replace bits when something is drawn
 	gDrawObjectList.clear();
-	drawNonTransparentLandscape();
+	drawNonTransparentLandscape(stereoView);
 	if (this->ThirdPersonView() && gMode.Get() != GameMode::LOGIN)
 		drawPlayer(); // Draw self, but not if camera is too close
 	drawOtherPlayers();
 	drawMonsters();
-	drawTransparentLandscape();
+	drawTransparentLandscape(stereoView);
 	glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP); // Make stencil read-only
-	drawSkyBox(GL_NONE, GL_COLOR_ATTACHMENT1); // Only output positional data.
+	drawSkyBox(GL_NONE, GL_COLOR_ATTACHMENT1, true); // Only output positional data.
 
 	// Apply deferred shader filters.
 	glStencilFunc(GL_EQUAL, STENCIL_NOSKY, STENCIL_NOSKY); // Only execute when no sky and no UI
@@ -266,13 +266,13 @@ void RenderControl::Draw(bool underWater, shared_ptr<const Model::Object> select
 	glDisable(GL_BLEND);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0); // Frame buffer has done its job now, results are in the diffuse image.
 	glDisable(GL_STENCIL_TEST);
+	glViewport(gViewport[0], gViewport[1], gViewport[2], gViewport[3]); // Restore default viewport.
 
 	// At this point, there is no depth buffer representing the geometry and no stencil. They are only valid inside the FBO.
-	drawClear(underWater);
 
     // If the player is dead, he will get a gray sky.
 	if (!Model::gPlayer.IsDead() && !Model::gPlayer.BelowGround() && !underWater)
-        drawSkyBox(GL_BACK_LEFT, GL_NONE); // Draw the sky texture, but ignore position data.
+        drawSkyBox(GL_BACK_LEFT, GL_NONE, false); // Draw the sky texture, but ignore position data.
 
 	ComputeAverageLighting(underWater);
 	if (gShowFramework)
@@ -314,17 +314,17 @@ void RenderControl::drawClearFBO(void) {
 	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
 }
 
-void RenderControl::drawNonTransparentLandscape(void) {
+void RenderControl::drawNonTransparentLandscape(bool stereoView) {
 	static TimeMeasure tm("Landsc");
 	tm.Start();
 	GLenum windowBuffOpaque[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_NONE };
 	glDrawBuffers(4, windowBuffOpaque); // Nothing is transparent here, do not produce any blending data on the 4:th render target.
 	fShader->EnableProgram(); // Get program back again after the skybox.
-	DrawLandscape(fShader, DL_NoTransparent);
+	DrawLandscape(fShader, DL_NoTransparent, stereoView);
 	tm.Stop();
 }
 
-void RenderControl::drawTransparentLandscape(void) {
+void RenderControl::drawTransparentLandscape(bool stereoView) {
 	static TimeMeasure tm("Transp");
 	tm.Start();
 	GLenum windowBuffOpaque[] = { GL_COLOR_ATTACHMENT3 }; // Only draw to the transparent buffer
@@ -337,7 +337,7 @@ void RenderControl::drawTransparentLandscape(void) {
 	glActiveTexture(GL_TEXTURE0);
 	gTranspShader.EnableProgram();
 	gTranspShader.View(float(gCurrentFrameTime));
-	DrawLandscape(&gTranspShader, DL_OnlyTransparent);
+	DrawLandscape(&gTranspShader, DL_OnlyTransparent, stereoView);
 	gTranspShader.DisableProgram();
 	glDepthMask(GL_TRUE);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // Restore to default
@@ -615,7 +615,7 @@ void RenderControl::drawColoredLights() const {
 // 1. Drawing the skybox color
 // 2. Drawing the skybox position data
 // Specify color target with 'diffuse' and position data target with 'position'.
-void RenderControl::drawSkyBox(GLenum diffuse, GLenum position) {
+void RenderControl::drawSkyBox(GLenum diffuse, GLenum position, bool disableDistortion) {
     static TimeMeasure tm("SkyBox");
     tm.Start();
     GLenum windowBuffOpaque[] = { diffuse, position };
@@ -623,7 +623,7 @@ void RenderControl::drawSkyBox(GLenum diffuse, GLenum position) {
     glDepthRange(1, 1); // This will move the sky box to the far plane, exactly
     glDepthFunc(GL_LEQUAL); // Seems to be needed, or depth value 1.0 will not be shown.
     glDisable(GL_CULL_FACE); // Skybox is drawn with the wrong culling order.
-    fSkyBox->Draw();
+    fSkyBox->Draw(disableDistortion);
     glEnable(GL_CULL_FACE);
     glDepthFunc(GL_LESS);
     glDepthRange(0, 1);
@@ -656,7 +656,7 @@ void RenderControl::drawMap(int mapWidth) {
 	map->Draw(0.6f);
 }
 
-void RenderControl::UpdateCameraPosition(int wheelDelta) {
+void RenderControl::UpdateCameraPosition(int wheelDelta, bool stereoView, float yaw, float pitch, float roll) {
 	fRequestedCameraDistance += wheelDelta;
 	if (fRequestedCameraDistance < 0.0f)
 		fRequestedCameraDistance = 0.0f;
@@ -730,8 +730,13 @@ void RenderControl::UpdateCameraPosition(int wheelDelta) {
 	}
 
 	gViewMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -fCameraDistance));
-	gViewMatrix = glm::rotate(gViewMatrix, _angleVert, glm::vec3(1.0f, 0.0f, 0.0f));
-	gViewMatrix = glm::rotate(gViewMatrix, _angleHor, glm::vec3(0.0f, 1.0f, 0.0f));
+	if (stereoView)
+		gViewMatrix = glm::rotate(gViewMatrix, roll, glm::vec3(0.0f, 0.0f, -1.0f));
+	if (stereoView)
+		gViewMatrix = glm::rotate(gViewMatrix, pitch, glm::vec3(-1.0f, 0.0f, 0.0f)); // Don't let mouse affect pitch
+	else
+		gViewMatrix = glm::rotate(gViewMatrix, _angleVert, glm::vec3(1.0f, 0.0f, 0.0f));
+	gViewMatrix = glm::rotate(gViewMatrix, _angleHor-yaw, glm::vec3(0.0f, 1.0f, 0.0f));
 	gViewMatrix = glm::translate(gViewMatrix, -playerOffset);
 }
 
@@ -777,7 +782,7 @@ void RenderControl::ComputeAverageLighting(bool underWater) {
 
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
-	glViewport(0, 0, gViewport[2], gViewport[3]); // Restore default viewport.
+	glViewport(gViewport[0], gViewport[1], gViewport[2], gViewport[3]); // Restore default viewport.
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 	tm.Stop();
 }

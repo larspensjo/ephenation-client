@@ -82,7 +82,7 @@ again:
 	glDrawBuffers(1, windowBuffer);
 	glClearColor(1,0,0,1);
 	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-	glViewport(0, 0, gViewport[2], gViewport[3]); // Restore default viewport.
+	glViewport(gViewport[0], gViewport[1], gViewport[2], gViewport[3]); // Restore default viewport.
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -147,7 +147,7 @@ void Billboard::UppdateBillboard(int picture) {
 	glBlitFramebuffer(0,0,fPixelWidth,fPixelWidth, dstX0, dstY0, dstX0+fPixelWidth, dstY0+fPixelWidth, GL_COLOR_BUFFER_BIT, GL_NEAREST);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-	glViewport(0, 0, gViewport[2], gViewport[3]); // Restore default viewport.
+	glViewport(gViewport[0], gViewport[1], gViewport[2], gViewport[3]); // Restore default viewport.
 }
 
 void Billboard::BindTexture(void) {
@@ -156,7 +156,6 @@ void Billboard::BindTexture(void) {
 
 void Billboard::InitializeTextures(StageOneShader *shader) {
 	int picture;
-	glm::mat4 fProjViewMatrix = gProjectionMatrix;
 	shader->EnableProgram();
 	shader->Model(glm::mat4(1));
 	int width = 20, depth = 40;
@@ -173,7 +172,7 @@ void Billboard::InitializeTextures(StageOneShader *shader) {
 	// Big tree
 	picture = gBillboard.AllocatePermanentPicture();
 	gBillboard.EnableForDrawing();
-	gUniformBuffer.Update();
+	gUniformBuffer.Update(false);
 	glBindTexture(GL_TEXTURE_2D, GameTexture::TreeBarkId); // This will be used for trunk and all branches.
 	Tree::sfBigTree.Draw();
 	gBillboard.UppdateBillboard(picture);
@@ -182,7 +181,7 @@ void Billboard::InitializeTextures(StageOneShader *shader) {
 	// Medium tree
 	picture = gBillboard.AllocatePermanentPicture();
 	gBillboard.EnableForDrawing();
-	gUniformBuffer.Update();
+	gUniformBuffer.Update(false);
 	glBindTexture(GL_TEXTURE_2D, GameTexture::TreeBarkId); // This will be used for trunk and all branches.
 	Tree::sfMediumTree.Draw();
 	gBillboard.UppdateBillboard(picture);
@@ -191,7 +190,7 @@ void Billboard::InitializeTextures(StageOneShader *shader) {
 	// Small tree
 	picture = gBillboard.AllocatePermanentPicture();
 	gBillboard.EnableForDrawing();
-	gUniformBuffer.Update();
+	gUniformBuffer.Update(false);
 	glBindTexture(GL_TEXTURE_2D, GameTexture::TreeBarkId); // This will be used for trunk and all branches.
 	Tree::sfSmallTree.Draw();
 	gBillboard.UppdateBillboard(picture);
@@ -202,7 +201,7 @@ void Billboard::InitializeTextures(StageOneShader *shader) {
 	// Big tree shadow
 	picture = gBillboard.AllocatePermanentPicture();
 	gBillboard.EnableForDrawing();
-	gUniformBuffer.Update();
+	gUniformBuffer.Update(false);
 	glBindTexture(GL_TEXTURE_2D, GameTexture::TreeBarkId); // This will be used for trunk and all branches.
 	Tree::sfBigTree.Draw();
 	gBillboard.UppdateBillboard(picture);
@@ -211,7 +210,7 @@ void Billboard::InitializeTextures(StageOneShader *shader) {
 	// Medium tree shadow
 	picture = gBillboard.AllocatePermanentPicture();
 	gBillboard.EnableForDrawing();
-	gUniformBuffer.Update();
+	gUniformBuffer.Update(false);
 	glBindTexture(GL_TEXTURE_2D, GameTexture::TreeBarkId); // This will be used for trunk and all branches.
 	Tree::sfMediumTree.Draw();
 	gBillboard.UppdateBillboard(picture);
@@ -220,14 +219,11 @@ void Billboard::InitializeTextures(StageOneShader *shader) {
 	// Small tree shadow
 	picture = gBillboard.AllocatePermanentPicture();
 	gBillboard.EnableForDrawing();
-	gUniformBuffer.Update();
+	gUniformBuffer.Update(false);
 	glBindTexture(GL_TEXTURE_2D, GameTexture::TreeBarkId); // This will be used for trunk and all branches.
 	Tree::sfSmallTree.Draw();
 	gBillboard.UppdateBillboard(picture);
 	fPredefined.at(tree1Shadow) = picture;
-
-	gProjectionMatrix = fProjViewMatrix; // Restore
-	gUniformBuffer.Update();
 }
 
 void Billboard::Draw(StageOneShader *shader, const glm::mat4 &modelMatrix, enum Predefined picture) {

@@ -64,6 +64,8 @@
 #include "worsttime.h"
 #include "contrib/glsw.h"
 #include "errormanager.h"
+#include "OculusRift.h"
+#include "Debug.h"
 
 #ifndef GL_VERSION_3_2
 #define GL_CONTEXT_CORE_PROFILE_BIT       0x00000001
@@ -80,6 +82,7 @@
 
 using namespace std;
 
+#ifdef DEBUG
 static const char* get_profile_name(GLint mask) {
 	if (mask & GL_CONTEXT_COMPATIBILITY_PROFILE_BIT)
 		return "compatibility";
@@ -88,6 +91,7 @@ static const char* get_profile_name(GLint mask) {
 
 	return "unknown";
 }
+#endif
 
 // Used for NVIDIA
 #define GPU_MEMORY_INFO_DEDICATED_VIDMEM_NVX          0x9047
@@ -104,43 +108,41 @@ static const char* get_profile_name(GLint mask) {
 static void dumpInfo(int major, int minor, int revision) {
 	int glfwMajor=-1, glfwMinor=-1, glfwRev=-1;
 	glfwGetVersion(&glfwMajor, &glfwMinor, &glfwRev);
-	printf ("GLFW Version: %d.%d.%d\n", glfwMajor, glfwMinor, glfwRev);
-	printf ("Vendor: %s\n", glGetString (GL_VENDOR));
-	printf ("Renderer: %s\n", glGetString (GL_RENDERER));
-	printf ("Version: %s\n", glGetString (GL_VERSION));
-	printf ("GLSL: %s\n", glGetString (GL_SHADING_LANGUAGE_VERSION));
-	printf("OpenGL context version parsed by GLFW: %u.%u.%u\n", major, minor, revision);
+	LPLOG ("GLFW Version: %d.%d.%d", glfwMajor, glfwMinor, glfwRev);
+	LPLOG ("Vendor: %s", glGetString (GL_VENDOR));
+	LPLOG ("Renderer: %s", glGetString (GL_RENDERER));
+	LPLOG ("Version: %s", glGetString (GL_VERSION));
+	LPLOG ("GLSL: %s", glGetString (GL_SHADING_LANGUAGE_VERSION));
+	LPLOG("OpenGL context version parsed by GLFW: %u.%u.%u", major, minor, revision);
 	GLint flags, mask;
 
 	if (major >= 3) {
 		glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
-		printf("OpenGL context flags:");
-
 		if (flags & GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT)
-			puts(" forward-compatible");
+			LPLOG("OpenGL context flags: forward-compatible");
 		else
-			puts(" none");
+			LPLOG("OpenGL context flags: none");
 	}
 
 	if (major > 3 || (major == 3 && minor >= 2)) {
 		glGetIntegerv(GL_CONTEXT_PROFILE_MASK, &mask);
-		printf("OpenGL profile mask: 0x%08x (%s)\n", mask, get_profile_name(mask));
+		LPLOG("OpenGL profile mask: 0x%08x (%s)", mask, get_profile_name(mask));
 	}
 
 	// This works for NVIDIA
 	GLint par = -1;
 	glGetIntegerv(GPU_MEMORY_INFO_DEDICATED_VIDMEM_NVX, &par);
 	if (glGetError() == GL_NO_ERROR)
-		printf("GPU_MEMORY_INFO_DEDICATED_VIDMEM_NVX %d\n", par);
+		LPLOG("GPU_MEMORY_INFO_DEDICATED_VIDMEM_NVX %d", par);
 	glGetIntegerv(GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX, &par);
 	if (glGetError() == GL_NO_ERROR)
-		printf("GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX %d\n", par);
+		LPLOG("GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX %d", par);
 
 	// This works for ATI
 	GLint parATI[4];
 	glGetIntegerv(VBO_FREE_MEMORY_ATI, parATI);
 	if (glGetError() == GL_NO_ERROR)
-		printf("VBO_FREE_MEMORY_ATI total %d, largest block %d, total aux %d, largest aux block %d\n", parATI[0], parATI[1], parATI[2], parATI[3]);
+		LPLOG("VBO_FREE_MEMORY_ATI total %d, largest block %d, total aux %d, largest aux block %d", parATI[0], parATI[1], parATI[2], parATI[3]);
 }
 
 void dumpGraphicsMemoryStats(void) {
@@ -149,20 +151,20 @@ void dumpGraphicsMemoryStats(void) {
 		GLint par = -1;
 		glGetIntegerv(GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX, &par);
 		if (glGetError() == GL_NO_ERROR)
-			printf("GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX %d\n", par);
+			LPLOG("GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX %d", par);
 		glGetIntegerv(GPU_MEMORY_INFO_EVICTION_COUNT_NVX, &par);
 		if (glGetError() == GL_NO_ERROR)
-			printf("GPU_MEMORY_INFO_EVICTION_COUNT_NVX %d\n", par);
+			LPLOG("GPU_MEMORY_INFO_EVICTION_COUNT_NVX %d", par);
 		glGetIntegerv(GPU_MEMORY_INFO_EVICTED_MEMORY_NVX, &par);
 		if (glGetError() == GL_NO_ERROR)
-			printf("GPU_MEMORY_INFO_EVICTED_MEMORY_NVX %d\n", par);
+			LPLOG("GPU_MEMORY_INFO_EVICTED_MEMORY_NVX %d", par);
 	}
 
 	if (strncmp((const char *)glGetString (GL_RENDERER), "AMD", 3) == 0) {
 		GLint parATI[4];
 		glGetIntegerv(VBO_FREE_MEMORY_ATI, parATI);
 		if (glGetError() == GL_NO_ERROR)
-			printf("VBO_FREE_MEMORY_ATI total %d, largest block %d, total aux %d, largest aux block %d\n", parATI[0], parATI[1], parATI[2], parATI[3]);
+			LPLOG("VBO_FREE_MEMORY_ATI total %d, largest block %d, total aux %d, largest aux block %d", parATI[0], parATI[1], parATI[2], parATI[3]);
 	}
 }
 
@@ -195,7 +197,7 @@ void APIENTRY DebugFunc(GLenum source, GLenum type, GLuint id, GLenum severity, 
 	}
 
 	if (severity == GL_DEBUG_SEVERITY_HIGH_ARB || !gIgnoreOpenGLErrors)
-		printf("%s from %s,\t%s priority\nMessage: %s\n", errorType.c_str(), srcName.c_str(), typeSeverity.c_str(), message); // Can't use ErrorDialog() here.
+		LPLOG("%s from %s,\t%s priority\nMessage: %s", errorType.c_str(), srcName.c_str(), typeSeverity.c_str(), message); // Can't use ErrorDialog() here.
 }
 
 void APIENTRY DebugFuncAMD(GLuint id, GLenum category, GLenum severity, GLsizei length, const GLchar* message, GLvoid* userParam) {
@@ -219,7 +221,7 @@ void APIENTRY DebugFuncAMD(GLuint id, GLenum category, GLenum severity, GLsizei 
 	}
 
 	if (severity == GL_DEBUG_SEVERITY_HIGH_ARB || !gIgnoreOpenGLErrors)
-		printf("%s,\t%s priority\nMessage: %s\n", typeCategory.c_str(), typeSeverity.c_str(), message); // Can't use ErrorDialog() here.
+		LPLOG("%s,\t%s priority\nMessage: %s", typeCategory.c_str(), typeSeverity.c_str(), message); // Can't use ErrorDialog() here.
 }
 
 // Used for debugging, where it is difficult when there are many threads trigging a break point.
@@ -231,18 +233,26 @@ static int sTestUser = 0;
 // True if the game GUI shall be hidden
 static int sHideGUI = 0;
 
+static int sOculusRiftMode = 0;
+
 static struct option long_options[] = {
 	/* These options set a flag. */
-	{"verbose", no_argument,       &gVerbose, 1},
-	{"debug",   no_argument,       &gDebugOpenGL, 1},
-	{"singlethread", no_argument,  &sSingleThread, 1},
-	{"testuser", no_argument,      &sTestUser, 1},
-	{"hidegui", no_argument,       &sHideGUI, 1},
-	{"ignoreerror", no_argument,   &gIgnoreOpenGLErrors, 1},
+	{"verbose",     no_argument, &gVerbose, 1},
+	{"debug",       no_argument, &gDebugOpenGL, 1},
+	{"singlethread",no_argument, &sSingleThread, 1},
+	{"testuser",    no_argument, &sTestUser, 1},
+	{"hidegui",     no_argument, &sHideGUI, 1},
+	{"ignoreerror", no_argument, &gIgnoreOpenGLErrors, 1},
+	{"ovr",         no_argument, &sOculusRiftMode, 1},
 	{0, 0, 0, 0}
 };
 
 int main(int argc, char** argv) {
+#ifdef _WIN32
+	LPLogFile("ephenation.log");
+#else
+	LPLogFile("/tmp/ephenation.log");
+#endif
 	if (!glfwInit()) {
 		ErrorDialog("Failed to initialize GLFW\n");
 		exit(EXIT_FAILURE);
@@ -316,11 +326,18 @@ int main(int argc, char** argv) {
 
 	ChunkCache::fgChunkCache.SetCacheDir(cachePath);
 
-	//printf("Game Path: %s\n", dataDir);
+	//LPLOG("Game Path: %s", dataDir);
 
-	gOptions.Init(optionsFilename); // This one should come early, as it is used to initalize things.
+	gOptions.Init(optionsFilename); // This one should come early, as it is used to initialize things.
+	if (gOptions.fOculusRift)
+		sOculusRiftMode = 1;
+	if (sOculusRiftMode) {
+		if (gDebugOpenGL)
+			LPLOG("main: Oculus Rift mode");
+		Controller::OculusRift::sfOvr.Create();
+	}
 
-	// If there was a saved position, use it for imnitialization.
+	// If there was a saved position, use it for initialization.
 	if (gOptions.fPlayerX != 0 || gOptions.fPlayerY != 0 || gOptions.fPlayerZ != 0)
 		Model::gPlayer.SetPosition(gOptions.fPlayerX, gOptions.fPlayerY, gOptions.fPlayerZ);
 	unsigned maxThreads = gOptions.fNumThreads;
@@ -335,7 +352,7 @@ int main(int argc, char** argv) {
 	TSExec::gTSExec.Init(); // This must be called after initiating gSoundControl.
 
 	if (gDebugOpenGL)
-		printf("Number of threads: %d\n", maxThreads);
+		LPLOG("Number of threads: %d", maxThreads);
 	int numChunkProc = maxThreads - 1;
 	if (numChunkProc <= 0)
 		numChunkProc = 1;
@@ -357,7 +374,7 @@ int main(int argc, char** argv) {
 	GLFWvidmode desktopMode;
 	glfwGetDesktopMode(&desktopMode);
 	if (gDebugOpenGL)
-		printf("Desktop mode %d blue bits, %d green bits, %d red bits, %dx%d\n", desktopMode.BlueBits, desktopMode.GreenBits, desktopMode.RedBits, desktopMode.Width, desktopMode.Height);
+		LPLOG("Desktop mode %d blue bits, %d green bits, %d red bits, %dx%d", desktopMode.BlueBits, desktopMode.GreenBits, desktopMode.RedBits, desktopMode.Width, desktopMode.Height);
 	gDesktopAspectRatio = float(desktopMode.Width)/float(desktopMode.Height);
 
 	// Initialize glew
@@ -365,7 +382,7 @@ int main(int argc, char** argv) {
 	checkError("glewInit");
 	if(err!=GLEW_OK) {
 		//problem: glewInit failed, something is seriously wrong
-		printf("Fail to init glew: Error: %s\n", glewGetErrorString(err));
+		LPLOG("Fail to init glew: Error: %s", glewGetErrorString(err));
 		checkError("glewInit");
 		return -1;
 	}
@@ -374,14 +391,14 @@ int main(int argc, char** argv) {
 	int major, minor, revision;
 	glfwGetGLVersion(&major, &minor, &revision);
 	if ((major == 3 && minor < 3) || major < 3) {
-		ErrorDialog("OpenGL context version parsed by GLFW: %u.%u.%u. Version 3.3 required\n", major, minor, revision);
+		ErrorDialog("OpenGL context version parsed by GLFW: %u.%u.%u. Version 3.3 required", major, minor, revision);
 	}
 
 	if (gDebugOpenGL) {
 		dumpInfo(major, minor, revision); // Enable this to show some version information about the OpenGL and the graphics card.
-		// dumpGraphicsMemoryStats();
+		dumpGraphicsMemoryStats();
 		// const GLubyte* sExtensions = glGetString(GL_EXTENSIONS);
-		// printf("GL extensions: %s\n", sExtensions);
+		// LPLOG("GL extensions: %s", sExtensions);
 		// glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB);
 		if (glDebugMessageCallbackARB != 0)
 			glDebugMessageCallbackARB(DebugFunc, (void*)15);
@@ -399,7 +416,7 @@ int main(int argc, char** argv) {
 	gUniformBuffer.Init();
 	gDrawFont.Init("textures/georgia12"); // Must be done before gGameDialog.
 	GameTexture::Init();
-	Controller::gGameDialog.init();
+	Controller::gGameDialog.init(sOculusRiftMode);
 	ChunkShader *shader = ChunkShader::Make();
 	gChunkShaderPicking.Init();
 	Tree::InitStatic();
@@ -445,13 +462,15 @@ int main(int argc, char** argv) {
 				ListenForServerMessages();
 		}
 
-		Controller::gGameDialog.Update();
-		Controller::gGameDialog.render(sHideGUI);
+		Controller::gGameDialog.DrawScreen(sHideGUI);
 
-		glfwSwapBuffers();
+		View::Chunk::DegradeBusyList_gl();
 
-		if (gMode.Get() == GameMode::ESC)
+		if (gMode.Get() == GameMode::ESC) {
+			if (gDebugOpenGL)
+				dumpGraphicsMemoryStats();
 			glfwCloseWindow();
+		}
 		tm.Stop();
 	}
 
@@ -461,8 +480,8 @@ int main(int argc, char** argv) {
 	unsigned char b[] = { 0x03, 0x00, CMD_QUIT };
 	SendMsg(b, sizeof b);
 
-	// The logout acknowledge from the server may take sime time. Take the opportunity to
-	// halt the process pool.ss
+	// The logout acknowledge from the server may take some time. Take the opportunity to
+	// halt the process pool.
 	gChunkProcess.RequestTerminate();
 	glswShutdown();
 
@@ -474,7 +493,7 @@ int main(int argc, char** argv) {
 	}
 
 	if (gMode.Get() == GameMode::GAME) {
-		printf("Failed to disconnect from server\n");
+		LPLOG("Failed to disconnect from server");
 	}
 
 	// The options will be saved by the destructor.

@@ -61,14 +61,20 @@ namespace Controller {
 class gameDialog {
 public:
 	gameDialog();
+	/// Called every frame
+	/// @param hideGUI Hide all GUI, for use when taking pictures, etc.
+	void DrawScreen(bool hideGUI);
 	/// Render many things.
-	/// @todo Nothing should be renderred from here, it should all go into the View of the MVC.
-	void render(bool hideGUI);
-	void init();
+	/// @todo Nothing should be rendered from here, it should all go into the View of the MVC.
+	void render(bool hideGUI, int fps);
+	/// Compute the projection matrix.
+	enum class ViewType { left, right, single };
+	void UpdateProjection(ViewType v);
+	void init(bool useOvr);
 	~gameDialog();
 	void handleMouse(int button, int action);
 	/// Polled to update various states
-	void Update();
+	void Update(void);
 	void SetMessage(const char *);
 	void HandleKeyRelease(int key); // Keyboard event
 	void HandleKeyPress(int key);	// Keyboard event
@@ -105,13 +111,13 @@ public:
 	void ClearInputRedirect(void);
 
 private:
+
 	Effect fCurrentEffect;
 	bool fMovingFwd;
 	bool fMovingBwd;
 	bool fMovingLeft;
 	bool fMovingRight;
 	bool fUsingTorch;
-	int fMapWidth;
 	Calibration fCalibrationMode;
 
 	bool fEnterDebugText;
@@ -119,12 +125,6 @@ private:
 	bool fShowWeapon;
 	bool fUnderWater; // True when player is below water
 	View::Chunk *FindSelectedSurface(int x, int y, ChunkOffsetCoord *, int *surfaceDir);
-	/// Draw the player weapon
-	/// @todo Should go int the View of the MVC.
-	void DrawWeapon(void) const;
-	/// Draw a healing self animation
-	/// @todo Should go into the View of the MVC.
-	void DrawHealingAnimation(bool restart) const;
 	/// Call this when a dialog will be showed, to stop movement, etc.
 	/// All key presses will henceforth be forwarded to the dialog, so the player can't stop moving.
 	void ClearForDialog(void);
@@ -151,6 +151,23 @@ private:
 
 	/// Save the game screen to a file
 	void SaveScreen();
+
+	bool fStereoView = false;
+
+	//
+	// TODO: The following parameters should be moved to the View.
+	//
+	int fScreenWidth = 0, fScreenHeight = 0;
+	int fMapWidth;
+	float fDefaultRenderViewAngle = 60.0f;
+	float fRenderViewAngle = fDefaultRenderViewAngle;
+
+	/// Draw the player weapon
+	/// @todo Should go int the View of the MVC.
+	void DrawWeapon(void) const;
+	/// Draw a healing self animation
+	/// @todo Should go into the View of the MVC.
+	void DrawHealingAnimation(bool restart) const;
 };
 
 extern gameDialog gGameDialog;

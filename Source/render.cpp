@@ -198,6 +198,7 @@ bool AllVerticesOutsideFrustum(const glm::vec3 *v, int numVertices, const glm::m
 
 // Can the user see this chunk? Test if any of the 8 corners are inside the display (view frustum).
 // TODO: If the chunk is completely empty (only air), the following test could be skipped.
+// TODO: Doesn't seem to work for right eye in stereo view mode.
 static bool Outside(int dx, int dy, int dz, const glm::mat4 &modelMatrix) {
 	static const glm::vec3 v[] = {
 		// All 8 corners
@@ -277,7 +278,7 @@ static void DrawChunkBorders(StageOneShader *shader) {
 }
 
 // TODO: This function should be split into a separate function for picking mode.
-void DrawLandscape(StageOneShader *shader, DL_Type dlType) {
+void DrawLandscape(StageOneShader *shader, DL_Type dlType, bool stereoView) {
 	if (!Model::gPlayer.KnownPosition())
 		return;
 	if (dlType == DL_NoTransparent) {
@@ -318,7 +319,8 @@ void DrawLandscape(StageOneShader *shader, DL_Type dlType) {
 		int dy = sChunkDistances[src].dy;
 		int dz = sChunkDistances[src].dz;
 		glm::mat4 modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(dx*CHUNK_SIZE, dz*CHUNK_SIZE, -dy*CHUNK_SIZE));
-		if (Outside(dx, dy , dz, modelMatrix)) {
+		// The outside detection is buggy for stereoView.
+		if (!stereoView && Outside(dx, dy , dz, modelMatrix)) {
 			continue; // Go to next chunk
 		}
 		listOfVisibleChunks[dst++] = src;
