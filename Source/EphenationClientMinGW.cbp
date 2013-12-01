@@ -99,6 +99,9 @@
 			<Add directory="C:/MinGW/msys/1.0/local/lib" />
 			<Add directory="C:/MinGW/msys/1.0/bin/assimp/lib" />
 		</Linker>
+		<Unit filename="../README.md" />
+		<Unit filename="../TODO.md" />
+		<Unit filename="../readme.txt" />
 		<Unit filename="BuildingBlocks.cpp" />
 		<Unit filename="BuildingBlocks.h" />
 		<Unit filename="ChunkBlocks.cpp" />
