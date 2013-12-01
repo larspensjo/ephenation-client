@@ -41,12 +41,8 @@ string gParseMessageAtLogin;
 
 #include "Inventory.h"
 #include <glm/glm.hpp>
-#include "object.h"
 #include "parse.h"
 #include "client_prot.h"
-#include "render.h"
-#include "chunk.h"
-#include "chunkcache.h"
 #include "player.h"
 #include "connection.h"
 #include "msgwindow.h"
@@ -57,22 +53,14 @@ string gParseMessageAtLogin;
 #include "SoundControl.h"
 #include "ui/Error.h"
 #include "ChunkProcess.h"
-#include "ChunkBlocks.h"
-#include "assert.h"
-#include "primitives.h"
 #include "SuperChunkManager.h"
 #include "Debug.h"
 
 #define NELEM(x) (sizeof x / sizeof x[0])
 
-/// Event generated when the player is hit by a monster
-/// @param dmg The damage in the hit
-/// @param id The id of the monster
 Simple::Signal<void (float dmg, unsigned long id)> gMonsterHitByPlayerEvt;
-
-/// Event generated when the player is hit by a monster
-/// @param dmg The amount of damage
 Simple::Signal<void (float dmg)> gPlayerHitByMonsterEvt;
+Simple::Signal<void (const char *msg)> gServerMessageEvt;
 
 using namespace Controller;
 using View::SoundControl;
@@ -201,22 +189,8 @@ static void ServerMessage(const char *msg) {
 		sgPopup = sgPopup + &msg[1] + "\n";
 		return;
 	}
-	View::gMsgWindow.Add("%s", msg);
-	string s = msg;
-	size_t n = s.find_first_of(' ');
-	if (n != s.npos && s.length() > n) {
-		// Found a space.
-		int cmp = s.compare(n+1, 5, "says:");
-		if (cmp == 0) {
-			View::gSoundControl.RequestSound(SoundControl::SInterfacePing);
-		}
-
-		cmp = s.compare(n+1, 10, "tells you:");
-		if (cmp == 0) {
-			View::gSoundControl.RequestSound(SoundControl::SInterfacePing);
-		}
-	}
-	// LPLOG("Parse: message '%s'", b+1);
+	gServerMessageEvt.emit(msg);
+	LPLOG("Message '%s'", msg);
 }
 
 // Parse a command from the server. Notice that the length bytes are not included, which means
@@ -487,6 +461,7 @@ void Parse(const unsigned char *b, int n) {
 	}
 	default:
 		View::gMsgWindow.Add("Parse: Unknown server command %d, length %d", b[0], n);
+		LPLOG("Unknown server command %d, length %d", b[0], n);
 		DumpBytes(b, n);
 		break;
 	}

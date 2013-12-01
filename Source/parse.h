@@ -26,8 +26,18 @@
 #include <vector>
 #include "contrib/SimpleSignal.h"
 
+/// Event generated when the player is hit by a monster
+/// @param dmg The damage in the hit
+/// @param id The id of the monster
 extern Simple::Signal<void (float dmg, unsigned long id)> gMonsterHitByPlayerEvt;
+
+/// Event generated when the player is hit by a monster
+/// @param dmg The amount of damage
 extern Simple::Signal<void (float dmg)> gPlayerHitByMonsterEvt;
+
+/// Event generated when there is a text message from the server
+/// @param msg The string with the message
+extern Simple::Signal<void (const char *msg)> gServerMessageEvt;
 
 /**
  * @brief Parse a message from the server

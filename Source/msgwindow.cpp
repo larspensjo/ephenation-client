@@ -40,12 +40,17 @@ static void PlayerHitByMonster(float dmg) {
 	gMsgWindow.Add("Monster hit you with %d%% damage", int(dmg*100+0.5f));
 }
 
+static void ServerMessage(const char *msg) {
+	gMsgWindow.Add("%s", msg);
+}
+
 MsgWindow::MsgWindow(): fRocketElement(0), fActivateDropMessage(false), fDropX(0), fDropY(0) {
 }
 
 void MsgWindow::Init(Rocket::Core::Element *rocketElement) {
 	fRocketElement = rocketElement;
 	gPlayerHitByMonsterEvt.connect(PlayerHitByMonster);
+	gServerMessageEvt.connect(ServerMessage);
 }
 
 void MsgWindow::Add(const char *fmt, ...) {

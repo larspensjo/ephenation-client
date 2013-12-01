@@ -54,6 +54,23 @@ static void PlayerHitByMonster(float) {
 	gSoundControl.RequestSound(SoundControl::SMonsterHits);
 }
 
+static void ServerMessage(const char *msg) {
+	string s = msg;
+	size_t n = s.find_first_of(' ');
+	if (n != s.npos && s.length() > n) {
+		// Found a space.
+		int cmp = s.compare(n+1, 5, "says:");
+		if (cmp == 0) {
+			gSoundControl.RequestSound(SoundControl::SInterfacePing);
+		}
+
+		cmp = s.compare(n+1, 10, "tells you:");
+		if (cmp == 0) {
+			gSoundControl.RequestSound(SoundControl::SInterfacePing);
+		}
+	}
+}
+
 SoundControl View::gSoundControl;
 
 // Macro that computes number of elements of a static vector
@@ -206,6 +223,7 @@ SoundControl::SoundControl() : fFeetInWater(false), fFeetInAir(false), fUnderWat
 void SoundControl::Init(void) {
 	gPlayerHitByMonsterEvt.connect(PlayerHitByMonster);
 	gMonsterHitByPlayerEvt.connect(MonsterHitByPlayer);
+	gServerMessageEvt.connect(ServerMessage);
 	int idx;
 
 	//TODO: Error handling - if OpenAL can not be initialized, allow the game to be played anyway?
