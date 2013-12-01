@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -41,7 +41,6 @@ public:
 private:
 	// Define all uniform and attribute indices.
 	virtual void GetLocations(void);
-	ColorShader(); // Only allow access through the maker.
 	static ColorShader fgSingleton; // This is the singleton instance
-	GLint fProjectionMatrixIndex, fColorIndex, fModelViewMatrixIndex;
+	GLint fProjectionMatrixIndex = -1, fColorIndex = -1, fModelViewMatrixIndex = -1;
 };

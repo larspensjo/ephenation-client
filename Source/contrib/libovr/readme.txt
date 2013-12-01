@@ -1,0 +1,1 @@
+For now, the header files are common with linux and win32.

@@ -1,0 +1,93 @@
+<!-- Copyright 2012,2013 The Ephenation Authors -->
+
+<!-- This file is part of Ephenation. -->
+
+<!-- Ephenation is free software: you can redistribute it and/or modify -->
+<!-- it under the terms of the GNU General Public License as published by -->
+<!-- the Free Software Foundation, version 3. -->
+
+<!-- Ephenation is distributed in the hope that it will be useful, -->
+<!-- but WITHOUT ANY WARRANTY; without even the implied warranty of -->
+<!-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the -->
+<!-- GNU General Public License for more details. -->
+
+<!-- You should have received a copy of the GNU General Public License -->
+<!-- along with Ephenation.  If not, see <http://www.gnu.org/licenses/>. -->
+
+<!--The is the login dialog.-->
+
+<rml>
+<head>
+	<title>login.rml</title>
+	<link type="text/rcss" href="ephenation.rcss"/>
+	<link type="text/rcss" href="popup.rcss"/>
+	<style>
+	.screencenter /* Use this to find the center of the screen at top left for an element */
+	{
+		width: 290px;
+		font-size: 22px;
+		margin-top: 50%;
+		margin-left: 50%;
+		z-index: -1; /* Should be behind everything else */
+	}
+	.inputdialog {
+		margin-top: -250px;
+		margin-left: -250px;
+		background-color: rgba(209,195,174,60%);
+		padding: 15px;
+	}
+	.overrideinput {
+		width:100%;
+		icon-background-decorator: none;
+	}
+
+	.label
+	{
+		padding-top: 12px;
+		width: 20%;
+	}
+
+	.field
+	{
+		width: 80%;
+	}
+
+	input.submit,
+	button {
+		icon-background-decorator: none;
+	}
+	input.submit:hover,
+	button:hover {
+		color: white;
+	}
+	</style>
+</head>
+<body id="body" handler="login"> <div class="screencenter"> <div class="inputdialog">
+	<form onsubmit="login">
+		<div class="header" id="header">
+			Ephenation login
+		</div>
+		<table>
+			<tr>
+				<td class="label">License key:</td>
+				<td class="field"><input class="onelineinput overrideinput" type=text name="Login.licensekey" style="margin-left: 0px;"/></td>
+			</tr>
+			<tr>
+				<td class="label">Email:</td>
+				<td class="field"><input class="onelineinput overrideinput" type=text name="Login.email" /></td>
+			</tr>
+			<tr>
+				<td class="label">Password:</td>
+				<td class="field"><input class="onelineinput overrideinput" type=password name="Login.password" /></td>
+			</tr>
+		</table>
+		<br />
+		<div>
+			<p name="client.availableversion" style="margin-left:30%;"></p>
+		</div>
+		<br />
+		<input class="formatbutton" type="submit" value="ok" enterkey=true style="margin-left:10px;">Ok</input>
+		<button class="formatbutton" onclick="Close" cancelkey=true style="margin-left:150px;">Cancel</button>
+	</form>
+</div> </div> </body>
+</rml>

@@ -217,7 +217,7 @@ std::shared_ptr<Model::ChunkBlocks> ChunkCache::LoadChunkFromCache(const ChunkCo
 		ReadChunk.read((char *) &cachedata->fOwner, sizeof(cachedata->fOwner));
 
 		cachedata->compressSize = size-sizeof(cachedata->flag)-sizeof(cachedata->fChecksum)-sizeof(cachedata->fOwner);
-		cachedata->fCompressedChunk.reset(new(unsigned char[cachedata->compressSize]));
+		cachedata->fCompressedChunk.reset(new unsigned char[cachedata->compressSize]);
 
 		ReadChunk.read((char*)cachedata->fCompressedChunk.get(), cachedata->compressSize);
 		ASSERT(ReadChunk.gcount() == cachedata->compressSize);

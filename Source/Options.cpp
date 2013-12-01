@@ -69,6 +69,8 @@ bool Options::ParseOneOption(const string &key, const string &arg) {
 		fExposure = atof(arg.c_str());
 	else if (key == "Display.vsync")
 		fVSYNC = atof(arg.c_str());
+	else if (key == "Display.oculusrift")
+		fOculusRift = atoi(arg.c_str());
 	else if (key == "Audio.musicvolume")
 		fMusicVolume = atoi(arg.c_str());
 	else if (key == "Audio.musicon")
@@ -171,6 +173,7 @@ void Options::Save(void) {
 	optionsFile << "whitepoint=" << fWhitePoint << endl;
 	optionsFile << "exposure=" << fExposure << endl;
 	optionsFile << "vsync=" << fVSYNC << endl;
+	optionsFile << "oculusrift=" << fOculusRift << endl;
 	optionsFile << endl;
 	optionsFile << "# Control audio settings\n";
 	optionsFile << "[Audio]\n";

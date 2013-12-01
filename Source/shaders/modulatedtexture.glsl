@@ -27,7 +27,12 @@ void main(void)
 {
 	fragmentTexCoord = AtexCoord;
 	colorFactor = AcolorFactor;
-	gl_Position = UprojectionMatrix * UmodelViewMatrix * vec4(Avertex,1.0);
+	vec4 pos = UprojectionMatrix * UmodelViewMatrix * vec4(Avertex,1.0);
+	if (UBOEnableDistortion == 1) {
+		pos /= pos.w;
+		pos.xy = HmdWarp(pos.xy);
+	}
+	gl_Position = pos;
 }
 
 -- Fragment

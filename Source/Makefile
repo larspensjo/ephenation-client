@@ -49,7 +49,7 @@
 ##==========================================================================
 
 # The pre-processor and compiler options.
-MY_CFLAGS = -Dunix -Icontrib/glm
+MY_CFLAGS = -Dunix -Icontrib/glm -Icontrib/libovr/include
 
 # The linker options.
 MY_LIBS   = -lGL\
@@ -66,6 +66,10 @@ MY_LIBS   = -lGL\
 	-lRocketCore\
 	-lRocketDebugger\
 	-lRocketControls\
+	contrib/libovr/lib/Release/libovr.a\
+	-lX11\
+	-ludev\
+	-lXinerama\
 	$(PROFILING)
 
 # The pre-processor options used by the cpp (man cpp for more).
@@ -152,6 +156,9 @@ LINK.cxx    = $(CXX) $(MY_CFLAGS) $(CXXFLAGS) $(CPPFLAGS) $(LDFLAGS)
 .SUFFIXES:
 
 all: $(PROGRAM)
+
+Debug:
+	$(MAKE) CFLAGS='-g --std=c++0x'
 
 # Rules for creating dependency files (.d).
 #------------------------------------------

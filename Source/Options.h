@@ -67,6 +67,7 @@ public:
 	int fStaticShadows;    // A simpler version of dynamic shadows.
 	int fAnisotropicFiltering;
 	int fVSYNC;
+	int fOculusRift;
 	unsigned fNumThreads; // Not really configurable
 	signed long long fPlayerX, fPlayerY, fPlayerZ; // Remember the last known player position
 

@@ -121,7 +121,7 @@ void ShadowRender::Render(int width, int height, const AnimationModels *animatio
 	// Blur the depth buffer, before the default viewport is restored.
 	this->Blur(blurShader);
 
-	glViewport(0, 0, gViewport[2], gViewport[3]); // Restore default viewport.
+	glViewport(gViewport[0], gViewport[1], gViewport[2], gViewport[3]); // Restore default viewport.
 	glBindFramebuffer (GL_FRAMEBUFFER, 0);
 }
 

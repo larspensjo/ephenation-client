@@ -40,7 +40,8 @@ public:
 
 	/// Update all data in the uniform buffer
 	/// It is a const function as no parameters in the class are changed.
-	void Update(void) const;
+	/// @param ovrMode true if screen is adapted for Oculus Rift display
+	void Update(bool ovrMode) const;
 
 	/// Call once for each program during initialization
 	void UniformBlockBinding(GLuint program, GLuint idx);
@@ -54,6 +55,8 @@ private:
 	GLuint fUBOBuffer;
 
 	glm::vec4 fCamera;
+	glm::vec4 fDistortion = glm::vec4(1.0f, 0.22f, 0.24f, 0.0f);
+	glm::vec2 fOvrLensCenter = glm::vec2(0.5f, 0.5f);
 };
 
 extern UniformBuffer gUniformBuffer;

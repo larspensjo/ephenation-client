@@ -4,11 +4,20 @@
 	<Project>
 		<Option title="EphenationClient" />
 		<Option makefile="Makefile.mingw" />
+		<Option makefile_is_custom="1" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
+		<MakeCommands>
+			<Build command="make -f $makefile $target" />
+			<CompileFile command="make -f $makefile $file" />
+			<Clean command="$make -f $makefile clean$target" />
+			<DistClean command="$make -f $makefile distclean$target" />
+			<AskRebuildNeeded command="$make -q -f $makefile $target" />
+			<SilentBuild command="make -f $makefile $target &gt; $(CMD_NULL)" />
+		</MakeCommands>
 		<Build>
 			<Target title="Debug">
-				<Option output="bin/Debug/EphenationClient" prefix_auto="1" extension_auto="1" />
+				<Option output="ephenation" prefix_auto="1" extension_auto="1" />
 				<Option object_output="obj/Debug/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
@@ -17,6 +26,14 @@
 					<Add option="-std=c++0x" />
 					<Add option="-g" />
 				</Compiler>
+				<MakeCommands>
+					<Build command="make -f $makefile $target" />
+					<CompileFile command="make -f $makefile $file" />
+					<Clean command="make -f $makefile clean" />
+					<DistClean command="$make -f $makefile distclean$target" />
+					<AskRebuildNeeded command="make -q -f $makefile $target" />
+					<SilentBuild command="make -f $makefile $target &gt; $(CMD_NULL)" />
+				</MakeCommands>
 			</Target>
 			<Target title="Release">
 				<Option output="bin/Release/EphenationClient" prefix_auto="1" extension_auto="1" />
@@ -29,6 +46,14 @@
 				<Linker>
 					<Add option="-s" />
 				</Linker>
+				<MakeCommands>
+					<Build command="$make -f $makefile $target" />
+					<CompileFile command="$make -f $makefile $file" />
+					<Clean command="$make -f $makefile clean" />
+					<DistClean command="$make -f $makefile distclean$target" />
+					<AskRebuildNeeded command="$make -q -f $makefile $target" />
+					<SilentBuild command="$make -f $makefile $target &gt; $(CMD_NULL)" />
+				</MakeCommands>
 			</Target>
 		</Build>
 		<Compiler>
@@ -74,6 +99,9 @@
 			<Add directory="C:/MinGW/msys/1.0/local/lib" />
 			<Add directory="C:/MinGW/msys/1.0/bin/assimp/lib" />
 		</Linker>
+		<Unit filename="../README.md" />
+		<Unit filename="../TODO.md" />
+		<Unit filename="../readme.txt" />
 		<Unit filename="BuildingBlocks.cpp" />
 		<Unit filename="BuildingBlocks.h" />
 		<Unit filename="ChunkBlocks.cpp" />
@@ -82,6 +110,8 @@
 		<Unit filename="ChunkObject.h" />
 		<Unit filename="ChunkProcess.cpp" />
 		<Unit filename="ChunkProcess.h" />
+		<Unit filename="Debug.cpp" />
+		<Unit filename="Debug.h" />
 		<Unit filename="DrawText.cpp" />
 		<Unit filename="DrawText.h" />
 		<Unit filename="DrawTexture.cpp" />
@@ -94,6 +124,8 @@
 		<Unit filename="Makefile.mingw" />
 		<Unit filename="Map.cpp" />
 		<Unit filename="Map.h" />
+		<Unit filename="OculusRift.cpp" />
+		<Unit filename="OculusRift.h" />
 		<Unit filename="Options.cpp" />
 		<Unit filename="Options.h" />
 		<Unit filename="ScrollingMessages.cpp" />
@@ -139,10 +171,14 @@
 		<Unit filename="dialogs/credits.rml" />
 		<Unit filename="dialogs/ephenation.rcss" />
 		<Unit filename="dialogs/help.rml" />
+		<Unit filename="dialogs/login-ovr.rml" />
+		<Unit filename="dialogs/login.rml" />
 		<Unit filename="dialogs/messagedialog.rml" />
 		<Unit filename="dialogs/popup.rcss" />
 		<Unit filename="dialogs/topleveldialog.rml" />
 		<Unit filename="dialogs/topoptions.rml" />
+		<Unit filename="dialogs/userinterface-base.rcss" />
+		<Unit filename="dialogs/userinterface-ovr.rml" />
 		<Unit filename="dialogs/userinterface.rml" />
 		<Unit filename="ephenation.rc">
 			<Option compilerVar="WINDRES" />
@@ -287,11 +323,13 @@
 		<Unit filename="worsttime.cpp" />
 		<Unit filename="worsttime.h" />
 		<Extensions>
-			<code_completion />
+			<code_completion>
+				<search_path add="contrib\libovr\include" />
+			</code_completion>
 			<envvars />
 			<debugger>
 				<remote_debugging target="Debug">
-					<options conn_type="0" serial_baud="115200" additional_cmds_before="set args --debug --testuser" />
+					<options conn_type="0" serial_baud="115200" additional_cmds_before="set args --debug --ovr" />
 				</remote_debugging>
 			</debugger>
 			<DoxyBlocks>

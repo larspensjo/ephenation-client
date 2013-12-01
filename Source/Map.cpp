@@ -58,7 +58,7 @@ void Map::Create(AnimationShader *anim, StageOneShader *shader, float rotate, in
 	auto saveMaxDistance = maxRenderDistance;
 	maxRenderDistance = width/2*1.414; // Temporary override, all the way out to the corners.
 
-	gUniformBuffer.Update();
+	gUniformBuffer.Update(false);
 
 	DrawLandscapeTopDown(shader, width, 64, false, DL_NoTransparent);
 	DrawLandscapeTopDown(shader, width, 64, false, DL_OnlyTransparent);
@@ -69,7 +69,6 @@ void Map::Create(AnimationShader *anim, StageOneShader *shader, float rotate, in
 
 	gProjectionMatrix = saveProj;
 	maxRenderDistance = saveMaxDistance;
-	gUniformBuffer.Update();
 }
 
 void Map::Draw(float alpha) const {

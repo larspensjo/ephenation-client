@@ -1,0 +1,51 @@
+<!-- Copyright 2012-2013 The Ephenation Authors -->
+
+<!-- This file is part of Ephenation. -->
+
+<!-- Ephenation is free software: you can redistribute it and/or modify -->
+<!-- it under the terms of the GNU General Public License as published by -->
+<!-- the Free Software Foundation, version 3. -->
+
+<!-- Ephenation is distributed in the hope that it will be useful, -->
+<!-- but WITHOUT ANY WARRANTY; without even the implied warranty of -->
+<!-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the -->
+<!-- GNU General Public License for more details. -->
+
+<!-- You should have received a copy of the GNU General Public License -->
+<!-- along with Ephenation.  If not, see <http://www.gnu.org/licenses/>. -->
+
+<!-- The document that describes all the main permanent elements shown during playing. -->
+
+<rml>
+<head>
+	<title>userinterface.rml</title>
+	<link type="text/rcss" href="ephenation.rcss"/>
+	<link type="text/rcss" href="userinterface-base.rcss"/>
+	<style>
+		/* Override defaults */
+		body
+		{
+			width: 66%;
+			height: 66%;
+			left: 17%;
+			top: 17%;
+		}
+		.inputarea { font-size: 15px; }
+		.chatwindow { font-size: 12px; }
+		.playerstatsoneliner { font-size: 12px; }
+		.fpsdisplay { font-size: 12px; }
+		.playerstats { font-size: 12px; }
+	</style>
+</head>
+<body id="body">
+	<handle move_target="chat">
+		<div id="chat" class="chatwindow"></div>
+	</handle>
+	<div class="playerstats">
+		<div style="position: absolute; left:20%;bottom:10%;white-space:pre;">ESC:Menu, TAB:Select monster, 1:Attack</div>
+	</div>
+	<div id="fps" class="fpsdisplay"></div>
+	<div id="playerstatsoneliner" class="playerstatsoneliner"></div>
+	<input class="inputarea" type=text id="inputline"></input>
+</body>
+</rml>

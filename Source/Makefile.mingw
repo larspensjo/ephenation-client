@@ -60,6 +60,7 @@ MY_CFLAGS = -L/usr/lib -L/usr/local/lib -I/usr/local/include -I/usr/include\
 	-DOV_EXCLUDE_STATIC_CALLBACKS\
 	-D__NO_MINGW_LFS\
 	-DWIN32\
+	-Icontrib/libovr/include\
 	-DSTATIC_LIB
 
 # The linker options.
@@ -76,8 +77,9 @@ MY_LIBS   =\
 	contrib/win32/libRocket/libRocketDebugger.dll.a\
 	contrib/win32/libRocket/libRocketControls.dll.a\
 	contrib/win32/libRocket/libRocketCore.dll.a\
+	contrib/libovr/MinGW/libovr.a\
 	contrib/win32/libfreetype.dll.a\
-	-lWs2_32 -lole32 -lcomctl32 -lgdi32 -lcomdlg32 -luuid
+	-lWs2_32 -lole32 -lcomctl32 -lgdi32 -lcomdlg32 -luuid -lWinmm -lSetupapi
 
 # The pre-processor options used by the cpp (man cpp for more).
 CPPFLAGS  = -Wall
@@ -305,7 +307,7 @@ show:
 	@echo 'link.cxx    :' $(LINK.cxx)
 
 Debug:
-	$(MAKE) -j8 -f Makefile.mingw CFLAGS="-g"
+	$(MAKE) -j -f Makefile.mingw CFLAGS="-g -O2 --std=c++11 -DDEBUG"
 
 ## End of the Makefile ##  Suggestions are welcome  ## All rights reserved ##
 #############################################################################

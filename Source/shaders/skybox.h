@@ -41,15 +41,16 @@
  // ==========================================================================================================
 class SkyBox : public ShaderBase {
 public:
-	SkyBox();
-
 	/// Initialisation for Skybox shaders.
 	void Init();
 
-	void Draw();
+	/// Draw the skybox
+	/// @param disableDistortion Disable any distortion effects from OVR.
+	void Draw(bool disableDistortion);
 private:
 	// Callback that defines all uniform and attribute indices.
 	virtual void GetLocations(void);
 
-	GLint fModelMatrixIdx;
+	GLint fModelMatrixIdx = -1;
+	GLint fDisableDistortion = -1;
 };
