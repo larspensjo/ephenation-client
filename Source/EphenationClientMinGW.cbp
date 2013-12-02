@@ -154,7 +154,7 @@
 		<Unit filename="client_prot.h" />
 		<Unit filename="connection.cpp" />
 		<Unit filename="connection.h" />
-		<Unit filename="contrib/SimpleSignal.h" />
+		<Unit filename="contrib/SimpleSignal/SimpleSignal.h" />
 		<Unit filename="contrib/bstrlib.c">
 			<Option compilerVar="CC" />
 		</Unit>

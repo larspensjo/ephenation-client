@@ -24,7 +24,7 @@
 
 #include <string>
 #include <vector>
-#include "contrib/SimpleSignal.h"
+#include "contrib/SimpleSignal/SimpleSignal.h"
 
 /// Event generated when the player is hit by a monster
 /// @param dmg The damage in the hit

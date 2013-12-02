@@ -1,0 +1,3 @@
+[submodule "Source/contrib/SimpleSignal"]
+	path = Source/contrib/SimpleSignal
+	url = https://github.com/larspensjo/SimpleSignal.git
