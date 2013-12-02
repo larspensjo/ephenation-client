@@ -158,7 +158,7 @@ LINK.cxx    = $(CXX) $(MY_CFLAGS) $(CXXFLAGS) $(CPPFLAGS) $(LDFLAGS)
 all: $(PROGRAM)
 
 Debug:
-	$(MAKE) -j8 CFLAGS='-O2 -g --std=gnu++11'
+	$(MAKE) -j8 CFLAGS='-O2 -g --std=gnu++11 -DDEBUG'
 
 # Rules for creating dependency files (.d).
 #------------------------------------------
