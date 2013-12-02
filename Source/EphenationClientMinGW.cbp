@@ -119,6 +119,8 @@
 		<Unit filename="Ephenation.iss" />
 		<Unit filename="HealthBar.cpp" />
 		<Unit filename="HealthBar.h" />
+		<Unit filename="HudTransformation.cpp" />
+		<Unit filename="HudTransformation.h" />
 		<Unit filename="Inventory.cpp" />
 		<Unit filename="Inventory.h" />
 		<Unit filename="Makefile.mingw" />
