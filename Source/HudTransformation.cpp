@@ -25,8 +25,14 @@ using namespace View;
 
 HudTransformation View::gHudTransformation;
 
-glm::mat4 HudTransformation::GetTransform() const {		// We want to draw the GUI as if it is placed out in the world.
-	glm::vec4 p = gProjectionMatrix * glm::vec4(0.0f, 1.0f, -fGuiDistance, 1.0f);
+const glm::mat4 &HudTransformation::GetTransform() const {
+	return fComputedTransform;
+}
+
+void HudTransformation::Update() {
+	// We want to draw the GUI as if it is placed out in the world.
+	// But scale it, so that it has the same size regardless.
+	glm::vec4 p = gProjectionMatrix * glm::vec4(0.0f, 1.0f, -fGuiDistance*2.0f, 1.0f);
 	p /= p.w;
 	float fact = 2.0f/p.y/gViewport[3];
 	glm::mat4 scale = glm::scale(glm::mat4(1), glm::vec3(fact, -fact, 1.0f));
@@ -37,6 +43,6 @@ glm::mat4 HudTransformation::GetTransform() const {		// We want to draw the GUI 
 	view = glm::rotate(view, -yawPitchRoll[1], glm::vec3(1.0f, 0.0f, 0.0f));
 	view = glm::rotate(view, -yawPitchRoll[0], glm::vec3(0.0f, 1.0f, 0.0f));
 	view = glm::translate(view, glm::vec3(Controller::OculusRift::sfOvr.GetHorViewAdjustment(), 0.0f, 0.0f));
-	glm::mat4 translate = glm::translate(glm::mat4(1.0), glm::vec3(0.0f, 0.0f, -fGuiDistance));
-	return view * scale * translate;
+	glm::mat4 translate = glm::translate(glm::mat4(1.0), glm::vec3(0.0f, 0.0f, -fGuiDistance*2.0f));
+	fComputedTransform = view * scale * translate;
 }

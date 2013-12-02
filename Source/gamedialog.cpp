@@ -69,6 +69,7 @@
 #include "ChunkProcess.h"
 #include "OculusRift.h"
 #include "Debug.h"
+#include "HudTransformation.h"
 
 using namespace Controller;
 using View::SoundControl;
@@ -1278,6 +1279,7 @@ void gameDialog::UpdateProjection(ViewType v) {
 		Options::sfSave.fWindowWidth = fScreenWidth; // This will override any option dialog changes.
 		Options::sfSave.fWindowHeight = fScreenHeight;
 	}
+	View::gHudTransformation.Update();
 }
 
 void gameDialog::SetMessage(const char *str) {
