@@ -177,7 +177,7 @@ void MainUserInterface::DrawPlayerStats(void) const {
 		// Scale to OVR screen pixels
 		glm::mat4 scale = glm::scale(glm::mat4(1), glm::vec3(250.0f, 5.0f, 1.0f));
 		// Move the bar to the left side of the window
-		glm::mat4 bottom = glm::translate(glm::mat4(1), glm::vec3(0.0f, 250.0f, 0.0f));
+		glm::mat4 bottom = glm::translate(glm::mat4(1), glm::vec3(0.0f, 200.0f, 0.0f));
 		model = View::gHudTransformation.GetTransform() * (bottom * scale * center);
 	} else {
 		model = glm::translate(glm::mat4(1.0f), glm::vec3(-1.0f, -1.0f, 0.0f));

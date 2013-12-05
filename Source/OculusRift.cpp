@@ -160,6 +160,14 @@ float OculusRift::GetHorScreenSize() const {
 	return fInfo.HScreenSize;
 }
 
+float OculusRift::GetHorResolution() const {
+	return fInfo.HResolution;
+}
+
+float OculusRift::GetVerResolution() const {
+	return fInfo.VResolution;
+}
+
 float OculusRift::GetLensSeparationDistance() const {
 	return fInfo.LensSeparationDistance;
 }

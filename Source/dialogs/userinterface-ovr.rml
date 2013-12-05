@@ -31,10 +31,24 @@
 			top: 17%;
 		}
 		.inputarea { font-size: 15px; }
-		.chatwindow { font-size: 12px; }
-		.playerstatsoneliner { font-size: 12px; }
-		.fpsdisplay { font-size: 12px; }
-		.playerstats { font-size: 12px; }
+		.chatwindow {
+			font-size: 12px;
+			overflow: hidden; /* Disable the scroll bar. TODO: draw something nice looking */
+			right: -200;
+			width: 60%;
+		}
+		.playerstatsoneliner {
+			font-size: 12px;
+			top: 50;
+		}
+		.fpsdisplay {
+			font-size: 12px;
+			top: 50px;
+		}
+		.playerstats {
+			font-size: 12px;
+			bottom: 0;
+		}
 	</style>
 </head>
 <body id="body">

@@ -329,12 +329,20 @@ int main(int argc, char** argv) {
 	//LPLOG("Game Path: %s", dataDir);
 
 	gOptions.Init(optionsFilename); // This one should come early, as it is used to initialize things.
+
+	bool fullScreen = gOptions.fFullScreen;
+	int windowWidth = gOptions.fWindowWidth;
+	int windowHeight = gOptions.fWindowHeight;
+
 	if (gOptions.fOculusRift)
 		sOculusRiftMode = 1;
 	if (sOculusRiftMode) {
 		if (gDebugOpenGL)
 			LPLOG("main: Oculus Rift mode");
 		Controller::OculusRift::sfOvr.Create();
+		fullScreen = true;
+		windowHeight = Controller::OculusRift::sfOvr.GetVerResolution();
+		windowWidth = Controller::OculusRift::sfOvr.GetHorResolution();
 	}
 
 	// If there was a saved position, use it for initialization.
@@ -364,7 +372,7 @@ int main(int argc, char** argv) {
 	// glfwOpenWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 	//glfwOpenWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // Need to specify at least version 3.3 for this to work.
 
-	if (!glfwOpenWindow(gOptions.fWindowWidth, gOptions.fWindowHeight, 0, 0, 0, 0, 16, 1, gOptions.fFullScreen ? GLFW_FULLSCREEN : GLFW_WINDOW)) {
+	if (!glfwOpenWindow(windowWidth, windowHeight, 0, 0, 0, 0, 16, 1, fullScreen ? GLFW_FULLSCREEN : GLFW_WINDOW)) {
 		glfwTerminate();
 
 		ErrorDialog("Failed to open GLFW window");

@@ -31,6 +31,8 @@ public:
 	float GetInterpupillaryDistance() const;
 	float GetHorScreenSize() const;
 	float GetLensSeparationDistance() const;
+	float GetHorResolution() const;
+	float GetVerResolution() const;
 
 	void UseLeftEye() { fLeftEyeSelected = true; }
 	void UseRightEye() { fLeftEyeSelected = false; }

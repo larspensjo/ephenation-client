@@ -3,9 +3,7 @@ IDEAS
 
 Oculus Rift
 -----------
-* Draw the experience, hp and mana bar in the HUD
 * Use bold font for better readability
-* When OVR is selected, force screen size matching the display, and full screen view
 * Remove mouse and draw a special one instead that depends on distortion and stereo view
 * Use alternative dialogs, adapted for OR
 * Fix problem with flickering screen when looking far to the sides
