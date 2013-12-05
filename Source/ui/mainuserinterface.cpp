@@ -136,18 +136,20 @@ void MainUserInterface::DrawPlayerStats(void) const {
 	auto fHealthBar = HealthBar::Make(); // Singleton
 	glm::mat4 model(1);
 	glm::mat4 proj(1);
+
+	// The bars have x and y going from 0 to 1.
+	glm::mat4 center = glm::translate(glm::mat4(1), glm::vec3(-0.5, 0.5f, 0.0f));
+
 	if (fStereoView) {
 		// We want to draw the GUI as if it is placed out in the world.
 		proj = gProjectionMatrix;
-		// The bar has x and y going from 0 to 1.
-		glm::mat4 center = glm::translate(glm::mat4(1), glm::vec3(-0.5, 0.5f, 0.0f));
 		// Scale to OVR screen pixels
 		glm::mat4 scale = glm::scale(glm::mat4(1), glm::vec3(300.0f, 5.0f, 1.0f));
 		// Make the bar standing up
 		glm::mat4 rot = glm::rotate(glm::mat4(1), 90.0f, glm::vec3(0.0f, 0.0f, -1.0f));
 		// Move the bar to the left side of the window
-		glm::mat4 leftSide = glm::translate(glm::mat4(1), glm::vec3(-250.0f, 0.0f, 0.0f));
-		model = View::gHudTransformation.GetTransform() * leftSide * rot * scale * center;
+		glm::mat4 leftSide = glm::translate(glm::mat4(1), glm::vec3(-200.0f, 0.0f, 0.0f));
+		model = View::gHudTransformation.GetTransform() * (leftSide * rot * scale * center);
 	} else {
 		// The coordinates and sizes used here are measured from the graphical UI. No view or projection matrix is used,
 		// which means the screen is from -1.0 to +1.0 in both x and y.
@@ -157,11 +159,29 @@ void MainUserInterface::DrawPlayerStats(void) const {
 	float dmg = Model::gPlayer.fPreviousHp - Model::gPlayer.fHp;
 	fHealthBar->DrawHealth(proj, model, Model::gPlayer.fHp, dmg, false);
 
-	model = glm::translate(glm::mat4(1.0f), glm::vec3(-0.69194f, -0.85735f, 0.0f));
-	model = glm::scale(model, glm::vec3(0.38361f, 0.01788f, 1.0f));
+	if (fStereoView) {
+		// Scale to OVR screen pixels
+		glm::mat4 scale = glm::scale(glm::mat4(1), glm::vec3(300.0f, 5.0f, 1.0f));
+		// Make the bar standing up
+		glm::mat4 rot = glm::rotate(glm::mat4(1), 90.0f, glm::vec3(0.0f, 0.0f, -1.0f));
+		// Move the bar to the left side of the window
+		glm::mat4 leftSide = glm::translate(glm::mat4(1), glm::vec3(200.0f, 0.0f, 0.0f));
+		model = View::gHudTransformation.GetTransform() * (leftSide * rot * scale * center);
+	} else {
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(-0.69194f, -0.85735f, 0.0f));
+		model = glm::scale(model, glm::vec3(0.38361f, 0.01788f, 1.0f));
+	}
 	fHealthBar->DrawMana(model, Model::gPlayer.fMana);
 
-	model = glm::translate(glm::mat4(1.0f), glm::vec3(-1.0f, -1.0f, 0.0f));
-	model = glm::scale(model, glm::vec3(2.0f, 0.02856f, 1.0f));
+	if (fStereoView) {
+		// Scale to OVR screen pixels
+		glm::mat4 scale = glm::scale(glm::mat4(1), glm::vec3(250.0f, 5.0f, 1.0f));
+		// Move the bar to the left side of the window
+		glm::mat4 bottom = glm::translate(glm::mat4(1), glm::vec3(0.0f, 250.0f, 0.0f));
+		model = View::gHudTransformation.GetTransform() * (bottom * scale * center);
+	} else {
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(-1.0f, -1.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(2.0f, 0.02856f, 1.0f));
+	}
 	fHealthBar->DrawExp(model, Model::gPlayer.fExp);
 }
