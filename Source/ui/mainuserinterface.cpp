@@ -31,6 +31,7 @@
 #include "../DrawTexture.h"
 #include "../HealthBar.h"
 #include "../otherplayers.h"
+#include "../HudTransformation.h"
 
 using namespace View;
 
@@ -42,6 +43,7 @@ MainUserInterface::~MainUserInterface() {
 }
 
 void MainUserInterface::Init(bool stereoView) {
+	fStereoView = stereoView;
 	// Create the main Rocket context and set it on the shell's input layer.
 	fRocketContext = Rocket::Core::CreateContext("main", Rocket::Core::Vector2i(gViewport[2], gViewport[3]));
 	if (fRocketContext == NULL)
@@ -55,7 +57,7 @@ void MainUserInterface::Init(bool stereoView) {
 		Rocket::Debugger::Initialise(fRocketContext);
 
 	// Load and show the UI.
-	if (stereoView)
+	if (fStereoView)
 		fDocument = fRocketContext->LoadDocument("dialogs/userinterface-ovr.rml");
 	else
 		fDocument = fRocketContext->LoadDocument("dialogs/userinterface.rml");
@@ -130,16 +132,30 @@ void MainUserInterface::DrawCompassRose(void) const {
 	Model::gOtherPlayers.RenderMinimap(model, fHealthBar);
 }
 
-
 void MainUserInterface::DrawPlayerStats(void) const {
 	auto fHealthBar = HealthBar::Make(); // Singleton
-	// The coordinates and sizes used here are measured from the graphical UI. No view or projection matrix is used,
-	// which means the screen is from -1.0 to +1.0 in both x and y.
-	glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(-0.69157f, -0.81982f, 0.0f));
-	model = glm::scale(model, glm::vec3(0.43802f, 0.03804f, 1.0f));
+	glm::mat4 model(1);
+	glm::mat4 proj(1);
+	if (fStereoView) {
+		// We want to draw the GUI as if it is placed out in the world.
+		proj = gProjectionMatrix;
+		// The bar has x and y going from 0 to 1.
+		glm::mat4 center = glm::translate(glm::mat4(1), glm::vec3(-0.5, 0.5f, 0.0f));
+		// Scale to OVR screen pixels
+		glm::mat4 scale = glm::scale(glm::mat4(1), glm::vec3(300.0f, 5.0f, 1.0f));
+		// Make the bar standing up
+		glm::mat4 rot = glm::rotate(glm::mat4(1), 90.0f, glm::vec3(0.0f, 0.0f, -1.0f));
+		// Move the bar to the left side of the window
+		glm::mat4 leftSide = glm::translate(glm::mat4(1), glm::vec3(-250.0f, 0.0f, 0.0f));
+		model = View::gHudTransformation.GetTransform() * leftSide * rot * scale * center;
+	} else {
+		// The coordinates and sizes used here are measured from the graphical UI. No view or projection matrix is used,
+		// which means the screen is from -1.0 to +1.0 in both x and y.
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(-0.69157f, -0.81982f, 0.0f));
+		model = glm::scale(model, glm::vec3(0.43802f, 0.03804f, 1.0f));
+	}
 	float dmg = Model::gPlayer.fPreviousHp - Model::gPlayer.fHp;
-	static const glm::mat4 id(1.0f); // No need to create a new one every time.
-	fHealthBar->DrawHealth(id, model, Model::gPlayer.fHp, dmg, false);
+	fHealthBar->DrawHealth(proj, model, Model::gPlayer.fHp, dmg, false);
 
 	model = glm::translate(glm::mat4(1.0f), glm::vec3(-0.69194f, -0.85735f, 0.0f));
 	model = glm::scale(model, glm::vec3(0.38361f, 0.01788f, 1.0f));

@@ -48,7 +48,7 @@ public:
 	void Resize(int w, int h);
 	void Init(bool stereoView);
 
-	// Draw the complete context. The main UI, managed from this class, can be explicitely enabled with 'showGUI'.
+	// Draw the complete context. The main UI, managed from this class, can be explicitly enabled with 'showGUI'.
 	void Draw(bool showGUI);
 	Rocket::Core::Context *GetRocketContext(void); // TODO: Ugly, I know.
 
@@ -57,6 +57,7 @@ private:
 	Rocket::Core::Context *fRocketContext = 0;
 	Rocket::Core::ElementDocument *fDocument = 0;
 	bool fShowGUI = false;
+	bool fStereoView = false;
 
 	void DrawCompassRose(void) const;
 	void DrawPlayerStats(void) const;
