@@ -96,7 +96,7 @@ void RocketRenderInterface::RenderCompiledGeometry(Rocket::Core::CompiledGeometr
 		proj = gProjectionMatrix;
 		glm::vec3 offset(translation.x-gViewport[2]/2, translation.y-gViewport[3]/2, 0.0f);
 		glm::mat4 translate = glm::translate(glm::mat4(1.0), offset);
-		model = View::gHudTransformation.GetTransform() * translate;
+		model = View::gHudTransformation.GetGUITransform() * translate;
 	} else {
 		proj = glm::ortho(0.0f, gViewport[2], gViewport[3], 0.0f, -1.0f, 1.0f);
 		glm::vec3 offset(translation.x, translation.y, 0.0f);

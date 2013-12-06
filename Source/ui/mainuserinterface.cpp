@@ -103,29 +103,38 @@ Rocket::Core::Element *MainUserInterface::GetElement(string elem) {
 
 
 void MainUserInterface::DrawCompassRose(void) const {
-	static const glm::mat4 id(1.0f); // No need to create a new one every time.
+	glm::mat4 model(1);
+	glm::mat4 proj(1);
+	if (fStereoView) {
+		proj = gProjectionMatrix;
+		glm::mat4 center = glm::translate(glm::mat4(1), glm::vec3(-0.5, -0.5f, 0.0f));
+		glm::mat4 scaleToMeter = glm::scale(glm::mat4(1), glm::vec3(0.3f, 0.3f, 0.3f));
+		glm::mat4 pointToNorth = glm::rotate(glm::mat4(1), Model::gPlayer.fAngleHor, glm::vec3(0.0f, 0.0f, 1.0f));
+		glm::mat4 makeHorizontal = glm::rotate(glm::mat4(1), -90.0f, glm::vec3(1.0f, 0.0f, 0.0f));
+		glm::mat4 transl = glm::translate(glm::mat4(1), glm::vec3(-1.2f, -1.0f, -0.8f));
+		model = View::gHudTransformation.GetViewTransform() * transl * makeHorizontal * scaleToMeter * pointToNorth * center;
+	} else {
+		// Move compass to lower left corner.
+		glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(-0.85f, -0.80f, 0.0f));
 
-	// Move compass to lower left corner.
-	glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(-0.85f, -0.80f, 0.0f));
+		// Scale it down, and remove dependency of screen width/height ratio
+		float scale = 0.2f;
+		float screenRatio = gViewport[2] / gViewport[3];
+		model = glm::scale(model, glm::vec3(scale/screenRatio, scale, scale));
 
-	// Scale it down, and remove dependency of screen width/height ratio
-	float scale = 0.2f;
-	float screenRatio = gViewport[2] / gViewport[3];
-	model = glm::scale(model, glm::vec3(scale/screenRatio, scale, scale));
+		// Rotate according to vertical viewing direction
+		model = glm::rotate(model, Model::gPlayer.fAngleVert, glm::vec3(1.0f, 0.0f, 0.0f));
 
-	// Rotate according to vertical viewing direction
-	model = glm::rotate(model, Model::gPlayer.fAngleVert, glm::vec3(1.0f, 0.0f, 0.0f));
+		// Rotate according to horisontal viewing direction
+		model = glm::rotate(model, Model::gPlayer.fAngleHor, glm::vec3(0.0f, 0.0f, 1.0f));
 
-	// Rotate according to horisontal viewing direction
-	model = glm::rotate(model, Model::gPlayer.fAngleHor, glm::vec3(0.0f, 0.0f, 1.0f));
-
-	// Move the center of the compass, so rotation is done around the center, not the lower left corner of the bitmap.
-	model = glm::translate(model, glm::vec3(-0.5f, -0.5f, 0.0f));
+		// Move the center of the compass, so rotation is done around the center, not the lower left corner of the bitmap.
+		model = glm::translate(model, glm::vec3(-0.5f, -0.5f, 0.0f));
+	}
 
 	glBindTexture(GL_TEXTURE_2D, GameTexture::CompassRose);
 	auto fDrawTexture = DrawTexture::Make();
-	fDrawTexture->Draw(id, model);
-	// glBindTexture(GL_TEXTURE_2D, 0);  // Deprecated
+	fDrawTexture->Draw(proj, model);
 
 	auto fHealthBar = HealthBar::Make(); // Singleton
 	Model::gMonsters.RenderMinimap(model, fHealthBar);
@@ -138,7 +147,7 @@ void MainUserInterface::DrawPlayerStats(void) const {
 	glm::mat4 proj(1);
 
 	// The bars have x and y going from 0 to 1.
-	glm::mat4 center = glm::translate(glm::mat4(1), glm::vec3(-0.5, 0.5f, 0.0f));
+	glm::mat4 center = glm::translate(glm::mat4(1), glm::vec3(-0.5, 0.5f, 0.0f)); // TODO: y should be -0.5f???
 
 	if (fStereoView) {
 		// We want to draw the GUI as if it is placed out in the world.
@@ -149,7 +158,7 @@ void MainUserInterface::DrawPlayerStats(void) const {
 		glm::mat4 rot = glm::rotate(glm::mat4(1), 90.0f, glm::vec3(0.0f, 0.0f, -1.0f));
 		// Move the bar to the left side of the window
 		glm::mat4 leftSide = glm::translate(glm::mat4(1), glm::vec3(-200.0f, 0.0f, 0.0f));
-		model = View::gHudTransformation.GetTransform() * (leftSide * rot * scale * center);
+		model = View::gHudTransformation.GetGUITransform() * (leftSide * rot * scale * center);
 	} else {
 		// The coordinates and sizes used here are measured from the graphical UI. No view or projection matrix is used,
 		// which means the screen is from -1.0 to +1.0 in both x and y.
@@ -166,7 +175,7 @@ void MainUserInterface::DrawPlayerStats(void) const {
 		glm::mat4 rot = glm::rotate(glm::mat4(1), 90.0f, glm::vec3(0.0f, 0.0f, -1.0f));
 		// Move the bar to the left side of the window
 		glm::mat4 leftSide = glm::translate(glm::mat4(1), glm::vec3(200.0f, 0.0f, 0.0f));
-		model = View::gHudTransformation.GetTransform() * (leftSide * rot * scale * center);
+		model = View::gHudTransformation.GetGUITransform() * (leftSide * rot * scale * center);
 	} else {
 		model = glm::translate(glm::mat4(1.0f), glm::vec3(-0.69194f, -0.85735f, 0.0f));
 		model = glm::scale(model, glm::vec3(0.38361f, 0.01788f, 1.0f));
@@ -178,7 +187,7 @@ void MainUserInterface::DrawPlayerStats(void) const {
 		glm::mat4 scale = glm::scale(glm::mat4(1), glm::vec3(250.0f, 5.0f, 1.0f));
 		// Move the bar to the left side of the window
 		glm::mat4 bottom = glm::translate(glm::mat4(1), glm::vec3(0.0f, 200.0f, 0.0f));
-		model = View::gHudTransformation.GetTransform() * (bottom * scale * center);
+		model = View::gHudTransformation.GetGUITransform() * (bottom * scale * center);
 	} else {
 		model = glm::translate(glm::mat4(1.0f), glm::vec3(-1.0f, -1.0f, 0.0f));
 		model = glm::scale(model, glm::vec3(2.0f, 0.02856f, 1.0f));

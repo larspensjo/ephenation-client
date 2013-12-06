@@ -25,14 +25,18 @@ namespace View {
 class HudTransformation
 {
 public:
-	// Get the current transformation
-	const glm::mat4 &GetTransform() const;
+	/// Get the current GUI transformation
+	const glm::mat4 &GetGUITransform() const { return fGUITransform; }
+
+	/// Just get the view part of the transform
+	const glm::mat4 &GetViewTransform() const { return fViewTransform; }
 
 	/// Update the transformation.
 	void Update();
 private:
 	float fGuiDistance = 10.0f; // A distance that feels good for the eyes, measured in meters.
-	glm::mat4 fComputedTransform;
+	glm::mat4 fGUITransform;
+	glm::mat4 fViewTransform;
 };
 
 extern HudTransformation gHudTransformation;
