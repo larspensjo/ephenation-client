@@ -1279,7 +1279,8 @@ void gameDialog::UpdateProjection(ViewType v) {
 		Options::sfSave.fWindowWidth = fScreenWidth; // This will override any option dialog changes.
 		Options::sfSave.fWindowHeight = fScreenHeight;
 	}
-	View::gHudTransformation.Update();
+	if (fStereoView)
+		View::gHudTransformation.Update();
 }
 
 void gameDialog::SetMessage(const char *str) {
