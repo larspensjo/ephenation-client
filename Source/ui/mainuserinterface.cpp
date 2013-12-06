@@ -137,8 +137,8 @@ void MainUserInterface::DrawCompassRose(void) const {
 	fDrawTexture->Draw(proj, model);
 
 	auto fHealthBar = HealthBar::Make(); // Singleton
-	Model::gMonsters.RenderMinimap(model, fHealthBar);
-	Model::gOtherPlayers.RenderMinimap(model, fHealthBar);
+	Model::gMonsters.RenderMinimap(proj * model, fHealthBar);
+	Model::gOtherPlayers.RenderMinimap(proj * model, fHealthBar);
 }
 
 void MainUserInterface::DrawPlayerStats(void) const {
