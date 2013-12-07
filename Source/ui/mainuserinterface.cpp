@@ -112,10 +112,10 @@ void MainUserInterface::DrawCompassRose(void) const {
 		glm::mat4 pointToNorth = glm::rotate(glm::mat4(1), Model::gPlayer.fAngleHor, glm::vec3(0.0f, 0.0f, 1.0f));
 		glm::mat4 makeHorizontal = glm::rotate(glm::mat4(1), -90.0f, glm::vec3(1.0f, 0.0f, 0.0f));
 		glm::mat4 transl = glm::translate(glm::mat4(1), glm::vec3(-1.2f, -1.0f, -0.8f));
-		model = View::gHudTransformation.GetViewTransform() * transl * makeHorizontal * scaleToMeter * pointToNorth * center;
+		model = View::gHudTransformation.GetViewTransform() * (transl * makeHorizontal * scaleToMeter * pointToNorth * center);
 	} else {
 		// Move compass to lower left corner.
-		glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(-0.85f, -0.80f, 0.0f));
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(-0.85f, -0.80f, 0.0f));
 
 		// Scale it down, and remove dependency of screen width/height ratio
 		float scale = 0.2f;
