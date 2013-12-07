@@ -26,7 +26,12 @@ void main(void)
 {
 	float textMult = textOffsMulti.z;
 	fragmentTexCoord = texCoord*textMult + textOffsMulti.xy;
-	gl_Position = projectionMatrix * modelViewMatrix * vec4(vertex,1.0);
+	vec4 pos = projectionMatrix * modelViewMatrix * vec4(vertex,1.0);
+	if (UBOEnableDistortion == 1) {
+		pos /= pos.w;
+		pos.xy = HmdWarp(pos.xy);
+	}
+	gl_Position = pos;
 }
 
 -- Fragment
