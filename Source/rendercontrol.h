@@ -87,6 +87,12 @@ public:
 
 	void ComputeShadowMap(void);
 	void drawClear(bool underWater); // Clear the main window
+
+	/// Set built-in mouse properties
+	/// @param x The Window x coordinate (measured in pixels)
+	/// @param y The Window y coordinate (measured in pixels)
+	/// @param enable If the mouse pointer shall be shown or not
+	void SetMouse(int x, int y, bool enable) { fMouseX = x; fMouseY = y; fShowMouse = enable; }
 private:
 
 	GLuint fboName;
@@ -116,6 +122,9 @@ private:
 	float fCameraDistance; /// Actual camera distance behind the player
 	float fRequestedCameraDistance; /// Requested camera distance behind the player
 
+	bool fShowMouse = false;
+	int fMouseX, fMouseY;
+
 	void ComputeAverageLighting(bool underWater);
 
 	void drawClearFBO(void); // Initialize all images in the FBO
@@ -135,6 +144,7 @@ private:
 	void drawMap(int mapWidth);
 	void drawSSAO(void);
 	void drawColoredLights() const;
+	void drawMousePointer() const;
 };
 
 }

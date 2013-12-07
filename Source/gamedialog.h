@@ -153,6 +153,7 @@ private:
 	void SaveScreen();
 
 	bool fStereoView = false;
+	bool fShowMouse = false; // Show the built-in mouse. Should only be used when Windows mouse is disabled.
 
 	//
 	// TODO: The following parameters should be moved to the View.

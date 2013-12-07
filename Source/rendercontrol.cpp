@@ -57,6 +57,7 @@
 #include "animationmodels.h"
 #include "modes.h"
 #include "fboflat.h"
+#include "HudTransformation.h"
 
 #define NELEM(x) (sizeof x / sizeof x[0])
 
@@ -292,6 +293,8 @@ void RenderControl::Draw(bool underWater, shared_ptr<const Model::Object> select
 		drawUI(ui);
 	if (showMap)
 		drawMap(mapWidth);
+	if (fShowMouse)
+		drawMousePointer();
 }
 
 void RenderControl::drawClear(bool underWater) {
@@ -654,6 +657,18 @@ void RenderControl::drawMap(int mapWidth) {
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 	glBindTexture(GL_TEXTURE_2D, fDiffuseTexture); // Override
 	map->Draw(0.6f);
+}
+
+void RenderControl::drawMousePointer() const {
+	glBindTexture(GL_TEXTURE_2D, GameTexture::MousePointerId); // Override
+	// 0,0 is bottom left of the bitmap, but we want it to be top left.
+	glm::mat4 moveToTip = glm::translate(glm::mat4(1), glm::vec3(0, -1, 0));
+	glm::mat4 scaleToPixel = glm::scale(glm::mat4(1), glm::vec3(16, -32, 1)); // This is the size of the bitmap
+	// 0,0 is middle of screen, whereas mouse coordinates starts at upper left of screen.
+	glm::mat4 translToMouse = glm::translate(glm::mat4(1), glm::vec3(float(fMouseX)-gViewport[2]/2, float(fMouseY)-gViewport[3]/2, 0.0f));
+	glm::mat4 model = View::gHudTransformation.GetGUITransform() * translToMouse * scaleToPixel * moveToTip;
+
+	DrawTexture::Make()->Draw(gProjectionMatrix, model);
 }
 
 void RenderControl::UpdateCameraPosition(int wheelDelta, bool stereoView, float yaw, float pitch, float roll) {

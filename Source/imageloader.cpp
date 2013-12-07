@@ -28,6 +28,7 @@
 #include "imageloader.h"
 #include "ui/Error.h"
 #include "assert.h"
+#include "Debug.h"
 
 using namespace std;
 
@@ -91,6 +92,15 @@ shared_ptr<Image> loadBMP(const char* filename, bool booleanAlpha) {
 		ASSERT(colorSize == 24 || colorSize == 32 || !"loadBMP: Image is not 24 or 32 bits per pixel");
 		ASSERT(readShort(input) == 0 || !"loadBMP: Image is compressed");
 		break;
+	case 56:
+		// BITMAPV3HEADER
+		width = readInt(input);
+		height = readInt(input);
+		input.ignore(2);
+		colorSize = readShort(input);
+		ASSERT(colorSize == 24 || colorSize == 32 || !"loadBMP: Image is not 24 or 32 bits per pixel");
+		// ASSERT(readShort(input) == 0 || !"loadBMP: Image is compressed");
+		break;
 	case 12:
 		//OS/2 V1
 		width = readShort(input);
@@ -114,6 +124,7 @@ shared_ptr<Image> loadBMP(const char* filename, bool booleanAlpha) {
 	default:
 		ASSERT(!"loadBMP: Unknown bitmap format");
 	}
+	LPLOG("%s: header size %d width %d height %d color size %d", filename, headerSize, width, height, colorSize);
 	int colorDepth = colorSize/8;
 	GLenum format = GL_BGR;
 	if (colorDepth == 4)

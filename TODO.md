@@ -4,9 +4,7 @@ IDEAS
 Oculus Rift
 -----------
 * Use bold font for better readability
-* Remove mouse and draw a special one instead that depends on distortion and stereo view
 * Use alternative dialogs, adapted for OR
-* Fix problem with flickering screen when looking far to the sides
 * Some calibration is wrong, leading to screen moving when head turns
 * Use super sampling for improved picture quality
 * Split the HealthBar into several triangles

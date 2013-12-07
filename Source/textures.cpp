@@ -107,7 +107,7 @@ GLuint GameTexture::CompassRose, GameTexture::DamageIndication;
 GLuint GameTexture::WEP1, GameTexture::WEP2, GameTexture::WEP3, GameTexture::WEP4;
 GLuint GameTexture::Coin, GameTexture::Quest;
 GLuint GameTexture::WEP1Text, GameTexture::WEP2Text, GameTexture::WEP3Text, GameTexture::WEP4Text;
-GLuint GameTexture::PoissonDisk;
+GLuint GameTexture::PoissonDisk, GameTexture::MousePointerId;
 
 using glm::vec2;
 // This table is from http://asawicki.info/Download/Productions/Applications/PoissonDiscGenerator/2D.txt
@@ -382,6 +382,7 @@ void GameTexture::Init(void) {
 	CompassRose = loadTexture(loadBMP("textures/CompassRose.bmp"), TF_NOMIPMAP);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	MousePointerId = loadTexture(loadBMP("textures/MousePointer.bmp"), TF_NOMIPMAP);
 
 	WEP2 = loadTexture(loadBMP("textures/WEP2.bmp"), TF_NOMIPMAP);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);

@@ -340,6 +340,7 @@ static void handleMouseActiveMotion(int x, int y) {
 }
 
 void gameDialog::handleMouseActiveMotion(int x, int y) {
+	fRenderControl.SetMouse(x, y, fShowMouse);
 	if (fCurrentRocketContextInput) {
 		fCurrentRocketContextInput->ProcessMouseMove(x, y, 0);
 		return;
@@ -1063,8 +1064,11 @@ void gameDialog::init(bool useOvr) {
 	if (useOvr) {
 		fRenderViewAngle  = OculusRift::sfOvr.GetFieldOfView();
 		fShowWeapon = false;
-	} else
+		glfwDisable(GLFW_MOUSE_CURSOR);
+		fShowMouse = true;
+	} else {
 		fRenderViewAngle  = 60.0f;
+	}
 	fRenderControl.Init(8, useOvr);
 
 	std::shared_ptr<DrawFont> gabriola18(new DrawFont);
@@ -1201,8 +1205,8 @@ void gameDialog::Update() {
 	}
 	gGameDialog.UpdateRunningStatus(false);
 
-	if (gOptions.fFullScreen) {
-		// Full screen, which means mouse is usually disabled. But there are cases when it is needed.
+	if (gOptions.fFullScreen && !fStereoView) {
+		// Full screen, which means Windows mouse is usually disabled. But there are cases when it is needed.
 		bool showMouseFullscreen = false;
 		static bool wasShowingMouse = false;
 		if (gMode.Get() == GameMode::CONSTRUCT || fShowInventory || gMode.Get() == GameMode::TELEPORT || fCurrentRocketContextInput)
