@@ -33,6 +33,7 @@ public:
 	float GetLensSeparationDistance() const;
 	float GetHorResolution() const;
 	float GetVerResolution() const;
+	const float *GetDistortionConstants() const;
 
 	void UseLeftEye() { fLeftEyeSelected = true; }
 	void UseRightEye() { fLeftEyeSelected = false; }

@@ -138,6 +138,10 @@ void OculusRift::Create() {
 	LPLOG("Left eye view adj: %f m", GetHorViewAdjustment());
 }
 
+const float *OculusRift::GetDistortionConstants() const {
+	return fInfo.DistortionK;
+}
+
 void OculusRift::GetYawPitchRoll(float ret[3]) {
 	Quatf quaternion = mFusionResult->GetOrientation();
 
