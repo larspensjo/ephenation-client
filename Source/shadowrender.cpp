@@ -47,7 +47,7 @@ ShadowRender::~ShadowRender() {
 void ShadowRender::Init() {
 	// Create the depth textures
 	//--------------------------
-	glGenTextures(1, &fTexture1); gDebugTextures.push_back(fTexture1); // Add this texture to the debugging list of textures
+	glGenTextures(1, &fTexture1); gDebugTextures.push_back(DebugTexture(fTexture1, "Shadow render texture 1")); // Add this texture to the debugging list of textures
 	glBindTexture(GL_TEXTURE_2D, fTexture1);
 	// Using a depth of less than 24 bits adds more random shadow flickering.
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, fMapWidth, fMapHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
@@ -60,7 +60,7 @@ void ShadowRender::Init() {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE);
 
 	glGenTextures(1, &fTexture2);
-	glBindTexture(GL_TEXTURE_2D, fTexture2);
+	glBindTexture(GL_TEXTURE_2D, fTexture2); gDebugTextures.push_back(DebugTexture(fTexture2, "Shadow render texture 2")); // Add this texture to the debugging list of textures
 	// Using a depth of less than 24 bits adds more random shadow flickering.
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, fMapWidth, fMapHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);

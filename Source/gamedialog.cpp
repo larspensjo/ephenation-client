@@ -81,7 +81,7 @@ using std::string;
 // The time stamp when the player clicked on a magical portal.
 static double sStartZoom;
 
-static std::vector<unsigned>::iterator sTextureIterator;
+static std::vector<DebugTexture>::iterator sTextureIterator;
 static bool sShowAlternateBitmap = false;
 
 static float mouseSens = -5.0f;
@@ -966,13 +966,15 @@ void gameDialog::render(bool hideGUI, int fps) {
 			wasDead = false;
 	}
 
+	const char *debugMessage = nullptr;
 	if (fDrawMap && gDebugOpenGL) {
-		// Very inefficient algorithm, computing the map every frame.
+		// The map class is used for simple drawing of a pixmap
 		std::unique_ptr<Map> map(new Map);
 		float alpha = 1.0f;
 		if (!sShowAlternateBitmap)
 			sTextureIterator = gDebugTextures.begin();
-		glBindTexture(GL_TEXTURE_2D, *sTextureIterator); // Override
+		glBindTexture(GL_TEXTURE_2D, sTextureIterator->id); // Override
+		debugMessage = sTextureIterator->comment;
 		map->Draw(alpha);
 	}
 
@@ -1003,6 +1005,10 @@ void gameDialog::render(bool hideGUI, int fps) {
 			// Only update if it changed
 			sPrevStat = buff;
 			fPlayerStatsOneLiner_Element->SetInnerRML(buff);
+		}
+		if (debugMessage != nullptr) {
+			fPlayerStatsOneLiner_Element->SetInnerRML(debugMessage);
+			sPrevStat = debugMessage;
 		}
 
 		if (gCurrentPing == 0.0 || !gShowPing)

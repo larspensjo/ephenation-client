@@ -93,13 +93,13 @@ void RenderControl::Init(int lightSamplingFactor, bool stereoView) {
 	// This only has to be done first time
 	glGenRenderbuffers(1, &fDepthBuffer);
 	// glGenTextures(1, &fDownSampleLumTextureBlurred); gDebugTextures.push_back(fDownSampleLumTextureBlurred); // Add this texture to the debugging list of textures
-	glGenTextures(1, &fDownSampleLumTexture1); gDebugTextures.push_back(fDownSampleLumTexture1); // Add this texture to the debugging list of textures
-	glGenTextures(1, &fDownSampleLumTexture2); gDebugTextures.push_back(fDownSampleLumTexture2); // Add this texture to the debugging list of textures
-	glGenTextures(1, &fDiffuseTexture); gDebugTextures.push_back(fDiffuseTexture); // Add this texture to the debugging list of textures
-	glGenTextures(1, &fPositionTexture); gDebugTextures.push_back(fPositionTexture);
-	glGenTextures(1, &fNormalsTexture); gDebugTextures.push_back(fNormalsTexture);
-	glGenTextures(1, &fBlendTexture); gDebugTextures.push_back(fBlendTexture);
-	glGenTextures(1, &fLightsTexture); gDebugTextures.push_back(fLightsTexture);
+	glGenTextures(1, &fDownSampleLumTexture1); gDebugTextures.push_back(DebugTexture(fDownSampleLumTexture1, "DownSampleLum1")); // Add this texture to the debugging list of textures
+	glGenTextures(1, &fDownSampleLumTexture2); gDebugTextures.push_back(DebugTexture(fDownSampleLumTexture2, "DownSampleLum2")); // Add this texture to the debugging list of textures
+	glGenTextures(1, &fDiffuseTexture); gDebugTextures.push_back(DebugTexture(fDiffuseTexture, "Deferred Diffuse")); // Add this texture to the debugging list of textures
+	glGenTextures(1, &fPositionTexture); gDebugTextures.push_back(DebugTexture(fPositionTexture, "Deferred position"));
+	glGenTextures(1, &fNormalsTexture); gDebugTextures.push_back(DebugTexture(fNormalsTexture, "Deferred normals"));
+	glGenTextures(1, &fBlendTexture); gDebugTextures.push_back(DebugTexture(fBlendTexture, "Deferred blend"));
+	glGenTextures(1, &fLightsTexture); gDebugTextures.push_back(DebugTexture(fLightsTexture, "Deferred lighting"));
 
 	glGenFramebuffers(1, &fboName);
 

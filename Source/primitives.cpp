@@ -111,6 +111,6 @@ double gLastPing, gCurrentPing;
 bool gShowPing;
 bool gAdminTP = false;
 int gIgnoreOpenGLErrors = 0;
-std::vector<unsigned> gDebugTextures;
+std::vector<DebugTexture> gDebugTextures;
 bool gToggleTesting; // Used for SW development
 float gDesktopAspectRatio;

@@ -7,7 +7,7 @@ for others to play.
 The server is designed to handle large amount (~10000) of players.
 
 The server is designed to run on a Linux platform, and the client is design to run on both Windows and Linux
-(based on OpenGL 3.3).
+(based on OpenGL 3.3). There is now preliminary support for Oculus Rift.
 
 See [Ephenation server wiki](https://github.com/larspensjo/ephenation-server/wiki) for server documentation
 and [Ephenation client wiki](https://github.com/larspensjo/ephenation-client/wiki) for client documentation.

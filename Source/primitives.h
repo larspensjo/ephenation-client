@@ -141,7 +141,12 @@ extern int gIgnoreOpenGLErrors; /// Don't report errors
 extern bool gToggleTesting; /// Used for SW development
 
 /// List of textures that can be shown for debugging.
-extern std::vector<unsigned> gDebugTextures;
+struct DebugTexture {
+	DebugTexture(unsigned id, const char *comment) : id(id), comment(comment) {}
+	unsigned id;
+	const char *comment;
+};
+extern std::vector<DebugTexture> gDebugTextures;
 
 /// Convert an argument to a string. This two-step approach is required for #defined values,
 /// or the argument name is given as a string instead of the value of the argument.

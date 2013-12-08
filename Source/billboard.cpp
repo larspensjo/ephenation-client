@@ -51,7 +51,7 @@ void Billboard::Init(void) {
 	// Create the atlas of all pictures.
 	GLenum internalFormat = GL_RGBA2;
 	int totalWidth = fPixelWidth * fNumPictures;
-	glGenTextures(1, &fAtlasId); gDebugTextures.push_back(fAtlasId);
+	glGenTextures(1, &fAtlasId); gDebugTextures.push_back(DebugTexture(fAtlasId, "Atlas"));
 again:
 	glBindTexture(GL_TEXTURE_2D, fAtlasId);
 	glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, totalWidth, totalWidth, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
@@ -89,7 +89,7 @@ again:
 	// Create a FBO for temporary drawing
 
 	glGenTextures(1, &fTempTextureId);
-	glBindTexture(GL_TEXTURE_2D, fTempTextureId); gDebugTextures.push_back(fTempTextureId);
+	glBindTexture(GL_TEXTURE_2D, fTempTextureId); gDebugTextures.push_back(DebugTexture(fTempTextureId, "Billboard"));
 	glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, fPixelWidth, fPixelWidth, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);

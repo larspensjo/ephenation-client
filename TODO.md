@@ -7,7 +7,6 @@ Oculus Rift
 * Use alternative dialogs, adapted for OR
 * Some calibration is wrong, leading to screen moving when head turns
 * Use super sampling for improved picture quality
-* Split the HealthBar into several triangles
 * Get selection marker to work.
 * Skybox is incorrect, it is possible to see the joints.
 
@@ -40,6 +39,7 @@ Algorithms
 * Timers should also be drawn live on the screen
 * The transformation of a chunk into printable data should be managed by a Streaming class
 * Pre-load chunks of TP destination
+* Update to newer version of libRocket
 
 Installation
 ------------
