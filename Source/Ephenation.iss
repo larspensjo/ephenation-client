@@ -7,7 +7,7 @@
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
 AppId={{C788FC6C-60BF-4D59-B6C5-EAB408F761F8}
 AppName=Ephenation
-AppVersion=4.3
+AppVersion=5b1
 AppPublisher=Ephenation
 AppPublisherURL=www.ephenation.net
 AppSupportURL=www.ephenation.net
@@ -34,13 +34,13 @@ Source: "ephenation.ico"; DestDir: "{app}"; Flags: ignoreversion
 Source: "*.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "../readme.txt"; DestDir: "{app}"; Flags: ignoreversion
 Source: "contrib/win32/OpenAL/redist/oalinst.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "\MinGW\msys\1.0\bin\libvorbis-0.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "\MinGW\msys\1.0\bin\libogg-0.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "\MinGW\msys\1.0\bin\libvorbisfile-3.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "\MinGW\msys\1.0\bin\glew32.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "\MinGW\bin\pthreadGC2.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "\MinGW\bin\libgcc_s_dw2-1.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "\MinGW\bin\libstdc++-6.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\MinGW\msys\1.0\bin\libvorbis-0.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\MinGW\msys\1.0\bin\libogg-0.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\MinGW\msys\1.0\bin\libvorbisfile-3.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\MinGW\msys\1.0\bin\glew32.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\MinGW\bin\pthreadGC2.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\MinGW\bin\libgcc_s_dw2-1.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\MinGW\bin\libstdc++-6.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "../Disclaimer.rtf"; DestDir: "{app}"; Flags: ignoreversion
 Source: "sounds\*"; DestDir: "{app}\sounds"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "textures\*"; DestDir: "{app}\textures"; Flags: ignoreversion recursesubdirs createallsubdirs

@@ -1,4 +1,4 @@
-﻿Copyright 2012 The Ephenation Authors
+﻿Copyright 2012-2013 The Ephenation Authors
 
 This file is part of Ephenation.
 
@@ -23,6 +23,10 @@ Ephenation Readme
 * Make an exciting adventure for others, or a place to invite friends to
 * Look at the high scores of popular areas, to find places to go adventure
 * To kill a monster, use TAB to select it and initiate attack with '1'.
+
+Release 5.0b 2013-12-08
+=======================
+* Support for Oculus Rift
 
 Release 4.3 2013-02-24
 ======================
