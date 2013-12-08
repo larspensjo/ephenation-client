@@ -23,6 +23,7 @@
 #include <GL/glew.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <cassert>
 
 #include "shader.h"
 #include "../uniformbuffer.h"
@@ -90,7 +91,9 @@ void ShaderBase::Init(const char *debug, int vertexShaderLines, const char **ver
 }
 
 GLint ShaderBase::GetUniformLocation(const char *name) const {
-	return glGetUniformLocation(fProgram, name);
+	GLint ind = glGetUniformLocation(fProgram, name);
+	assert(ind != -1);
+	return ind;
 }
 
 GLint ShaderBase::GetAttribLocation(const char *name) const {

@@ -40,7 +40,6 @@ static const GLchar *fragmentShaderSource[] = {
 	"common.UniformBuffer",
 	"common.OvrDistortion",
 	"common.DoubleResolutionFunction",
-	"common.Poissondisk",
 	"common.SunDirection",
 	"common.DistanceAlphaBlending",
 	"deferredlighting.Fragment"
@@ -65,7 +64,7 @@ void DeferredLighting::GetLocations(void) {
 	fAverageLuminanceIdx = this->GetUniformLocation("UwhitePoint");
 
 	// The following uniforms only need to be initialized once
-	glUniform1i(this->GetUniformLocation("Upoissondisk"), 6); // Used in common.glsl
+	// glUniform1i(this->GetUniformLocation("Upoissondisk"), 6); // Used in common.glsl
 	glUniform1i(this->GetUniformLocation("lightTex"), 5);
 	glUniform1i(this->GetUniformLocation("blendTex"), 3);
 	glUniform1i(this->GetUniformLocation("normalTex"), 2);
