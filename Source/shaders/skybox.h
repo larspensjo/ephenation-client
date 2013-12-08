@@ -45,12 +45,10 @@ public:
 	void Init();
 
 	/// Draw the skybox
-	/// @param disableDistortion Disable any distortion effects from OVR.
-	void Draw(bool disableDistortion);
+	void Draw();
 private:
 	// Callback that defines all uniform and attribute indices.
 	virtual void GetLocations(void);
 
 	GLint fModelMatrixIdx = -1;
-	GLint fDisableDistortion = -1;
 };

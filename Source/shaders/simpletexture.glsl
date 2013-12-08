@@ -35,9 +35,14 @@ uniform sampler2D firstTexture;
 uniform float forceTransparent;
 uniform vec3 colorOffset;
 in vec2 fragmentTexCoord;
+uniform bool UCompensateDistortion = false;
 void main(void)
 {
-	gl_FragColor = texture(firstTexture, fragmentTexCoord) + vec4(colorOffset, 0);
+	vec2 coord = fragmentTexCoord;
+	if (UCompensateDistortion) {
+		coord = HmdWarp((fragmentTexCoord-vec2(0.5, 0.5))*2)/2 + vec2(0.5, 0.5);
+	}
+	gl_FragColor = texture(firstTexture, coord) + vec4(colorOffset, 0);
 	if (gl_FragColor.a < 0.1) discard;
 	if (forceTransparent < 1) gl_FragColor.a = forceTransparent; // The transparency isn't used unless enabled.
 }

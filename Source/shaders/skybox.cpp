@@ -50,7 +50,6 @@ void SkyBox::Init(void) {
 
 void SkyBox::GetLocations(void) {
 	fModelMatrixIdx = this->GetUniformLocation("UmodelMatrix");
-	fDisableDistortion = this->GetUniformLocation("UDisableDistortion");
 
 	// Always use texture 0.
 	glUniform1i(this->GetUniformLocation("UTextureSampler"), 0);
@@ -67,7 +66,7 @@ void SkyBox::GetLocations(void) {
  * below. The view transform is then applied within the shader.
  */
 // ====================================================================================================================
-void SkyBox::Draw(bool disableDistortion) {
+void SkyBox::Draw() {
 	bool belowGround = false;
 	if (Model::gPlayer.BelowGround()) // If a number of blocks below ground, use a dark gray texture instead
 		belowGround = true;
@@ -75,7 +74,6 @@ void SkyBox::Draw(bool disableDistortion) {
 	glm::mat3 rot = glm::mat3(model);
 	glUseProgram(this->Program());
 	glUniformMatrix3fv(fModelMatrixIdx, 1, GL_FALSE, &rot[0][0]); //
-	glUniform1i(fDisableDistortion, disableDistortion);
 	glBindTexture(GL_TEXTURE_2D, belowGround ? GameTexture::DarkGray : GameTexture::Sky1Id);
 	gQuad.Draw();
 

@@ -101,6 +101,25 @@ void DrawTexture::Draw(const glm::mat4 &projection, const glm::mat4 &model, floa
 	glBindVertexArray(0);
 }
 
+void DrawTexture::DrawScreen(bool compensateDistortion) const {
+	glBindVertexArray(fVao);
+	fShader->EnableProgram();
+	fShader->Projection(glm::mat4(1));
+	glm::mat4 scale = glm::scale(glm::mat4(1), glm::vec3(2,2,1));
+	glm::mat4 transl = glm::translate(glm::mat4(1), glm::vec3(-1, -1, 0));
+	fShader->ModelView(transl * scale);
+	fShader->ForceTransparent(1.0f);
+	if (compensateDistortion)
+		fShader->SetCompensateDistortion(true);
+
+	this->DrawBasic();
+
+	if (compensateDistortion)
+		fShader->SetCompensateDistortion(false); // Immediately reset
+	fShader->DisableProgram();
+	glBindVertexArray(0);
+}
+
 void DrawTexture::DrawOffset(const glm::mat4 &projection, const glm::mat4 &model, float offsX, float offsY, float mult) const {
 	glBindVertexArray(fVao);
 	fShader->EnableProgram();

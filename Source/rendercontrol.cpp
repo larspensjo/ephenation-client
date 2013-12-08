@@ -233,8 +233,6 @@ void RenderControl::Resize(GLsizei width, GLsizei height) {
 	checkError("RenderControl::Resize");
 }
 
-enum { STENCIL_NOSKY = 1 };
-
 void RenderControl::Draw(bool underWater, shared_ptr<const Model::Object> selectedObject, bool showMap, int mapWidth, MainUserInterface *ui, bool stereoView) {
 	if (gShowFramework)
 		glPolygonMode(GL_FRONT, GL_LINE);
@@ -242,9 +240,15 @@ void RenderControl::Draw(bool underWater, shared_ptr<const Model::Object> select
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fboName);
 	drawClearFBO();
 	glViewport(0, 0, fWidth, fHeight);
-	glEnable(GL_STENCIL_TEST);
-	glStencilFunc(GL_ALWAYS, STENCIL_NOSKY, STENCIL_NOSKY); // Set bit for no sky
-	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE); // Replace bits when something is drawn
+	// If the player is dead, he will get a gray sky.
+	int diffuseSky = GL_NONE;
+	if (!Model::gPlayer.IsDead() && !Model::gPlayer.BelowGround() && !underWater)
+		diffuseSky = GL_COLOR_ATTACHMENT0;
+	drawSkyBox(diffuseSky, GL_COLOR_ATTACHMENT1, stereoView);
+
+	// glEnable(GL_STENCIL_TEST);
+	// glStencilFunc(GL_ALWAYS, STENCIL_NOSKY, STENCIL_NOSKY); // Set bit for no sky
+	// glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE); // Replace bits when something is drawn
 	gDrawObjectList.clear();
 	drawNonTransparentLandscape(stereoView);
 	if (this->ThirdPersonView() && gMode.Get() != GameMode::LOGIN)
@@ -255,11 +259,10 @@ void RenderControl::Draw(bool underWater, shared_ptr<const Model::Object> select
 	if (ui) drawUI(ui); // Will draw into transparent layer
 	if (fShowMouse)
 		drawMousePointer();
-	glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP); // Make stencil read-only
-	drawSkyBox(GL_NONE, GL_COLOR_ATTACHMENT1, true); // Only output positional data.
+	// glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP); // Make stencil read-only
 
 	// Apply deferred shader filters.
-	glStencilFunc(GL_EQUAL, STENCIL_NOSKY, STENCIL_NOSKY); // Only execute when no sky and no UI
+	// glStencilFunc(GL_EQUAL, STENCIL_NOSKY, STENCIL_NOSKY); // Only execute when no sky and no UI
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_ONE, GL_ONE);
 	if ((gOptions.fDynamicShadows || gOptions.fStaticShadows) && !Model::gPlayer.BelowGround())
@@ -269,14 +272,10 @@ void RenderControl::Draw(bool underWater, shared_ptr<const Model::Object> select
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // Restore default
 	glDisable(GL_BLEND);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0); // Frame buffer has done its job now, results are in the diffuse image.
-	glDisable(GL_STENCIL_TEST);
+	// glDisable(GL_STENCIL_TEST);
 	glViewport(gViewport[0], gViewport[1], gViewport[2], gViewport[3]); // Restore default viewport.
 
 	// At this point, there is no depth buffer representing the geometry and no stencil. They are only valid inside the FBO.
-
-    // If the player is dead, he will get a gray sky.
-	if (!Model::gPlayer.IsDead() && !Model::gPlayer.BelowGround() && !underWater)
-        drawSkyBox(GL_BACK_LEFT, GL_NONE, false); // Draw the sky texture, but ignore position data.
 
 	ComputeAverageLighting(underWater);
 	if (gShowFramework)
@@ -626,10 +625,18 @@ void RenderControl::drawSkyBox(GLenum diffuse, GLenum position, bool disableDist
     glDepthFunc(GL_LEQUAL); // Seems to be needed, or depth value 1.0 will not be shown.
     glDisable(GL_CULL_FACE); // Skybox is drawn with the wrong culling order.
 	glEnable(GL_DEPTH_TEST);
-    fSkyBox->Draw(disableDistortion);
+    fSkyBox->Draw();
     glEnable(GL_CULL_FACE);
     glDepthFunc(GL_LESS);
     glDepthRange(0, 1);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+	glViewport(gViewport[0], gViewport[1], gViewport[2], gViewport[3]); // Restore default viewport.
+	// Print the skybox texture immediately
+	DrawTexture *texture = DrawTexture::Make();
+	glBindTexture(GL_TEXTURE_2D, fDiffuseTexture);
+	texture->DrawScreen(disableDistortion);
+	glViewport(0, 0, fWidth, fHeight);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fboName);
     tm.Stop();
 }
 

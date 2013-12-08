@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -29,6 +29,7 @@ public:
 	void ModelView(const glm::mat4 &); // Define the ModelView matrix
 	void Projection(const glm::mat4 &); // Define the projection matrix
 	void ForceTransparent(float alpha); // This will change alpha to a lower value for all colors.
+	void SetCompensateDistortion(bool flag) { 	glUniform1i(fCompensateDistInd, flag); }
 	void TextureOffsetMulti(float offsX, float offsY, float mult);
 	// Define memory layout for the vertices. A buffer must be bound to do this.
 	void VertexAttribPointer(GLenum type, GLint size, GLsizei stride, const GLvoid * pointer);
@@ -46,4 +47,5 @@ private:
 	static const GLchar *fFragmentShaderSource[];
 	GLint fgProjectionMatrixIndex, fgVertexIndex, fgTexCoordIndex, fModelViewMatrixIndex, fColorOffsetIdx;
 	GLint fgForceTranspInd, fTextOffsMultiInd;
+	GLint fCompensateDistInd = -1;
 };

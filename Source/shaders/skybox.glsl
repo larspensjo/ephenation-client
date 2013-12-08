@@ -47,11 +47,7 @@ layout(location = 1) out vec4 posOutput;
 
 void main(void)
 {
-	vec2 coord = TexCoord;
-	if (UBOEnableDistortion == 1 && !UDisableDistortion) {
-		coord = HmdWarp(TexCoord-vec2(0.5, 0.5)) + vec2(0.5, 0.5);
-	}
-	vec3 color = texture(UTextureSampler, coord).rgb;
+	vec3 color = texture(UTextureSampler, TexCoord).rgb;
 	// Use a vertical fog gradient to add fog to all pixels below a certain height.
 	vec3 cameraToWorld = UBOCamera.xyz-worldPos.xyz;
 	vec3 eyeDir = normalize(cameraToWorld);

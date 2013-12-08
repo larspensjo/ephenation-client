@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -23,6 +23,7 @@
 
 class SimpleTextureShader;
 
+/// Various functions to draw a texture
 class DrawTexture {
 public:
 	static DrawTexture *Make(void); // Make one single DrawTexture, and always return the same.
@@ -34,6 +35,9 @@ public:
 	void DrawDepth(const glm::mat4 &projection, const glm::mat4 &model, float offsX, float offsY, float mult) const;
 	// Draw without changing any uniforms or program
 	void DrawBasic(void) const;
+	/// Draw texture to complete screen, using OVR distortion if needed
+	/// @param compensateDistortion Enable lens distortion compensation
+	void DrawScreen(bool compensateDistortion) const;
 private:
 	DrawTexture(); // Constructor is private, to make it a singleton class.
 	virtual ~DrawTexture();

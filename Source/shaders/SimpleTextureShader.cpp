@@ -24,13 +24,13 @@
 
 /// Using GLSW to define shader
 static const GLchar *vertexShaderSource[] = {
-	"common.UniformBuffer",
-	"common.OvrDistortion",
 	"simpletexture.Vertex",
 };
 
 /// Using GLSW to define shader
 static const GLchar *fragmentShaderSource[] = {
+	"common.UniformBuffer",
+	"common.OvrDistortion",
 	"simpletexture.Fragment",
 };
 
@@ -52,6 +52,7 @@ void SimpleTextureShader::GetLocations(void) {
 	fgTexCoordIndex = this->GetAttribLocation("texCoord");
 	fTextOffsMultiInd = this->GetUniformLocation("textOffsMulti");
 	fColorOffsetIdx = this->GetUniformLocation("colorOffset");
+	fCompensateDistInd = this->GetUniformLocation("UCompensateDistortion");
 	this->TextureOffsetMulti(0.0f, 0.0f, 1.0f);
 }
 
