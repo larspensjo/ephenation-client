@@ -26,12 +26,7 @@ void main(void)
 {
 	float textMult = textOffsMulti.z;
 	fragmentTexCoord = texCoord*textMult + textOffsMulti.xy;
-	vec4 pos = projectionMatrix * modelViewMatrix * vec4(vertex,1.0);
-	if (UBOEnableDistortion == 1) {
-		pos /= pos.w;
-		pos.xy = HmdWarp(pos.xy);
-	}
-	gl_Position = pos;
+	gl_Position = projectionMatrix * modelViewMatrix * vec4(vertex,1.0);
 }
 
 -- Fragment
@@ -45,5 +40,4 @@ void main(void)
 	gl_FragColor = texture(firstTexture, fragmentTexCoord) + vec4(colorOffset, 0);
 	if (gl_FragColor.a < 0.1) discard;
 	if (forceTransparent < 1) gl_FragColor.a = forceTransparent; // The transparency isn't used unless enabled.
-	//	gl_FragColor = vec4(1.0, 0.5, 0.25, 1.0);
 }

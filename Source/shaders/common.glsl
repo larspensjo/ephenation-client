@@ -55,17 +55,6 @@ vec2 HmdWarp(vec2 theta)
 	return rvector;
 }
 
-vec2 HmdWarpInv(vec2 theta)
-{
-	float rSq = theta.x * theta.x + theta.y * theta.y;
-	vec2 rvector = theta / (UBOOVRDistortion.x +
-							UBOOVRDistortion.y * rSq +
-							UBOOVRDistortion.z * rSq * rSq +
-							UBOOVRDistortion.w * rSq * rSq * rSq
-			);
-	return rvector;
-}
-
 -- Poissondisk
 
 float seedpoisson;

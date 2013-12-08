@@ -252,6 +252,9 @@ void RenderControl::Draw(bool underWater, shared_ptr<const Model::Object> select
 	drawOtherPlayers();
 	drawMonsters();
 	drawTransparentLandscape(stereoView);
+	if (ui) drawUI(ui); // Will draw into transparent layer
+	if (fShowMouse)
+		drawMousePointer();
 	glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP); // Make stencil read-only
 	drawSkyBox(GL_NONE, GL_COLOR_ATTACHMENT1, true); // Only output positional data.
 
@@ -289,12 +292,8 @@ void RenderControl::Draw(bool underWater, shared_ptr<const Model::Object> select
 	drawColoredLights();
 	if (!underWater)
 		drawLocalFog(); // This should come late in the drawing process, as we don't want light effects added to fog
-	if (ui)
-		drawUI(ui);
 	if (showMap)
 		drawMap(mapWidth);
-	if (fShowMouse)
-		drawMousePointer();
 }
 
 void RenderControl::drawClear(bool underWater) {
@@ -626,6 +625,7 @@ void RenderControl::drawSkyBox(GLenum diffuse, GLenum position, bool disableDist
     glDepthRange(1, 1); // This will move the sky box to the far plane, exactly
     glDepthFunc(GL_LEQUAL); // Seems to be needed, or depth value 1.0 will not be shown.
     glDisable(GL_CULL_FACE); // Skybox is drawn with the wrong culling order.
+	glEnable(GL_DEPTH_TEST);
     fSkyBox->Draw(disableDistortion);
     glEnable(GL_CULL_FACE);
     glDepthFunc(GL_LESS);
@@ -636,9 +636,14 @@ void RenderControl::drawSkyBox(GLenum diffuse, GLenum position, bool disableDist
 void RenderControl::drawUI(MainUserInterface *ui) {
 	static WorstTime tm("MainUI");
 	tm.Start();
+	GLenum windowBuffOpaque[] = { GL_COLOR_ATTACHMENT3 }; // Only draw to the transparent buffer
+	glDrawBuffers(1, windowBuffOpaque);
 	glEnable(GL_BLEND);
+	glDepthMask(GL_FALSE);                // The depth buffer shall not be updated, or some transparent blocks behind each other will not be shown.
+	glDisable(GL_DEPTH_TEST);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	ui->Draw(gMode.Get() != GameMode::LOGIN);
+	glDepthMask(GL_TRUE);
 	glDisable(GL_BLEND);
 	tm.Stop();
 }
@@ -668,7 +673,16 @@ void RenderControl::drawMousePointer() const {
 	glm::mat4 translToMouse = glm::translate(glm::mat4(1), glm::vec3(float(fMouseX)-gViewport[2]/2, float(fMouseY)-gViewport[3]/2, 0.0f));
 	glm::mat4 model = View::gHudTransformation.GetGUITransform() * translToMouse * scaleToPixel * moveToTip;
 
+	GLenum windowBuffOpaque[] = { GL_COLOR_ATTACHMENT3 }; // Only draw to the transparent buffer
+	glDrawBuffers(1, windowBuffOpaque);
+	glEnable(GL_BLEND);
+	glDepthMask(GL_FALSE);                // The depth buffer shall not be updated, or some transparent blocks behind each other will not be shown.
+	glDisable(GL_DEPTH_TEST);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 	DrawTexture::Make()->Draw(gProjectionMatrix, model);
+	glDepthMask(GL_TRUE);
+	glDisable(GL_BLEND);
 }
 
 void RenderControl::UpdateCameraPosition(int wheelDelta, bool stereoView, float yaw, float pitch, float roll) {
