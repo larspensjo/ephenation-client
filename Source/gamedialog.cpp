@@ -1149,7 +1149,7 @@ void gameDialog::Update() {
 	// Detect usage of the mouse wheel
 	int newWheel = glfwGetMouseWheel();
 	int zoomDelta = 0;
-	if (!fStereoView && newWheel != wheel) {
+	if (newWheel != wheel) {
 		if (fCurrentRocketContextInput) {
 			fCurrentRocketContextInput->ProcessMouseWheel(wheel-newWheel, rocketKeyModifiers);
 		} else if (gMode.Get() == GameMode::CONSTRUCT) {
@@ -1159,7 +1159,7 @@ void gameDialog::Update() {
 			fMapWidth = fMapWidth * fact;
 			if (fMapWidth < 100)
 				fMapWidth = 100;
-		} else {
+		} else if (!fStereoView) {
 			zoomDelta = wheel-newWheel;
 		}
 		wheel = newWheel;
