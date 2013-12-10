@@ -38,6 +38,14 @@ public:
 	/// Do the actual buffer allocation
 	void Init();
 
+	/// Configure the parameters needed for Oculus Rift
+	/// @param dist The 4 constants for the barrel distortion
+	/// @param lensCenter The horizontal distance from the view center to the lens center
+	void SetOVRConstants(const float *dist, float lensCenter);
+
+	/// Used for stereo view
+	void SelectEye(bool left) { fLeftEeye = left; }
+
 	/// Update all data in the uniform buffer
 	/// It is a const function as no parameters in the class are changed.
 	/// @param ovrMode true if screen is adapted for Oculus Rift display
@@ -56,7 +64,8 @@ private:
 
 	glm::vec4 fCamera;
 	glm::vec4 fDistortion = glm::vec4(1.0f, 0.22f, 0.24f, 0.0f);
-	glm::vec2 fOvrLensCenter = glm::vec2(0.5f, 0.5f);
+	glm::vec2 fOvrLensCenter = glm::vec2(0.15f, 0.0f); // Best guess.
+	bool fLeftEeye = true;
 };
 
 extern UniformBuffer gUniformBuffer;

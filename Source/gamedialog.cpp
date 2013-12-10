@@ -908,12 +908,14 @@ void gameDialog::DrawScreen(bool hideGUI) {
 			fRenderControl.ComputeShadowMap();
 		float horViewAdjust = OculusRift::sfOvr.GetHorViewAdjustment() * 2.0f; // Multiply with two as there are two units to every meter
 		gViewMatrix = glm::translate(glm::mat4(1), glm::vec3(horViewAdjust, 0.0f, 0.0f)) * gViewMatrix; // Move half distance from center to left eye
+		gUniformBuffer.SelectEye(true);
 		gUniformBuffer.Update(true); // Transfer settings to the graphics card
 		this->render(hideGUI, int(slAverageFps));
 
 		OculusRift::sfOvr.UseRightEye();
 		gViewMatrix = glm::translate(glm::mat4(1), glm::vec3(-horViewAdjust*2.0f, 0.0f, 0.0f)) * gViewMatrix; // Move double distance, from left eye to right eye
 		this->UpdateProjection(Controller::gameDialog::ViewType::right);
+		gUniformBuffer.SelectEye(false);
 		gUniformBuffer.Update(true); // Transfer settings to the graphics card
 		this->render(hideGUI, int(slAverageFps));
 	} else {

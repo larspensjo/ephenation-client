@@ -31,6 +31,13 @@ UniformBuffer::~UniformBuffer() {
 		glDeleteBuffers(1, &fUBOBuffer);
 }
 
+void UniformBuffer::SetOVRConstants(const float *dist, float lensCenter) {
+	for (int i=0; i<4; i++)
+		fDistortion[i] = dist[i];
+	// Double the value to scale from the interval 0 to +1, to the interval -1 to +1.
+	fOvrLensCenter.x = lensCenter*2.0f;
+}
+
 // This data description must match the content of the UBO.
 // The content and layout must match UniformBuffer in common.glsl.
 // "bool" didn't work, probably because of alignment definitions of layout(std140).
@@ -88,7 +95,10 @@ void UniformBuffer::Update(bool ovrMode) const {
 	data.ambientLight = gOptions.fAmbientLight / 200.0f;
 	data.belowGround = Model::gPlayer.BelowGround();
 	data.ovrDistortion = fDistortion;
-	data.ovrlenscenter = fOvrLensCenter;
+	if (fLeftEeye)
+		data.ovrlenscenter = fOvrLensCenter;
+	else
+		data.ovrlenscenter = -fOvrLensCenter;
 	data.enabledistortion = ovrMode;
 
 	glBindBuffer(GL_UNIFORM_BUFFER, fUBOBuffer);

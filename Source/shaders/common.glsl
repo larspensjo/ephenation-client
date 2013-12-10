@@ -44,15 +44,16 @@ layout(std140) uniform GlobalData {
 -- OvrDistortion
 
 // Apply distortion effect to a coordinate. It has to be centered at 0,0, and range from -1 to +1.
-vec2 HmdWarp(vec2 theta)
+vec2 HmdWarp(vec2 in01)
 {
+	vec2 theta = in01 - UBOLensCenter;
 	float rSq = theta.x * theta.x + theta.y * theta.y;
 	vec2 rvector = theta * (UBOOVRDistortion.x +
 							UBOOVRDistortion.y * rSq +
 							UBOOVRDistortion.z * rSq * rSq +
 							UBOOVRDistortion.w * rSq * rSq * rSq
 			);
-	return rvector;
+	return rvector + UBOLensCenter;
 }
 
 -- Poissondisk

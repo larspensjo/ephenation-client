@@ -343,6 +343,7 @@ int main(int argc, char** argv) {
 		fullScreen = true;
 		windowHeight = Controller::OculusRift::sfOvr.GetVerResolution();
 		windowWidth = Controller::OculusRift::sfOvr.GetHorResolution();
+		gUniformBuffer.SetOVRConstants(Controller::OculusRift::sfOvr.GetDistortionConstants(), Controller::OculusRift::sfOvr.GetLensSeparationDistance());
 	}
 
 	// If there was a saved position, use it for initialization.
