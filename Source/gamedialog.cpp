@@ -593,6 +593,13 @@ void gameDialog::HandleKeyPress(int key) {
 			fShowInventory = false;
 			gMsgWindow.SetAlternatePosition(0,0,false);
 		} else {
+			if (fShowMouse) {
+				// The mouse can be any distance far away, move it back to the center of the screen.
+				x = gViewport[2]/2;
+				y = gViewport[3]/2;
+				glfwSetMousePos(x, y);
+				fRenderControl.SetMouse(x, y, true);
+			}
 			fCurrentRocketContextInput = fMainUserInterface.GetRocketContext();
 			gDialogFactory.Make(fCurrentRocketContextInput, "topleveldialog.rml");
 		}
