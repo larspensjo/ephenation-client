@@ -279,7 +279,7 @@ void RenderControl::Draw(bool underWater, shared_ptr<const Model::Object> select
 
 	ComputeAverageLighting(underWater);
 	if (gShowFramework)
-		glPolygonMode(GL_FRONT, GL_FILL);
+		glPolygonMode(GL_FRONT, GL_FILL); // Restore normal drawing.
 	// Draw the main result to the screen.
 	drawDeferredLighting(underWater, gOptions.fWhitePoint);
 
@@ -785,8 +785,8 @@ void RenderControl::ComputeAverageLighting(bool underWater) {
 	else
 		glClearColor(1.0f, 0.0f, 0.0f, 1.0f );
 	glClear(GL_COLOR_BUFFER_BIT);
-	int w = gViewport[2] / fLightSamplingFactor;
-	int h = gViewport[3] / fLightSamplingFactor;
+	int w = fWidth / fLightSamplingFactor;
+	int h = fHeight / fLightSamplingFactor;
 	glViewport(0, 0, w, h); // set viewport to texture dimensions
 	GLenum windowBuffer[] = { GL_COLOR_ATTACHMENT0 };
 	glDrawBuffers(1, windowBuffer);
