@@ -98,6 +98,7 @@ private:
 	GLuint fboName;
 	GLuint fDepthBuffer; // Render target buffers
 	GLuint fDiffuseTexture, fPositionTexture, fNormalsTexture, fBlendTexture, fLightsTexture;
+	GLuint fRendertarget = 0;
 	GLsizei fWidth, fHeight;
 
 	GLuint fDownSampleLumTexture1, fDownSampleLumTexture2;
@@ -145,6 +146,7 @@ private:
 	void drawSSAO(void);
 	void drawColoredLights() const;
 	void drawMousePointer() const;
+	void drawFullScreenPixmap(GLuint id, bool stereoView) const;
 };
 
 }

@@ -5,10 +5,8 @@ Oculus Rift
 -----------
 * Use bold font for better readability
 * Use alternative dialogs, adapted for OR
-* Some calibration is wrong, leading to screen moving when head turns
 * Use super sampling for improved picture quality
-* Get selection marker to work.
-* Skybox is incorrect, it is possible to see the joints.
+* Get selection marker to work
 
 Graphical effects
 -----------------

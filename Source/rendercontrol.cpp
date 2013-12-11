@@ -100,6 +100,7 @@ void RenderControl::Init(int lightSamplingFactor, bool stereoView) {
 	glGenTextures(1, &fNormalsTexture); gDebugTextures.push_back(DebugTexture(fNormalsTexture, "Deferred normals"));
 	glGenTextures(1, &fBlendTexture); gDebugTextures.push_back(DebugTexture(fBlendTexture, "Deferred blend"));
 	glGenTextures(1, &fLightsTexture); gDebugTextures.push_back(DebugTexture(fLightsTexture, "Deferred lighting"));
+	glGenTextures(1, &fRendertarget);
 
 	glGenFramebuffers(1, &fboName);
 
@@ -151,6 +152,14 @@ void RenderControl::Resize(GLsizei width, GLsizei height) {
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
 
 	// Generate and bind the texture for diffuse
+	glBindTexture(GL_TEXTURE_2D, fRendertarget);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER); // Get a black border when outside
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+
+	// Generate and bind the texture for diffuse
 	glBindTexture(GL_TEXTURE_2D, fDiffuseTexture);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -198,6 +207,7 @@ void RenderControl::Resize(GLsizei width, GLsizei height) {
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, fNormalsTexture, 0);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, GL_TEXTURE_2D, fBlendTexture, 0);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT4, GL_TEXTURE_2D, fLightsTexture, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT5, GL_TEXTURE_2D, fRendertarget, 0);
 	glReadBuffer(GL_NONE);
 
 	GLenum fboStatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
@@ -243,12 +253,9 @@ void RenderControl::Draw(bool underWater, shared_ptr<const Model::Object> select
 	// If the player is dead, he will get a gray sky.
 	int diffuseSky = GL_NONE;
 	if (!Model::gPlayer.IsDead() && !Model::gPlayer.BelowGround() && !underWater)
-		diffuseSky = GL_COLOR_ATTACHMENT0;
+		diffuseSky = GL_COLOR_ATTACHMENT5;
 	drawSkyBox(diffuseSky, GL_COLOR_ATTACHMENT1, stereoView);
 
-	// glEnable(GL_STENCIL_TEST);
-	// glStencilFunc(GL_ALWAYS, STENCIL_NOSKY, STENCIL_NOSKY); // Set bit for no sky
-	// glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE); // Replace bits when something is drawn
 	gDrawObjectList.clear();
 	drawNonTransparentLandscape(stereoView);
 	if (this->ThirdPersonView() && gMode.Get() != GameMode::LOGIN)
@@ -256,13 +263,8 @@ void RenderControl::Draw(bool underWater, shared_ptr<const Model::Object> select
 	drawOtherPlayers();
 	drawMonsters();
 	drawTransparentLandscape(stereoView);
-	if (ui) drawUI(ui); // Will draw into transparent layer
-	if (fShowMouse)
-		drawMousePointer();
-	// glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP); // Make stencil read-only
 
 	// Apply deferred shader filters.
-	// glStencilFunc(GL_EQUAL, STENCIL_NOSKY, STENCIL_NOSKY); // Only execute when no sky and no UI
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_ONE, GL_ONE);
 	if ((gOptions.fDynamicShadows || gOptions.fStaticShadows) && !Model::gPlayer.BelowGround())
@@ -271,16 +273,15 @@ void RenderControl::Draw(bool underWater, shared_ptr<const Model::Object> select
 	// drawSSAO(); // TODO: Not good enough yet.
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // Restore default
 	glDisable(GL_BLEND);
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0); // Frame buffer has done its job now, results are in the diffuse image.
-	// glDisable(GL_STENCIL_TEST);
-	glViewport(gViewport[0], gViewport[1], gViewport[2], gViewport[3]); // Restore default viewport.
-
-	// At this point, there is no depth buffer representing the geometry and no stencil. They are only valid inside the FBO.
 
 	ComputeAverageLighting(underWater);
 	if (gShowFramework)
 		glPolygonMode(GL_FRONT, GL_FILL); // Restore normal drawing.
-	// Draw the main result to the screen.
+
+	// From now on, only draw to the final render target.
+
+	GLenum winBuffers[] = { GL_COLOR_ATTACHMENT5 };
+	glDrawBuffers(1, winBuffers);
 	drawDeferredLighting(underWater, gOptions.fWhitePoint);
 
 	// Do some post processing
@@ -293,6 +294,12 @@ void RenderControl::Draw(bool underWater, shared_ptr<const Model::Object> select
 		drawLocalFog(); // This should come late in the drawing process, as we don't want light effects added to fog
 	if (showMap)
 		drawMap(mapWidth);
+	if (ui) drawUI(ui); // Will draw into transparent layer
+	if (fShowMouse)
+		drawMousePointer();
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+	glViewport(gViewport[0], gViewport[1], gViewport[2], gViewport[3]); // Restore default viewport.
+	drawFullScreenPixmap(fRendertarget, stereoView);
 }
 
 void RenderControl::drawClear(bool underWater) {
@@ -305,12 +312,12 @@ void RenderControl::drawClear(bool underWater) {
 }
 
 void RenderControl::drawClearFBO(void) {
-	GLenum windowBuffClear[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3, GL_COLOR_ATTACHMENT4 };
-	glDrawBuffers(1, windowBuffClear); // diffuse buffer
+	GLenum windowBuffClear[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3, GL_COLOR_ATTACHMENT4, GL_COLOR_ATTACHMENT5 };
+	glDrawBuffers(1, windowBuffClear); // diffuse buffer only
 	glClearColor(0.584f, 0.620f, 0.698f, 1.0f); // Gray background, will only be used where there is no sky box.
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	glDrawBuffers(4, windowBuffClear+1); // Select all buffers but the diffuse buffer
+	glDrawBuffers(5, windowBuffClear+1); // Select all buffers but the diffuse buffer
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f); // Set everything to zero.
 	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
 }
@@ -619,8 +626,8 @@ void RenderControl::drawColoredLights() const {
 void RenderControl::drawSkyBox(GLenum diffuse, GLenum position, bool disableDistortion) {
     static TimeMeasure tm("SkyBox");
     tm.Start();
-    GLenum windowBuffOpaque[] = { diffuse, position };
-    glDrawBuffers(2, windowBuffOpaque);
+    GLenum buffers[] = { diffuse, position };
+    glDrawBuffers(2, buffers);
     glDepthRange(1, 1); // This will move the sky box to the far plane, exactly
     glDepthFunc(GL_LEQUAL); // Seems to be needed, or depth value 1.0 will not be shown.
     glDisable(GL_CULL_FACE); // Skybox is drawn with the wrong culling order.
@@ -629,22 +636,12 @@ void RenderControl::drawSkyBox(GLenum diffuse, GLenum position, bool disableDist
     glEnable(GL_CULL_FACE);
     glDepthFunc(GL_LESS);
     glDepthRange(0, 1);
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-	glViewport(gViewport[0], gViewport[1], gViewport[2], gViewport[3]); // Restore default viewport.
-	// Print the skybox texture immediately
-	DrawTexture *texture = DrawTexture::Make();
-	glBindTexture(GL_TEXTURE_2D, fDiffuseTexture);
-	texture->DrawScreen(disableDistortion);
-	glViewport(0, 0, fWidth, fHeight);
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fboName);
     tm.Stop();
 }
 
 void RenderControl::drawUI(MainUserInterface *ui) {
 	static WorstTime tm("MainUI");
 	tm.Start();
-	GLenum windowBuffOpaque[] = { GL_COLOR_ATTACHMENT3 }; // Only draw to the transparent buffer
-	glDrawBuffers(1, windowBuffOpaque);
 	glEnable(GL_BLEND);
 	glDepthMask(GL_FALSE);                // The depth buffer shall not be updated, or some transparent blocks behind each other will not be shown.
 	glDisable(GL_DEPTH_TEST);
@@ -680,8 +677,6 @@ void RenderControl::drawMousePointer() const {
 	glm::mat4 translToMouse = glm::translate(glm::mat4(1), glm::vec3(float(fMouseX)-gViewport[2]/2, float(fMouseY)-gViewport[3]/2, 0.0f));
 	glm::mat4 model = View::gHudTransformation.GetGUITransform() * translToMouse * scaleToPixel * moveToTip;
 
-	GLenum windowBuffOpaque[] = { GL_COLOR_ATTACHMENT3 }; // Only draw to the transparent buffer
-	glDrawBuffers(1, windowBuffOpaque);
 	glEnable(GL_BLEND);
 	glDepthMask(GL_FALSE);                // The depth buffer shall not be updated, or some transparent blocks behind each other will not be shown.
 	glDisable(GL_DEPTH_TEST);
@@ -690,6 +685,17 @@ void RenderControl::drawMousePointer() const {
 	DrawTexture::Make()->Draw(gProjectionMatrix, model);
 	glDepthMask(GL_TRUE);
 	glDisable(GL_BLEND);
+}
+
+void RenderControl::drawFullScreenPixmap(GLuint id, bool stereoView) const {
+	static TimeMeasure tm("Screen");
+	tm.Start();
+	glBindTexture(GL_TEXTURE_2D, id); // Override
+	glDepthMask(GL_FALSE);                // The depth buffer shall not be updated, or some transparent blocks behind each other will not be shown.
+	glDisable(GL_DEPTH_TEST);
+	DrawTexture::Make()->DrawScreen(stereoView);
+	glDepthMask(GL_TRUE);
+	tm.Stop();
 }
 
 void RenderControl::UpdateCameraPosition(int wheelDelta, bool stereoView, float yaw, float pitch, float roll) {
@@ -818,7 +824,7 @@ void RenderControl::ComputeAverageLighting(bool underWater) {
 
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
-	glViewport(gViewport[0], gViewport[1], gViewport[2], gViewport[3]); // Restore default viewport.
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+	glViewport(0, 0, fWidth, fHeight); // Restore
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fboName); // Restore
 	tm.Stop();
 }

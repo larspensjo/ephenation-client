@@ -38,7 +38,6 @@ static const GLchar *vertexShaderSource[] = {
 /// Using GLSW to define shader
 static const GLchar *fragmentShaderSource[] = {
 	"common.UniformBuffer",
-	"common.OvrDistortion",
 	"common.DoubleResolutionFunction",
 	"common.SunDirection",
 	"common.DistanceAlphaBlending",
