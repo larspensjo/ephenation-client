@@ -170,15 +170,16 @@ void Monsters::RenderMinimap(const glm::mat4 &miniMap, View::HealthBar *hb) cons
 }
 
 void Monsters::OneMonster::RenderHealthBar(View::HealthBar *hb, float angle) const {
-	auto pos = this->GetPosition() + glm::vec3(0.0f, 3.0f, 0.0f);
+	auto pos = this->GetPosition() + glm::vec3(0.0f, 3.5f, 0.0f);
 	glm::mat4 model = glm::translate(glm::mat4(1.0f), pos);
 	model = glm::rotate(model, -angle, glm::vec3(0.0f, 1.0f, 0.0f)); // Need to counter the rotation from the view matrix
+	model = glm::translate(model, glm::vec3(-1.0f, 0, 0));
 	model = glm::scale(model, glm::vec3(2.0f, 0.2f, 1.0f));
 	float dmg = (this->prevHp - this->hp)/255.0f;
 	hb->DrawHealth(gProjectionMatrix, gViewMatrix * model, this->hp/255.0f, dmg, true);
 
 	glm::vec4 v = glm::vec4(pos, 1.0f);
-	v.y += 4.0f; // Just above
+	v.y += 3.0f; // Just above
 	glm::vec4 screen = gProjectionMatrix * gViewMatrix * v;
 	screen = screen / screen.w;
 	// printf("Selected: (%f,%f,%f,%f)\n", screen.x, screen.y, screen.z, screen.w);
@@ -186,15 +187,15 @@ void Monsters::OneMonster::RenderHealthBar(View::HealthBar *hb, float angle) con
 		return; // Ignore display of Level information for monsters behind the camera
 	gDrawFont.Enable();
 	gDrawFont.UpdateProjection();
-	gDrawFont.SetOffset(gViewport[2] * (screen.x+1)/2, gViewport[3] * (1-screen.y)/2);
+	gDrawFont.SetOffset((gViewport[2] - gViewport[0]) * (screen.x+1)/2, (gViewport[3] - gViewport[1]) * (1-screen.y)/2);
 	stringstream ss;
 	ss << "Level " << this->level;
-	glm::vec3 offs(0.0f, -0.8f, -0.8f);
+	glm::vec3 colorOffs(0.0f, -0.8f, -0.8f);
 	if (this->level+3 < gPlayer.fLevel)
-		offs = glm::vec3(-0.2f, -0.2f, -0.2f); // Gray
+		colorOffs = glm::vec3(-0.2f, -0.2f, -0.2f); // Gray
 	else if (this->level < gPlayer.fLevel+3)
-		offs = glm::vec3(-0.8f, -0.0f, -0.8f); // Green
-	gDrawFont.vsfl.renderAndDiscard(ss.str(), offs);
+		colorOffs = glm::vec3(-0.8f, -0.0f, -0.8f); // Green
+	gDrawFont.vsfl.renderAndDiscard(ss.str(), colorOffs);
 }
 
 shared_ptr<const Object> Monsters::GetNext(shared_ptr<const Object> current) const {

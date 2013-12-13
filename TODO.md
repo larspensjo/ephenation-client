@@ -5,13 +5,12 @@ Oculus Rift
 -----------
 * Use bold font for better readability
 * Use alternative dialogs, adapted for OR
-* Use super sampling for improved picture quality
-* Get selection marker to work
+* Use bigger render target, to use more of the OVR display
 * Get construction mode to work
-* Flying and swimming needs to be fixed
 * Magic portals don't work (can't click on)
 * The mouse pointer should be hidden when not needed
 * The OVR checkbox in options doesn't reflect the settings correctly
+* Drawing monster stats should use gProjectionView
 
 Graphical effects
 -----------------

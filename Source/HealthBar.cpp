@@ -91,7 +91,6 @@ void HealthBar::DrawHealth(const glm::mat4 &projection, const glm::mat4 &model, 
 	glBindVertexArray(fVao);
 	fShader->EnableProgram();
 	fShader->Projection(projection);
-	glDisable(GL_DEPTH_TEST); // TODO: Should save the old setting
 	glDisable(GL_CULL_FACE);
 	glEnable(GL_BLEND);
 	const float alpha = 0.4f;
@@ -120,7 +119,6 @@ void HealthBar::DrawHealth(const glm::mat4 &projection, const glm::mat4 &model, 
 
 	glBindVertexArray(0);
 	glDisable(GL_BLEND);
-	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 
 	fShader->DisableProgram();

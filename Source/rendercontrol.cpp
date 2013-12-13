@@ -18,9 +18,10 @@
 #include <GL/glew.h>
 #include <stdio.h>
 #include <stdlib.h>
-
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+
+#include "HealthBar.h"
 #include "primitives.h"
 #include "rendercontrol.h"
 #include "ui/Error.h"
@@ -263,6 +264,8 @@ void RenderControl::Draw(bool underWater, shared_ptr<const Model::Object> select
 	drawOtherPlayers();
 	drawMonsters();
 	drawTransparentLandscape(stereoView);
+	if (selectedObject)
+		selectedObject->RenderHealthBar(HealthBar::Make(), _angleHor);
 
 	// Apply deferred shader filters.
 	glEnable(GL_BLEND);

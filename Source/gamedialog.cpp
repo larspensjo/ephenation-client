@@ -991,9 +991,6 @@ void gameDialog::render(bool hideGUI, int fps) {
 		map->Draw(alpha);
 	}
 
-	if (fSelectedObject) {
-		fSelectedObject->RenderHealthBar(fHealthBar, _angleHor);
-	}
 	Model::gOtherPlayers.RenderPlayerStats(fHealthBar, _angleHor);
 	bool newHealing = false;
 	if (Model::gPlayer.fFlags & UserFlagHealed) {
