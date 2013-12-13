@@ -31,6 +31,7 @@ at shallow angles and translucent at near perpendicular angles.
 * Better looking water. Some ideas [here](http://mtnphil.wordpress.com/2012/09/12/faking-water-reflections-with-fourier-coefficients/),
 [and here](http://www.jayconrod.com/posts/34/water-simulation-in-glsl)
 * Implement SSAO
+* Make water splash when a player or monsters falls into water
 
 Sound
 -----

@@ -32,6 +32,7 @@
 #include "manageanimation.h"
 #include "Options.h"
 #include "animationmodels.h"
+#include "Debug.h"
 
 using std::stringstream;
 using std::shared_ptr;
@@ -197,9 +198,11 @@ void Monsters::OneMonster::RenderHealthBar(View::HealthBar *hb, float angle) con
 }
 
 shared_ptr<const Object> Monsters::GetNext(shared_ptr<const Object> current) const {
+	glm::vec4 viewPort = glm::vec4(0,0,1,1);
 	float curr_z = 0.0f;
 	if (current)
-		curr_z = glm::project(current->GetPosition(), gViewMatrix, gProjectionMatrix, gViewport).z;
+		curr_z = glm::project(current->GetPosition(), gViewMatrix, gProjectionMatrix, viewPort).z;
+	LPLOG("Current z: %f", curr_z);
 	shared_ptr<const Object> best, first;
 	float best_z = 1.0f, first_z = 1.0f;
 	for (const auto mon : fMonsters) {
@@ -208,11 +211,12 @@ shared_ptr<const Object> Monsters::GetNext(shared_ptr<const Object> current) con
 			continue; // No monster at this slot, or it was the one already selected
 		// Transform monster coordinates into projection coordinates
 		glm::vec3 pos = mon.second->GetPosition();
-		glm::vec3 screen = glm::project(pos, gViewMatrix, gProjectionMatrix, gViewport);
+		glm::vec3 screen = glm::project(pos, gViewMatrix, gProjectionMatrix, viewPort);
+		LPLOG("Found at: %f,%f,%f", screen.x, screen.y, screen.z);
 		if (screen.z < 0.0f || screen.z > 1.0f)
 			continue;
 		// TODO: This test will actually cut off some monsters that are partly visible.
-		if (screen.x < 0.0f || screen.x > gViewport[2] || screen.y < 0.0f || screen.y > gViewport[3])
+		if (screen.x < 0.0f || screen.x > 1.0f || screen.y < 0.0f || screen.y > 1.0f)
 			continue;
 		if (screen.z < first_z) {
 			first_z = screen.z;
