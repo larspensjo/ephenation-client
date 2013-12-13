@@ -129,7 +129,7 @@ private:
 	void ComputeAverageLighting(bool underWater);
 
 	void drawClearFBO(void); // Initialize all images in the FBO
-	void drawNonTransparentLandscape(bool stereoView);
+	void drawOpaqueLandscape(bool stereoView);
 	void drawDynamicShadows(void);
 	void drawDeferredLighting(bool underWater, float whitepoint);
 	void drawPointLights(void);
@@ -147,6 +147,13 @@ private:
 	void drawColoredLights() const;
 	void drawMousePointer() const;
 	void drawFullScreenPixmap(GLuint id, bool stereoView) const;
+
+	// Define alias for color attachments. Remember to look at
+	// drawClearFBO() if this list is changed.
+	enum ColorAttachment {
+		ColAttachDiffuse = GL_COLOR_ATTACHMENT0,
+		ColAttachPosition, ColAttachNormals, ColAttachBlend, ColAttachLighting, ColAttachRenderTarget
+	};
 };
 
 }

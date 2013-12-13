@@ -28,7 +28,8 @@ at shallow angles and translucent at near perpendicular angles.
 * libRocket Dialogs projected on blocks (a special case of the action block)
 * For underground, use automatic green tints for positive up normals
 * Make three sets of skyboxes, for different time of day
-* Better looking water. Some ideas [here](http://mtnphil.wordpress.com/2012/09/12/faking-water-reflections-with-fourier-coefficients/)
+* Better looking water. Some ideas [here](http://mtnphil.wordpress.com/2012/09/12/faking-water-reflections-with-fourier-coefficients/),
+[and here](http://www.jayconrod.com/posts/34/water-simulation-in-glsl)
 * Implement SSAO
 
 Sound

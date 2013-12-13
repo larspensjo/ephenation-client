@@ -288,7 +288,7 @@ void gameDialog::GetActivator(int &dx, int &dy, int &dz, ChunkCoord &cc) {
 // allow for rebuilding the environment, or attack monsters.
 // TODO: For now, can only use TAB to select objects
 void gameDialog::ClickOnObject(int x, int y) {
-	fSelectedObject = nullptr;
+	ClearSelection();
 }
 
 // The player clicked one something. Depending on mode, we either
@@ -638,6 +638,10 @@ void gameDialog::HandleKeyPress(int key) {
 		}
 		// Find next monster after the selected one.
 		fSelectedObject = Model::gMonsters.GetNext(fSelectedObject);
+		if (fSelectedObject)
+			LPLOG("TAB selection: monster %d, level %d", fSelectedObject->GetId(), fSelectedObject->GetLevel());
+		else
+			LPLOG("TAB selection nothing");
 		break;
 	case GLFW_KEY_LALT: // ALT key
 		if (gMode.Get() == GameMode::CONSTRUCT) {
@@ -1384,7 +1388,7 @@ void gameDialog::ClearForDialog(void) {
 		gAdminTP = false;
 	}
 	gGameDialog.UpdateRunningStatus(false);
-	fSelectedObject = nullptr;
+	ClearSelection();
 }
 
 // Manage the running status of the player
