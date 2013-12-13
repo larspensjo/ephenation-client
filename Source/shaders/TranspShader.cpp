@@ -58,6 +58,7 @@ void TranspShader::GetLocations(void) {
 
 	glUniform1i(this->GetUniformLocation("firstTexture"), 0);
 	glUniform1i(this->GetUniformLocation("posTexture"), 1);
+	glUniform1i(this->GetUniformLocation("USkyBox"), 2);
 	checkError("TranspShader::GetLocations");
 }
 

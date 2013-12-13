@@ -312,8 +312,8 @@ void RenderControl::drawClear(bool underWater) {
 }
 
 void RenderControl::drawClearFBO(void) {
-	GLenum windowBuffClear[] = { ColAttachDiffuse, ColAttachPosition, ColAttachNormals, ColAttachBlend, ColAttachLighting, ColAttachRenderTarget };
-	glDrawBuffers(1, windowBuffClear); // diffuse buffer only
+	GLenum windowBuffClear[] = { ColAttachRenderTarget, ColAttachDiffuse, ColAttachPosition, ColAttachNormals, ColAttachBlend, ColAttachLighting  };
+	glDrawBuffers(1, windowBuffClear); // render target only
 	glClearColor(0.584f, 0.620f, 0.698f, 1.0f); // Gray background, will only be used where there is no sky box.
 	glClear(GL_COLOR_BUFFER_BIT);
 
@@ -340,6 +340,8 @@ void RenderControl::drawTransparentLandscape(bool stereoView) {
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA); // Use alpha 1 for source channel, as the colors are premultiplied by the alpha.
 	glDepthMask(GL_FALSE);                // The depth buffer shall not be updated, or some transparent blocks behind each other will not be shown.
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, GameTexture::SkyupId); // Use the skybox
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, fPositionTexture); // Position data is used by the transparent shader for distance computation.
 	glActiveTexture(GL_TEXTURE0);

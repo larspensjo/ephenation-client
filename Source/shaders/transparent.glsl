@@ -38,6 +38,7 @@ void main(void)
 
 uniform sampler2D firstTexture;
 uniform sampler2D posTexture;
+uniform sampler2D USkyBox;
 uniform bool depthDependingAlpha = false;
 uniform vec2 screenSize = vec2(1920, 1003); // A default as a safety precaution
 uniform float time = 0; // Number of seconds since the game was started
@@ -72,6 +73,12 @@ float snoise(vec2 v) {
 	return 130.0 * dot(m, g);
 }
 
+float height(vec3 pos) {
+	float wave1 = snoise(vec2(pos.x/3, pos.z+time/2.5))/10;
+	float wave2 = snoise(vec2(pos.x/3+1000, pos.z+time/2.5))/10;
+	return wave2*sin(time) + wave1*sin(time+3.14/2);
+}
+
 void main(void) {
 	float distCamPos = distance(UBOCamera.xyz, position);
 	if (distCamPos > UBOViewingDistance) { discard; return; }
@@ -82,9 +89,14 @@ void main(void) {
 		float dist = distance(position, backgroundPos); // TODO: Move this logic to the vertex shader?
 		clr.a = clamp(0.4+dist/50, 0, 1);
 		if (distCamPos<100 && UBOPerformance > 1) {
-			float wave1 = snoise(vec2(position.x/3, position.z+time/2.5))/10;
-			float wave2 = snoise(vec2(position.x/3+1000, position.z+time/2.5))/10;
-			clr.rgb += (wave2*sin(time) + wave1*sin(time+3.14/2)) * (1-distCamPos/100); // Let the water ripples fade out with distance
+			float delta = 0.1;
+			float centerHeight = height(position);
+			float rightHeight = height(position + vec3(delta, 0, 0));
+			float belowHeight = height(position + vec3(0, 0, delta));
+			vec2 normal = vec2(centerHeight - rightHeight, centerHeight - belowHeight) / delta;
+			// clr.rgb += height(position) * (1-distCamPos/100); // Let the water ripples fade out with distance
+			clr.rgb += texture(USkyBox, 0.5+normal*vec2(3.5, 1.2)).rgb * (1-distCamPos/100);
+			// clr.rgb = vec4(normal*vec2(3.5, 1.2), 0, 1);
 		}
 		clr.rgb *= clr.a; // This texture isn't premultiplied
 	}

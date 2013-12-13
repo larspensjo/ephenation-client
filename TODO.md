@@ -45,6 +45,7 @@ Algorithms
 * The transformation of a chunk into printable data should be managed by a Streaming class
 * Pre-load chunks of TP destination
 * Update to newer version of libRocket
+* Teleport shall use a jump parabola instead of instant transfer. If inside rock, black will have to be used.
 
 Installation
 ------------
