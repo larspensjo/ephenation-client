@@ -702,8 +702,8 @@ void RenderControl::UpdateCameraPosition(int wheelDelta, bool stereoView, float 
 	fRequestedCameraDistance += wheelDelta;
 	if (fRequestedCameraDistance < 0.0f)
 		fRequestedCameraDistance = 0.0f;
-	if (fRequestedCameraDistance > 20.0f)
-		fRequestedCameraDistance = 20.0f; // Don't allow unlimited third person view distance
+	if (fRequestedCameraDistance > 25.0f)
+		fRequestedCameraDistance = 25.0f; // Don't allow unlimited third person view distance
 	static double last = 0.0;
 	double delta = (gCurrentFrameTime - last)*20; // Number of blocks/s
 	last = gCurrentFrameTime;
@@ -771,14 +771,15 @@ void RenderControl::UpdateCameraPosition(int wheelDelta, bool stereoView, float 
 		}
 	}
 
-	gViewMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -fCameraDistance));
-	if (stereoView)
+	gViewMatrix = glm::mat4(1.0f);
+	if (stereoView) {
 		gViewMatrix = glm::rotate(gViewMatrix, roll, glm::vec3(0.0f, 0.0f, -1.0f));
-	if (stereoView)
-		gViewMatrix = glm::rotate(gViewMatrix, pitch, glm::vec3(-1.0f, 0.0f, 0.0f)); // Don't let mouse affect pitch
-	else
-		gViewMatrix = glm::rotate(gViewMatrix, _angleVert, glm::vec3(1.0f, 0.0f, 0.0f));
-	gViewMatrix = glm::rotate(gViewMatrix, _angleHor-yaw, glm::vec3(0.0f, 1.0f, 0.0f));
+		gViewMatrix = glm::rotate(gViewMatrix, pitch, glm::vec3(-1.0f, 0.0f, 0.0f));
+		gViewMatrix = glm::rotate(gViewMatrix, yaw, glm::vec3(0.0f, -1.0f, 0.0f));
+	}
+	gViewMatrix = glm::translate(gViewMatrix, glm::vec3(0.0f, 0.0f, -fCameraDistance));
+	gViewMatrix = glm::rotate(gViewMatrix, _angleVert, glm::vec3(1.0f, 0.0f, 0.0f));
+	gViewMatrix = glm::rotate(gViewMatrix, _angleHor, glm::vec3(0.0f, 1.0f, 0.0f));
 	gViewMatrix = glm::translate(gViewMatrix, -playerOffset);
 }
 

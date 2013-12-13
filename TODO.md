@@ -7,6 +7,11 @@ Oculus Rift
 * Use alternative dialogs, adapted for OR
 * Use super sampling for improved picture quality
 * Get selection marker to work
+* Get construction mode to work
+* Flying and swimming needs to be fixed
+* Magic portals don't work (can't click on)
+* The mouse pointer should be hidden when not needed
+* The OVR checkbox in options doesn't reflect the settings correctly
 
 Graphical effects
 -----------------
@@ -30,6 +35,7 @@ Sound
 -----
 * Rewrite sound management using [OpenAL Soft](http://kcat.strangesoft.net/openal.html) and [Alure](http://kcat.strangesoft.net/alure.html).
 * Implement environment depending echo using delayed emitters at a number of directions
+* Sound from walking is wrong (generating too many steps)
 
 Algorithms
 ----------

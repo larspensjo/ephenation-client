@@ -1159,7 +1159,7 @@ void gameDialog::Update() {
 			fMapWidth = fMapWidth * fact;
 			if (fMapWidth < 100)
 				fMapWidth = 100;
-		} else if (!fStereoView) {
+		} else {
 			zoomDelta = wheel-newWheel;
 		}
 		wheel = newWheel;
