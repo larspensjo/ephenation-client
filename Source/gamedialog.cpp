@@ -134,6 +134,8 @@ gameDialog::~gameDialog() {
 // In build mode, find the block at the given screen position. Return the chunk and the
 // data about it to the pointers.
 View::Chunk *gameDialog::FindSelectedSurface(int x, int y, ChunkOffsetCoord *coc, int *surfaceDir) {
+	if (fStereoView)
+		this->UpdateProjection(ViewType::left);
 	gChunkShaderPicking.EnableProgram();
 
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f); // Use black sky for picking
@@ -150,11 +152,10 @@ View::Chunk *gameDialog::FindSelectedSurface(int x, int y, ChunkOffsetCoord *coc
 
 	PickingData coding;
 	coding.rgb[0] = pixel[0]; coding.rgb[1] = pixel[1]; coding.rgb[2] = pixel[2]; // Compensate for transformation in shader.
-#if 0
-	gMsgWindow.Add("Pick (%d,%d,%d) facing %d, d(%d,%d,%d)", coding.bitmap.x, coding.bitmap.y, coding.bitmap.z,
+
+	LPLOG("Pick (%d,%d,%d) facing %d, d(%d,%d,%d)", coding.bitmap.x, coding.bitmap.y, coding.bitmap.z,
 	               coding.bitmap.facing, coding.bitmap.dx-1, coding.bitmap.dy-1, coding.bitmap.dz-1);
-	gMsgWindow.Add("RGB: %d,%d,%d", coding.rgb[0], coding.rgb[1], coding.rgb[2]);
-#endif
+	LPLOG("RGB: %d,%d,%d", coding.rgb[0], coding.rgb[1], coding.rgb[2]);
 
 	ChunkCoord cc;
 
@@ -303,7 +304,7 @@ void gameDialog::ClickOnBlock(int x, int y) {
 	if (cp == 0)
 		return;
 	// Use the block that the surface belongs to
-	// gDebugWindow.Add("Pick: object (%d,%d,%d) at (%d,%d,%d)\n", cp->cc.x, cp->cc.y, cp->cc.z, coc.x, coc.y, coc.z);
+	LPLOG("Pick: object (%d,%d,%d) at (%d,%d,%d)", cp->cc.x, cp->cc.y, cp->cc.z, coc.x, coc.y, coc.z);
 
 	unsigned char b[18];
 	b[0] = sizeof b;
@@ -316,7 +317,7 @@ void gameDialog::ClickOnBlock(int x, int y) {
 	b[16] = coc.y;
 	b[17] = coc.z;
 	SendMsg(b, sizeof b);
-	// printf("Click on block %d, %d, %d\n", coc.x, coc.y , coc.z);
+	LPLOG("Click on block %d, %d, %d", coc.x, coc.y , coc.z);
 
     ChunkCoord ch;
     ch.x = cp->cc.x;
@@ -744,6 +745,8 @@ void gameDialog::HandleKeyPress(int key) {
 	case GLFW_KEY_INSERT: // Insert, closer to delete on a full keyboard
 	case 'B':
 		if (gMode.Get() == GameMode::CONSTRUCT) {
+			if (fStereoView)
+				fRenderControl.GetVirtualPointer(&x, &y);
 			this->AttachBlockToSurface(x, y);
 		}
 
@@ -751,6 +754,8 @@ void gameDialog::HandleKeyPress(int key) {
 	case GLFW_KEY_DEL: // Delete
 	case 'V': // Closer to B when building
 		if (gMode.Get() == GameMode::CONSTRUCT) {
+			if (fStereoView)
+				fRenderControl.GetVirtualPointer(&x, &y);
 			ClickOnBlock(x, y);
 		}
 		break;
@@ -1171,7 +1176,10 @@ void gameDialog::Update() {
 
 	if (gMode.Get() == GameMode::CONSTRUCT && (glfwGetKey(GLFW_KEY_DEL) == GLFW_PRESS || glfwGetKey('V') == GLFW_PRESS) && glfwGetMouseButton(GLFW_MOUSE_BUTTON_1) == GLFW_PRESS) {
 		int x, y;
-		glfwGetMousePos(&x, &y);
+		if (fStereoView)
+			fRenderControl.GetVirtualPointer(&x, &y);
+		else
+			glfwGetMousePos(&x, &y);
 		this->ClickOnBlock(x, y);
 	}
 	Model::gMonsters.Cleanup();
