@@ -71,7 +71,8 @@ public:
 	/// @param mapWidth Pixels in width used when drawing a map
 	/// @param ui Pointer to the user interface
 	/// @param stereoView True when using OVR
-	void Draw(bool underWater, std::shared_ptr<const Model::Object> selectedObject, bool showMap, int mapWidth, MainUserInterface *ui, bool stereoView);
+    /// @param renderViewAngle The view angle to use
+	void Draw(bool underWater, std::shared_ptr<const Model::Object> selectedObject, bool showMap, int mapWidth, MainUserInterface *ui, bool stereoView, float renderViewAngle);
 
 	/// Update the camera position.
 	/// Check if camera position is inside a wall.
@@ -93,6 +94,10 @@ public:
 	/// @param y The Window y coordinate (measured in pixels)
 	/// @param enable If the mouse pointer shall be shown or not
 	void SetMouse(int x, int y, bool enable) { fMouseX = x; fMouseY = y; fShowMouse = enable; }
+
+	/// Get the pointer screen coordinate (if there is one)
+	void GetVirtualPointer(int *x, int *y) const  { *x = fPointerX+0.5f; *y = fPointerY+0.5f; }
+
 private:
 
 	GLuint fboName;
@@ -124,7 +129,11 @@ private:
 	float fRequestedCameraDistance; /// Requested camera distance behind the player
 
 	bool fShowMouse = false;
+
+	/// The mouse represents a virtual value, not limited to the screen
 	int fMouseX, fMouseY;
+	/// The pointer position on the screen
+	float fPointerX = 0.0f, fPointerY = 0.0f;
 
 	void ComputeAverageLighting(bool underWater);
 
@@ -145,7 +154,7 @@ private:
 	void drawMap(int mapWidth);
 	void drawSSAO(void);
 	void drawColoredLights() const;
-	void drawMousePointer() const;
+	void drawMousePointer();
 	void drawFullScreenPixmap(GLuint id, bool stereoView) const;
 
 	// Define alias for color attachments. Remember to look at

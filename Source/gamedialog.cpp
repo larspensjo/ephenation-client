@@ -423,8 +423,16 @@ void gameDialog::handleMouse(int button, int action) {
 		ClickOnObject(x, y);
 	} else if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS && gMode.Get() == GameMode::TELEPORT) {
 		int x, y;
-		glfwGetMousePos(&x, &y);
-		const ChunkCoord *cc = TeleportClick(fHealthBar, _angleHor, fRenderViewAngle, x, y, true);
+		if (fStereoView) {
+			// Get the mouse pointer that we draw on the left screen
+			fRenderControl.GetVirtualPointer(&x, &y);
+			this->UpdateProjection(ViewType::left); // Would get right side otherwise
+		} else {
+			// Get the mouse pointer as reported by the system
+			glfwGetMousePos(&x, &y);
+		}
+		LPLOG("TP Click at %d, %d", x, y);
+		const ChunkCoord *cc = TeleportClick(fHealthBar, _angleHor, fRenderViewAngle, x, y, true, fStereoView);
 		if (cc != 0) {
 			LPLOG("TP to chunk %d,%d,%d\n", cc->x, cc->y, cc->z);
 			unsigned char b[6];
@@ -912,31 +920,22 @@ void gameDialog::DrawScreen(bool hideGUI) {
 
 	this->Update();
 	fRenderControl.drawClear(fUnderWater); // Clear the screen
+	if (!Model::gPlayer.BelowGround())
+		fRenderControl.ComputeShadowMap();
+	glm::mat4 saveView = gViewMatrix;
 	if (fStereoView) {
-		OculusRift::sfOvr.UseLeftEye();
 		this->UpdateProjection(Controller::gameDialog::ViewType::left);
-		if (!Model::gPlayer.BelowGround())
-			fRenderControl.ComputeShadowMap();
-		float horViewAdjust = OculusRift::sfOvr.GetHorViewAdjustment() * 2.0f; // Multiply with two as there are two units to every meter
-		gViewMatrix = glm::translate(glm::mat4(1), glm::vec3(horViewAdjust, 0.0f, 0.0f)) * gViewMatrix; // Move half distance from center to left eye
-		gUniformBuffer.SelectEye(true);
-		gUniformBuffer.Update(true); // Transfer settings to the graphics card
 		this->render(hideGUI, int(slAverageFps));
 
-		OculusRift::sfOvr.UseRightEye();
-		gViewMatrix = glm::translate(glm::mat4(1), glm::vec3(-horViewAdjust*2.0f, 0.0f, 0.0f)) * gViewMatrix; // Move double distance, from left eye to right eye
+		gViewMatrix = saveView;
 		this->UpdateProjection(Controller::gameDialog::ViewType::right);
-		gUniformBuffer.SelectEye(false);
-		gUniformBuffer.Update(true); // Transfer settings to the graphics card
 		this->render(hideGUI, int(slAverageFps));
 	} else {
 		this->UpdateProjection(Controller::gameDialog::ViewType::single);
-		if (!Model::gPlayer.BelowGround())
-			fRenderControl.ComputeShadowMap();
-		gUniformBuffer.Update(false); // Transfer settings to the graphics card
 		this->render(hideGUI, int(slAverageFps));
 	}
 	glfwSwapBuffers();
+	gViewMatrix = saveView;
 }
 
 void gameDialog::render(bool hideGUI, int fps) {
@@ -949,7 +948,7 @@ void gameDialog::render(bool hideGUI, int fps) {
 		gBillboard.InitializeTextures(fShader);
 	}
 
-	fRenderControl.Draw(fUnderWater, fSelectedObject, fDrawMap && !gDebugOpenGL, fMapWidth, (hideGUI && fCurrentRocketContextInput == 0) ? 0 : &fMainUserInterface, fStereoView);
+	fRenderControl.Draw(fUnderWater, fSelectedObject, fDrawMap && !gDebugOpenGL, fMapWidth, (hideGUI && fCurrentRocketContextInput == 0) ? 0 : &fMainUserInterface, fStereoView, fRenderViewAngle);
 
 	//=========================================================================
 	// Various effects drawn after the deferred shader
@@ -998,11 +997,6 @@ void gameDialog::render(bool hideGUI, int fps) {
 		Model::gPlayer.fFlags &= ~UserFlagHealed;
 	}
 	this->DrawHealingAnimation(newHealing);
-
-	if (gMode.Get() == GameMode::TELEPORT) {
-		// Draw the teleport mode
-		TeleportClick(fHealthBar, _angleHor, fRenderViewAngle, 0, 0, false);
-	}
 
 	//=========================================================================
 	// Various text messages
@@ -1262,12 +1256,22 @@ void gameDialog::UpdateProjection(ViewType v) {
 	int xOffset = 0;
 	switch (v) {
 	case ViewType::left:
-		width /= 2;
-		break;
+		{
+			OculusRift::sfOvr.UseLeftEye();
+			float horViewAdjust = OculusRift::sfOvr.GetHorViewAdjustment() * 2.0f; // Multiply with two as there are two units to every meter
+			gViewMatrix = glm::translate(glm::mat4(1), glm::vec3(horViewAdjust, 0.0f, 0.0f)) * gViewMatrix; // Move half distance from center to left eye
+			width /= 2;
+			break;
+		}
 	case ViewType::right:
-		width /= 2;
-		xOffset = width;
-		break;
+		{
+			OculusRift::sfOvr.UseRightEye();
+			float horViewAdjust = OculusRift::sfOvr.GetHorViewAdjustment() * 2.0f; // Multiply with two as there are two units to every meter
+			gViewMatrix = glm::translate(glm::mat4(1), glm::vec3(horViewAdjust, 0.0f, 0.0f)) * gViewMatrix; // Move half distance from center to right eye
+			width /= 2;
+			xOffset = width;
+			break;
+		}
 	case ViewType::single:
 		break;
 	}
@@ -1281,13 +1285,17 @@ void gameDialog::UpdateProjection(ViewType v) {
 			aspectRatio /= 2;
 	}
 	gProjectionMatrix  = glm::perspective(fRenderViewAngle, aspectRatio, 0.01f, maxRenderDistance);  // Create our perspective projection matrix
-	float projectionCenterOffset = OculusRift::sfOvr.GetHorProjectionAdjustment();
 	switch(v) {
 	case ViewType::left:
-	case ViewType::right:
+	case ViewType::right: {
+		float projectionCenterOffset = OculusRift::sfOvr.GetHorProjectionAdjustment();
 		gProjectionMatrix = glm::translate(glm::mat4(1), glm::vec3(projectionCenterOffset, 0, 0)) * gProjectionMatrix;
+		gUniformBuffer.SelectEye(v == ViewType::left);
+		gUniformBuffer.Update(true); // Transfer settings to the graphics card
 		break;
+	}
 	case ViewType::single:
+		gUniformBuffer.Update(false); // Transfer settings to the graphics card
 		break;
 	}
 	static int prevWidth = 0, prevHeight = 0;

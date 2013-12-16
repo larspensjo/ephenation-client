@@ -37,6 +37,7 @@ public:
 
 	void UseLeftEye() { fLeftEyeSelected = true; }
 	void UseRightEye() { fLeftEyeSelected = false; }
+	bool LeftEyeSelected() const { return fLeftEyeSelected; }
 
 	/// Compute the horizontal project adjustment in screen coordinates, depending on current eye selection.
 	float GetHorProjectionAdjustment() const;

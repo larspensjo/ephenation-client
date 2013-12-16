@@ -21,6 +21,9 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+#include "OculusRift.h"
+#include "Debug.h"
+#include "Teleport.h"
 #include "HealthBar.h"
 #include "primitives.h"
 #include "rendercontrol.h"
@@ -244,7 +247,7 @@ void RenderControl::Resize(GLsizei width, GLsizei height) {
 	checkError("RenderControl::Resize");
 }
 
-void RenderControl::Draw(bool underWater, shared_ptr<const Model::Object> selectedObject, bool showMap, int mapWidth, MainUserInterface *ui, bool stereoView) {
+void RenderControl::Draw(bool underWater, shared_ptr<const Model::Object> selectedObject, bool showMap, int mapWidth, MainUserInterface *ui, bool stereoView, float renderViewAngle) {
 	if (gShowFramework)
 		glPolygonMode(GL_FRONT, GL_LINE);
 	// Create all bitmaps setup in the frame buffer. This is all stage one shaders.
@@ -298,6 +301,8 @@ void RenderControl::Draw(bool underWater, shared_ptr<const Model::Object> select
 	if (showMap)
 		drawMap(mapWidth);
 	if (ui) drawUI(ui); // Will draw into transparent layer
+	if (gMode.Get() == GameMode::TELEPORT) // Draw the teleport mode
+		TeleportClick(HealthBar::Make(), _angleHor, renderViewAngle, 0, 0, false, stereoView);
 	if (fShowMouse)
 		drawMousePointer();
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
@@ -673,7 +678,7 @@ void RenderControl::drawMap(int mapWidth) {
 	map->Draw(0.6f);
 }
 
-void RenderControl::drawMousePointer() const {
+void RenderControl::drawMousePointer() {
 	glBindTexture(GL_TEXTURE_2D, GameTexture::MousePointerId); // Override
 	// 0,0 is bottom left of the bitmap, but we want it to be top left.
 	glm::mat4 moveToTip = glm::translate(glm::mat4(1), glm::vec3(0, -1, 0));
@@ -690,6 +695,13 @@ void RenderControl::drawMousePointer() const {
 	DrawTexture::Make()->Draw(gProjectionMatrix, model);
 	glDepthMask(GL_TRUE);
 	glDisable(GL_BLEND);
+	if (Controller::OculusRift::sfOvr.LeftEyeSelected()) {
+		glm::vec4 screen = gProjectionMatrix * model * glm::vec4(0,1,0,1); // Compensate for offset in y
+		screen /= screen.w;
+		fPointerX = (screen.x/2 + 0.5f) * gViewport[2];
+		fPointerY = gViewport[3] * (0.5f - screen.y/2);
+		// LPLOG("mouse: %.4f %.4f, pointer: %.1f(%d) %.1f(%d)", screen.x, screen.y, fPointerX, int(gViewport[2]), fPointerY, int(gViewport[3]));
+	}
 }
 
 void RenderControl::drawFullScreenPixmap(GLuint id, bool stereoView) const {

@@ -27,7 +27,7 @@ void LPLog(const char *func, const char *file, int line, const char *fmt, ...) {
 	std::time_t result = std::time(NULL);
 	char buff[30];
 	std::strftime(buff, sizeof buff, "%c", std::localtime(&result));
-	std::fprintf(out, "%s %s:%s:%d ", buff, file, func, line);
+	std::fprintf(out, "%s %s:%d:%s ", buff, file, line, func);
 	std::va_list args;
 	va_start(args, fmt);
 	std::vfprintf(out, fmt, args);

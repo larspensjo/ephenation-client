@@ -29,4 +29,4 @@ namespace View {
 extern void DrawTeleports(DrawTexture *dt, float angle, float renderViewAngle);
 
 // Given a click on x,y, find out what teleport is near.
-extern const ChunkCoord *TeleportClick(View::HealthBar *hb, float angle, float renderViewAngle, int x, int y, bool picking);
+extern const ChunkCoord *TeleportClick(View::HealthBar *hb, float angle, float renderViewAngle, int x, int y, bool picking, bool stereoView);
