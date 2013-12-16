@@ -101,17 +101,16 @@ Rocket::Core::Element *MainUserInterface::GetElement(string elem) {
 	return fDocument->GetElementById(elem.c_str());
 }
 
-
 void MainUserInterface::DrawCompassRose(void) const {
 	glm::mat4 model(1);
 	glm::mat4 proj(1);
 	if (fStereoView) {
 		proj = gProjectionMatrix;
 		glm::mat4 center = glm::translate(glm::mat4(1), glm::vec3(-0.5, -0.5f, 0.0f));
-		glm::mat4 scaleToMeter = glm::scale(glm::mat4(1), glm::vec3(0.3f, 0.3f, 0.3f));
+		glm::mat4 scaleToMeter = glm::scale(glm::mat4(1), glm::vec3(0.4f, 0.4f, 0.4f));
 		glm::mat4 pointToNorth = glm::rotate(glm::mat4(1), Model::gPlayer.fAngleHor, glm::vec3(0.0f, 0.0f, 1.0f));
 		glm::mat4 makeHorizontal = glm::rotate(glm::mat4(1), -90.0f, glm::vec3(1.0f, 0.0f, 0.0f));
-		glm::mat4 transl = glm::translate(glm::mat4(1), glm::vec3(-1.2f, -1.0f, -0.8f));
+		glm::mat4 transl = glm::translate(glm::mat4(1), glm::vec3(-2.0f, -3.5f, -4.0f));
 		model = View::gHudTransformation.GetViewTransform() * (transl * makeHorizontal * scaleToMeter * pointToNorth * center);
 	} else {
 		// Move compass to lower left corner.
@@ -125,7 +124,7 @@ void MainUserInterface::DrawCompassRose(void) const {
 		// Rotate according to vertical viewing direction
 		model = glm::rotate(model, Model::gPlayer.fAngleVert, glm::vec3(1.0f, 0.0f, 0.0f));
 
-		// Rotate according to horisontal viewing direction
+		// Rotate according to horizontal viewing direction
 		model = glm::rotate(model, Model::gPlayer.fAngleHor, glm::vec3(0.0f, 0.0f, 1.0f));
 
 		// Move the center of the compass, so rotation is done around the center, not the lower left corner of the bitmap.

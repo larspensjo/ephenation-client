@@ -19,8 +19,9 @@
 #include <string.h>
 #include <stddef.h>
 #include <stdio.h>
-
 #include <glm/glm.hpp>
+
+#include "HudTransformation.h"
 #include "player.h"
 #include "Map.h"
 #include "render.h"
@@ -46,7 +47,8 @@ Map::Map() {
 Map::~Map() {
 }
 
-void Map::Create(AnimationShader *anim, StageOneShader *shader, float rotate, int width, const AnimationModels *animationModels) {
+void Map::Create(AnimationShader *anim, StageOneShader *shader, float rotate, int width, const AnimationModels *animationModels, bool stereoView) {
+	glm::mat4 saveView = gViewMatrix;
 	gViewMatrix = glm::mat4(1);
 	gViewMatrix = glm::rotate(gViewMatrix, -90.0f, glm::vec3(1.0f, 0.0f, 0.0f)); // Looking downwards
 	gViewMatrix = glm::rotate(gViewMatrix, rotate, glm::vec3(0.0f, 1.0f, 0.0f));
@@ -58,7 +60,7 @@ void Map::Create(AnimationShader *anim, StageOneShader *shader, float rotate, in
 	auto saveMaxDistance = maxRenderDistance;
 	maxRenderDistance = width/2*1.414; // Temporary override, all the way out to the corners.
 
-	gUniformBuffer.Update(false);
+	gUniformBuffer.Update(stereoView);
 
 	DrawLandscapeTopDown(shader, width, 64, false, DL_NoTransparent);
 	DrawLandscapeTopDown(shader, width, 64, false, DL_OnlyTransparent);
@@ -68,15 +70,26 @@ void Map::Create(AnimationShader *anim, StageOneShader *shader, float rotate, in
 	Model::gOtherPlayers.RenderPlayers(anim, false);
 
 	gProjectionMatrix = saveProj;
+	gViewMatrix = saveView;
+	gUniformBuffer.Update(stereoView);
 	maxRenderDistance = saveMaxDistance;
 }
 
-void Map::Draw(float alpha) const {
-	float screenRatio = gViewport[2] / gViewport[3];
-	glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(-1.0f, -1.0f, 0.0f));
-	model = glm::scale(model, glm::vec3(2.0f/screenRatio, 2.0f, 1.0f));
-	static const glm::mat4 projection(1.0f); // No need to create a new one every time.
-	auto texture = DrawTexture::Make();
-	texture->Draw(projection, model, alpha);
+void Map::Draw(float alpha, bool stereoView) const {
+	glm::mat4 proj(1);
+	glm::mat4 model(1);
+	if (stereoView) {
+		proj = gProjectionMatrix;
+		glm::mat4 center = glm::translate(glm::mat4(1), glm::vec3(-0.5, -0.5f, 0.0f));
+		glm::mat4 scaleToMeter = glm::scale(glm::mat4(1), glm::vec3(3.0f, 3.0f, 3.0f));
+		glm::mat4 makeHorizontal = glm::rotate(glm::mat4(1), -90.0f, glm::vec3(1.0f, 0.0f, 0.0f));
+		glm::mat4 transl = glm::translate(glm::mat4(1), glm::vec3(0.0f, -2.0f, -3.0f));
+		model = View::gHudTransformation.GetViewTransform() * (transl * makeHorizontal * scaleToMeter * center);
+	} else {
+		float screenRatio = gViewport[2] / gViewport[3];
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(-1.0f, -1.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(2.0f/screenRatio, 2.0f, 1.0f));
+	}
+	DrawTexture::Make()->Draw(proj, model, alpha);
 	glBindTexture(GL_TEXTURE_2D, 0);
 }

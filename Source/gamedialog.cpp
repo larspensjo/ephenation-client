@@ -992,7 +992,7 @@ void gameDialog::render(bool hideGUI, int fps) {
 			sTextureIterator = gDebugTextures.begin();
 		glBindTexture(GL_TEXTURE_2D, sTextureIterator->id); // Override
 		debugMessage = sTextureIterator->comment;
-		map->Draw(alpha);
+		map->Draw(alpha, false);
 	}
 
 	Model::gOtherPlayers.RenderPlayerStats(fHealthBar, _angleHor);

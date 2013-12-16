@@ -29,8 +29,8 @@ public:
 	virtual ~Map();
 
 	// Create a map
-	void Create(AnimationShader *anim, StageOneShader *shader, float rotate, int width, const View::AnimationModels *animationModels);
+	void Create(AnimationShader *anim, StageOneShader *shader, float rotate, int width, const View::AnimationModels *animationModels, bool stereoView);
 
-	void Draw(float alpha) const;
+	void Draw(float alpha, bool stereoView) const;
 private:
 };

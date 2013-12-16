@@ -299,7 +299,7 @@ void RenderControl::Draw(bool underWater, shared_ptr<const Model::Object> select
 	if (!underWater)
 		drawLocalFog(); // This should come late in the drawing process, as we don't want light effects added to fog
 	if (showMap)
-		drawMap(mapWidth);
+		drawMap(mapWidth, stereoView);
 	if (ui) drawUI(ui); // Will draw into transparent layer
 	if (gMode.Get() == GameMode::TELEPORT) // Draw the teleport mode
 		TeleportClick(HealthBar::Make(), _angleHor, renderViewAngle, 0, 0, false, stereoView);
@@ -662,20 +662,19 @@ void RenderControl::drawUI(MainUserInterface *ui) {
 	tm.Stop();
 }
 
-void RenderControl::drawMap(int mapWidth) {
+void RenderControl::drawMap(int mapWidth, bool stereoView) {
 	// Very inefficient algorithm, computing the map every frame.
-	// The FBO is overwritten for this.
 	std::unique_ptr<Map> map(new Map);
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fboName);
 	GLenum windows[] = { ColAttachDiffuse }; // Re-use and Overwrite
 	glDrawBuffers(1, windows); // Only diffuse color needed
 	glClearColor(0, 0, 0, 0);
 	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 	fShader->EnableProgram();
-	map->Create(fAnimation, fShader, _angleHor, mapWidth, &fAnimationModels);
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+	map->Create(fAnimation, fShader, _angleHor, mapWidth, &fAnimationModels, stereoView);
 	glBindTexture(GL_TEXTURE_2D, fDiffuseTexture); // Override
-	map->Draw(0.6f);
+	windows[0] = ColAttachRenderTarget;
+	glDrawBuffers(1, windows);
+	map->Draw(0.6f, stereoView);
 }
 
 void RenderControl::drawMousePointer() {

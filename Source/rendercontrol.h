@@ -151,7 +151,7 @@ private:
 	void drawLocalFog(void);
 	void drawSelection(const glm::vec3 &);
 	void drawUI(MainUserInterface *ui);
-	void drawMap(int mapWidth);
+	void drawMap(int mapWidth, bool stereoView);
 	void drawSSAO(void);
 	void drawColoredLights() const;
 	void drawMousePointer();

@@ -10,7 +10,7 @@ Oculus Rift
 * The OVR checkbox in options doesn't reflect the settings correctly
 * Drawing monster stats should use gProjectionView
 * Fix the inventory screen
-* Fix the map
+* The map should only be computed once in OVR mode, not once for each eye
 
 Graphical effects
 -----------------
