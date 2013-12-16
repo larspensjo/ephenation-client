@@ -1363,6 +1363,19 @@ void gameDialog::DrawHealingAnimation(bool restart) const {
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
+void gameDialog::DrawMarker(int x, int y) {
+	DrawMarker(float(x)/(gViewport[2]-gViewport[0])*2-1, 1-float(y)/(gViewport[3]-gViewport[1])*2);
+}
+
+void gameDialog::DrawMarker(float x, float y) {
+	const float scale = 0.05f;
+	glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(x, y, 0.0f));
+	model = glm::scale(model, glm::vec3(scale, scale, 1.0f));
+	static const glm::mat4 id(1.0f); // No need to create a new one every time.
+	glBindTexture(GL_TEXTURE_2D, GameTexture::GreenChunkBorder);
+	fDrawTexture->Draw(id, model);
+	glBindTexture(GL_TEXTURE_2D, 0);
+}
 void gameDialog::ClearForDialog(void) {
 	// TODO: Much of this is duplicate logic. That is not good.
 	sTurning = false;

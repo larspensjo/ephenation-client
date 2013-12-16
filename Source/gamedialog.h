@@ -169,6 +169,10 @@ private:
 	/// Draw a healing self animation
 	/// @todo Should go into the View of the MVC.
 	void DrawHealingAnimation(bool restart) const;
+
+	/// Draw a small square on the screen
+	void DrawMarker(int x, int y);
+	void DrawMarker(float x, float y);
 };
 
 extern gameDialog gGameDialog;
