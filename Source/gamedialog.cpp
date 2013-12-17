@@ -101,9 +101,6 @@ gameDialog::gameDialog() {
 	fUnderWater = false;
 	fMapWidth = 600;
 
-	fEnterDebugText = false;
-	fDrawMap = false;
-	fShowInventory = false;
 	fShader = 0;
 	fBuildingBlocks = 0;
 	fHealthBar = 0;
@@ -346,7 +343,7 @@ void gameDialog::handleMouseActiveMotion(int x, int y) {
 		fCurrentRocketContextInput->ProcessMouseMove(x, y, 0);
 		return;
 	}
-	if (fShowInventory) {
+	if (fGuiMode != GuiMode::Default) {
 		sTurning = false;
 	} else if (sTurning) {
 		int deltax = xStartTurn - x;
@@ -400,11 +397,11 @@ void gameDialog::handleMouse(int button, int action) {
 	}
 	int x, y;
 	glfwGetMousePos(&x, &y);
-	if (fShowInventory) {
+	if (fGuiMode == GuiMode::Inventory) {
 		// Override the usual mouse handling
 		bool close = gInventory.HandleMouseClick(button, action, x, y);
 		if (close) {
-			fShowInventory = false;
+			fGuiMode = GuiMode::Default;
 			gMsgWindow.SetAlternatePosition(0,0,false);
 		}
 		return;
@@ -529,16 +526,16 @@ void gameDialog::HandleKeyPress(int key) {
         return;
 	}
 
-	if ((key == GLFW_KEY_ENTER || key == GLFW_KEY_KP_ENTER) && fEnterDebugText && fCurrentRocketContextInput) {
+	if ((key == GLFW_KEY_ENTER || key == GLFW_KEY_KP_ENTER) && fGuiMode == GuiMode::EnterText && fCurrentRocketContextInput) {
 		fCurrentRocketContextInput = 0; // Override. Use ENTER key to submit the input text.
 	}
 
-	if (key == GLFW_KEY_ESC && fEnterDebugText && fCurrentRocketContextInput) {
+	if (key == GLFW_KEY_ESC && fGuiMode == GuiMode::EnterText && fCurrentRocketContextInput) {
 		// Override, cancel input of text.
 		fCurrentRocketContextInput = 0;
 		fInputLine->SetAttribute("value", "");
 		fInputLine->Blur();
-		fEnterDebugText = false;
+		fGuiMode == GuiMode::Default;
 		return;
 	}
 
@@ -568,7 +565,7 @@ void gameDialog::HandleKeyPress(int key) {
 		gInventory.UseObjectFunctionKey(key);
 		return;
 	}
-	if (fEnterDebugText) {
+	if (fGuiMode == GuiMode::EnterText) {
 		glfwDisable(GLFW_KEY_REPEAT);
 		Rocket::Core::String def = "";
 		Rocket::Core::String str = fInputLine->GetAttribute("value", def); // This call generates 100 lines of warnings
@@ -586,7 +583,7 @@ void gameDialog::HandleKeyPress(int key) {
 		cmd[3] = '/';
 		SendMsg(cmd, 4);
 		SendMsg((const unsigned char *)begin, len);
-		fEnterDebugText = false;
+		fGuiMode = GuiMode::Default;
 		fInputLine->SetAttribute("value", "");
 		fInputLine->Blur();
 		return;
@@ -596,10 +593,10 @@ void gameDialog::HandleKeyPress(int key) {
 	glfwGetMousePos(&x, &y);
 	switch (key) {
 	case GLFW_KEY_ESC:
-		if (fDrawMap)
-			fDrawMap = false;
-		else if (fShowInventory) {
-			fShowInventory = false;
+		if (fGuiMode == GuiMode::Map)
+			fGuiMode = GuiMode::Default;
+		else if (fGuiMode == GuiMode::Inventory) {
+			fGuiMode = GuiMode::Default;
 			gMsgWindow.SetAlternatePosition(0,0,false);
 		} else {
 			if (fShowMouse) {
@@ -633,7 +630,7 @@ void gameDialog::HandleKeyPress(int key) {
 		}
 		break;
 	case GLFW_KEY_TAB:
-		if (fDrawMap && gDebugOpenGL) {
+		if (fGuiMode == GuiMode::Map && gDebugOpenGL) {
 			// A debug feature to iterate through various interesting bitmaps
 			if (!sShowAlternateBitmap) {
 				sShowAlternateBitmap = true;
@@ -683,9 +680,11 @@ void gameDialog::HandleKeyPress(int key) {
 	}
 	case 'I': {
 		// Toggle inventory screen
-		fShowInventory = !fShowInventory;
-		if (!fShowInventory)
+		if (fGuiMode == GuiMode::Inventory) {
+			fGuiMode = GuiMode::Default;
 			gMsgWindow.SetAlternatePosition(0,0,false);
+		} else if (fGuiMode == GuiMode::Default)
+			fGuiMode = GuiMode::Inventory;
 		break;
 	}
 	case 'T':
@@ -693,12 +692,14 @@ void gameDialog::HandleKeyPress(int key) {
 		break;
 	case GLFW_KEY_KP_ENTER:
 	case GLFW_KEY_ENTER: // ENTER key
-		fEnterDebugText = true;
-		glfwEnable(GLFW_KEY_REPEAT);
-		fInputLine->SetAttribute("value", prevCommand.c_str());
-		fInputLine->Focus();
-		fCurrentRocketContextInput = fMainUserInterface.GetRocketContext();
-		fCurrentRocketContextInput->ProcessKeyDown(Rocket::Core::Input::KI_END, Rocket::Core::Input::KM_SHIFT);
+		if (fGuiMode == GuiMode::Default) {
+			fGuiMode = GuiMode::EnterText;
+			glfwEnable(GLFW_KEY_REPEAT);
+			fInputLine->SetAttribute("value", prevCommand.c_str());
+			fInputLine->Focus();
+			fCurrentRocketContextInput = fMainUserInterface.GetRocketContext();
+			fCurrentRocketContextInput->ProcessKeyDown(Rocket::Core::Input::KI_END, Rocket::Core::Input::KM_SHIFT);
+		}
 		break;
 	case GLFW_KEY_SPACE: { // space key
 		unsigned char b[] = { 0x03, 0x00, CMD_JUMP };
@@ -822,10 +823,12 @@ void gameDialog::HandleKeyPress(int key) {
 		gMsgWindow.Add("Viewing distance: %f m", maxRenderDistance/2);
 		break;
 	}
-	case 'M': {
-		fDrawMap = !fDrawMap;
+	case 'M':
+		if (fGuiMode == GuiMode::Default)
+			fGuiMode = GuiMode::Map;
+		else if (fGuiMode == GuiMode::Map)
+			fGuiMode = GuiMode::Default;
 		break;
-	}
 	case '\'': {
 		if (Model::gPlayer.fAdmin > 0)
 			fUsingTorch = !fUsingTorch;
@@ -953,46 +956,36 @@ void gameDialog::render(bool hideGUI, int fps) {
 		gBillboard.InitializeTextures(fShader);
 	}
 
-	fRenderControl.Draw(fUnderWater, fSelectedObject, fDrawMap && !gDebugOpenGL, fMapWidth, (hideGUI && fCurrentRocketContextInput == 0) ? 0 : &fMainUserInterface, fStereoView, fRenderViewAngle);
+	fRenderControl.Draw(fUnderWater, fSelectedObject, fGuiMode == GuiMode::Map && !gDebugOpenGL, fMapWidth, (hideGUI && fCurrentRocketContextInput == 0) ? 0 : &fMainUserInterface, fStereoView, fRenderViewAngle);
 
 	//=========================================================================
 	// Various effects drawn after the deferred shader
 	//=========================================================================
-
-	if (!fDrawMap) {
-		if (fShowWeapon && gMode.Get() != GameMode::CONSTRUCT && !fShowInventory && !fRenderControl.ThirdPersonView() && !hideGUI)
-			this->DrawWeapon();
-		static bool wasDead = false;
-		if (Model::gPlayer.IsDead() && !wasDead) {
-			wasDead = true;
-			sgPopupTitle = "Oops";
-			sgPopup = "You are dead.\n\nYou will be revived, and transported back to your starting place.\n\nThe place can be changed with a scroll of resurrection point.";
-			fCurrentRocketContextInput = fMainUserInterface.GetRocketContext();
-			gDialogFactory.Make(fCurrentRocketContextInput, "messagedialog.rml", revive);
-			this->ClearForDialog();
-		} else if (fShowInventory)
-			gInventory.DrawInventory(fDrawTexture);
-		else if (sgPopup.length() > 0) {
-			// There are some messages that shall be shown in a popup dialog.
-			fCurrentRocketContextInput = fMainUserInterface.GetRocketContext();
-			gDialogFactory.Make(fCurrentRocketContextInput, "messagedialog.rml");
-			this->ClearForDialog();
-		}
-
-		if (!Model::gPlayer.IsDead())
-			wasDead = false;
-	}
-
 	const char *debugMessage = nullptr;
-	if (fDrawMap && gDebugOpenGL) {
-		// The map class is used for simple drawing of a pixmap
-		std::unique_ptr<Map> map(new Map);
-		float alpha = 1.0f;
-		if (!sShowAlternateBitmap)
-			sTextureIterator = gDebugTextures.begin();
-		glBindTexture(GL_TEXTURE_2D, sTextureIterator->id); // Override
-		debugMessage = sTextureIterator->comment;
-		map->Draw(alpha, false);
+	switch(fGuiMode) {
+	case GuiMode::Default:
+		if (fShowWeapon && gMode.Get() != GameMode::CONSTRUCT && !fRenderControl.ThirdPersonView() && !hideGUI)
+			this->DrawWeapon();
+		if (gMode.Get() == GameMode::CONSTRUCT)
+			fBuildingBlocks->Draw(gProjectionMatrix);
+		break;
+	case GuiMode::Inventory:
+		gInventory.DrawInventory(fDrawTexture);
+		break;
+	case GuiMode::Map:
+		if (gDebugOpenGL) {
+			// The map class is used for simple drawing of a pixmap
+			std::unique_ptr<Map> map(new Map);
+			float alpha = 1.0f;
+			if (!sShowAlternateBitmap)
+				sTextureIterator = gDebugTextures.begin();
+			glBindTexture(GL_TEXTURE_2D, sTextureIterator->id); // Override
+			debugMessage = sTextureIterator->comment;
+			map->Draw(alpha, false);
+		}
+		break;
+	case GuiMode::EnterText:
+		break;
 	}
 
 	Model::gOtherPlayers.RenderPlayerStats(fHealthBar, _angleHor);
@@ -1049,11 +1042,6 @@ void gameDialog::render(bool hideGUI, int fps) {
 		}
 
 		gScrollingMessages.Update();
-	}
-
-	if (!fDrawMap && !fShowInventory) {
-		if (gMode.Get() == GameMode::CONSTRUCT)
-			fBuildingBlocks->Draw(gProjectionMatrix);
 	}
 
 	if (gDebugOpenGL) {
@@ -1154,7 +1142,7 @@ void gameDialog::Update() {
 			fCurrentRocketContextInput->ProcessMouseWheel(wheel-newWheel, rocketKeyModifiers);
 		} else if (gMode.Get() == GameMode::CONSTRUCT) {
 			fBuildingBlocks->UpdateSelection(newWheel);
-		} else if (fDrawMap) {
+		} else if (fGuiMode == GuiMode::Map) {
 			float fact = 1.0f + (wheel-newWheel)/10.0f;
 			fMapWidth = fMapWidth * fact;
 			if (fMapWidth < 100)
@@ -1227,7 +1215,7 @@ void gameDialog::Update() {
 		// Full screen, which means Windows mouse is usually disabled. But there are cases when it is needed.
 		bool showMouseFullscreen = false;
 		static bool wasShowingMouse = false;
-		if (gMode.Get() == GameMode::CONSTRUCT || fShowInventory || gMode.Get() == GameMode::TELEPORT || fCurrentRocketContextInput)
+		if (gMode.Get() == GameMode::CONSTRUCT || fGuiMode == GuiMode::Inventory || gMode.Get() == GameMode::TELEPORT || fCurrentRocketContextInput)
 			showMouseFullscreen = true;
 		if (wasShowingMouse && !showMouseFullscreen) {
 			glfwDisable(GLFW_MOUSE_CURSOR);
@@ -1257,6 +1245,26 @@ void gameDialog::Update() {
 	// Can't select objects that are dead
 	if (fSelectedObject && fSelectedObject->IsDead())
 		ClearSelection();
+
+	static bool wasDead = false;
+	if (Model::gPlayer.IsDead() && !wasDead) {
+		fGuiMode = GuiMode::Default;
+		wasDead = true;
+		sgPopupTitle = "Oops";
+		sgPopup = "You are dead.\n\nYou will be revived, and transported back to your starting place.\n\nThe place can be changed with a scroll of resurrection point.";
+		fCurrentRocketContextInput = fMainUserInterface.GetRocketContext();
+		gDialogFactory.Make(fCurrentRocketContextInput, "messagedialog.rml", revive);
+		this->ClearForDialog();
+	}
+	if (!Model::gPlayer.IsDead())
+		wasDead = false;
+
+	if (sgPopup.length() > 0) {
+		// There are some messages that shall be shown in a popup dialog.
+		fCurrentRocketContextInput = fMainUserInterface.GetRocketContext();
+		gDialogFactory.Make(fCurrentRocketContextInput, "messagedialog.rml");
+		this->ClearForDialog();
+	}
 }
 
 void gameDialog::UpdateProjection(ViewType v) {

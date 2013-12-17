@@ -27,8 +27,8 @@ public:
 		WAIT_ACK,  // Waiting for login ack from the server (or reject).
 		LOGIN_FAILED,
 		GAME,		// Full game running.
-		CONSTRUCT,	// Like game mode, but change the surroundings.
-		TELEPORT,   // Similar to game mode, but enable teleporting
+		CONSTRUCT,	// Like game mode, but change the surroundings. TODO: Should not be a game mode.
+		TELEPORT,   // Similar to game mode, but enable teleporting. TODO: Should not be a game mode.
 		ESC,		// Player pressed Esc or was disconnected, option-dialog active.
 		EXIT,		// The client is exiting. All processes shall close down.
 	};

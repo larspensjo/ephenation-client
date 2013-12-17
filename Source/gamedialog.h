@@ -67,9 +67,6 @@ public:
 	/// Render many things.
 	/// @todo Nothing should be rendered from here, it should all go into the View of the MVC.
 	void render(bool hideGUI, int fps);
-	/// Compute the projection matrix.
-	enum class ViewType { left, right, single };
-	void UpdateProjection(ViewType v);
 	void init(bool useOvr);
 	~gameDialog();
 	void handleMouse(int button, int action);
@@ -95,8 +92,6 @@ public:
 	/// Manage the running status of the player
 	void UpdateRunningStatus(bool disable);
 
-	bool fShowInventory;
-
 	/// Define possible effects that can be requested. They will all terminate automatically.
 	enum Effect {
 		EFFECT_NONE,  /// Normal mode, no special effects.
@@ -111,6 +106,9 @@ public:
 	void ClearInputRedirect(void);
 
 private:
+	/// Compute the projection matrix.
+	enum class ViewType { left, right, single };
+	void UpdateProjection(ViewType v);
 
 	Effect fCurrentEffect;
 	bool fMovingFwd;
@@ -120,8 +118,9 @@ private:
 	bool fUsingTorch;
 	Calibration fCalibrationMode;
 
-	bool fEnterDebugText;
-	bool fDrawMap;
+	enum class GuiMode { Default, Inventory, Map, EnterText } fGuiMode = GuiMode::Default;
+	bool fShowMouse = false; // Show the built-in mouse. Should only be used when Windows mouse is disabled.
+	Rocket::Core::Context *fCurrentRocketContextInput; // All keyboard and mouse events are redirected to this one if it is non-null
 	bool fShowWeapon = true;
 	bool fUnderWater; // True when player is below water
 	View::Chunk *FindSelectedSurface(int x, int y, ChunkOffsetCoord *, int *surfaceDir);
@@ -137,9 +136,6 @@ private:
 
 	RocketGui fRocketGui; // Has to be declared before the MainUserInterface
 
-	// All keyboard and mouse events are redirected to this one if it is non-null
-	Rocket::Core::Context *fCurrentRocketContextInput;
-
 	MainUserInterface fMainUserInterface;
 	Rocket::Core::Element *fFPS_Element, *fPlayerStatsOneLiner_Element, *fInputLine;
 
@@ -153,7 +149,6 @@ private:
 	void SaveScreen();
 
 	bool fStereoView = false;
-	bool fShowMouse = false; // Show the built-in mouse. Should only be used when Windows mouse is disabled.
 
 	//
 	// TODO: The following parameters should be moved to the View.
