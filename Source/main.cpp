@@ -481,6 +481,8 @@ int main(int argc, char** argv) {
 			glfwCloseWindow();
 		}
 		tm.Stop();
+		if (gDebugOpenGL)
+			fflush(stdout);
 	}
 
 	View::gErrorManager.Report();

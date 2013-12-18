@@ -343,7 +343,7 @@ void gameDialog::handleMouseActiveMotion(int x, int y) {
 		fCurrentRocketContextInput->ProcessMouseMove(x, y, 0);
 		return;
 	}
-	if (fGuiMode != GuiMode::Default) {
+	if (fGuiMode != GuiMode::Default && fGuiMode != GuiMode::Map) {
 		sTurning = false;
 	} else if (sTurning) {
 		int deltax = xStartTurn - x;
@@ -376,6 +376,13 @@ static void dialogHandleMouse(int button, int action) {
 }
 
 void gameDialog::handleMouse(int button, int action) {
+	int x, y;
+	glfwGetMousePos(&x, &y);
+	if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+		int vx, vy;
+		fRenderControl.GetVirtualPointer(&vx, &vy);
+		LPLOG("Click on mouse %d,%d, virtual pointer %d, %d", x, y, vx, vy);
+	}
 	if (fCurrentRocketContextInput) {
 		int idx = 2;
 		switch (button) {
@@ -395,8 +402,6 @@ void gameDialog::handleMouse(int button, int action) {
 			fCurrentRocketContextInput->ProcessMouseButtonUp(idx, 0);
 		return;
 	}
-	int x, y;
-	glfwGetMousePos(&x, &y);
 	if (fGuiMode == GuiMode::Inventory) {
 		// Override the usual mouse handling
 		bool close = gInventory.HandleMouseClick(button, action, x, y, fStereoView);
@@ -931,6 +936,8 @@ void gameDialog::DrawScreen(bool hideGUI) {
 	if (!Model::gPlayer.BelowGround())
 		fRenderControl.ComputeShadowMap();
 	glm::mat4 saveView = gViewMatrix;
+	if (fGuiMode == GuiMode::Inventory)
+		hideGUI = true;
 	if (fStereoView) {
 		this->UpdateProjection(Controller::gameDialog::ViewType::left);
 		this->render(hideGUI, int(slAverageFps));
@@ -939,6 +946,8 @@ void gameDialog::DrawScreen(bool hideGUI) {
 		this->UpdateProjection(Controller::gameDialog::ViewType::right);
 		this->render(hideGUI, int(slAverageFps));
 	} else {
+		if (fGuiMode == GuiMode::Map)
+			hideGUI = true;
 		this->UpdateProjection(Controller::gameDialog::ViewType::single);
 		this->render(hideGUI, int(slAverageFps));
 	}
