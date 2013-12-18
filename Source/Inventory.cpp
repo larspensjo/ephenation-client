@@ -23,23 +23,22 @@
 #include <string>
 #include <iostream>
 #include <sstream>
-
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+
+#include "Debug.h"
+#include "HudTransformation.h"
 #include "Inventory.h"
 #include "modes.h"
 #include "textures.h"
 #include "DrawTexture.h"
 #include "player.h"
-#include "client_prot.h"
 #include "connection.h"
-#include "msgwindow.h"
 #include "DrawText.h"
 #include "primitives.h"
 #include "parse.h"
 #include "vsfl/vsfl.h"
 #include "ScrollingMessages.h"
-#include "gamedialog.h"
 #include "msgwindow.h"
 
 using namespace std;
@@ -198,21 +197,25 @@ void Inventory::UseObjectFunctionKey(int key) {
 	View::gMsgWindow.Add("You don't have any object of that type");
 }
 
-#define INVENTORY_SCALE 1.3f // How big the inventory screen will be. 2.0 would be a full X width.
+static float INVENTORY_SCALE = 1.3f; // How big the inventory screen will be. 2.0 would be a full X width.
 #define INVENTORY_ROWSIZE 6 // Number of items per row
 #define INVENTORY_SCREEN_X_OFFS (-0.67292f)
 #define INVENTORY_SCREEN_Y_OFFS (-0.69492f)
 
+// Size of the main inventory GUI
+#define GUI_WIDTH 1000.0f
+#define GUI_HEIGHT 600.0f
+
 // The following are the pixel coordinates read out from the bitmap.
 // The Y values are counting from bottom.
 #define WEAPON_SCREEN_X 189 // Read left pixel from bitmap
-#define WEAPON_SCREEN_Y 216 // 600 - lower pixel from bitmap
+#define WEAPON_SCREEN_Y 216 // GUI_HEIGHT - lower pixel from bitmap
 #define ARMOR_SCREEN_X 39   // Read left pixel from bitmap
-#define ARMOR_SCREEN_Y 411  // 600 - lower pixel from bitmap
+#define ARMOR_SCREEN_Y 411  // GUI_HEIGHT - lower pixel from bitmap
 #define HELMET_SCREEN_X 39   // Read left pixel from bitmap
-#define HELMET_SCREEN_Y 486  // 600 - lower pixel from bitmap
+#define HELMET_SCREEN_Y 486  // GUI_HEIGHT - lower pixel from bitmap
 #define MSG1_SCREEN_X 39    // Read left pixel from bitmap
-#define MSG1_SCREEN_Y 182   // 600 - lower pixel from bitmap
+#define MSG1_SCREEN_Y 182   // GUI_HEIGHT - lower pixel from bitmap
 #define CLOSE_BTNX1 962     // The red button in the upper right corner used to close the window
 #define CLOSE_BTNY1 564
 #define CLOSE_BTNX2 980
@@ -222,12 +225,12 @@ static float screenRatio;
 
 // Given a pixel x coordinate of the inventory screen, return the window x position
 static float xPixelToScreen(int x) {
-	return INVENTORY_SCALE/1000*x;
+	return INVENTORY_SCALE/GUI_WIDTH*x;
 }
 
 // Given a pixel y coordinate of the inventory screen, return the window y position
 static float yPixelToScreen(int y) {
-	return screenRatio*INVENTORY_SCALE/600*y;
+	return screenRatio*INVENTORY_SCALE/GUI_HEIGHT*y;
 }
 
 static float X(int col) {
@@ -236,6 +239,18 @@ static float X(int col) {
 
 static float Y(int row) {
 	return yPixelToScreen(36+75*(INVENTORY_ROWSIZE-row)); // Constants are pixels taken from the bitmap
+}
+
+/// Get the coordinates relative the inventory GUI
+/// fx and fy will range from 0, for the lower left corner
+static void ComputeRelativeCoordinate(float &fx, float &fy, int x, int y, bool stereoView) {
+	if (stereoView) {
+		fx = (x+350)/GUI_WIDTH;
+		fy = 1 - (y-212)/GUI_HEIGHT;
+	} else {
+		fx = x / gViewport[2] * 2 - 1 - INVENTORY_SCREEN_X_OFFS;
+		fy = 1 - y / gViewport[3] * 2 - INVENTORY_SCREEN_Y_OFFS;
+	}
 }
 
 // Compensate for a fighter at level 'pLevel' using a weapon at level 'itemLevel'.
@@ -300,27 +315,35 @@ static string ArmorLevelDiffMultiplier(unsigned long pLevel, unsigned long itemL
 	return string("modifier: ") + ss.str() + " %";
 }
 
-void Inventory::DrawInventory(DrawTexture *drawTexture) {
+void Inventory::Draw(DrawTexture *drawTexture, bool stereoView, int x, int y) {
+	glm::mat4 proj(1);
 	glm::mat4 baseModel = glm::translate(glm::mat4(1.0f), glm::vec3(INVENTORY_SCREEN_X_OFFS, INVENTORY_SCREEN_Y_OFFS, 0.0f));
-	// The bitmap is 1000x600
-	screenRatio = 600.0f/1000.0f*gViewport[2] / gViewport[3];
-	glm::mat4 inventoryModel = glm::scale(baseModel, glm::vec3(INVENTORY_SCALE, screenRatio*INVENTORY_SCALE, 1.0f));
-	static const glm::mat4 ident(1.0f); // No need to create a new one every time.
-	glBindTexture(GL_TEXTURE_2D, GameTexture::InventoryId);
-	drawTexture->Draw(ident, inventoryModel);
-	const glm::vec3 itemIconScale(72.0f/1000*INVENTORY_SCALE, 71.0f/600*screenRatio*INVENTORY_SCALE, 1.0f);
+	float xMouse, yMouse;
+	ComputeRelativeCoordinate(xMouse, yMouse, x, y, stereoView);
+	if (stereoView) {
+		INVENTORY_SCALE = 1.0f;
+		proj = gProjectionMatrix;
+		glm::mat4 center = glm::translate(glm::mat4(1), glm::vec3(INVENTORY_SCREEN_X_OFFS, INVENTORY_SCREEN_Y_OFFS, 0.0f));
+		glm::mat4 scaleToPixel = glm::scale(glm::mat4(1), glm::vec3(GUI_WIDTH, -GUI_HEIGHT, 1.0f));
+		baseModel = View::gHudTransformation.GetGUITransform() * (scaleToPixel * center);
+		screenRatio = 1.0f;
+	} else {
+		// The bitmap is 1000x600
+		screenRatio = GUI_HEIGHT/GUI_WIDTH*gViewport[2] / gViewport[3];
+	}
 
+	// printf("xMouse %6.3f yMouse %6.3f xy (%d,%d) X0 %6.3f Y0 %6.3f\n", xMouse, yMouse, x, y, X(0), Y(0));
+	float dX = X(1) - X(0); // On screen distance from one column to the next
+	float dY = Y(0) - Y(1);
+
+	glm::mat4 inventoryModel = glm::scale(baseModel, glm::vec3(INVENTORY_SCALE, screenRatio*INVENTORY_SCALE, 1.0f));
+	glBindTexture(GL_TEXTURE_2D, GameTexture::InventoryId);
+	drawTexture->Draw(proj, inventoryModel);
+
+	const glm::vec3 itemIconScale(72.0f/GUI_WIDTH*INVENTORY_SCALE, 71.0f/GUI_HEIGHT*screenRatio*INVENTORY_SCALE, 1.0f);
 	// Iterate over each item in the equipment list, and draw it on the inventory screen.
 	// The EquipmentId is an atlas with all different types of equipment icons
 	glBindTexture(GL_TEXTURE_2D, GameTexture::EquipmentId);
-
-	int x, y;
-	glfwGetMousePos(&x, &y);
-	// Compute mouse screen coordinates relative inventory screen.
-	float xMouse = x / gViewport[2] * 2 - 1 - INVENTORY_SCREEN_X_OFFS;
-	float yMouse = 1 - y / gViewport[3] * 2 - INVENTORY_SCREEN_Y_OFFS;
-	float dX = X(1) - X(0); // On screen distance from one column to the next
-	float dY = Y(0) - Y(1);
 
 	// Optional tooltip information, depending on where the mouse is
 	char buff[100];
@@ -350,7 +373,7 @@ void Inventory::DrawInventory(DrawTexture *drawTexture) {
 				drawTooltip = true;
 			}
 		}
-		drawTexture->DrawOffset(ident, iconModel, info->xOffset, info->yOffset, 1/IS);
+		drawTexture->DrawOffset(proj, iconModel, info->xOffset, info->yOffset, 1/IS);
 	}
 
 	// Draw the equipped weapon
@@ -361,7 +384,7 @@ void Inventory::DrawInventory(DrawTexture *drawTexture) {
 		float yOffset = yPixelToScreen(WEAPON_SCREEN_Y);
 		glm::mat4 weaponModel = glm::translate(baseModel, glm::vec3(xOffset, yOffset, 0.0f));
 		weaponModel = glm::scale(weaponModel, itemIconScale);
-		drawTexture->DrawOffset(ident, weaponModel, o->xOffset, o->yOffset, 1/IS);
+		drawTexture->DrawOffset(proj, weaponModel, o->xOffset, o->yOffset, 1/IS);
 		if (xMouse > xOffset && xMouse < xOffset + dX && yMouse > yOffset && yMouse < yOffset + dY) {
 			tooltipX = (weaponModel[3].x+1)/2 * gViewport[2];
 			tooltipY = (1-weaponModel[3].y - dY)/2 * gViewport[3];
@@ -382,7 +405,7 @@ void Inventory::DrawInventory(DrawTexture *drawTexture) {
 		float yOffset = yPixelToScreen(ARMOR_SCREEN_Y);
 		glm::mat4 itemModel = glm::translate(baseModel, glm::vec3(xOffset, yOffset, 0.0f));
 		itemModel = glm::scale(itemModel, itemIconScale);
-		drawTexture->DrawOffset(ident, itemModel, o->xOffset, o->yOffset, 1/IS);
+		drawTexture->DrawOffset(proj, itemModel, o->xOffset, o->yOffset, 1/IS);
 		if (xMouse > xOffset && xMouse < xOffset + dX && yMouse > yOffset && yMouse < yOffset + dY) {
 			tooltipX = (itemModel[3].x+1)/2 * gViewport[2];
 			tooltipY = (1-itemModel[3].y - dY)/2 * gViewport[3];
@@ -403,7 +426,7 @@ void Inventory::DrawInventory(DrawTexture *drawTexture) {
 		float yOffset = yPixelToScreen(HELMET_SCREEN_Y);
 		glm::mat4 itemModel = glm::translate(baseModel, glm::vec3(xOffset, yOffset, 0.0f));
 		itemModel = glm::scale(itemModel, itemIconScale);
-		drawTexture->DrawOffset(ident, itemModel, o->xOffset, o->yOffset, 1/IS);
+		drawTexture->DrawOffset(proj, itemModel, o->xOffset, o->yOffset, 1/IS);
 		if (xMouse > xOffset && xMouse < xOffset + dX && yMouse > yOffset && yMouse < yOffset + dY) {
 			tooltipX = (itemModel[3].x+1)/2 * gViewport[2];
 			tooltipY = (1-itemModel[3].y - dY)/2 * gViewport[3];
@@ -450,10 +473,9 @@ void Inventory::DrawInventory(DrawTexture *drawTexture) {
 // ======================================================================
 
 // Identify what inventory item is at specified screen coordinate
-int Inventory::IdentifyInv(int x, int y) {
-	// Compute mouse screen coordinates relative inventory screen.
-	float xMouse = x / gViewport[2] * 2 - 1 - INVENTORY_SCREEN_X_OFFS;
-	float yMouse = 1 - y / gViewport[3] * 2 - INVENTORY_SCREEN_Y_OFFS;
+int Inventory::IdentifyInv(int x, int y, bool stereoView) {
+	float xMouse, yMouse;
+	ComputeRelativeCoordinate(xMouse, yMouse, x, y, stereoView);
 	for (int ind=0; ind<fNumItems; ind++) {
 		int row = ind / INVENTORY_ROWSIZE;
 		int col = ind % INVENTORY_ROWSIZE;
@@ -465,13 +487,12 @@ int Inventory::IdentifyInv(int x, int y) {
 }
 
 // Validate that an item of category 'ic' can be dropped outside of the inventory
-static bool validateDropOutside(Inventory::InventoryCategory ic, int x, int y) {
-	// Compute mouse screen coordinates relative inventory screen.
-	float xMouse = x / gViewport[2] * 2 - 1 - INVENTORY_SCREEN_X_OFFS;
-	float yMouse = 1 - y / gViewport[3] * 2 - INVENTORY_SCREEN_Y_OFFS;
+static bool validateDropOutside(Inventory::InventoryCategory ic, int x, int y, bool stereoView) {
+	float xMouse, yMouse;
+	ComputeRelativeCoordinate(xMouse, yMouse, x, y, stereoView);
 	bool ret = false;
-	float xOffset = xPixelToScreen(1000);
-	float yOffset = yPixelToScreen(600);
+	float xOffset = xPixelToScreen(GUI_WIDTH);
+	float yOffset = yPixelToScreen(GUI_HEIGHT);
 	switch(ic) {
 	case Inventory::ICWeapon:
 	case Inventory::ICArmor:
@@ -488,10 +509,9 @@ static bool validateDropOutside(Inventory::InventoryCategory ic, int x, int y) {
 }
 
 // Validate that an item of category 'ic' can be dropped at the specified screen position
-static bool validateDropZone(Inventory::InventoryCategory ic, int x, int y) {
-	// Compute mouse screen coordinates relative inventory screen.
-	float xMouse = x / gViewport[2] * 2 - 1 - INVENTORY_SCREEN_X_OFFS;
-	float yMouse = 1 - y / gViewport[3] * 2 - INVENTORY_SCREEN_Y_OFFS;
+static bool validateDropZone(Inventory::InventoryCategory ic, int x, int y, bool stereoView) {
+	float xMouse, yMouse;
+	ComputeRelativeCoordinate(xMouse, yMouse, x, y, stereoView);
 	float dX = X(1) - X(0); // On screen distance from one column to the next
 	float dY = Y(0) - Y(1);
 	bool ret = false;
@@ -531,10 +551,9 @@ static bool validateDropZone(Inventory::InventoryCategory ic, int x, int y) {
 }
 
 // Detect if the mouse is pointing at the close button of the inventory screen.
-static bool PointingAtCloseButton(int x, int y) {
-	// Compute mouse screen coordinates relative inventory screen.
-	float xMouse = x / gViewport[2] * 2 - 1 - INVENTORY_SCREEN_X_OFFS;
-	float yMouse = 1 - y / gViewport[3] * 2 - INVENTORY_SCREEN_Y_OFFS;
+static bool PointingAtCloseButton(int x, int y, bool stereoView) {
+	float xMouse, yMouse;
+	ComputeRelativeCoordinate(xMouse, yMouse, x, y, stereoView);
 	// printf("Closing: (%f, %f) (%f-%f), (%f-%f)\n", xMouse, yMouse, xPixelToScreen(CLOSE_BTNX1), xPixelToScreen(CLOSE_BTNX2), yPixelToScreen(CLOSE_BTNY1), yPixelToScreen(CLOSE_BTNY2));
 	return xMouse >= xPixelToScreen(CLOSE_BTNX1) &&
 	       xMouse <= xPixelToScreen(CLOSE_BTNX2) &&
@@ -542,14 +561,14 @@ static bool PointingAtCloseButton(int x, int y) {
 	       yMouse <= yPixelToScreen(CLOSE_BTNY2);
 }
 
-bool Inventory::HandleMouseClick(int button, int action, int x, int y) {
-	// printf("Inventory::HandleMouseClick: button %d, action %d, coord %d,%d\n", button, action , x, y);
+bool Inventory::HandleMouseClick(int button, int action, int x, int y, bool stereoView) {
+	LPLOG("Inventory::HandleMouseClick: button %d, action %d, coord %d,%d", button, action , x, y);
 	if (button != GLFW_MOUSE_BUTTON_LEFT)
 		return false;
 	switch (sDadState) {
 	case DadNone:
 		if (action == GLFW_PRESS) {
-			int id = IdentifyInv(x, y);
+			int id = IdentifyInv(x, y, stereoView);
 			if (id != -1) {
 				dragItem = id;
 				static int previousItem;
@@ -566,7 +585,7 @@ bool Inventory::HandleMouseClick(int button, int action, int x, int y) {
 				break;
 			}
 		}
-		if (action == GLFW_RELEASE && PointingAtCloseButton(x, y))
+		if (action == GLFW_RELEASE && PointingAtCloseButton(x, y, stereoView))
 			return true;
 		break;
 	case DadDragging:
@@ -575,9 +594,9 @@ bool Inventory::HandleMouseClick(int button, int action, int x, int y) {
 			// printf("Drop %s at %d,%d\n", info->descr, x, y);
 			sDadState = DadNone;
 			InventoryCategory ic = info->category;
-			if (validateDropZone(ic, x, y)) {
+			if (validateDropZone(ic, x, y, stereoView)) {
 				this->UseObjectMessage(&fItemList[dragItem], CMD_USE_ITEM);
-			} else if (validateDropOutside(ic, x, y)) {
+			} else if (validateDropOutside(ic, x, y, stereoView)) {
 				View::gMsgWindow.SetAlternatePosition(x, y, true);
 				this->UseObjectMessage(&fItemList[dragItem], CMD_DROP_ITEM);
 			}

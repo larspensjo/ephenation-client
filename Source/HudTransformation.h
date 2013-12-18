@@ -25,7 +25,7 @@ namespace View {
 class HudTransformation
 {
 public:
-	/// Get the current GUI transformation
+	/// Get the current GUI projection transformation (transforming coordinate in pixel)
 	const glm::mat4 &GetGUITransform() const { return fGUITransform; }
 
 	/// Just get the view part of the transform
@@ -34,7 +34,7 @@ public:
 	/// Update the transformation.
 	void Update();
 private:
-	float fGuiDistance = 10.0f; // A distance that feels good for the eyes, measured in meters.
+	float fGuiDistance = 20.0f; // A distance that feels good for the eyes, measured in meters.
 	glm::mat4 fGUITransform;
 	glm::mat4 fViewTransform;
 };

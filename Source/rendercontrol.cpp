@@ -21,6 +21,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+#include "Inventory.h"
 #include "OculusRift.h"
 #include "Debug.h"
 #include "Teleport.h"
@@ -247,7 +248,7 @@ void RenderControl::Resize(GLsizei width, GLsizei height) {
 	checkError("RenderControl::Resize");
 }
 
-void RenderControl::Draw(bool underWater, shared_ptr<const Model::Object> selectedObject, bool showMap, int mapWidth, MainUserInterface *ui, bool stereoView, float renderViewAngle) {
+void RenderControl::Draw(bool underWater, shared_ptr<const Model::Object> selectedObject, bool showMap, bool showInvent, int mapWidth, MainUserInterface *ui, bool stereoView, float renderViewAngle) {
 	if (gShowFramework)
 		glPolygonMode(GL_FRONT, GL_LINE);
 	// Create all bitmaps setup in the frame buffer. This is all stage one shaders.
@@ -300,7 +301,10 @@ void RenderControl::Draw(bool underWater, shared_ptr<const Model::Object> select
 		drawLocalFog(); // This should come late in the drawing process, as we don't want light effects added to fog
 	if (showMap)
 		drawMap(mapWidth, stereoView);
-	if (ui) drawUI(ui); // Will draw into transparent layer
+	if (showInvent)
+		drawInventory(stereoView);
+	if (ui)
+		drawUI(ui); // Will draw into transparent layer
 	if (gMode.Get() == GameMode::TELEPORT) // Draw the teleport mode
 		TeleportClick(HealthBar::Make(), _angleHor, renderViewAngle, 0, 0, false, stereoView);
 	if (fShowMouse)
@@ -677,6 +681,10 @@ void RenderControl::drawMap(int mapWidth, bool stereoView) {
 	map->Draw(0.6f, stereoView);
 }
 
+void RenderControl::drawInventory(bool stereoView) const {
+	gInventory.Draw(DrawTexture::Make(), stereoView, fMouseX, fMouseY);
+}
+
 void RenderControl::drawMousePointer() {
 	glBindTexture(GL_TEXTURE_2D, GameTexture::MousePointerId); // Override
 	// 0,0 is bottom left of the bitmap, but we want it to be top left.
@@ -684,7 +692,7 @@ void RenderControl::drawMousePointer() {
 	glm::mat4 scaleToPixel = glm::scale(glm::mat4(1), glm::vec3(16, -32, 1)); // This is the size of the bitmap
 	// 0,0 is middle of screen, whereas mouse coordinates starts at upper left of screen.
 	glm::mat4 translToMouse = glm::translate(glm::mat4(1), glm::vec3(float(fMouseX)-gViewport[2]/2, float(fMouseY)-gViewport[3]/2, 0.0f));
-	glm::mat4 model = View::gHudTransformation.GetGUITransform() * translToMouse * scaleToPixel * moveToTip;
+	glm::mat4 model = View::gHudTransformation.GetGUITransform() * translToMouse * (scaleToPixel * moveToTip);
 
 	glEnable(GL_BLEND);
 	glDepthMask(GL_FALSE);                // The depth buffer shall not be updated, or some transparent blocks behind each other will not be shown.
@@ -698,7 +706,7 @@ void RenderControl::drawMousePointer() {
 		glm::vec4 screen = gProjectionMatrix * model * glm::vec4(0,1,0,1); // Compensate for offset in y
 		screen /= screen.w;
 		fPointerX = (screen.x/2 + 0.5f) * gViewport[2];
-		fPointerY = gViewport[3] * (0.5f - screen.y/2);
+		fPointerY = (0.5f - screen.y/2) * gViewport[3];
 		// LPLOG("mouse: %.4f %.4f, pointer: %.1f(%d) %.1f(%d)", screen.x, screen.y, fPointerX, int(gViewport[2]), fPointerY, int(gViewport[3]));
 	}
 }

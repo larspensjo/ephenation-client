@@ -27,11 +27,13 @@ HudTransformation View::gHudTransformation;
 
 void HudTransformation::Update() {
 	// We want to draw the GUI as if it is placed out in the world.
-	// But scale it, so that it has the same size regardless.
-	glm::vec4 p = gProjectionMatrix * glm::vec4(0.0f, 1.0f, -fGuiDistance*2.0f, 1.0f);
+	// But scale it, so that it has the same size regardless. Input one pixel offset in y, and
+	// find out what it corresponds to at distance.
+	glm::vec4 p = gProjectionMatrix * glm::vec4(0.0f, 1.0f, -fGuiDistance, 1.0f);
 	p /= p.w;
-	float fact = 2.0f/p.y/gViewport[3];
-	glm::mat4 scale = glm::scale(glm::mat4(1), glm::vec3(fact, -fact, 1.0f));
+	float fact = 2.0f/p.y/gViewport[3]; // Factor 2 to cover the range -1 to +1.
+	glm::mat4 scale = glm::scale(glm::mat4(1), glm::vec3(fact, -fact, 1.0f)); // Scale from pixels to m, ignore z
+
 	float yawPitchRoll[3] = { 0.0f, 0.0f, 0.0f };
 	Controller::OculusRift::sfOvr.GetYawPitchRoll(yawPitchRoll);
 	glm::mat4 view(1);
@@ -40,6 +42,6 @@ void HudTransformation::Update() {
 	view = glm::rotate(view, -yawPitchRoll[0], glm::vec3(0.0f, 1.0f, 0.0f));
 	view = glm::translate(view, glm::vec3(Controller::OculusRift::sfOvr.GetHorViewAdjustment(), 0.0f, 0.0f));
 	fViewTransform = view;
-	glm::mat4 translate = glm::translate(glm::mat4(1.0), glm::vec3(0.0f, 0.0f, -fGuiDistance*2.0f));
+	glm::mat4 translate = glm::translate(glm::mat4(1.0), glm::vec3(0.0f, 0.0f, -fGuiDistance));
 	fGUITransform = view * scale * translate;
 }

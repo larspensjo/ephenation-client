@@ -41,17 +41,22 @@ public:
 
 	/// Use an object, corresponding to the function key
 	void UseObjectFunctionKey(int key);
-	void DrawInventory(DrawTexture *);
+
+	/// Draw the inventory screen
+	/// @param texture Used for drawing pictures
+	/// @param stereoView If Oculus Rift mode
+	/// @param x,y The x and y mouse pointer coordinate
+	void Draw(DrawTexture *texture, bool stereoView, int x, int y);
 
 	/// As long as the inventory screen is shown, this function will be called.
 	/// @return true if window shall be closed.
-	bool HandleMouseClick(int button, int action, int x, int y);
+	bool HandleMouseClick(int button, int action, int x, int y, bool stereoView);
 private:
 	struct Item;
 	Item *fItemList;
 	int fNumItems;
 
-	int IdentifyInv(int x, int y);
+	int IdentifyInv(int x, int y, bool stereoView);
 	void UseObjectMessage(Item *item, unsigned char cmd);
 };
 

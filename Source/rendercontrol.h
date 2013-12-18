@@ -72,7 +72,7 @@ public:
 	/// @param ui Pointer to the user interface
 	/// @param stereoView True when using OVR
     /// @param renderViewAngle The view angle to use
-	void Draw(bool underWater, std::shared_ptr<const Model::Object> selectedObject, bool showMap, int mapWidth, MainUserInterface *ui, bool stereoView, float renderViewAngle);
+	void Draw(bool underWater, std::shared_ptr<const Model::Object> selectedObject, bool showMap, bool showInvent, int mapWidth, MainUserInterface *ui, bool stereoView, float renderViewAngle);
 
 	/// Update the camera position.
 	/// Check if camera position is inside a wall.
@@ -156,6 +156,7 @@ private:
 	void drawColoredLights() const;
 	void drawMousePointer();
 	void drawFullScreenPixmap(GLuint id, bool stereoView) const;
+	void drawInventory(bool stereoView) const;
 
 	// Define alias for color attachments. Remember to look at
 	// drawClearFBO() if this list is changed.

@@ -399,7 +399,7 @@ void gameDialog::handleMouse(int button, int action) {
 	glfwGetMousePos(&x, &y);
 	if (fGuiMode == GuiMode::Inventory) {
 		// Override the usual mouse handling
-		bool close = gInventory.HandleMouseClick(button, action, x, y);
+		bool close = gInventory.HandleMouseClick(button, action, x, y, fStereoView);
 		if (close) {
 			fGuiMode = GuiMode::Default;
 			gMsgWindow.SetAlternatePosition(0,0,false);
@@ -956,7 +956,7 @@ void gameDialog::render(bool hideGUI, int fps) {
 		gBillboard.InitializeTextures(fShader);
 	}
 
-	fRenderControl.Draw(fUnderWater, fSelectedObject, fGuiMode == GuiMode::Map && !gDebugOpenGL, fMapWidth, (hideGUI && fCurrentRocketContextInput == 0) ? 0 : &fMainUserInterface, fStereoView, fRenderViewAngle);
+	fRenderControl.Draw(fUnderWater, fSelectedObject, fGuiMode == GuiMode::Map && !gDebugOpenGL, fGuiMode == GuiMode::Inventory, fMapWidth, (hideGUI && fCurrentRocketContextInput == 0) ? 0 : &fMainUserInterface, fStereoView, fRenderViewAngle);
 
 	//=========================================================================
 	// Various effects drawn after the deferred shader
@@ -970,7 +970,6 @@ void gameDialog::render(bool hideGUI, int fps) {
 			fBuildingBlocks->Draw(gProjectionMatrix);
 		break;
 	case GuiMode::Inventory:
-		gInventory.DrawInventory(fDrawTexture);
 		break;
 	case GuiMode::Map:
 		if (gDebugOpenGL) {
