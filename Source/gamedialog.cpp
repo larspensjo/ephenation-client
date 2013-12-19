@@ -540,7 +540,7 @@ void gameDialog::HandleKeyPress(int key) {
 		fCurrentRocketContextInput = 0;
 		fInputLine->SetAttribute("value", "");
 		fInputLine->Blur();
-		fGuiMode == GuiMode::Default;
+		fGuiMode = GuiMode::Default;
 		return;
 	}
 
