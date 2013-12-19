@@ -3,13 +3,12 @@ IDEAS
 
 Oculus Rift
 -----------
+* Information text drawn by vsfl does not show properly in stereo mode
+* Drawing monster stats should use gProjectionView
 * Use bold font for better readability
 * Dialogs are usually made for high resolution screens, so they become very big
-* Information text drawn by vsfl does not show properly in stereo mode
 * Use bigger render target, to use more of the OVR display
 * The mouse pointer should be hidden when not needed
-* The OVR checkbox in options doesn't reflect the settings correctly
-* Drawing monster stats should use gProjectionView
 * The map should only be computed once in OVR mode, not once for each eye
 * Text in options windows doesn't always show
 * Tilting the head should also tilt the head of the avatar, for other players to see
@@ -36,14 +35,19 @@ Sound
 * Implement environment depending echo using delayed emitters at a number of directions
 * Sound from walking is wrong (generating too many steps)
 
-Algorithms
-----------
+Other
+-----
 * Fix the issue with low initial FPS
 * Timers should also be drawn live on the screen
-* The transformation of a chunk into printable data should be managed by a Streaming class
-* Pre-load chunks of TP destination
+* Pre-load chunks of teleport destination
 * Update to newer version of libRocket
 * Teleport shall use a jump parabola instead of instant transfer. If inside rock, black will have to be used.
+
+Refactoring
+-----------
+* The ui/options.cpp and Options.cpp has redundant use of name for options. That should be centralized at one place.
+* The transformation of a chunk into printable data should be managed by a Streaming class
+* glsw should be moved to a separate github repository, and included as a submodule
 
 Installation
 ------------
