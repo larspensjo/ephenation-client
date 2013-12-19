@@ -1,6 +1,4 @@
-ephenation-client
-=================
-
+# ephenation-client
 Ephenation is a MMORPG client-server game.
 The purpose of the game is to allow adventures in an unlimited world and to create their your own adventures
 for others to play.
@@ -16,5 +14,7 @@ There is a page about the game progress at [Google+](https://plus.google.com/u/0
 and a blog about some of the OpenGL experiences [Ephenation OpenGL](http://ephenationopengl.blogspot.se/).
 
 ![Pict](https://lh5.googleusercontent.com/-osMriYp7jLg/UGcrFi1suUI/AAAAAAAAAUY/deSaaYmIsco/s650/Valley_2012-09-30.jpeg)
-
+## Hardware requirements
+AMD and NVIDIA graphic cards are supported, but not Intel HD3000 or HD4000.
+## Participation
 Interested in joining the project? All talents are welcome, send mail to info@ephenation.net.
