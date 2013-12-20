@@ -102,8 +102,8 @@ private:
 
 	GLuint fboName;
 	GLuint fDepthBuffer; // Render target buffers
-	GLuint fDiffuseTexture, fPositionTexture, fNormalsTexture, fBlendTexture, fLightsTexture;
-	GLuint fRendertarget = 0;
+	GLuint fPositionTexture, fNormalsTexture, fBlendTexture, fLightsTexture;
+	GLuint fRendertarget1 = 0, fRendertarget2 = 0;
 	GLsizei fWidth, fHeight;
 
 	GLuint fDownSampleLumTexture1, fDownSampleLumTexture2;
@@ -161,9 +161,13 @@ private:
 	// Define alias for color attachments. Remember to look at
 	// drawClearFBO() if this list is changed.
 	enum ColorAttachment {
-		ColAttachDiffuse = GL_COLOR_ATTACHMENT0,
-		ColAttachPosition, ColAttachNormals, ColAttachBlend, ColAttachLighting, ColAttachRenderTarget
+		ColAttachRenderTarget1 = GL_COLOR_ATTACHMENT0,
+		ColAttachPosition, ColAttachNormals, ColAttachBlend, ColAttachLighting, ColAttachRenderTarget2
 	};
+
+	GLuint fCurrentInputColor = 0;
+	ColorAttachment fCurrentColorAttachment = ColAttachRenderTarget1;
+	void ToggleRenderTarget(); // Toggle between the two render targets
 };
 
 }

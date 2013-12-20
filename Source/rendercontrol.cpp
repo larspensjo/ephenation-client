@@ -68,10 +68,22 @@
 
 using namespace View;
 
+/// @class RenderControl
+/// The render targets are used as follows:
+/// fDepthBuffer
+/// fRendertarget1 - 3 bytes per pixel, all used for RGB
+/// fRendertarget2 - 3 x unsigned byte, used alternated
+/// fPositionTexture - 4 x 32-bit float. The first 3 are used for position, the last for sun intensity when not using dynamic shadows
+/// fNormalsTexture - 4 x 16-bit float. The first 3 are used for the normal, the last is used for ambient light
+/// fBlendTexture - 4 x unsigned byte. All data is used for RGBA
+/// fLightsTexture - 16-bit float for dynamic light intensity
+/// fDownSampleLumTexture1
+/// fDownSampleLumTexture2
+
 RenderControl::RenderControl() {
 	fboName = 0;
 	fDepthBuffer = 0;
-	fDiffuseTexture = 0; fPositionTexture = 0; fNormalsTexture = 0; fBlendTexture = 0; fLightsTexture = 0;
+	fPositionTexture = 0; fNormalsTexture = 0; fBlendTexture = 0; fLightsTexture = 0;
 	fAnimation = 0; fShader = 0;
 	fSkyBox = 0;
 	fCameraDistance = 0.0f;
@@ -84,7 +96,8 @@ RenderControl::~RenderControl() {
 	if (fDepthBuffer != 0) {
 		glDeleteFramebuffers(1, &fboName);
 		glDeleteTextures(1, &fDepthBuffer);
-		glDeleteTextures(1, &fDiffuseTexture);
+		glDeleteTextures(1, &fRendertarget1);
+		glDeleteTextures(1, &fRendertarget2);
 		glDeleteTextures(1, &fPositionTexture);
 		glDeleteTextures(1, &fNormalsTexture);
 		glDeleteTextures(1, &fBlendTexture);
@@ -97,14 +110,14 @@ RenderControl::~RenderControl() {
 void RenderControl::Init(int lightSamplingFactor, bool stereoView) {
 	// This only has to be done first time
 	glGenRenderbuffers(1, &fDepthBuffer);
-	glGenTextures(1, &fDownSampleLumTexture1); gDebugTextures.push_back(DebugTexture(fDownSampleLumTexture1, "DownSampleLum1")); // Add this texture to the debugging list of textures
-	glGenTextures(1, &fDownSampleLumTexture2); gDebugTextures.push_back(DebugTexture(fDownSampleLumTexture2, "DownSampleLum2")); // Add this texture to the debugging list of textures
-	glGenTextures(1, &fDiffuseTexture); gDebugTextures.push_back(DebugTexture(fDiffuseTexture, "Deferred Diffuse")); // Add this texture to the debugging list of textures
+	glGenTextures(1, &fDownSampleLumTexture1); gDebugTextures.push_back(DebugTexture(fDownSampleLumTexture1, "DownSampleLum1"));
+	glGenTextures(1, &fDownSampleLumTexture2); gDebugTextures.push_back(DebugTexture(fDownSampleLumTexture2, "DownSampleLum2"));
+	glGenTextures(1, &fRendertarget1); gDebugTextures.push_back(DebugTexture(fRendertarget1, "Render target 1"));
+	glGenTextures(1, &fRendertarget2); gDebugTextures.push_back(DebugTexture(fRendertarget2, "Render target 2"));
 	glGenTextures(1, &fPositionTexture); gDebugTextures.push_back(DebugTexture(fPositionTexture, "Deferred position"));
 	glGenTextures(1, &fNormalsTexture); gDebugTextures.push_back(DebugTexture(fNormalsTexture, "Deferred normals"));
 	glGenTextures(1, &fBlendTexture); gDebugTextures.push_back(DebugTexture(fBlendTexture, "Deferred blend"));
 	glGenTextures(1, &fLightsTexture); gDebugTextures.push_back(DebugTexture(fLightsTexture, "Deferred lighting"));
-	glGenTextures(1, &fRendertarget);
 
 	glGenFramebuffers(1, &fboName);
 
@@ -156,7 +169,7 @@ void RenderControl::Resize(GLsizei width, GLsizei height) {
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
 
 	// Generate and bind the texture for diffuse
-	glBindTexture(GL_TEXTURE_2D, fRendertarget);
+	glBindTexture(GL_TEXTURE_2D, fRendertarget1);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -164,7 +177,7 @@ void RenderControl::Resize(GLsizei width, GLsizei height) {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 
 	// Generate and bind the texture for diffuse
-	glBindTexture(GL_TEXTURE_2D, fDiffuseTexture);
+	glBindTexture(GL_TEXTURE_2D, fRendertarget2);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -206,12 +219,12 @@ void RenderControl::Resize(GLsizei width, GLsizei height) {
 	// Attach all textures and the depth buffer
 	glBindFramebuffer(GL_FRAMEBUFFER, fboName);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, fDepthBuffer);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, ColAttachDiffuse, GL_TEXTURE_2D, fDiffuseTexture, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, ColAttachRenderTarget1, GL_TEXTURE_2D, fRendertarget1, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, ColAttachRenderTarget2, GL_TEXTURE_2D, fRendertarget2, 0);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, ColAttachPosition, GL_TEXTURE_2D, fPositionTexture, 0);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, ColAttachNormals, GL_TEXTURE_2D, fNormalsTexture, 0);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, ColAttachBlend, GL_TEXTURE_2D, fBlendTexture, 0);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, ColAttachLighting, GL_TEXTURE_2D, fLightsTexture, 0);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, ColAttachRenderTarget, GL_TEXTURE_2D, fRendertarget, 0);
 	glReadBuffer(GL_NONE);
 
 	GLenum fboStatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
@@ -252,15 +265,18 @@ void RenderControl::Draw(bool underWater, shared_ptr<const Model::Object> select
 		glPolygonMode(GL_FRONT, GL_LINE);
 	// Create all bitmaps setup in the frame buffer. This is all stage one shaders.
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fboName);
-	drawClearFBO();
 	glViewport(0, 0, fWidth, fHeight);
+	drawClearFBO();
+	fCurrentColorAttachment = ColAttachRenderTarget2;
+	fCurrentInputColor = fRendertarget1;
 	// If the player is dead, he will get a gray sky.
 	int diffuseSky = GL_NONE;
 	if (!Model::gPlayer.IsDead() && !Model::gPlayer.BelowGround() && !underWater)
-		diffuseSky = ColAttachRenderTarget;
+		diffuseSky = fCurrentColorAttachment;
 	drawSkyBox(diffuseSky, ColAttachPosition, stereoView);
 
 	gDrawObjectList.clear();
+	ToggleRenderTarget();
 	drawOpaqueLandscape(stereoView);
 	if (this->ThirdPersonView() && gMode.Get() != GameMode::LOGIN)
 		drawPlayer(); // Draw self, but not if camera is too close
@@ -283,34 +299,35 @@ void RenderControl::Draw(bool underWater, shared_ptr<const Model::Object> select
 	ComputeAverageLighting(underWater);
 	if (gShowFramework)
 		glPolygonMode(GL_FRONT, GL_FILL); // Restore normal drawing.
-
-	// From now on, only draw to the final render target.
-
-	GLenum winBuffers[] = { ColAttachRenderTarget };
+	ToggleRenderTarget();
+	GLenum winBuffers[] = { fCurrentColorAttachment };
 	glDrawBuffers(1, winBuffers);
 	drawDeferredLighting(underWater, gOptions.fWhitePoint);
 
 	// Do some post processing
 	if (!underWater)
 		drawPointShadows();
+	drawColoredLights();
 	if (selectedObject)
 		drawSelection(selectedObject->GetPosition());
-	drawColoredLights();
 	if (!underWater)
 		drawLocalFog(); // This should come late in the drawing process, as we don't want light effects added to fog
+
+	// Add gadgets, ui, maps and other overlays
 	if (showMap)
 		drawMap(mapWidth, stereoView);
 	if (showInvent)
 		drawInventory(stereoView);
 	if (ui)
-		drawUI(ui); // Will draw into transparent layer
+		drawUI(ui);
 	if (gMode.Get() == GameMode::TELEPORT) // Draw the teleport mode
 		TeleportClick(HealthBar::Make(), _angleHor, renderViewAngle, 0, 0, false, stereoView);
 	if (fShowMouse)
 		drawMousePointer();
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 	glViewport(gViewport[0], gViewport[1], gViewport[2], gViewport[3]); // Restore default viewport.
-	drawFullScreenPixmap(fRendertarget, stereoView);
+	ToggleRenderTarget();
+	drawFullScreenPixmap(fCurrentInputColor, stereoView);
 }
 
 void RenderControl::drawClear(bool underWater) {
@@ -323,12 +340,12 @@ void RenderControl::drawClear(bool underWater) {
 }
 
 void RenderControl::drawClearFBO(void) {
-	GLenum windowBuffClear[] = { ColAttachRenderTarget, ColAttachDiffuse, ColAttachPosition, ColAttachNormals, ColAttachBlend, ColAttachLighting  };
-	glDrawBuffers(1, windowBuffClear); // render target only
+	GLenum windowBuffClear[] = { ColAttachRenderTarget1, ColAttachRenderTarget2, ColAttachPosition, ColAttachNormals, ColAttachBlend, ColAttachLighting  };
+	glDrawBuffers(2, windowBuffClear); // render target only
 	glClearColor(0.584f, 0.620f, 0.698f, 1.0f); // Gray background, will only be used where there is no sky box.
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	glDrawBuffers(5, windowBuffClear+1); // Select all buffers but the diffuse buffer
+	glDrawBuffers(4, windowBuffClear+2); // Select all buffers but the diffuse buffers
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f); // Set everything to zero.
 	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
 }
@@ -336,7 +353,7 @@ void RenderControl::drawClearFBO(void) {
 void RenderControl::drawOpaqueLandscape(bool stereoView) {
 	static TimeMeasure tm("Landsc");
 	tm.Start();
-	GLenum windowBuffOpaque[] = { ColAttachDiffuse, ColAttachPosition, ColAttachNormals };
+	GLenum windowBuffOpaque[] = { fCurrentColorAttachment, ColAttachPosition, ColAttachNormals };
 	glDrawBuffers(3, windowBuffOpaque); // Nothing is transparent here, do not produce any blending data on the 4:th render target.
 	fShader->EnableProgram(); // Get program back again after the skybox.
 	DrawLandscape(fShader, DL_NoTransparent, stereoView);
@@ -369,14 +386,14 @@ void RenderControl::drawTransparentLandscape(bool stereoView) {
 void RenderControl::drawMonsters(void) {
 	static TimeMeasure tm("Monst");
 	tm.Start();
-	GLenum windowBuffOpaque[] = { ColAttachDiffuse, ColAttachPosition, ColAttachNormals };
+	GLenum windowBuffOpaque[] = { fCurrentColorAttachment, ColAttachPosition, ColAttachNormals };
 	glDrawBuffers(3, windowBuffOpaque); // Nothing is transparent here, do not produce any blending data on the 4:th render target.
 	Model::gMonsters.RenderMonsters(false, false, &fAnimationModels);
 	tm.Stop();
 }
 
 void RenderControl::drawPlayer(void) {
-	GLenum windowBuffOpaque[] = { ColAttachDiffuse, ColAttachPosition, ColAttachNormals };
+	GLenum windowBuffOpaque[] = { fCurrentColorAttachment, ColAttachPosition, ColAttachNormals };
 	glDrawBuffers(3, windowBuffOpaque); // Nothing is transparent here, do not produce any blending data on the 4:th render target.
 	fAnimation->EnableProgram();
 	Model::gPlayer.Draw(fAnimation, fShader, false, &fAnimationModels);
@@ -421,7 +438,7 @@ void RenderControl::drawDeferredLighting(bool underWater, float whitepoint) {
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, fPositionTexture);
 	glActiveTexture(GL_TEXTURE0); // Need to restore it or everything will break.
-	glBindTexture(GL_TEXTURE_2D, fDiffuseTexture);
+	glBindTexture(GL_TEXTURE_2D, fCurrentInputColor);
 
 	fDeferredLighting->EnableProgram();
 	fDeferredLighting->InsideTeleport(gMode.Get() == GameMode::TELEPORT);
@@ -451,7 +468,7 @@ void RenderControl::drawPointLights(void) {
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, fPositionTexture);
 	glActiveTexture(GL_TEXTURE0); // Need to restore it or everything will break.
-	glBindTexture(GL_TEXTURE_2D, fDiffuseTexture);
+	glBindTexture(GL_TEXTURE_2D, fCurrentInputColor);
 	glDisable(GL_CULL_FACE);
 	glDepthMask(GL_FALSE);
 	// Iterate through all the objects, and add lights for some of them
@@ -632,10 +649,6 @@ void RenderControl::drawColoredLights() const {
 	tm.Stop();
 }
 
-// This function can be used for two things:
-// 1. Drawing the skybox color
-// 2. Drawing the skybox position data
-// Specify color target with 'diffuse' and position data target with 'position'.
 void RenderControl::drawSkyBox(GLenum diffuse, GLenum position, bool disableDistortion) {
     static TimeMeasure tm("SkyBox");
     tm.Start();
@@ -668,14 +681,16 @@ void RenderControl::drawUI(MainUserInterface *ui) {
 void RenderControl::drawMap(int mapWidth, bool stereoView) {
 	// Very inefficient algorithm, computing the map every frame.
 	std::unique_ptr<Map> map(new Map);
-	GLenum windows[] = { ColAttachDiffuse }; // Re-use and Overwrite
+	ToggleRenderTarget(); // Save the current render target
+	GLenum windows[] = { fCurrentColorAttachment }; // Re-use and Overwrite
 	glDrawBuffers(1, windows); // Only diffuse color needed
 	glClearColor(0, 0, 0, 0);
 	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 	fShader->EnableProgram();
 	map->Create(fAnimation, fShader, _angleHor, mapWidth, &fAnimationModels, stereoView);
-	glBindTexture(GL_TEXTURE_2D, fDiffuseTexture); // Override
-	windows[0] = ColAttachRenderTarget;
+	ToggleRenderTarget(); // This restores the saved render target
+	glBindTexture(GL_TEXTURE_2D, fCurrentInputColor);
+	windows[0] = fCurrentColorAttachment;
 	glDrawBuffers(1, windows);
 	map->Draw(0.6f, stereoView);
 }
@@ -809,7 +824,7 @@ void RenderControl::UpdateCameraPosition(int wheelDelta, bool stereoView, float 
 void RenderControl::ComputeAverageLighting(bool underWater) {
 	static TimeMeasure tm("AvgLght");
 	tm.Start();
-	fboDownSampleLum1->EnableWriting(ColAttachDiffuse);
+	fboDownSampleLum1->EnableWriting(GL_COLOR_ATTACHMENT0);
 	if (Model::gPlayer.BelowGround())
 		glClearColor(gOptions.fAmbientLight / 200.0f, 0.0f, 0.0f, 1.0f );
 	else
@@ -818,7 +833,7 @@ void RenderControl::ComputeAverageLighting(bool underWater) {
 	int w = fWidth / fLightSamplingFactor;
 	int h = fHeight / fLightSamplingFactor;
 	glViewport(0, 0, w, h); // set viewport to texture dimensions
-	GLenum windowBuffer[] = { ColAttachDiffuse }; // Re-use and overwite
+	GLenum windowBuffer[] = { GL_COLOR_ATTACHMENT0 }; // Re-use and overwite
 	glDrawBuffers(1, windowBuffer);
 	// Prepare the input images needed
 	glActiveTexture(GL_TEXTURE5);
@@ -829,8 +844,8 @@ void RenderControl::ComputeAverageLighting(bool underWater) {
 	glBindTexture(GL_TEXTURE_2D, fNormalsTexture);
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, fPositionTexture);
-	glActiveTexture(GL_TEXTURE0); // Need to restore it or everything will break.
-	glBindTexture(GL_TEXTURE_2D, fDiffuseTexture);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, fCurrentInputColor);
 
 	fDownSamplingLuminance->EnableProgram();
 	glDisable(GL_DEPTH_TEST);
@@ -839,10 +854,10 @@ void RenderControl::ComputeAverageLighting(bool underWater) {
 
 	int tap = h/4;
 	float sigma = float(tap)/3.0f;
-	fboDownSampleLum2->EnableWriting(ColAttachDiffuse);
+	fboDownSampleLum2->EnableWriting(GL_COLOR_ATTACHMENT0);
 	glBindTexture(GL_TEXTURE_2D, fDownSampleLumTexture1);
 	fGaussianBlur->BlurHorizontal(tap, sigma);
-	fboDownSampleLum1->EnableWriting(ColAttachDiffuse);
+	fboDownSampleLum1->EnableWriting(GL_COLOR_ATTACHMENT0);
 	glBindTexture(GL_TEXTURE_2D, fDownSampleLumTexture2);
 	fGaussianBlur->BlurVertical();
 
@@ -851,4 +866,14 @@ void RenderControl::ComputeAverageLighting(bool underWater) {
 	glViewport(0, 0, fWidth, fHeight); // Restore
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fboName); // Restore
 	tm.Stop();
+}
+
+void RenderControl::ToggleRenderTarget() {
+	if (fCurrentInputColor == fRendertarget2) {
+		fCurrentInputColor = fRendertarget1;
+		fCurrentColorAttachment = ColAttachRenderTarget2;
+	} else {
+		fCurrentInputColor = fRendertarget2;
+		fCurrentColorAttachment = ColAttachRenderTarget1;
+	}
 }
