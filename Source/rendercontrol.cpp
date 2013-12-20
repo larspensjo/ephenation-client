@@ -97,7 +97,6 @@ RenderControl::~RenderControl() {
 void RenderControl::Init(int lightSamplingFactor, bool stereoView) {
 	// This only has to be done first time
 	glGenRenderbuffers(1, &fDepthBuffer);
-	// glGenTextures(1, &fDownSampleLumTextureBlurred); gDebugTextures.push_back(fDownSampleLumTextureBlurred); // Add this texture to the debugging list of textures
 	glGenTextures(1, &fDownSampleLumTexture1); gDebugTextures.push_back(DebugTexture(fDownSampleLumTexture1, "DownSampleLum1")); // Add this texture to the debugging list of textures
 	glGenTextures(1, &fDownSampleLumTexture2); gDebugTextures.push_back(DebugTexture(fDownSampleLumTexture2, "DownSampleLum2")); // Add this texture to the debugging list of textures
 	glGenTextures(1, &fDiffuseTexture); gDebugTextures.push_back(DebugTexture(fDiffuseTexture, "Deferred Diffuse")); // Add this texture to the debugging list of textures
@@ -489,7 +488,7 @@ void RenderControl::drawSSAO(void) {
 	static TimeMeasure tm("SSAO ");
 	tm.Start();
 	GLenum windowBuffers[] = { ColAttachLighting };
-	glDrawBuffers(1, windowBuffers); // Nothing is transparent here, do not produce any blending data on the 4:th render target.
+	glDrawBuffers(1, windowBuffers);
 	glActiveTexture(GL_TEXTURE2);
 	glBindTexture(GL_TEXTURE_2D, fNormalsTexture);
 	glActiveTexture(GL_TEXTURE1);

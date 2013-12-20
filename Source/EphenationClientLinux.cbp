@@ -72,6 +72,8 @@
 		<Unit filename="ChunkObject.h" />
 		<Unit filename="ChunkProcess.cpp" />
 		<Unit filename="ChunkProcess.h" />
+		<Unit filename="Debug.cpp" />
+		<Unit filename="Debug.h" />
 		<Unit filename="DrawText.cpp" />
 		<Unit filename="DrawText.h" />
 		<Unit filename="DrawTexture.cpp" />
@@ -127,11 +129,14 @@
 		<Unit filename="dialogs/credits.rml" />
 		<Unit filename="dialogs/ephenation.rcss" />
 		<Unit filename="dialogs/help.rml" />
+		<Unit filename="dialogs/login-ovr.rml" />
 		<Unit filename="dialogs/login.rml" />
 		<Unit filename="dialogs/messagedialog.rml" />
 		<Unit filename="dialogs/popup.rcss" />
 		<Unit filename="dialogs/topleveldialog.rml" />
 		<Unit filename="dialogs/topoptions.rml" />
+		<Unit filename="dialogs/userinterface-base.rcss" />
+		<Unit filename="dialogs/userinterface-ovr.rml" />
 		<Unit filename="dialogs/userinterface.rml" />
 		<Unit filename="errormanager.cpp" />
 		<Unit filename="errormanager.h" />
@@ -278,11 +283,11 @@
 				<search_path add="contrib/libovr/Src" />
 			</code_completion>
 			<debugger>
-				<remote_debugging target="Release">
-					<options conn_type="0" serial_baud="115200" additional_cmds_before="set args --debug" />
-				</remote_debugging>
 				<remote_debugging target="Debug">
 					<options conn_type="0" serial_baud="115200" additional_cmds_before="set args --debug  --singlethread server1.ephenation.net" />
+				</remote_debugging>
+				<remote_debugging target="Release">
+					<options conn_type="0" serial_baud="115200" additional_cmds_before="set args --debug" />
 				</remote_debugging>
 			</debugger>
 			<envvars />
