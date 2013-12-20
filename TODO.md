@@ -15,6 +15,7 @@ Oculus Rift
 
 Graphical effects
 -----------------
+* Lamps and spherical fogs are cut off too hard at the edge
 * Upgrade to GLFW 3, to support alternative displays
 * Add distance dependent blurring
 * Implement LOD (scale blocks with a factor of 2)

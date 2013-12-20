@@ -946,7 +946,7 @@ void gameDialog::DrawScreen(bool hideGUI) {
 		this->UpdateProjection(Controller::gameDialog::ViewType::right);
 		this->render(hideGUI, int(slAverageFps));
 	} else {
-		if (fGuiMode == GuiMode::Map)
+		if (fGuiMode == GuiMode::Map && !gDebugOpenGL)
 			hideGUI = true;
 		this->UpdateProjection(Controller::gameDialog::ViewType::single);
 		this->render(hideGUI, int(slAverageFps));
