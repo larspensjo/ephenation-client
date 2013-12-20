@@ -80,6 +80,27 @@ using namespace View;
 /// fDownSampleLumTexture1
 /// fDownSampleLumTexture2
 
+// Helper functions
+static void DrawBuffers(GLenum buf) {
+	GLenum windows[] = { buf };
+	glDrawBuffers(1, windows);
+}
+
+static void DrawBuffers(GLenum buf1, GLenum buf2) {
+	GLenum windows[] = { buf1, buf2 };
+	glDrawBuffers(2, windows);
+}
+
+static void DrawBuffers(GLenum buf1, GLenum buf2, GLenum buf3) {
+	GLenum windows[] = { buf1, buf2, buf3 };
+	glDrawBuffers(3, windows);
+}
+
+static void DrawBuffers(GLenum buf1, GLenum buf2, GLenum buf3, GLenum buf4) {
+	GLenum windows[] = { buf1, buf2, buf3, buf4 };
+	glDrawBuffers(4, windows);
+}
+
 RenderControl::RenderControl() {
 	fboName = 0;
 	fDepthBuffer = 0;
@@ -300,8 +321,7 @@ void RenderControl::Draw(bool underWater, shared_ptr<const Model::Object> select
 	if (gShowFramework)
 		glPolygonMode(GL_FRONT, GL_FILL); // Restore normal drawing.
 	ToggleRenderTarget();
-	GLenum winBuffers[] = { fCurrentColorAttachment };
-	glDrawBuffers(1, winBuffers);
+	DrawBuffers(fCurrentColorAttachment);
 	drawDeferredLighting(underWater, gOptions.fWhitePoint);
 
 	// Do some post processing
@@ -340,12 +360,11 @@ void RenderControl::drawClear(bool underWater) {
 }
 
 void RenderControl::drawClearFBO(void) {
-	GLenum windowBuffClear[] = { ColAttachRenderTarget1, ColAttachRenderTarget2, ColAttachPosition, ColAttachNormals, ColAttachBlend, ColAttachLighting  };
-	glDrawBuffers(2, windowBuffClear); // render target only
+	DrawBuffers(ColAttachRenderTarget1, ColAttachRenderTarget2);
 	glClearColor(0.584f, 0.620f, 0.698f, 1.0f); // Gray background, will only be used where there is no sky box.
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	glDrawBuffers(4, windowBuffClear+2); // Select all buffers but the diffuse buffers
+	DrawBuffers(ColAttachPosition, ColAttachNormals, ColAttachBlend, ColAttachLighting);
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f); // Set everything to zero.
 	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
 }
@@ -353,8 +372,7 @@ void RenderControl::drawClearFBO(void) {
 void RenderControl::drawOpaqueLandscape(bool stereoView) {
 	static TimeMeasure tm("Landsc");
 	tm.Start();
-	GLenum windowBuffOpaque[] = { fCurrentColorAttachment, ColAttachPosition, ColAttachNormals };
-	glDrawBuffers(3, windowBuffOpaque); // Nothing is transparent here, do not produce any blending data on the 4:th render target.
+	DrawBuffers(fCurrentColorAttachment, ColAttachPosition, ColAttachNormals); // Nothing is transparent here, do not produce any blending data on the 4:th render target.
 	fShader->EnableProgram(); // Get program back again after the skybox.
 	DrawLandscape(fShader, DL_NoTransparent, stereoView);
 	tm.Stop();
@@ -363,8 +381,7 @@ void RenderControl::drawOpaqueLandscape(bool stereoView) {
 void RenderControl::drawTransparentLandscape(bool stereoView) {
 	static TimeMeasure tm("Transp");
 	tm.Start();
-	GLenum windowBuffOpaque[] = { ColAttachBlend }; // Only draw to the transparent buffer
-	glDrawBuffers(1, windowBuffOpaque);
+	DrawBuffers(ColAttachBlend);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA); // Use alpha 1 for source channel, as the colors are premultiplied by the alpha.
 	glDepthMask(GL_FALSE);                // The depth buffer shall not be updated, or some transparent blocks behind each other will not be shown.
@@ -386,15 +403,13 @@ void RenderControl::drawTransparentLandscape(bool stereoView) {
 void RenderControl::drawMonsters(void) {
 	static TimeMeasure tm("Monst");
 	tm.Start();
-	GLenum windowBuffOpaque[] = { fCurrentColorAttachment, ColAttachPosition, ColAttachNormals };
-	glDrawBuffers(3, windowBuffOpaque); // Nothing is transparent here, do not produce any blending data on the 4:th render target.
+	DrawBuffers(fCurrentColorAttachment, ColAttachPosition, ColAttachNormals); // Nothing is transparent here, do not produce any blending data on the 4:th render target.
 	Model::gMonsters.RenderMonsters(false, false, &fAnimationModels);
 	tm.Stop();
 }
 
 void RenderControl::drawPlayer(void) {
-	GLenum windowBuffOpaque[] = { fCurrentColorAttachment, ColAttachPosition, ColAttachNormals };
-	glDrawBuffers(3, windowBuffOpaque); // Nothing is transparent here, do not produce any blending data on the 4:th render target.
+	DrawBuffers(fCurrentColorAttachment, ColAttachPosition, ColAttachNormals); // Nothing is transparent here, do not produce any blending data on the 4:th render target.
 	fAnimation->EnableProgram();
 	Model::gPlayer.Draw(fAnimation, fShader, false, &fAnimationModels);
 	fAnimation->DisableProgram();
@@ -403,8 +418,7 @@ void RenderControl::drawPlayer(void) {
 void RenderControl::drawDynamicShadows() {
 	static TimeMeasure tm("Dynshdws");
 	tm.Start();
-	GLenum windowBuffers[] = { ColAttachLighting };
-	glDrawBuffers(1, windowBuffers); // Nothing is transparent here, do not produce any blending data on the 4:th render target.
+	DrawBuffers(ColAttachLighting);
 	if ((gOptions.fDynamicShadows || gOptions.fStaticShadows) && fShadowRender) {
 		glActiveTexture(GL_TEXTURE4);
 		fShadowRender->BindTexture();
@@ -461,8 +475,7 @@ void RenderControl::drawDeferredLighting(bool underWater, float whitepoint) {
 void RenderControl::drawPointLights(void) {
 	static TimeMeasure tm("Pntlght");
 	tm.Start();
-	GLenum windowBuffers[] = { ColAttachLighting };
-	glDrawBuffers(1, windowBuffers); // Draw only to the light buffer
+	DrawBuffers(ColAttachLighting);
 	glActiveTexture(GL_TEXTURE2);
 	glBindTexture(GL_TEXTURE_2D, fNormalsTexture);
 	glActiveTexture(GL_TEXTURE1);
@@ -504,8 +517,7 @@ void RenderControl::drawPointLights(void) {
 void RenderControl::drawSSAO(void) {
 	static TimeMeasure tm("SSAO ");
 	tm.Start();
-	GLenum windowBuffers[] = { ColAttachLighting };
-	glDrawBuffers(1, windowBuffers);
+	DrawBuffers(ColAttachLighting);
 	glActiveTexture(GL_TEXTURE2);
 	glBindTexture(GL_TEXTURE_2D, fNormalsTexture);
 	glActiveTexture(GL_TEXTURE1);
@@ -652,8 +664,7 @@ void RenderControl::drawColoredLights() const {
 void RenderControl::drawSkyBox(GLenum diffuse, GLenum position, bool disableDistortion) {
     static TimeMeasure tm("SkyBox");
     tm.Start();
-    GLenum buffers[] = { diffuse, position };
-    glDrawBuffers(2, buffers);
+	DrawBuffers(diffuse, position);
     glDepthRange(1, 1); // This will move the sky box to the far plane, exactly
     glDepthFunc(GL_LEQUAL); // Seems to be needed, or depth value 1.0 will not be shown.
     glDisable(GL_CULL_FACE); // Skybox is drawn with the wrong culling order.
@@ -682,16 +693,14 @@ void RenderControl::drawMap(int mapWidth, bool stereoView) {
 	// Very inefficient algorithm, computing the map every frame.
 	std::unique_ptr<Map> map(new Map);
 	ToggleRenderTarget(); // Save the current render target
-	GLenum windows[] = { fCurrentColorAttachment }; // Re-use and Overwrite
-	glDrawBuffers(1, windows); // Only diffuse color needed
+	DrawBuffers(fCurrentColorAttachment);
 	glClearColor(0, 0, 0, 0);
 	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 	fShader->EnableProgram();
 	map->Create(fAnimation, fShader, _angleHor, mapWidth, &fAnimationModels, stereoView);
 	ToggleRenderTarget(); // This restores the saved render target
 	glBindTexture(GL_TEXTURE_2D, fCurrentInputColor);
-	windows[0] = fCurrentColorAttachment;
-	glDrawBuffers(1, windows);
+	DrawBuffers(fCurrentColorAttachment);
 	map->Draw(0.6f, stereoView);
 }
 
@@ -833,8 +842,7 @@ void RenderControl::ComputeAverageLighting(bool underWater) {
 	int w = fWidth / fLightSamplingFactor;
 	int h = fHeight / fLightSamplingFactor;
 	glViewport(0, 0, w, h); // set viewport to texture dimensions
-	GLenum windowBuffer[] = { GL_COLOR_ATTACHMENT0 }; // Re-use and overwite
-	glDrawBuffers(1, windowBuffer);
+	DrawBuffers(GL_COLOR_ATTACHMENT0);
 	// Prepare the input images needed
 	glActiveTexture(GL_TEXTURE5);
 	glBindTexture(GL_TEXTURE_2D, fLightsTexture);
