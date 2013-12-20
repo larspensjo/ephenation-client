@@ -33,6 +33,7 @@ at shallow angles and translucent at near perpendicular angles.
 [and here](http://www.jayconrod.com/posts/34/water-simulation-in-glsl)
 * Implement SSAO
 * Make water splash when a player or monsters falls into water
+* Lamps shall have light added to them, they look dark now
 
 Sound
 -----

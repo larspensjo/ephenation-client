@@ -23,13 +23,14 @@
 #include <GL/glew.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <cassert>
 
 #include "shader.h"
 #include "../uniformbuffer.h"
 #include "../ui/Error.h"
 #include "../contrib/glsw.h"
 #include "../Debug.h"
+#include "../assert.h"
+#include "../primitives.h"
 
 void ShaderBase::Initglsw(const char *debug, int vertexShaderLines, const char **vertexShaderSource, int fragmentShaderLines, const char **fragmentShaderSource) {
 	const char *loadedVertexLines[vertexShaderLines+1];
@@ -92,7 +93,8 @@ void ShaderBase::Init(const char *debug, int vertexShaderLines, const char **ver
 
 GLint ShaderBase::GetUniformLocation(const char *name) const {
 	GLint ind = glGetUniformLocation(fProgram, name);
-	assert(ind != -1);
+	if (gDebugOpenGL)
+		ASSERT(ind != -1);
 	return ind;
 }
 
