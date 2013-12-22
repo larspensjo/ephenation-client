@@ -23,10 +23,18 @@ Ephenation Readme
 * Make an exciting adventure for others, or a place to invite friends to
 * Look at the high scores of popular areas, to find places to go adventure
 * To kill a monster, use TAB to select it and initiate attack with '1'.
+* Play game with Oculus Rift this way:
+	1. Duplicate main display with Oculus display,
+	2. Make sure they both are set to 1280x800.
+	3. Start Ephenation client, select "Oculus Rift" mode in the options, and restart. It is also possible to use the --ovr flag.
+	4. Use mouse wheel to zoom between first person and third person view.
+	4. Start the game again. The FPS can be improved by changing view distance ('+' and '-').
+	5. Turning the head turns the camera. Turning the character with the mouse turns both camera and character.
 
-Release 5.0b 2013-12-08
+Release 5.0b1 2013-12-22
 =======================
-* Support for Oculus Rift
+* Support for Oculus Rift.
+* Improved logging (with --debug).
 
 Release 4.3 2013-02-24
 ======================

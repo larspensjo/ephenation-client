@@ -1076,7 +1076,6 @@ void gameDialog::init(bool useOvr) {
 		fRenderViewAngle  = OculusRift::sfOvr.GetFieldOfView();
 		fShowWeapon = false;
 		glfwDisable(GLFW_MOUSE_CURSOR);
-		fShowMouse = true;
 	} else {
 		fRenderViewAngle  = 60.0f;
 	}
@@ -1219,7 +1218,7 @@ void gameDialog::Update() {
 	}
 	gGameDialog.UpdateRunningStatus(false);
 
-	if (gOptions.fFullScreen && !fStereoView) {
+	if (gOptions.fFullScreen || fStereoView) {
 		// Full screen, which means Windows mouse is usually disabled. But there are cases when it is needed.
 		bool showMouseFullscreen = false;
 		static bool wasShowingMouse = false;
@@ -1227,10 +1226,19 @@ void gameDialog::Update() {
 			showMouseFullscreen = true;
 		if (wasShowingMouse && !showMouseFullscreen) {
 			glfwDisable(GLFW_MOUSE_CURSOR);
+			fShowMouse = false;
+			fRenderControl.SetMouse(0, 0, false);
 			wasShowingMouse = false;
 		}
 		if (!wasShowingMouse && showMouseFullscreen) {
-			glfwEnable(GLFW_MOUSE_CURSOR);
+			int x = gViewport[2]/2;
+			int y = gViewport[3]/2;
+			glfwSetMousePos(x, y);
+			if (fStereoView) {
+				fShowMouse = true;
+				fRenderControl.SetMouse(x, y, true);
+			} else
+				glfwEnable(GLFW_MOUSE_CURSOR);
 			wasShowingMouse = true;
 		}
 	}

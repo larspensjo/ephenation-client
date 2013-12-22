@@ -7,7 +7,6 @@ Oculus Rift
 * Dialogs are usually made for high resolution screens, so they become very big
 * Information text drawn by vsfl does not show properly in stereo mode
 * Use bigger render target, to use more of the OVR display
-* The mouse pointer should be hidden when not needed
 * The OVR checkbox in options doesn't reflect the settings correctly
 * Drawing monster stats should use gProjectionView
 * The map should only be computed once in OVR mode, not once for each eye
