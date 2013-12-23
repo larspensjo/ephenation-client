@@ -32,6 +32,7 @@
 #include "Options.h"
 #include "uniformbuffer.h"
 #include "shadowconfig.h"
+#include "shaders/ScreenSpaceReflection.h"
 #include "shaders/ChunkShader.h"
 #include "shaders/adddynamicshadow.h"
 #include "shaders/DeferredLighting.h"
@@ -159,6 +160,8 @@ void RenderControl::Init(int lightSamplingFactor, bool stereoView) {
 	fAddLocalFog->Init();
 	fAddSSAO.reset(new AddSSAO);
 	fAddSSAO->Init();
+	fScreenSpaceReflection.reset(new ScreenSpaceReflection);
+	fScreenSpaceReflection->Init();
 	fDownSamplingLuminance.reset(new DownSamplingLuminance);
 	fDownSamplingLuminance->Init();
 	fAnimationModels.Init();
@@ -526,6 +529,24 @@ void RenderControl::drawSSAO(void) {
 	glDisable(GL_CULL_FACE);
 	glDepthMask(GL_FALSE);
 	fAddSSAO->Draw();
+	glDepthMask(GL_TRUE);
+	glEnable(GL_CULL_FACE);
+	tm.Stop();
+}
+
+void RenderControl::drawScreenSpaceReflection(void) {
+	static TimeMeasure tm("SSRefl ");
+	tm.Start();
+	DrawBuffers(fCurrentColorAttachment);
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, fNormalsTexture);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, fPositionTexture);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, fCurrentInputColor);
+	glDisable(GL_CULL_FACE);
+	glDepthMask(GL_FALSE);
+	fScreenSpaceReflection->Draw();
 	glDepthMask(GL_TRUE);
 	glEnable(GL_CULL_FACE);
 	tm.Stop();
