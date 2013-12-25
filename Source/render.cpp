@@ -32,6 +32,7 @@
 #include <set>
 
 #include <glm/glm.hpp>
+#include "worsttime.h"
 #include "primitives.h"
 #include "render.h"
 #include "player.h"
@@ -51,6 +52,11 @@
 #include "SoundControl.h"
 
 #define NELEM(x) (sizeof(x)/sizeof(x[0]))
+
+#ifdef _WIN32
+// For some reason, this only helps for Windows
+#define USE_QUERY_OPTIMIZATITON
+#endif
 
 using namespace View;
 
@@ -221,6 +227,7 @@ static bool Outside(int dx, int dy, int dz, const glm::mat4 &modelMatrix) {
 	return outside;
 }
 
+#ifdef USE_QUERY_OPTIMIZATITON
 // Investigate chunks in the specified interval, and test if they are visible.
 // This is done in a pipeline, which means enough cubes should be tested every time
 // to make sure the wait for the pipe line isn't too long.
@@ -244,6 +251,7 @@ static void QuerySetup(StageOneShader *shader, int from, int to, int *listOfVisi
 	glDepthMask(GL_TRUE);
 	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 }
+#endif // USE_QUERY_OPTIMIZATITON
 
 // In construction mode, the borders of the near chunks are drawn to make it easier to see
 // where the chunk ends.
@@ -329,10 +337,15 @@ void DrawLandscape(StageOneShader *shader, DL_Type dlType, bool stereoView) {
 	// printf("DrawLandscape: listOfVisibleChunks %d\n", visibleChunklistLength);
 	bool insideAnyTeleport = false;
 
+	static WorstTime opaque("Opaque");
+	if (dlType == DL_NoTransparent)
+		opaque.Start();
+
 	// We need to know which TP is the nearest.
 	float distanceToNearTP2 = 1000.0f*1000.0f; // Distance^2 to the nearest TP, initialized to something big.
 	glm::vec3 TPPosition;
 	for (int i=0; i<visibleChunklistLength; i++) {
+#ifdef USE_QUERY_OPTIMIZATITON
 		if (i%NUMQUERIES == 0 && dlType == DL_NoTransparent) {
 			// Request NUMQUERIES queries, every NUMQUERIES chunk.
 			// The chunks that are tested is not the same ones that will be drawn,
@@ -347,15 +360,18 @@ void DrawLandscape(StageOneShader *shader, DL_Type dlType, bool stereoView) {
 			if (to > from)
 				QuerySetup(shader, from, to, listOfVisibleChunks); // Initiate the query for a group of chunks
 		}
+#endif
 		int ind = listOfVisibleChunks[i];
 		if (dlType == DL_OnlyTransparent)
 			ind = listOfVisibleChunks[visibleChunklistLength-i-1]; // Read chunks in reverse order for transparent objects
+#ifdef USE_QUERY_OPTIMIZATITON
 		if (i >= NUMQUERIES && dlType == DL_NoTransparent) { // There is no query initiated for the first NUMQUERIES chunks.
 			GLuint numSamples = 1;
 			glGetQueryObjectuiv(sQueryId[i%(NUMQUERIES*2)], GL_QUERY_RESULT, &numSamples);
 			if (numSamples == 0)
 				continue; // No pixels changed by this chunk, skip it!
 		}
+#endif
 		int dx = sChunkDistances[ind].dx;
 		int dy = sChunkDistances[ind].dy;
 		int dz = sChunkDistances[ind].dz;
@@ -432,6 +448,8 @@ void DrawLandscape(StageOneShader *shader, DL_Type dlType, bool stereoView) {
 			}
 		}
 	}
+	if (dlType == DL_NoTransparent)
+		opaque.Stop();
 
 	if (dlType == DL_OnlyTransparent) {
 		static bool wasNearTP = false;
