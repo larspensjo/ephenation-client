@@ -138,8 +138,6 @@
 		<Unit filename="dialogs/userinterface-base.rcss" />
 		<Unit filename="dialogs/userinterface-ovr.rml" />
 		<Unit filename="dialogs/userinterface.rml" />
-		<Unit filename="distro/usr/bin/ephenation" />
-		<Unit filename="distro/usr/share/applications/ephenation.desktop" />
 		<Unit filename="errormanager.cpp" />
 		<Unit filename="errormanager.h" />
 		<Unit filename="fboflat.cpp" />
@@ -148,6 +146,8 @@
 		<Unit filename="gamedialog.h" />
 		<Unit filename="imageloader.cpp" />
 		<Unit filename="imageloader.h" />
+		<Unit filename="linuxdistro/usr/bin/ephenation" />
+		<Unit filename="linuxdistro/usr/share/applications/ephenation.desktop" />
 		<Unit filename="main.cpp" />
 		<Unit filename="manageanimation.cpp" />
 		<Unit filename="manageanimation.h" />
