@@ -4,6 +4,6 @@ Name=Ephenation 5.0b1
 GenericName=MMORPG
 Type=Application
 Icon=/usr/share/ephenation/ephenation.ico
-Exec=ephenation --gamedata=/usr/share/ephenation --debug
+Exec=ephenation
 Terminal=false
 Categories=Game;

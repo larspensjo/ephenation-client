@@ -262,6 +262,7 @@ debian: $(PROGRAM)
 	(umask 0022; mkdir --mode=0755 -p $(DESTDIR)/usr/share/ephenation/dialogs)
 	(umask 0022; mkdir --mode=0755 -p $(DESTDIR)/usr/share/ephenation/models)
 	(umask 0022; mkdir --mode=0755 -p $(DESTDIR)/usr/share/ephenation/fonts)
+	chmod +x $(DESTDIR)/usr/bin/ephenation
 	strip $(PROGRAM)
 	cp $(PROGRAM) $(DESTDIR)/usr/share/ephenation/
 	cp -r sounds/* $(DESTDIR)/usr/share/ephenation/sounds/
