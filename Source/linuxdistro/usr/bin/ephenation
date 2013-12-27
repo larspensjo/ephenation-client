@@ -1,0 +1,3 @@
+#!/bin/sh
+cd /usr/share/ephenation
+LD_LIBRARY_PATH=. ./ephenation $*

@@ -12,6 +12,7 @@ Oculus Rift
 * Drawing monster stats should use gProjectionView
 * The map should only be computed once in OVR mode, not once for each eye
 * Text in options windows doesn't always show
+* Tilting the head should also tilt the head of the avatar, for other players to see
 
 Graphical effects
 -----------------
@@ -52,5 +53,4 @@ Algorithms
 
 Installation
 ------------
-* Investigate the use of [Ermine](http://www.magicermine.com/features.html) and FPM to create Linux installation
 * Uninstalling the game should also remove the cache.
