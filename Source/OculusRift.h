@@ -25,7 +25,6 @@ class OculusRift
 {
 public:
 	OculusRift();
-	~OculusRift();
 	void Create();
 	float GetFieldOfView() const;
 	float GetInterpupillaryDistance() const;

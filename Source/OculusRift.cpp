@@ -24,16 +24,13 @@ using namespace std;
 #include "OculusRift.h"
 #include "Debug.h"
 
+extern string sgPopup, sgPopupTitle; // Ugly, sorry
+
 using namespace OVR;
 using namespace Controller;
 
 OculusRift::OculusRift() : fSystem(Log::ConfigureDefaultLog(LogMask_All))
 {
-}
-
-OculusRift::~OculusRift()
-{
-	//dtor
 }
 
 void OculusRift::Create() {
@@ -66,16 +63,19 @@ void OculusRift::Create() {
 	   mFusionResult->AttachToSensor(pSensor);
 	}
 
-	if (pHMD) {
-		LPLOG(" [x] HMD Found");
-	} else {
-		LPLOG(" [ ] HMD Not Found");
+	if (pHMD == nullptr) {
+		sgPopupTitle = "Oculus Rift";
+		sgPopup += "No display found.\n";
 	}
 
-	if (pSensor) {
-		LPLOG(" [x] Sensor Found");
-	} else {
-		LPLOG(" [ ] Sensor not found");
+	if (pSensor == nullptr) {
+		sgPopupTitle = "Oculus Rift";
+		sgPopup += "No sensor found, you may need to do 'sudo chmod +rw /dev/hidraw* to enable reading and writing.\n";
+#ifdef _WIN32
+		LPLOG("No sensor found");
+#else
+		LPLOG("No sensor found, you may need to do 'sudo chmod +rw /dev/hidraw* to enable reaading and writing");
+#endif // _WIN32
 	}
 
 	if (InfoLoaded) {
