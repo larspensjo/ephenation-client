@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.0
+Name=Ephenation 5.0b1
+GenericName=MMORPG
+Type=Application
+Icon=/usr/share/ephenation/ephenation.ico
+Exec=ephenation --gamedata=/usr/share/ephenation --debug
+Terminal=false
+Categories=Game;

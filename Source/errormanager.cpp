@@ -36,6 +36,7 @@
 #include <GL/glew.h>
 #include <GL/glfw.h>
 
+#include "Debug.h"
 #include "errormanager.h"
 #include "connection.h"
 #include "client_prot.h"
@@ -64,6 +65,7 @@ void ErrorManager::Report() const {
 	if (str == "")
 		return; // There was no error to report
 
+	LPLOG("%s", str.c_str());
 	if (!fInhibitPopup)
 		this->Win32MessageBox(str);
 

@@ -35,8 +35,9 @@
 #include <fstream>
 #include <string>
 #include <getopt.h>
-
 #include <glm/glm.hpp>
+#include <unistd.h>
+
 #include "connection.h"
 #include "modes.h"
 #include "textures.h"
@@ -235,6 +236,7 @@ static int sHideGUI = 0;
 
 static int sOculusRiftMode = 0;
 
+const char *sGameDataDirArg = "gamedata";
 static struct option long_options[] = {
 	/* These options set a flag. */
 	{"verbose",     no_argument, &gVerbose, 1},
@@ -244,6 +246,7 @@ static struct option long_options[] = {
 	{"hidegui",     no_argument, &sHideGUI, 1},
 	{"ignoreerror", no_argument, &gIgnoreOpenGLErrors, 1},
 	{"ovr",         no_argument, &sOculusRiftMode, 1},
+	{sGameDataDirArg,		required_argument, NULL, 0},
 	{0, 0, 0, 0}
 };
 
@@ -265,7 +268,7 @@ int main(int argc, char** argv) {
 #ifdef unix
 	const char *home = getenv("HOME");
 	// Save Linux Path
-	dataDir = string(home) + "/.ephenation";
+	dataDir = string(home) + "/.config/ephenation";
 	const char *ephenationPath = dataDir.c_str();
 	struct stat st;
 	if (stat(ephenationPath,&st) != 0) {
@@ -289,18 +292,27 @@ int main(int argc, char** argv) {
 		optionsFilename = dataDir + "\\" + optionsFilename; // Fallback
 	}
 #endif
-
+	LPLOG("optionsFilename=%s", optionsFilename.c_str());
 	const char *host = "server1.ephenation.net";
 	int port = 57862;
 	/* getopt_long stores the option index here. */
 	int option_index = 0;
 
 	while(1) {
-		int c = getopt_long (argc, argv, "", long_options, &option_index);
+		int c = getopt_long(argc, argv, "", long_options, &option_index);
 
 		/* Detect the end of the options. */
 		if (c == -1)
 			break;
+		if (c == '?') {
+			LPLOG("Bad argument");
+			std::exit(1);
+		}
+		if (strcmp(long_options[option_index].name, sGameDataDirArg) == 0) {
+			LPLOG("Game data dir %s", optarg);
+			int chdirSuccess = chdir(optarg);
+			ASSERT(chdirSuccess == 0);
+		}
 	}
 	if (optind < argc)
 		host = argv[optind];
@@ -310,6 +322,14 @@ int main(int argc, char** argv) {
 	const char *cacheName = "\\cache";
 #else
 	const char *cacheName = "/cache";
+	FILE *iconFile = std::fopen("ephenation.ico", "r");
+	if (iconFile == nullptr) {
+		const char *err = "Missing game data in current dir (no 'ephenation.ico'). Hint: use argument --gamedata=/usr/share/ephenation";
+		cerr << err << std::endl;
+		LPLOG(err);
+		std::exit(1);
+	}
+	std::fclose(iconFile); // Don't really need the file, just used for testing
 #endif
 
 	char *cachePath = new char[strlen(dataDir.c_str()) + strlen(cacheName) + strlen(host) + 2];
