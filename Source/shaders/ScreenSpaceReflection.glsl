@@ -28,6 +28,8 @@ void main(void)
 }
 
 -- Fragment
+
+// Create a float value 0 to 1 into a color from red, through green and then blue.
 vec3 rainbow(float x) {
 	float level = x * 2.0;
 	float r, g, b;
@@ -48,26 +50,27 @@ vec3 rainbow(float x) {
 float noise(vec3 v) {
 	return snoise((v.xy+v.z)*10);
 }
+uniform sampler2D colTex;     // Color texture sampler
+uniform sampler2D posTex;     // World position texture sampler
+uniform sampler2D normalTex;  // Normal texture sampler
+in vec2 screen;               // The screen position (0 to 1)
 
-uniform sampler2D colTex;     // Input colors
-uniform sampler2D posTex;     // World position
-uniform sampler2D normalTex;  // Normals
-in vec2 screen;               // The screen position
 layout(location = 0) out vec4 color;
 
+// #define CALIBRATE // Define this to get a color coded representation of number of needed iterations
 void main(void)
 {
 	vec3 worldStartingPos = texture(posTex, screen).xyz;
 	vec3 normal = texture(normalTex, screen).xyz;
-	normal.x += noise(worldStartingPos)/20;
-	normal.y += noise(worldStartingPos+100)/20;
+	normal.x += noise(worldStartingPos)/15;
+	normal.y += noise(worldStartingPos+100)/15;
 	vec3 cameraToWorld = worldStartingPos.xyz - UBOCamera.xyz;
 	float cameraToWorldDist = length(cameraToWorld);
 	vec3 cameraToWorldNorm = normalize(cameraToWorld);
-	vec3 refl = normalize(reflect(cameraToWorldNorm, normal));
+	vec3 refl = normalize(reflect(cameraToWorldNorm, normal)); // This is the reflection vector
 #ifdef CALIBRATE
 	if (dot(refl, cameraToWorldNorm) < 0) {
-		// Ignore reflections going backwards towards the camera
+		// Ignore reflections going backwards towards the camera, indicate with white
 		color = vec4(1,1,1,1);
 		return;
 	}
@@ -86,34 +89,42 @@ void main(void)
 	vec3 newPos;
 	vec4 newScreen = vec4(screen, 0, 1);
 	float i = 0;
-	vec3 worldCurrentPos = worldStartingPos;
+	vec3 rayTrace = worldStartingPos;
 	float currentWorldDist, currentWorldTestDist;
 	float incr = 0.4;
-	vec2 lastGoodPos;
 	do {
 		i += 0.04;
-		worldCurrentPos += refl*incr;
+		rayTrace += refl*incr;
 		incr *= 1.3;
-		lastGoodPos = screen.xy;
-		newScreen = UBOProjectionviewMatrix * vec4(worldCurrentPos, 1);
+		newScreen = UBOProjectionviewMatrix * vec4(rayTrace, 1);
 		newScreen /= newScreen.w;
 		newPos = texture(posTex, newScreen.xy/2.0+0.5).xyz;
 		currentWorldDist = length(newPos.xyz - UBOCamera.xyz);
-		currentWorldTestDist = length(worldCurrentPos.xyz - UBOCamera.xyz);
-	} while(newScreen.x < 1 && newScreen.x > -1 && newScreen.y < 1 && newScreen.y > -1 && newScreen.z < 1 && newScreen.z > -1 && currentWorldTestDist < currentWorldDist && i < 1.0);
+		currentWorldTestDist = length(rayTrace.xyz - UBOCamera.xyz);
+		if (newScreen.x > 1 || newScreen.x < -1 || newScreen.y > 1 || newScreen.y < -1 || newScreen.z > 1 || newScreen.z < -1 || i >= 1.0 || cameraToWorldDist > currentWorldTestDist) {
+			fact = 1.0; // Ignore any reflection
+			break; // This is a failure mode.
+		}
+	} while(currentWorldTestDist < currentWorldDist);
 	// } while(0);
 #ifdef CALIBRATE
-	if (newScreen.x > 1 || newScreen.x < -1 || newScreen.y > 1 || newScreen.y < -1)
-		color = vec4(0,0,0,1);
+	if (cameraToWorldDist > currentWorldTestDist)
+		color = vec4(1,1,0,1); // Yellow indicates we found a pixel hidden behind another object
+	else if (newScreen.x > 1 || newScreen.x < -1 || newScreen.y > 1 || newScreen.y < -1)
+		color = vec4(0,0,0,1); // Black used for outside of screen
+	else if (newScreen.z > 1 && newScreen.z < -1)
+		color = vec4(1,1,1,1); // White outside of frustum
 	else
-		color = vec4(rainbow(i), 1);
+		color = vec4(rainbow(i), 1); // Encode number of iterations as a color. Red, then green, and last blue.
 	return;
 #endif
 	vec4 newColor = texture(colTex, newScreen.xy/2.0 + 0.5);
 	if (dot(refl, cameraToWorldNorm) < 0)
 		fact = 1.0; // Ignore reflections going backwards towards the camera
-	if (newScreen.x > 1 || newScreen.x < -1 || newScreen.y > 1 || newScreen.y < -1)
+	else if (newScreen.x > 1 || newScreen.x < -1 || newScreen.y > 1 || newScreen.y < -1)
 		fact = 1.0; // Falling outside of screen
+	else if (cameraToWorldDist > currentWorldTestDist)
+		fact = 1.0;
 	color = origColor*fact + newColor*(1-fact);
 	// color = noise(worldStartingPos); // Debug the noise function
 }
