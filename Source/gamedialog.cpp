@@ -24,6 +24,7 @@
 #include <GL/glfw.h>
 #include <math.h>
 #include <Rocket/Debugger.h>
+#include <Rocket/Controls/Clipboard.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <limits>
@@ -32,6 +33,7 @@
 #define M_PI		3.14159265358979323846
 #endif
 
+#include "clipboard.h"
 #include "primitives.h"
 #include "player.h"
 #include "gamedialog.h"
@@ -1136,6 +1138,14 @@ void gameDialog::init(bool useOvr) {
 }
 
 void gameDialog::Update() {
+#ifndef _WIN32
+	bool active = glfwGetWindowParam(GLFW_ACTIVE);
+	static bool wasActive = false;
+	if (active && !wasActive) {
+		Rocket::Controls::Clipboard::Set(Controller::GetClipBoardString().c_str());
+	}
+	wasActive = active;
+#endif // _WIN32
 	static int wheel = 0;
 	static bool inWater = false;
 	static bool inAir = false;

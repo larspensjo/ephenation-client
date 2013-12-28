@@ -114,6 +114,8 @@
 		<Unit filename="chunkcache.cpp" />
 		<Unit filename="chunkcache.h" />
 		<Unit filename="client_prot.h" />
+		<Unit filename="clipboard.cpp" />
+		<Unit filename="clipboard.h" />
 		<Unit filename="connection.cpp" />
 		<Unit filename="connection.h" />
 		<Unit filename="contrib/bstrlib.c">
