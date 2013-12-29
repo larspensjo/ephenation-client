@@ -51,10 +51,11 @@ void main(void)
 	float ref = distance(UBOCamera.xyz, worldPos.xyz);
 	int num = 0;
 	const int SIZE=20;
-	float p = 1.0/UBOWindowHeight; // Size of one pixel
+	float py = 1.0/UBOWindowHeight; // Size of one pixel
+	float px = 1.0/UBOWindowWidth; // Size of one pixel
 	for (int i=0; i<SIZE; i++) {
 		int ind = i + abs(int(worldPos.x*12.32));
-		vec2 sampleInd = screen + (rand(worldPos.xy, normal.xy)*2-1)*p*20;
+		vec2 sampleInd = screen + (rand(worldPos.xy, normal.xy)*2-1)*vec2(px,py)*20;
 		vec3 sample = texture(posTex, sampleInd).xyz;
 		float dist = distance(UBOCamera.xyz, sample);
 		if (abs(dist-ref) > 0.2) { num-=10; }

@@ -50,6 +50,7 @@ struct Data {
 	int performance;
 	int dynamicshadows;
 	int windowheight; // Height of window, in pixels.
+	int windowWidth;  // Width of window, in pixels.
 	int toggleTesting;
 	int belowGround; // True when player is below ground
 	float exposure;
@@ -91,6 +92,7 @@ void UniformBuffer::Update(bool ovrMode) const {
 	data.camera = fCamera;
 	data.projectionviewmatrix = gProjectionMatrix * gViewMatrix;
 	data.windowheight = gViewport[3];
+	data.windowWidth = gViewport[2];
 	data.toggleTesting = gToggleTesting;
 	data.exposure = gOptions.fExposure;
 	data.ambientLight = gOptions.fAmbientLight / 200.0f;
