@@ -108,7 +108,6 @@ gameDialog::gameDialog() {
 	fHealthBar = 0;
 	fDrawTexture = 0;
 	fCurrentEffect = EFFECT_NONE;
-	fCalibrationMode = CALIB_NONE;
 	fCurrentRocketContextInput = 0;
 	fFPS_Element = 0;
 	fPlayerStatsOneLiner_Element = 0;
@@ -768,32 +767,17 @@ void gameDialog::HandleKeyPress(int key) {
 		}
 		break;
     case 'U':
-            if (gMode.Get() == GameMode::CONSTRUCT) {
-                fUndoOperator.undoOperation();
-            }
+		if (gMode.Get() == GameMode::CONSTRUCT) {
+			fUndoOperator.undoOperation();
+		}
 		break;
-       case 'R':
-            if (gMode.Get() == GameMode::CONSTRUCT) {
-                fUndoOperator.redoOperation();
-            }
+	case 'R':
+		if (gMode.Get() == GameMode::CONSTRUCT) {
+			fUndoOperator.redoOperation();
+		}
 		break;
 	case GLFW_KEY_KP_SUBTRACT:
-		switch(fCalibrationMode) {
-		case CALIB_AMBIENT:
-			gOptions.fAmbientLight -= 1;
-			gMsgWindow.Add("Ambient light: %f", gOptions.fAmbientLight/100.0);
-			break;
-		case CALIB_EXPOSURE:
-			gOptions.fExposure /= 1.1f;
-			gMsgWindow.Add("Exposure: %f", gOptions.fExposure);
-			break;
-		case CALIB_WHITE_POINT:
-			gOptions.fWhitePoint /= 1.1f;
-			gMsgWindow.Add("White point: %f", gOptions.fWhitePoint);
-			break;
-		case CALIB_NONE:
-			break;
-		}
+		UpdateCalibrationConstant(false);
 		break;
 	case '-': {
 		maxRenderDistance -= 5.0;
@@ -805,22 +789,7 @@ void gameDialog::HandleKeyPress(int key) {
 		break;
 	}
 	case GLFW_KEY_KP_ADD:
-		switch(fCalibrationMode) {
-		case CALIB_AMBIENT:
-			gOptions.fAmbientLight += 1;
-			gMsgWindow.Add("Ambient light: %f", gOptions.fAmbientLight/100.0);
-			break;
-		case CALIB_EXPOSURE:
-			gOptions.fExposure *= 1.1f;
-			gMsgWindow.Add("Exposure: %f", gOptions.fExposure);
-			break;
-		case CALIB_WHITE_POINT:
-			gOptions.fWhitePoint *= 1.1f;
-			gMsgWindow.Add("White point: %f", gOptions.fWhitePoint);
-			break;
-		case CALIB_NONE:
-			break;
-		}
+		UpdateCalibrationConstant(true);
 		break;
 	case '+': {
 		// #255 long distances are not handled very well by neither server nor client
@@ -845,6 +814,30 @@ void gameDialog::HandleKeyPress(int key) {
 		break;
 	}
 	gGameDialog.UpdateRunningStatus(false);
+}
+
+void gameDialog::UpdateCalibrationConstant(bool increase) {
+	const float fact = 1.05f;
+	switch(fCalibrationMode) {
+	case Calibration::Ambient:
+		gOptions.fAmbientLight += increase ? 1 : -1;
+		gMsgWindow.Add("Ambient light: %f", gOptions.fAmbientLight/100.0);
+		break;
+	case Calibration::Exposure:
+		gOptions.fExposure *= increase ? fact : 1.0f/fact;
+		gMsgWindow.Add("Exposure: %f", gOptions.fExposure);
+		break;
+	case Calibration::WhitePoint:
+		gOptions.fWhitePoint *= increase ? fact : 1.0f/fact;
+		gMsgWindow.Add("White point: %f", gOptions.fWhitePoint);
+		break;
+	case Calibration::Factor:
+		fCalibrationFactor *= increase ? fact : 1.0f/fact;
+		gUniformBuffer.SetcalibrationFactor(fCalibrationFactor);
+		gMsgWindow.Add("Cal fact: %f", fCalibrationFactor);
+	case Calibration::None:
+		break;
+	}
 }
 
 void gameDialog::HandleKeyRelease(int key) {

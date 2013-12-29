@@ -54,6 +54,7 @@ struct Data {
 	int belowGround; // True when player is below ground
 	float exposure;
 	float ambientLight;
+	float calibrationFactor;
 	//
 	// Oculus rift parameters
 	//
@@ -93,6 +94,7 @@ void UniformBuffer::Update(bool ovrMode) const {
 	data.toggleTesting = gToggleTesting;
 	data.exposure = gOptions.fExposure;
 	data.ambientLight = gOptions.fAmbientLight / 200.0f;
+	data.calibrationFactor = fDebugfactor;
 	data.belowGround = Model::gPlayer.BelowGround();
 	data.ovrDistortion = fDistortion;
 	if (fLeftEeye)

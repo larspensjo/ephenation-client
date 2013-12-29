@@ -33,6 +33,7 @@ layout(std140) uniform GlobalData {
 	int UBOBelowGround;
 	float UBOexposure;
 	float UBOambientLight;
+	float UBOcalibrationFactor;
 	//
 	// Oculus rift parameters
 	//
