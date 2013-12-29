@@ -1149,7 +1149,9 @@ void gameDialog::Update() {
 	int newWheel = glfwGetMouseWheel();
 	int zoomDelta = 0;
 	if (newWheel != wheel) {
-		if (fCurrentRocketContextInput) {
+		if (fCalibrationMode == Calibration::Factor) {
+			UpdateCalibrationConstant(newWheel > wheel);
+		} else if (fCurrentRocketContextInput) {
 			fCurrentRocketContextInput->ProcessMouseWheel(wheel-newWheel, rocketKeyModifiers);
 		} else if (gMode.Get() == GameMode::CONSTRUCT) {
 			fBuildingBlocks->UpdateSelection(newWheel);
