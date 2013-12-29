@@ -33,6 +33,7 @@
 #include "uniformbuffer.h"
 #include "shadowconfig.h"
 #include "shaders/ScreenSpaceReflection.h"
+#include "shaders/DistanceBlurring.h"
 #include "shaders/ChunkShader.h"
 #include "shaders/adddynamicshadow.h"
 #include "shaders/DeferredLighting.h"
@@ -162,6 +163,8 @@ void RenderControl::Init(int lightSamplingFactor, bool stereoView) {
 	fAddSSAO->Init();
 	fScreenSpaceReflection.reset(new ScreenSpaceReflection);
 	fScreenSpaceReflection->Init();
+	fDistanceBlurring.reset(new DistanceBlurring);
+	fDistanceBlurring->Init();
 	fDownSamplingLuminance.reset(new DownSamplingLuminance);
 	fDownSamplingLuminance->Init();
 	fAnimationModels.Init();
@@ -337,6 +340,11 @@ void RenderControl::Draw(bool underWater, shared_ptr<const Model::Object> select
 		drawLocalFog(); // This should come late in the drawing process, as we don't want light effects added to fog
 
 	// Add gadgets, ui, maps and other overlays
+	if (gOptions.fPerformance > 1 && !stereoView) {
+		// The Oculus will have its own blurring functionality
+		ToggleRenderTarget();
+		drawDistanceBlurring();
+	}
 	if (showMap)
 		drawMap(mapWidth, stereoView);
 	if (showInvent)
@@ -547,6 +555,20 @@ void RenderControl::drawScreenSpaceReflection(void) {
 	glDisable(GL_CULL_FACE);
 	glDepthMask(GL_FALSE);
 	fScreenSpaceReflection->Draw();
+	glDepthMask(GL_TRUE);
+	glEnable(GL_CULL_FACE);
+	tm.Stop();
+}
+
+void RenderControl::drawDistanceBlurring(void) {
+	static TimeMeasure tm("Blur ");
+	tm.Start();
+	DrawBuffers(fCurrentColorAttachment);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, fCurrentInputColor);
+	glDisable(GL_CULL_FACE);
+	glDepthMask(GL_FALSE);
+	fDistanceBlurring->Draw();
 	glDepthMask(GL_TRUE);
 	glEnable(GL_CULL_FACE);
 	tm.Stop();

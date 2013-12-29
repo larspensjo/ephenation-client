@@ -36,6 +36,7 @@ class DownSamplingLuminance;
 class FBOFlat;
 class GaussianBlur;
 class ScreenSpaceReflection;
+class DistanceBlurring;
 
 namespace Model {
 	class Object;
@@ -121,6 +122,7 @@ private:
 	std::unique_ptr<DownSamplingLuminance> fDownSamplingLuminance;
 	std::unique_ptr<GaussianBlur> fGaussianBlur;
 	std::unique_ptr<ScreenSpaceReflection> fScreenSpaceReflection;
+	std::unique_ptr<DistanceBlurring> fDistanceBlurring;
 	// Use two FBOs to switch between for blurring
 	std::unique_ptr<FBOFlat> fboDownSampleLum1, fboDownSampleLum2;
 	ChunkShader *fShader;
@@ -156,6 +158,7 @@ private:
 	void drawMap(int mapWidth, bool stereoView);
 	void drawSSAO(void);
 	void drawScreenSpaceReflection(void);
+	void drawDistanceBlurring(void);
 	void drawColoredLights() const;
 	void drawMousePointer();
 	void drawFullScreenPixmap(GLuint id, bool stereoView) const;
