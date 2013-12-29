@@ -62,10 +62,11 @@ void main(void)
 {
 	vec3 worldStartingPos = texture(posTex, screen).xyz;
 	vec3 normal = texture(normalTex, screen).xyz;
-	normal.x += noise(worldStartingPos)/15;
-	normal.y += noise(worldStartingPos+100)/15;
 	vec3 cameraToWorld = worldStartingPos.xyz - UBOCamera.xyz;
 	float cameraToWorldDist = length(cameraToWorld);
+	float scaleNormal = max(10.0, cameraToWorldDist*5.0);
+	normal.x += noise(worldStartingPos)/scaleNormal;
+	normal.y += noise(worldStartingPos+100)/scaleNormal;
 	vec3 cameraToWorldNorm = normalize(cameraToWorld);
 	vec3 refl = normalize(reflect(cameraToWorldNorm, normal)); // This is the reflection vector
 #ifdef CALIBRATE
