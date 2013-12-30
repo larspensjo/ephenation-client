@@ -47,6 +47,7 @@ void ScreenSpaceReflection::Init(void) {
 
 void ScreenSpaceReflection::GetLocations(void) {
 	// The following uniforms only need to be initialized once
+	glUniform1i(this->GetUniformLocation("materialTex"), 3);
 	glUniform1i(this->GetUniformLocation("normalTex"), 2);
 	glUniform1i(this->GetUniformLocation("posTex"), 1);
 	glUniform1i(this->GetUniformLocation("colTex"), 0);

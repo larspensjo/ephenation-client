@@ -53,6 +53,7 @@ float noise(vec3 v) {
 uniform sampler2D colTex;     // Color texture sampler
 uniform sampler2D posTex;     // World position texture sampler
 uniform sampler2D normalTex;  // Normal texture sampler
+uniform sampler2D materialTex;  // Material texture sampler
 in vec2 screen;               // The screen position (0 to 1)
 
 layout(location = 0) out vec4 color;
@@ -60,6 +61,7 @@ layout(location = 0) out vec4 color;
 // #define CALIBRATE // Define this to get a color coded representation of number of needed iterations
 void main(void)
 {
+	int effectType = int(texture(materialTex, screen).r * 256.0) & 0xf;
 	vec3 worldStartingPos = texture(posTex, screen).xyz;
 	vec3 normal = texture(normalTex, screen).xyz;
 	vec3 cameraToWorld = worldStartingPos.xyz - UBOCamera.xyz;
@@ -79,6 +81,8 @@ void main(void)
 	vec4 origColor = texture(colTex, screen);
 	float cosAngle = abs(dot(normal, cameraToWorldNorm)); // Will be a value between 0 and 1
 	float fact = 1 - cosAngle;
+	if (effectType != 1)
+		fact = 0.0;
 	fact = min(1, 1.3 - fact*fact);
 #ifndef CALIBRATE
 	if (fact > 0.95) {

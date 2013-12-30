@@ -469,6 +469,12 @@ void ChunkObject::FindTriangles(const Chunk *cp, bool pickingMode, int pdx, int 
 						tri2.v[0].SetAmbient(ambient); tri2.v[1].SetAmbient(ambient); tri2.v[2].SetAmbient(ambient);
 					}
 
+					unsigned int material = 0;
+					if (blxm1 >= BT_EffWatery && blxm1 <= BT_EffRes15)
+						material = blxm1 - BT_EffOffset;
+					tri1.v[0].SetMaterial(material); tri1.v[1].SetMaterial(material); tri1.v[2].SetMaterial(material);
+					tri2.v[0].SetMaterial(material); tri2.v[1].SetMaterial(material); tri2.v[2].SetMaterial(material);
+
 					if (bl == BT_Soil && MostlyFacingUpwards(tri1.v[0])) {
 						b[BT_TopSoil].push_back(tri1);
 						b[BT_TopSoil].push_back(tri2);
@@ -512,6 +518,12 @@ void ChunkObject::FindTriangles(const Chunk *cp, bool pickingMode, int pdx, int 
 						tri1.v[0].SetAmbient(ambient); tri1.v[1].SetAmbient(ambient); tri1.v[2].SetAmbient(ambient);
 						tri2.v[0].SetAmbient(ambient); tri2.v[1].SetAmbient(ambient); tri2.v[2].SetAmbient(ambient);
 					}
+
+					unsigned int material = 0;
+					if (blym1 >= BT_EffWatery && blym1 <= BT_EffRes15)
+						material = blym1 - BT_EffOffset;
+					tri1.v[0].SetMaterial(material); tri1.v[1].SetMaterial(material); tri1.v[2].SetMaterial(material);
+					tri2.v[0].SetMaterial(material); tri2.v[1].SetMaterial(material); tri2.v[2].SetMaterial(material);
 
 					if (bl == BT_Soil && MostlyFacingUpwards(tri1.v[0])) {
 						b[BT_TopSoil].push_back(tri1);
@@ -557,6 +569,12 @@ void ChunkObject::FindTriangles(const Chunk *cp, bool pickingMode, int pdx, int 
 						tri2.v[0].SetAmbient(ambient); tri2.v[1].SetAmbient(ambient); tri2.v[2].SetAmbient(ambient);
 					}
 
+					unsigned int material = 0;
+					if (blzm1 >= BT_EffWatery && blzm1 <= BT_EffRes15)
+						material = blzm1 - BT_EffOffset;
+					tri1.v[0].SetMaterial(material); tri1.v[1].SetMaterial(material); tri1.v[2].SetMaterial(material);
+					tri2.v[0].SetMaterial(material); tri2.v[1].SetMaterial(material); tri2.v[2].SetMaterial(material);
+
 					b[bl].push_back(tri1);
 					b[bl].push_back(tri2);
 				}
@@ -595,6 +613,12 @@ void ChunkObject::FindTriangles(const Chunk *cp, bool pickingMode, int pdx, int 
 						tri1.v[0].SetAmbient(ambient); tri1.v[1].SetAmbient(ambient); tri1.v[2].SetAmbient(ambient);
 						tri2.v[0].SetAmbient(ambient); tri2.v[1].SetAmbient(ambient); tri2.v[2].SetAmbient(ambient);
 					}
+
+					unsigned int material = 0;
+					if (blxp1 >= BT_EffWatery && blxp1 <= BT_EffRes15)
+						material = blxp1 - BT_EffOffset;
+					tri1.v[0].SetMaterial(material); tri1.v[1].SetMaterial(material); tri1.v[2].SetMaterial(material);
+					tri2.v[0].SetMaterial(material); tri2.v[1].SetMaterial(material); tri2.v[2].SetMaterial(material);
 
 					if (bl == BT_Soil && MostlyFacingUpwards(tri1.v[0])) {
 						b[BT_TopSoil].push_back(tri1);
@@ -639,6 +663,12 @@ void ChunkObject::FindTriangles(const Chunk *cp, bool pickingMode, int pdx, int 
 						tri1.v[0].SetAmbient(ambient); tri1.v[1].SetAmbient(ambient); tri1.v[2].SetAmbient(ambient);
 						tri2.v[0].SetAmbient(ambient); tri2.v[1].SetAmbient(ambient); tri2.v[2].SetAmbient(ambient);
 					}
+
+					unsigned int material = 0;
+					if (blyp1 >= BT_EffWatery && blyp1 <= BT_EffRes15)
+						material = blyp1 - BT_EffOffset;
+					tri1.v[0].SetMaterial(material); tri1.v[1].SetMaterial(material); tri1.v[2].SetMaterial(material);
+					tri2.v[0].SetMaterial(material); tri2.v[1].SetMaterial(material); tri2.v[2].SetMaterial(material);
 
 					if (bl == BT_Soil && MostlyFacingUpwards(tri1.v[0])) {
 						b[BT_TopSoil].push_back(tri1);
@@ -688,6 +718,12 @@ void ChunkObject::FindTriangles(const Chunk *cp, bool pickingMode, int pdx, int 
 						tri1.v[0].SetAmbient(ambient); tri1.v[1].SetAmbient(ambient); tri1.v[2].SetAmbient(ambient);
 						tri2.v[0].SetAmbient(ambient); tri2.v[1].SetAmbient(ambient); tri2.v[2].SetAmbient(ambient);
 					}
+
+					unsigned int material = 0;
+					if (blzp1 >= BT_EffWatery && blzp1 <= BT_EffRes15)
+						material = blzp1 - BT_EffOffset;
+					tri1.v[0].SetMaterial(material); tri1.v[1].SetMaterial(material); tri1.v[2].SetMaterial(material);
+					tri2.v[0].SetMaterial(material); tri2.v[1].SetMaterial(material); tri2.v[2].SetMaterial(material);
 
 					// This is a special case. Replace the texture of the top soil with another block type (green grass).
 					if (bl == BT_Soil && MostlyFacingUpwards(tri1.v[0])) {

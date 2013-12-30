@@ -127,6 +127,7 @@ RenderControl::~RenderControl() {
 		glDeleteTextures(1, &fLightsTexture);
 		glDeleteTextures(1, &fDownSampleLumTexture1);
 		glDeleteTextures(1, &fDownSampleLumTexture2);
+		glDeleteTextures(1, &fSurfaceProperties);
 	}
 }
 
@@ -141,6 +142,7 @@ void RenderControl::Init(int lightSamplingFactor, bool stereoView) {
 	glGenTextures(1, &fNormalsTexture); gDebugTextures.push_back(DebugTexture(fNormalsTexture, "Deferred normals"));
 	glGenTextures(1, &fBlendTexture); gDebugTextures.push_back(DebugTexture(fBlendTexture, "Deferred blend"));
 	glGenTextures(1, &fLightsTexture); gDebugTextures.push_back(DebugTexture(fLightsTexture, "Deferred lighting"));
+	glGenTextures(1, &fSurfaceProperties);  gDebugTextures.push_back(DebugTexture(fSurfaceProperties, "Surface props"));
 
 	glGenFramebuffers(1, &fboName);
 
@@ -243,6 +245,14 @@ void RenderControl::Resize(GLsizei width, GLsizei height) {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
+	// Generate and bind the texture for surface properties
+	glBindTexture(GL_TEXTURE_2D, fSurfaceProperties);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
 	// Attach all textures and the depth buffer
 	glBindFramebuffer(GL_FRAMEBUFFER, fboName);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, fDepthBuffer);
@@ -252,6 +262,7 @@ void RenderControl::Resize(GLsizei width, GLsizei height) {
 	glFramebufferTexture2D(GL_FRAMEBUFFER, ColAttachNormals, GL_TEXTURE_2D, fNormalsTexture, 0);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, ColAttachBlend, GL_TEXTURE_2D, fBlendTexture, 0);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, ColAttachLighting, GL_TEXTURE_2D, fLightsTexture, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, ColAttachSurfaceProps, GL_TEXTURE_2D, fSurfaceProperties, 0);
 	glReadBuffer(GL_NONE);
 
 	GLenum fboStatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
@@ -329,7 +340,6 @@ void RenderControl::Draw(bool underWater, shared_ptr<const Model::Object> select
 	ToggleRenderTarget();
 	DrawBuffers(fCurrentColorAttachment);
 	drawDeferredLighting(underWater, gOptions.fWhitePoint);
-
 	// Do some post processing
 	if (!underWater)
 		drawPointShadows();
@@ -340,6 +350,10 @@ void RenderControl::Draw(bool underWater, shared_ptr<const Model::Object> select
 		drawLocalFog(); // This should come late in the drawing process, as we don't want light effects added to fog
 
 	// Add gadgets, ui, maps and other overlays
+	if (gOptions.fPerformance > 2) {
+		ToggleRenderTarget();
+		drawScreenSpaceReflection();
+	}
 	if (gOptions.fPerformance > 1 && !stereoView) {
 		// The Oculus will have its own blurring functionality
 		ToggleRenderTarget();
@@ -378,12 +392,15 @@ void RenderControl::drawClearFBO(void) {
 	DrawBuffers(ColAttachPosition, ColAttachNormals, ColAttachBlend, ColAttachLighting);
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f); // Set everything to zero.
 	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
+
+	DrawBuffers(ColAttachSurfaceProps);
+	glClear(GL_COLOR_BUFFER_BIT);
 }
 
 void RenderControl::drawOpaqueLandscape(bool stereoView) {
 	static TimeMeasure tm("Landsc");
 	tm.Start();
-	DrawBuffers(fCurrentColorAttachment, ColAttachPosition, ColAttachNormals); // Nothing is transparent here, do not produce any blending data on the 4:th render target.
+	DrawBuffers(fCurrentColorAttachment, ColAttachPosition, ColAttachNormals, ColAttachSurfaceProps); // Nothing is transparent here, do not produce any blending data on the 4:th render target.
 	fShader->EnableProgram(); // Get program back again after the skybox.
 	DrawLandscape(fShader, DL_NoTransparent, stereoView);
 	tm.Stop();
@@ -546,6 +563,8 @@ void RenderControl::drawScreenSpaceReflection(void) {
 	static TimeMeasure tm("SSRefl ");
 	tm.Start();
 	DrawBuffers(fCurrentColorAttachment);
+	glActiveTexture(GL_TEXTURE3);
+	glBindTexture(GL_TEXTURE_2D, fSurfaceProperties);
 	glActiveTexture(GL_TEXTURE2);
 	glBindTexture(GL_TEXTURE_2D, fNormalsTexture);
 	glActiveTexture(GL_TEXTURE1);

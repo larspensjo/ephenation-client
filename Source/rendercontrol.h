@@ -106,6 +106,7 @@ private:
 	GLuint fDepthBuffer; // Render target buffers
 	GLuint fPositionTexture, fNormalsTexture, fBlendTexture, fLightsTexture;
 	GLuint fRendertarget1 = 0, fRendertarget2 = 0;
+	GLuint fSurfaceProperties = 0;
 	GLsizei fWidth, fHeight;
 
 	GLuint fDownSampleLumTexture1, fDownSampleLumTexture2;
@@ -168,7 +169,7 @@ private:
 	// drawClearFBO() if this list is changed.
 	enum ColorAttachment {
 		ColAttachRenderTarget1 = GL_COLOR_ATTACHMENT0,
-		ColAttachPosition, ColAttachNormals, ColAttachBlend, ColAttachLighting, ColAttachRenderTarget2
+		ColAttachPosition, ColAttachNormals, ColAttachBlend, ColAttachLighting, ColAttachRenderTarget2, ColAttachSurfaceProps
 	};
 
 	GLuint fCurrentInputColor = 0;

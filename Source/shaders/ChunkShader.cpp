@@ -52,6 +52,7 @@ void ChunkShader::PreLinkCallback(GLuint prg) {
 	// Ensure that the same index for inputs are always used (to enable the use of the same VAO on other shaders).
 	glBindAttribLocation(prg, StageOneShader::Normal, "normal");
 	glBindAttribLocation(prg, StageOneShader::Vertex, "vertex");
+	glBindAttribLocation(prg, StageOneShader::Material, "material");
 }
 
 void ChunkShader::GetLocations(void) {

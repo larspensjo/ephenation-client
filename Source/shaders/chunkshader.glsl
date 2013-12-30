@@ -30,11 +30,14 @@ uniform mat4 modelMatrix;
 uniform vec3 textOffsMulti = vec3(0,0,1);
 in vec4 normal;
 in vec4 vertex; // First 3 are vertex coordinates, the 4:th is texture data coded as two scaled bytes
+in float material;
 out vec3 fragmentNormal;
 out vec2 fragmentTexCoord;
 out float extIntensity;
 out float extAmbientLight;
 out vec3 position;
+out float materialEffectDensity;
+out flat int materialEffectType;
 void main(void)
 {
 	vec4 vertexScaled = vec4(vec3(vertex) / VERTEXSCALING, 1);
@@ -52,6 +55,8 @@ void main(void)
 	// "	extIntensity = 0.1;
 	extAmbientLight = (intens2 >> 4)/15.0;
 	// "   extAmbientLight = 1;
+	materialEffectDensity = 0;
+	materialEffectType = int(material);
 }
 
 -- Fragment
@@ -62,9 +67,12 @@ in vec2 fragmentTexCoord;
 in float extIntensity;
 in float extAmbientLight;
 in vec3 position;       // The model coordinate, as given by the vertex shader
+in float materialEffectDensity;
+in flat int materialEffectType;
 layout(location = 0) out vec4 diffuseOutput;
 layout(location = 1) out vec4 posOutput;
 layout(location = 2) out vec4 normOutput;
+layout(location = 3) out float materialOutput;
 void main(void)
 {
 	if (distance(UBOCamera.xyz, position) > UBOViewingDistance) { discard; return; }
@@ -75,4 +83,5 @@ void main(void)
 	posOutput.a = extIntensity;                          // Use the alpha channel for sun intensity. TODO: This is a 32-bit float, very inefficient
 	normOutput = vec4(fragmentNormal, extAmbientLight); // Use alpha channel of normal for ambient info.
 	diffuseOutput = clr;
+	materialOutput = ((int(materialEffectDensity*15.0) << 4) + materialEffectType) / 256.0;
 }
