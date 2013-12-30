@@ -25,6 +25,8 @@ layout(std140) uniform GlobalData {
 	mat4 UBOProjectionviewMatrix;
 	mat4 UBOViewMatrix;
 	vec4 UBOCamera;
+	vec4 UBOOVRDistortion;
+	vec2 UBOLensCenter;
 	float UBOViewingDistance;
 	int UBOPerformance;
 	int UBODynamicshadows;
@@ -35,11 +37,6 @@ layout(std140) uniform GlobalData {
 	float UBOexposure;
 	float UBOambientLight;
 	float UBOcalibrationFactor;
-	//
-	// Oculus rift parameters
-	//
-	vec4 UBOOVRDistortion;
-	vec2 UBOLensCenter;
 	int UBOEnableDistortion;
 };
 

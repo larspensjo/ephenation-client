@@ -46,6 +46,8 @@ struct Data {
 	glm::mat4 projectionviewmatrix;
 	glm::mat4 viewmatrix;
 	glm::vec4 camera; // Only three floats needed, but std140 will align to 4 anyway.
+	glm::vec4 ovrDistortion;
+	glm::vec2 ovrlenscenter;
 	float viewingdistance;
 	int performance;
 	int dynamicshadows;
@@ -56,11 +58,6 @@ struct Data {
 	float exposure;
 	float ambientLight;
 	float calibrationFactor;
-	//
-	// Oculus rift parameters
-	//
-	glm::vec4 ovrDistortion;
-	glm::vec2 ovrlenscenter;
 	int enabledistortion;
 };
 
