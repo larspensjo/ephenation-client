@@ -68,6 +68,7 @@ static GameTexture gameTextures[] = {
 	{ BT_Tree1,         0, "textures/tree-texture1.bmp", "Small tree", TF_SRGB },
 	{ BT_Tree2,         0, "textures/tree-texture2.bmp", "Medium tree", TF_SRGB },
 	{ BT_Tree3,         0, "textures/tree-texture3.bmp", "Big tree", TF_SRGB },
+	{ BT_EffWatery,     0, "textures/WaterDrop.bmp", "Damp walls", TF_SRGB },
 	{ BT_Tuft,          0, "textures/TuftOfGrass.bmp", "Tuft of grass", TF_SRGB|TF_MIPMAP2|TF_NEAREST|TF_BOOLAPHA },
 	{ BT_Flowers,       0, "textures/RedFlowers.bmp", "Flowers", TF_NOMIPMAP|TF_NEAREST|TF_BOOLAPHA },
 	{ BT_SmallFog,      0, "textures/SmallFog.bmp", "Small fog", TF_SRGB },

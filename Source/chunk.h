@@ -67,6 +67,24 @@
 #define BT_GreenLight    32 // Add green light
 #define BT_BlueLight     33 // Add blue light
 
+// A list of surface effects. There can be up to 15 of them, where number zero means no effect.
+#define BT_EffOffset 100 // Used as a offset.
+#define BT_EffWatery 101
+#define BT_EffRes2   102
+#define BT_EffRes3   103
+#define BT_EffRes4   104
+#define BT_EffRes5   105
+#define BT_EffRes6   106
+#define BT_EffRes7   107
+#define BT_EffRes8   108
+#define BT_EffRes9   109
+#define BT_EffRes10  110
+#define BT_EffRes11  111
+#define BT_EffRes12  112
+#define BT_EffRes13  113
+#define BT_EffRes14  114
+#define BT_EffRes15  115
+
 #define BT_Stone2	127 // Use a free block type
 #define BT_TopSoil	128
 #define BT_Teleport 129
