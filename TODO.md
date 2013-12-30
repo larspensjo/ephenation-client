@@ -42,6 +42,7 @@ Other
 * Pre-load chunks of teleport destination
 * Update to newer version of libRocket
 * Teleport shall use a jump parabola instead of instant transfer. If inside rock, black will have to be used.
+* Create About-dialog
 
 Refactoring
 -----------
