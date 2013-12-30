@@ -119,7 +119,13 @@ shared_ptr<Image> loadBMP(const char* filename, bool booleanAlpha) {
 		break;
 	case 124:
 		//Windows V5
-		ASSERT(!"loadBMP: Can't load Windows V5 bitmaps");
+		//V3
+		width = readInt(input);
+		height = readInt(input);
+		input.ignore(2);
+		colorSize = readShort(input);
+		// if (colorSize == 32) printf("%s\n", filename);
+		ASSERT(colorSize == 24 || colorSize == 32 || !"loadBMP: Image is not 24 or 32 bits per pixel");
 		break;
 	default:
 		ASSERT(!"loadBMP: Unknown bitmap format");
