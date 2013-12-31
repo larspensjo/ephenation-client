@@ -1,4 +1,4 @@
-// Copyright 2012-2013 The Ephenation Authors
+// Copyright 2012-2014 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -17,24 +17,32 @@
 
 #pragma once
 
-#include "primitives.h"
-
 #include <memory>
 #include <vector>
+#include <glm/glm.hpp>
+
+#include "primitives.h"
 
 using std::unique_ptr;
 struct TriangleSurfacef;
+class StageOneShader;
 
 namespace View {
 	class Chunk;
 
-/// @brief Manage visible attributes of a chunk.
-/// This is part of the View.
+/// Manage visible attributes of a chunk.
 /// A chunk is 32x32x32 blocks, which can't be used for drawing as it is. It is converted into two
 /// types: visible blocks and special objects. It is the responsibility of this class to take the chunk
 /// data and compute what can be drawn from the chunk.
 class ChunkObject {
 public:
+	/// Draw all lamps
+	void DrawLamps(StageOneShader *shader, glm::vec3 offset) const;
+	void DrawTreasures(StageOneShader *shader, glm::vec3 offset) const;
+	void DrawTrees(StageOneShader *shader, glm::vec3 offset, bool forShadows) const;
+	void FindFogs(glm::vec3 offset) const;
+	void FindSpecialObjects(glm::vec3 offset, float radius) const;
+
 	// The triangle list. There is one list for each block type, as they can't be drawn in
 	// a single call (using different textures).
 	// TODO: Should not be public

@@ -1,4 +1,4 @@
-// Copyright 2012-2013 The Ephenation Authors
+// Copyright 2012-2014 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -161,7 +161,7 @@ public:
 	bool fScheduledForLoading;
 
 	/// Information about graphical objects.
-	/// The referenced object is a 'const', as the content must not change asynchronosuly.
+	/// The referenced object is a 'const', as the content must not change asynchronously.
 	shared_ptr<const ChunkObject> fChunkObject;
 
 	/// The actual blocks in the chunk. The content may change asynchronously, so it can't be a const.
@@ -203,7 +203,7 @@ public:
 
 	/// Draw all objects in the chunk. If 'forShadows' is true, skip doing things that shall not be
 	/// used in the shadow map. dx, dy and dz is the relative distance to the player chunk.
-	void DrawObjects(StageOneShader *shader, int dx, int dy, int dz, bool forShadows);
+	void DrawObjects(StageOneShader *shader, int dx, int dy, int dz, bool forShadows) const;
 	void PrepareOpenGL(StageOneShader *shader, ChunkShaderPicking *pickShader, DL_Type dlType);
 	void ReleaseOpenGLBuffers(void);
 

@@ -1,4 +1,4 @@
-// Copyright 2012-2013 The Ephenation Authors
+// Copyright 2012-2014 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -17,14 +17,23 @@
 
 #include <memory.h>
 #include <set>
+#include <glm/gtc/noise.hpp>
+#include <glm/gtx/closest_point.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 #include "primitives.h"
 #include "ChunkObject.h"
 #include "chunk.h"
 #include "modes.h"
 #include "Options.h"
-#include <glm/gtc/noise.hpp>
-#include <glm/gtx/closest_point.hpp>
+#include "textures.h"
+#include "player.h"
+#include "manageanimation.h"
+#include "billboard.h"
+#include "shapes/Cube.h"
+#include "shaders/StageOneShader.h"
+#include "shapes/quadstage1.h"
+#include "shapes/Tree.h"
 
 using namespace View;
 
@@ -52,6 +61,182 @@ unique_ptr<ChunkObject> ChunkObject::Make(const Chunk *cp, bool pickingMode, int
 bool ChunkObject::Empty(void) const {
 	// If the boundary box doesn't exist, then there are no graphical objects
 	return fBoundXMax < fBoundXMin;
+}
+
+void ChunkObject::DrawLamps(StageOneShader *shader, glm::vec3 offset) const {
+	for (int i=0; i<fNumLamps; i++) {
+		float lampx = (float)fLampList[i].x + offset.x;
+		float lampy = (float)fLampList[i].z + offset.y;
+		float lampz = -(float)fLampList[i].y + offset.z;
+		gDrawObjectList.emplace_back(glm::vec3(lampx, lampy, lampz), fLampList[i].type);
+		glm::mat4 modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(lampx, lampy, lampz));
+		glBindTexture(GL_TEXTURE_2D, GameTexture::LanternSideId); // For now, also used on top and bottom.
+		switch (fLampList[i].type) {
+		case BT_Lamp1:
+			modelMatrix = glm::scale(modelMatrix, glm::vec3(0.2f, 0.4f, 0.2f));
+			shader->Model(modelMatrix);
+			gLantern.Draw();
+			break;
+		case BT_Lamp2:
+			modelMatrix = glm::scale(modelMatrix, glm::vec3(0.3f, 0.6f, 0.3f));
+			shader->Model(modelMatrix);
+			gLantern.Draw();
+			break;
+		}
+	}
+}
+
+void ChunkObject::DrawTreasures(StageOneShader *shader, glm::vec3 offset) const {
+	for (int i=0; i<fNumTreasures; i++) {
+		float x = (float)fTreasureList[i].x + offset.x;
+		float y = (float)fTreasureList[i].z + offset.y + 0.5f;
+		float z = -(float)fTreasureList[i].y + offset.z;
+		gDrawObjectList.emplace_back(glm::vec3(x, y, z), fTreasureList[i].type);
+		glm::mat4 modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(x, y, z));
+		switch (fTreasureList[i].type) {
+		case BT_Treasure:
+			glBindTexture(GL_TEXTURE_2D, GameTexture::Coin);
+			modelMatrix = glm::scale(modelMatrix, glm::vec3(0.3f, 0.3f, 0.3f));
+			modelMatrix = glm::rotate(modelMatrix, float(gCurrentFrameTime*360), glm::vec3(0,1,0));
+			shader->Model(modelMatrix);
+			gQuadStage1.DrawDoubleSide();
+			break;
+		case BT_Quest:
+			glBindTexture(GL_TEXTURE_2D, GameTexture::Quest);
+			modelMatrix = glm::scale(modelMatrix, glm::vec3(0.6f, 0.6f, 0.6f));
+			modelMatrix = glm::rotate(modelMatrix, float(gCurrentFrameTime*360), glm::vec3(0,1,0));
+			shader->Model(modelMatrix);
+			gQuadStage1.DrawDoubleSide();
+			break;
+		}
+	}
+}
+
+void ChunkObject::DrawTrees(StageOneShader *shader, glm::vec3 offset, bool forShadows) const {
+	const float billboardLimit = 80.0f;
+	const float billboardShadowLimit = 45.0f;
+	const float rotateShadowBillboard = -45.0f;
+	const float tiltShadowBillboard = -30.0f;
+	bool belowGround = Model::gPlayer.BelowGround();
+	for (int i=0; i<fNumTree; i++) {
+		float treex = (float)fTreeList[i].x + offset.x;
+		float treey = (float)fTreeList[i].z + offset.y;
+		float treez = -(float)fTreeList[i].y + offset.z;
+		glm::mat4 modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(treex, treey, treez));
+
+		glm::vec3 player = Model::gPlayer.GetOffsetToChunk();
+		float d = glm::distance(player, glm::vec3(treex, treey, treez));
+		float limit = billboardLimit;
+		if (forShadows)
+			limit = billboardShadowLimit;
+
+		switch (fTreeList[i].type) {
+		case BT_Tuft:
+			if (forShadows && gOptions.fPerformance < 4)
+				continue; // Only show shadow if high performance
+			shader->Model(glm::translate(modelMatrix, glm::vec3(0.0f, 0.65f, 0.0f)));
+			glBindTexture(GL_TEXTURE_2D, GameTexture::TuftOfGrass); // This will be used for trunk and all branches.
+			gTuftOfGrass.DrawStatic();
+			break;
+		case BT_Flowers:
+			if (forShadows && gOptions.fPerformance < 4)
+				continue; // Only show shadow if high performance
+			shader->Model(glm::translate(modelMatrix, glm::vec3(0.0f, 0.65f, 0.0f)));
+			glBindTexture(GL_TEXTURE_2D, GameTexture::Flowers); // This will be used for trunk and all branches.
+			gTuftOfGrass.DrawStatic(); // The same model as "tuft of grass" is used, but with a different texture
+			break;
+		case BT_Tree1:
+			if (d > limit) {
+				float angle = -_angleHor;
+				Billboard::Predefined picture = Billboard::tree1;
+				if (forShadows) {
+					angle = rotateShadowBillboard;
+					picture = Billboard::tree1Shadow;
+				}
+				modelMatrix = glm::rotate(modelMatrix, angle, glm::vec3(0, 1, 0));
+				if (forShadows)
+					modelMatrix = glm::rotate(modelMatrix, tiltShadowBillboard, glm::vec3(1, 0, 0));
+				gBillboard.Draw(shader, modelMatrix, picture);
+			} else {
+				shader->Model(modelMatrix);
+				Tree::sfSmallTree.Draw();
+				if ((!gOptions.fDynamicShadows && !gOptions.fStaticShadows) || belowGround) gShadows.Add(treex, treey, treez, 1.5f, 0.8f);
+			}
+			break;
+		case BT_Tree2:
+			if (d > limit) {
+				float angle = -_angleHor;
+				Billboard::Predefined picture = Billboard::tree2;
+				if (forShadows) {
+					angle = rotateShadowBillboard;
+					picture = Billboard::tree2Shadow;
+				}
+				modelMatrix = glm::rotate(modelMatrix, angle, glm::vec3(0, 1, 0));
+				if (forShadows)
+					modelMatrix = glm::rotate(modelMatrix, tiltShadowBillboard, glm::vec3(1, 0, 0));
+				gBillboard.Draw(shader, modelMatrix, picture);
+			} else {
+				shader->Model(modelMatrix);
+				Tree::sfMediumTree.Draw();
+				if ((!gOptions.fDynamicShadows && !gOptions.fStaticShadows) || belowGround) gShadows.Add(treex, treey, treez, 3.0f, 0.8f);
+			}
+			break;
+		case BT_Tree3:
+			if (d > limit) {
+				float angle = -_angleHor;
+				Billboard::Predefined picture = Billboard::tree3;
+				if (forShadows) {
+					angle = rotateShadowBillboard;
+					picture = Billboard::tree3Shadow;
+				}
+				modelMatrix = glm::rotate(modelMatrix, angle, glm::vec3(0, 1, 0));
+				if (forShadows)
+					modelMatrix = glm::rotate(modelMatrix, tiltShadowBillboard, glm::vec3(1, 0, 0));
+				gBillboard.Draw(shader, modelMatrix, picture);
+			} else {
+				shader->Model(modelMatrix);
+				Tree::sfBigTree.Draw();
+				if ((!gOptions.fDynamicShadows && !gOptions.fStaticShadows) || belowGround) gShadows.Add(treex, treey, treez, 4.0f, 0.8f);
+			}
+			break;
+		}
+	}
+}
+
+void ChunkObject::FindFogs(glm::vec3 offset) const {
+	// Just find all fogs, they are drawn later in the deferred shader
+	for (int i=0; i<fNumFogs; i++) {
+		float x = (float)fFogList[i].x + offset.x;
+		float y = (float)fFogList[i].z + offset.y;
+		float z = -(float)fFogList[i].y + offset.z;
+		switch (fFogList[i].type) {
+		case BT_SmallFog:
+			gFogs.Add(x, y, z, LAMP1_DIST);
+			break;
+		case BT_BigFog:
+			gFogs.Add(x, y, z, LAMP2_DIST);
+			break;
+		}
+	}
+}
+
+void ChunkObject::FindSpecialObjects(glm::vec3 offset, float radius) const {
+	for (const auto &item : fSpecialObject) {
+		float x = (float)item.x + offset.x;
+		float y = (float)item.z + offset.y;
+		float z = -(float)item.y + offset.z;
+		switch (item.type) {
+		case BT_RedLight:
+			gLightSources.AddRed(x, y, z, radius);
+			break;
+		case BT_BlueLight:
+			gLightSources.AddBlue(x, y, z, radius);
+			break;
+		case BT_GreenLight:
+			gLightSources.AddGreen(x, y, z, radius);
+			break;
+		}
+	}
 }
 
 // If the coordinate being analyzed is on chunk border, the adjacent chunks need to be queried. That

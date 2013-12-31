@@ -16,11 +16,11 @@ Oculus Rift
 Graphical effects
 -----------------
 * Lamps and spherical fogs are cut off too hard at the edge
-* Upgrade to GLFW 3, to support alternative displays (wait for Ubuntu to support it)
+* Upgrade to GLFW 3, to support alternative displays (wait for Ubuntu to support it?)
 * Implement LOD (scale blocks with a factor of 2)
 * Enable blurred shadows again
-* Use fading effect at block border, where needed
-* Moss, rust, dust, dirt
+* Use fading surface material effects at block border, where needed
+* Surface effects: Moss, rust, dust, dirt
 * Update textures with higher resolution (512x512)
 * libRocket Dialogs projected on blocks (a special case of the action block)
 * For underground, use automatic green tints for positive up normals
