@@ -30,7 +30,7 @@ uniform mat4 modelMatrix;
 uniform vec3 textOffsMulti = vec3(0,0,1);
 in vec4 normal;
 in vec4 vertex; // First 3 are vertex coordinates, the 4:th is texture data coded as two scaled bytes
-in float material;
+in int material;
 out vec3 fragmentNormal;
 out vec2 fragmentTexCoord;
 out float extIntensity;
@@ -56,7 +56,7 @@ void main(void)
 	extAmbientLight = (intens2 >> 4)/15.0;
 	// "   extAmbientLight = 1;
 	materialEffectDensity = 0;
-	materialEffectType = int(material);
+	materialEffectType = material;
 }
 
 -- Fragment

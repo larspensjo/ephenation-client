@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2014 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -25,7 +25,7 @@ void StageOneShader::VertexAttribPointer(int offset) {
 	enum { stride = sizeof(VertexDataf), };
 	glVertexAttribPointer(StageOneShader::Normal, 4, GL_BYTE, GL_FALSE, stride, VertexDataf::GetNormalOffset());
 	glVertexAttribPointer(StageOneShader::Vertex, 4, GL_SHORT, GL_FALSE, stride, VertexDataf::GetVertexOffset());
-	glVertexAttribPointer(StageOneShader::Material, 1, GL_INT, GL_FALSE, stride, VertexDataf::GetMaterialOffset());
+	glVertexAttribIPointer(StageOneShader::Material, 1, GL_INT, stride, VertexDataf::GetMaterialOffset());
 }
 
 void StageOneShader::VertexAttribPointerSkinWeights(int skinOffset, int jointOffset) {
