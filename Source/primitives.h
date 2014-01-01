@@ -22,7 +22,9 @@
 #pragma once
 
 #include <vector>
+#include <cstring>
 #include <glm/glm.hpp>
+
 #include "assert.h"
 
 /// Help to encode data into the three RGB bytes.
@@ -113,8 +115,9 @@ public:
 		this->SetAmbient(ambient);
 		this->SetIntensity(intensity);
 		this->SetTexture(texture);
+		this->SetMaterial(0);
 	}
-	VertexDataf() {}
+	VertexDataf() { std::memset(this, '\0', sizeof (VertexDataf)); }
 };
 
 struct TriangleSurfacef {
