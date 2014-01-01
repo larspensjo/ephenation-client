@@ -72,7 +72,7 @@ in flat int materialEffectType;
 layout(location = 0) out vec4 diffuseOutput;
 layout(location = 1) out vec4 posOutput;
 layout(location = 2) out vec4 normOutput;
-layout(location = 3) out float materialOutput;
+layout(location = 3) out int materialOutput;
 void main(void)
 {
 	if (distance(UBOCamera.xyz, position) > UBOViewingDistance) { discard; return; }
@@ -83,5 +83,5 @@ void main(void)
 	posOutput.a = extIntensity;                          // Use the alpha channel for sun intensity. TODO: This is a 32-bit float, very inefficient
 	normOutput = vec4(fragmentNormal, extAmbientLight); // Use alpha channel of normal for ambient info.
 	diffuseOutput = clr;
-	materialOutput = ((int(materialEffectDensity*15.0) << 4) + materialEffectType) / 256.0;
+	materialOutput = ((int(materialEffectDensity*15.0) << 4) + materialEffectType);
 }

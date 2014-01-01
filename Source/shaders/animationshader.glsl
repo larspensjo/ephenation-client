@@ -68,7 +68,7 @@ in vec3 position;       // The model coordinate, as given by the vertex shader
 layout(location = 0) out vec4 diffuseOutput;
 layout(location = 1) out vec4 posOutput;
 layout(location = 2) out vec4 normOutput;
-layout(location = 3) out float materialOutput;
+layout(location = 3) out int materialOutput;
 void main(void)
 {
    if (distance(UBOCamera.xyz, position) > UBOViewingDistance) { discard; return; }
@@ -80,5 +80,5 @@ void main(void)
    posOutput.a = extIntensity; // Use the alpha channel for sun intensity
    normOutput = vec4(fragmentNormal, extAmbientLight); // Use alpha channel of normal for ambient info.
    diffuseOutput = clr;
-   materialOutput = 0.0; // Not supported yet
+   materialOutput = 0; // Not supported yet
 }
