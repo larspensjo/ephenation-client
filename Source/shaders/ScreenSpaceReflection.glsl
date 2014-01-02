@@ -47,9 +47,11 @@ vec3 rainbow(float x) {
 	return vec3(r, g, b);
 }
 
+// Return a random value between -1 and +1.
 float noise(vec3 v) {
 	return snoise((v.xy+v.z)*10);
 }
+
 uniform sampler2D colTex;     // Color texture sampler
 uniform sampler2D posTex;     // World position texture sampler
 uniform sampler2D normalTex;  // Normal texture sampler
@@ -61,12 +63,17 @@ layout(location = 0) out vec4 color;
 // #define CALIBRATE // Define this to get a color coded representation of number of needed iterations
 void main(void)
 {
+	vec4 origColor = texture(colTex, screen);
 	uint effectType = texture(materialTex, screen).r & 0xf; // High nibbles are used for modulating factor
+	if (effectType != 1) {
+		color = origColor;
+		return;
+	}
 	vec3 worldStartingPos = texture(posTex, screen).xyz;
 	vec3 normal = texture(normalTex, screen).xyz;
 	vec3 cameraToWorld = worldStartingPos.xyz - UBOCamera.xyz;
 	float cameraToWorldDist = length(cameraToWorld);
-	float scaleNormal = max(10.0, cameraToWorldDist*5.0);
+	float scaleNormal = max(3.0, cameraToWorldDist*1.5);
 	normal.x += noise(worldStartingPos)/scaleNormal;
 	normal.y += noise(worldStartingPos+100)/scaleNormal;
 	vec3 cameraToWorldNorm = normalize(cameraToWorld);
@@ -78,15 +85,11 @@ void main(void)
 		return;
 	}
 #endif
-	vec4 origColor = texture(colTex, screen);
 	float cosAngle = abs(dot(normal, cameraToWorldNorm)); // Will be a value between 0 and 1
 	float fact = 1 - cosAngle;
-	if (effectType != 1)
-		fact = 0.0;
-	fact = min(1, 1.3 - fact*fact);
+	fact = min(1, 1.38 - fact*fact);
 #ifndef CALIBRATE
 	if (fact > 0.95) {
-		// This test reduce the cost by approximately 50%
 		color = origColor;
 		return;
 	}
@@ -131,5 +134,4 @@ void main(void)
 	else if (cameraToWorldDist > currentWorldTestDist)
 		fact = 1.0;
 	color = origColor*fact + newColor*(1-fact);
-	// color = noise(worldStartingPos); // Debug the noise function
 }
