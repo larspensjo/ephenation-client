@@ -21,15 +21,13 @@
 
 #include "../primitives.h"
 
-class ChunkShader;
-
 // Class for drawing a cube. The result is a list of triangles.
 class Cube {
 public:
 	Cube();
 	~Cube();
 	// Create a list of triangles representing a cube. The size is a unit size.
-	void Init(ChunkShader *shader);
+	void Init(bool invertedNormals = false);
 	void Draw(void) const; // Draw a cube, using the currently bound texture0.
 	void DrawLines(void) const; // Only draw the edges of the cube.
 private:
@@ -38,4 +36,5 @@ private:
 	GLuint fVao; // Vertex Attribute Object
 };
 
+/// The lantern is special as it has normals pointing inwards.
 extern Cube gLantern;

@@ -24,7 +24,7 @@
 
 #include "Cube.h"
 #include "../primitives.h"
-#include "../shaders/ChunkShader.h"
+#include "../shaders/StageOneShader.h"
 #include "../ui/Error.h"
 
 Cube gLantern;
@@ -42,10 +42,14 @@ Cube::~Cube() {
 
 // The following logic is copied from Cylinder, which explains some algorithms.
 // TODO: Should be redesigned using a predefined table.
-void Cube::Init(ChunkShader *shader) {
+void Cube::Init(bool invertedNormals) {
 	const int numSegments = 4;
 	float deltaAngle = 2*M_PI/numSegments;
 	float radius = 0.5f;
+	float normalFactor = 1.0f;
+
+	if (invertedNormals)
+		normalFactor = -1.0f;
 
 	glm::vec3 v1(radius, 0.0f, 0.0f);
 	glm::vec3 v2(radius, 1.0f, 0.0f);
@@ -68,7 +72,7 @@ void Cube::Init(ChunkShader *shader) {
 #endif
 		glm::vec3 v3(radius*c, 0.0f, radius*s);
 		glm::vec3 v4(radius*c, 1.0f, radius*s);
-		glm::vec3 norm1 = glm::normalize(glm::vec3(v1.x, v1.y, 0));
+		glm::vec3 norm1 = normalFactor * glm::normalize(glm::vec3(v1.x, v1.y, 0));
 		tri.v[0].SetVertex(v1);
 		tri.v[0].SetNormal(norm1);
 		tri.v[0].SetTexture(0, 0);
@@ -94,13 +98,13 @@ void Cube::Init(ChunkShader *shader) {
 
 	// Define the top 2 triangles.
 	tri.v[0].SetVertex(top[0]);
-	tri.v[0].SetNormal(glm::vec3(0,1,0));
+	tri.v[0].SetNormal(normalFactor*glm::vec3(0,1,0));
 	tri.v[0].SetTexture(1, 0);
 	tri.v[1].SetVertex(top[2]);
-	tri.v[1].SetNormal(glm::vec3(0,1,0));
+	tri.v[1].SetNormal(normalFactor*glm::vec3(0,1,0));
 	tri.v[1].SetTexture(0, 1);
 	tri.v[2].SetVertex(top[1]);
-	tri.v[2].SetNormal(glm::vec3(0,1,0));
+	tri.v[2].SetNormal(normalFactor*glm::vec3(0,1,0));
 	tri.v[2].SetTexture(1, 1);
 	fVisibleTriangles.push_back(tri);
 
@@ -114,13 +118,13 @@ void Cube::Init(ChunkShader *shader) {
 
 	// Define the bottom 2 triangles.
 	tri.v[0].SetVertex(bottom[0]);
-	tri.v[0].SetNormal(glm::vec3(0,-1,0));
+	tri.v[0].SetNormal(normalFactor*glm::vec3(0,-1,0));
 	tri.v[0].SetTexture(1, 0);
 	tri.v[1].SetVertex(bottom[1]);
-	tri.v[1].SetNormal(glm::vec3(0,-1,0));
+	tri.v[1].SetNormal(normalFactor*glm::vec3(0,-1,0));
 	tri.v[1].SetTexture(1, 1);
 	tri.v[2].SetVertex(bottom[2]);
-	tri.v[2].SetNormal(glm::vec3(0,-1,0));
+	tri.v[2].SetNormal(normalFactor*glm::vec3(0,-1,0));
 	tri.v[2].SetTexture(0, 1);
 	fVisibleTriangles.push_back(tri);
 
@@ -134,7 +138,7 @@ void Cube::Init(ChunkShader *shader) {
 
 	glGenVertexArrays(1, &fVao);
 	glBindVertexArray(fVao);
-	shader->EnableVertexAttribArray();
+	StageOneShader::EnableVertexAttribArray();
 	glGenBuffers(1, &fBufferId);
 	glBindBuffer(GL_ARRAY_BUFFER, fBufferId);
 	glBufferData(GL_ARRAY_BUFFER, fVisibleTriangles.size() * sizeof fVisibleTriangles[0], &fVisibleTriangles[0], GL_STATIC_DRAW);
@@ -147,7 +151,7 @@ void Cube::Init(ChunkShader *shader) {
 		ErrorDialog("Cube::Init: Data size is mismatch with input array\n");
 	}
 
-	shader->VertexAttribPointer();
+	StageOneShader::VertexAttribPointer();
 
 	glBindVertexArray(0);
 	// DumpTriangles(fVisibleTriangles, fVisibleTriangles.size());

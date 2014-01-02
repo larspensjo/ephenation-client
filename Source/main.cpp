@@ -449,10 +449,9 @@ int main(int argc, char** argv) {
 	Controller::gGameDialog.init(sOculusRiftMode);
 	if (sCalibrateFlag)
 		Controller::gGameDialog.CalibrateMode(Controller::gameDialog::Calibration::Factor);
-	ChunkShader *shader = ChunkShader::Make();
 	gChunkShaderPicking.Init();
 	Tree::InitStatic();
-	gLantern.Init(shader);
+	gLantern.Init(true);
 	gQuadStage1.Init();
 	gBillboard.Init();
 

@@ -27,7 +27,6 @@ Graphical effects
 * Make three sets of skyboxes, for different time of day
 * Implement SSAO
 * Make water splash when a player or monsters falls into water
-* Lamps shall have light added to them, they look dark now
 
 Sound
 -----
