@@ -290,8 +290,12 @@ debian: $(PROGRAM)
 		-d libfreetype6\
 		-C $(DESTDIR) --license GPL3.0 --category game\
 		--description "MMOPRG adventures in an unlimited world and to create their your own adventures for others to play."\
-		--deb-user root --deb-group root --vendor 'Lars Pensjö'\
-		--url https://github.com/larspensjo/ephenation-client --maintainer "Lars Pensjö <lars.pensjo@gmail.com>" .
+		--deb-user root\
+		--deb-group root\
+		--vendor 'Lars Pensjö'\
+		--after-install after-install.sh\
+		--url https://github.com/larspensjo/ephenation-client\
+		--maintainer "Lars Pensjö <lars.pensjo@gmail.com>" .
 #		-d libXdmcp6\
 #		-d libXau6\
 #		-d libXrender1\

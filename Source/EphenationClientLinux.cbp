@@ -103,6 +103,7 @@
 		<Unit filename="Teleport.h" />
 		<Unit filename="UndoOp.cpp" />
 		<Unit filename="UndoOp.h" />
+		<Unit filename="after-install.sh" />
 		<Unit filename="animationmodels.cpp" />
 		<Unit filename="animationmodels.h" />
 		<Unit filename="assert.cpp" />

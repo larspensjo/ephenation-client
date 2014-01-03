@@ -1,3 +1,4 @@
 #!/bin/sh
 cd /usr/share/ephenation
-LD_LIBRARY_PATH=. ./ephenation $*
+export LD_PRELOAD="./libglfw.so ./libRocketControls.so.1 ./libRocketCore.so.1 ./libRocketDebugger.so.1"
+./ephenation $*
