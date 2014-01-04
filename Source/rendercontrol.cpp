@@ -431,13 +431,13 @@ void RenderControl::drawTransparentLandscape(bool stereoView) {
 void RenderControl::drawMonsters(void) {
 	static TimeMeasure tm("Monst");
 	tm.Start();
-	DrawBuffers(fCurrentColorAttachment, ColAttachPosition, ColAttachNormals); // Nothing is transparent here, do not produce any blending data on the 4:th render target.
+	DrawBuffers(fCurrentColorAttachment, ColAttachPosition, ColAttachNormals, ColAttachSurfaceProps);
 	Model::gMonsters.RenderMonsters(false, false, &fAnimationModels);
 	tm.Stop();
 }
 
 void RenderControl::drawPlayer(void) {
-	DrawBuffers(fCurrentColorAttachment, ColAttachPosition, ColAttachNormals); // Nothing is transparent here, do not produce any blending data on the 4:th render target.
+	DrawBuffers(fCurrentColorAttachment, ColAttachPosition, ColAttachNormals, ColAttachSurfaceProps);
 	fAnimation->EnableProgram();
 	Model::gPlayer.Draw(fAnimation, fShader, false, &fAnimationModels);
 	fAnimation->DisableProgram();
