@@ -554,6 +554,7 @@ void gameDialog::HandleKeyPress(int key) {
 
 	if (key == GLFW_KEY_F10 && gDebugOpenGL) {
 		gToggleTesting = !gToggleTesting;
+		gMsgWindow.Add("Testing: %d", gToggleTesting);
 		return;
 	}
 
