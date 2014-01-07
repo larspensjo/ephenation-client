@@ -53,6 +53,15 @@ vec2 rand(vec2 a, vec2 b) {
 	return seed;
 }
 
+// Is pixel at 'screenPos' near the distance 'z' and point in general the same direction?
+bool near(float z, vec3 normal, vec2 screenPos) {
+	float sampleDist = texture(posTex, screenPos).z;
+	if (sampleDist < z-0.5 || sampleDist > z+0.5)
+		return false;
+	vec3 sampleNormal = texture(normalTex, screenPos).xyz;
+	return dot(sampleNormal, normal) > 0.0;
+}
+
 void main(void)
 {
 	// Load data, stored in textures, from the first stage rendering.
@@ -70,7 +79,32 @@ void main(void)
 	vec3 eyeDir = normalize(cameraToWorld);
 	vec3 vHalfVector = normalize(sundir.xyz+eyeDir);
 	float inSun = worldPos.a; // Is greater than 0 if this position is reached by the sun
-	float fact = texture(lightTex, screen).r + (ambient+UBOambientLight)*0.03;
+	float fact = texture(lightTex, screen).r;
+	if (UBOPerformance > 3) {
+		float n = 1.0;
+		float ndx, ndy;
+		ndx = 1.5/float(UBOWindowWidth); // 1.5 pixels
+		ndy = 1.5/float(UBOWindowHeight);
+		if (near(worldPos.z, normal.xyz, screen+vec2(ndx, ndy))) {
+			fact += texture(lightTex, screen+vec2(ndx, ndy)).r;
+			n++;
+		}
+		if (near(worldPos.z, normal.xyz, screen+vec2(-ndx, ndy))) {
+			fact += texture(lightTex, screen+vec2(-ndx, ndy)).r;
+			n++;
+		}
+		if (near(worldPos.z, normal.xyz, screen+vec2(ndx, -ndy))) {
+			fact += texture(lightTex, screen+vec2(ndx, -ndy)).r;
+			n++;
+		}
+		if (near(worldPos.z, normal.xyz, screen+vec2(-ndx, -ndy))) {
+			fact += texture(lightTex, screen+vec2(-ndx, -ndy)).r;
+			n++;
+		}
+		fact = fact / n;
+	}
+	fact += (ambient+UBOambientLight)*0.03;
+
 	if (UBODynamicshadows == 0) fact += inSun;         // Add pre computed light instead of using shadow map
 	if (skyPixel) { fact = 0.8; }
 	vec3 step1 = fact*hdr.xyz; // + inSun*pow(max(dot(normal.xyz,vHalfVector),0.0), 100) * 0.1; // TODO: Specular glare isn't correct
