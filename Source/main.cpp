@@ -429,7 +429,7 @@ int main(int argc, char** argv) {
 		dumpGraphicsMemoryStats();
 		// const GLubyte* sExtensions = glGetString(GL_EXTENSIONS);
 		// LPLOG("GL extensions: %s", sExtensions);
-		// glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB);
+		glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB);
 		if (glDebugMessageCallbackARB != 0)
 			glDebugMessageCallbackARB(DebugFunc, (void*)15);
 		else if (glDebugMessageCallbackAMD != 0)
