@@ -227,6 +227,7 @@
 		<Unit filename="shaders/modulatedtextureshader.cpp" />
 		<Unit filename="shaders/modulatedtextureshader.h" />
 		<Unit filename="shaders/monster.glsl" />
+		<Unit filename="shaders/noise3D.glsl" />
 		<Unit filename="shaders/pointlight.glsl" />
 		<Unit filename="shaders/shader.cpp" />
 		<Unit filename="shaders/shader.h" />

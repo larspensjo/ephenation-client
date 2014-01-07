@@ -47,11 +47,6 @@ vec4 rainbow(float x) {
 	return vec4(r, g, b, 1);
 }
 
-// Return a random value between -1 and +1.
-float noise(vec3 v) {
-	return snoise((v.xy+v.z)*10);
-}
-
 uniform sampler2D colTex;     // Color texture sampler
 uniform sampler2D posTex;     // World position texture sampler
 uniform sampler2D normalTex;  // Normal texture sampler
@@ -75,8 +70,8 @@ void main(void)
 	float cameraToWorldDist = length(cameraToWorld);
 	float scaleNormal = max(3.0, cameraToWorldDist*1.5);
 #ifndef CALIBRATE
-	normal.x += noise(worldStartingPos)/scaleNormal;
-	normal.y += noise(worldStartingPos+100)/scaleNormal;
+	normal.x += snoise(worldStartingPos*10)/scaleNormal;
+	normal.y += snoise(worldStartingPos*10+100)/scaleNormal;
 #endif
 	vec3 cameraToWorldNorm = normalize(cameraToWorld);
 	vec3 refl = normalize(reflect(cameraToWorldNorm, normal)); // This is the reflection vector

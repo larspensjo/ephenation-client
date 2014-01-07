@@ -40,7 +40,7 @@ void ShaderBase::Initglsw(const char *debug, int vertexShaderLines, const char *
 		if (p[0] != '#')
 			p = glswGetShader(p); // Directives are not translated
 		if (p == 0)
-			ErrorDialog("ShaderBase::Initglsw %s failed to load '%s'\n", debug, vertexShaderSource[i]);
+			ErrorDialog("ShaderBase::Initglsw %s failed to load '%s' (%s)\n", debug, vertexShaderSource[i], glswGetError());
 		// LPLOG("%s", p);
 		loadedVertexLines[i+1] = p;
 	}
@@ -52,7 +52,7 @@ void ShaderBase::Initglsw(const char *debug, int vertexShaderLines, const char *
 		if (p[0] != '#')
 			p = glswGetShader(p); // Directives are not translated
 		if (p == 0)
-			ErrorDialog("ShaderBase::Initglsw %s failed to load '%s'\n", debug, fragmentShaderSource[i]);
+			ErrorDialog("ShaderBase::Initglsw %s failed to load '%s' (%s)\n", debug, fragmentShaderSource[i], glswGetError());
 		// LPLOG("%s", p);
 		loadedFragmnetLines[i+1] = p;
 	}

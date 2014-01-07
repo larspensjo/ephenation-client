@@ -34,7 +34,7 @@ static const GLchar *vertexShaderSource[] = {
 /// Using GLSW to define shader
 static const GLchar *fragmentShaderSource[] = {
 	"common.UniformBuffer",
-	"common.SimplexNoise",
+	"noise3D.noise3D",
 	"ScreenSpaceReflection.Fragment",
 };
 
