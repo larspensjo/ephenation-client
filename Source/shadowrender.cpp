@@ -1,4 +1,4 @@
-// Copyright 2012-2013 The Ephenation Authors
+// Copyright 2012-2014 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -34,7 +34,7 @@
 using namespace View;
 
 ShadowRender::ShadowRender(int width, int height) :
-	fTexture1(0), fTexture2(0), fMapWidth(width), fMapHeight(height) {
+	fMapWidth(width), fMapHeight(height) {
 }
 
 ShadowRender::~ShadowRender() {
@@ -47,7 +47,7 @@ ShadowRender::~ShadowRender() {
 void ShadowRender::Init() {
 	// Create the depth textures
 	//--------------------------
-	glGenTextures(1, &fTexture1); gDebugTextures.push_back(DebugTexture(fTexture1, "Shadow render texture 1")); // Add this texture to the debugging list of textures
+	glGenTextures(1, &fTexture1); gDebugTextures.push_back(DebugTexture(fTexture1, "Shadow render texture 1"));
 	glBindTexture(GL_TEXTURE_2D, fTexture1);
 	// Using a depth of less than 24 bits adds more random shadow flickering.
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, fMapWidth, fMapHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
@@ -60,7 +60,7 @@ void ShadowRender::Init() {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE);
 
 	glGenTextures(1, &fTexture2);
-	glBindTexture(GL_TEXTURE_2D, fTexture2); gDebugTextures.push_back(DebugTexture(fTexture2, "Shadow render texture 2")); // Add this texture to the debugging list of textures
+	glBindTexture(GL_TEXTURE_2D, fTexture2); gDebugTextures.push_back(DebugTexture(fTexture2, "Shadow render texture 2"));
 	// Using a depth of less than 24 bits adds more random shadow flickering.
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, fMapWidth, fMapHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -99,7 +99,7 @@ void ShadowRender::Render(int width, int height, const AnimationModels *animatio
 
 	fShader->EnableProgram();
 	fShader->ProjectionView(fProjViewMatrix);
-	fbo1->EnableWriting(GL_NONE);
+	fbo1->EnableWriting(GL_NONE); // No color attachment, only using depth buffer
 	glClear(GL_DEPTH_BUFFER_BIT); // Clear the depth buffer
 	glViewport(0, 0, fMapWidth, fMapHeight); // set viewport to texture dimensions
 	glDepthFunc(GL_LESS);
@@ -126,7 +126,6 @@ void ShadowRender::Render(int width, int height, const AnimationModels *animatio
 }
 
 void ShadowRender::Blur(GaussianBlur *blurShader) {
-	glEnable(GL_DEPTH_TEST);
 	glDisable(GL_CULL_FACE);
 	glDepthFunc(GL_ALWAYS); // Overwrite the old values
 	fbo2->EnableWriting(GL_NONE); // Only update depth buffer
