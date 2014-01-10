@@ -1,4 +1,4 @@
-// Copyright 2012-2013 The Ephenation Authors
+// Copyright 2012-2014 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -93,8 +93,8 @@ void ShaderBase::Init(const char *debug, int vertexShaderLines, const char **ver
 
 GLint ShaderBase::GetUniformLocation(const char *name) const {
 	GLint ind = glGetUniformLocation(fProgram, name);
-	if (gDebugOpenGL)
-		ASSERT(ind != -1);
+	if (ind == -1)
+		LPLOG("Failed to find %s", name);
 	return ind;
 }
 

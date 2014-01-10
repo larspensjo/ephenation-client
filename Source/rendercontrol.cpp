@@ -1,4 +1,4 @@
-// Copyright 2012-2013 The Ephenation Authors
+// Copyright 2012-2014 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -93,10 +93,12 @@ static void DrawBuffers(GLenum buf1, GLenum buf2) {
 	glDrawBuffers(2, windows);
 }
 
+#if 0 // Unused
 static void DrawBuffers(GLenum buf1, GLenum buf2, GLenum buf3) {
 	GLenum windows[] = { buf1, buf2, buf3 };
 	glDrawBuffers(3, windows);
 }
+#endif
 
 static void DrawBuffers(GLenum buf1, GLenum buf2, GLenum buf3, GLenum buf4) {
 	GLenum windows[] = { buf1, buf2, buf3, buf4 };
@@ -895,7 +897,13 @@ void RenderControl::UpdateCameraPosition(int wheelDelta, bool stereoView, float 
 		gViewMatrix = glm::rotate(gViewMatrix, yaw, glm::vec3(0.0f, -1.0f, 0.0f));
 	}
 	gViewMatrix = glm::translate(gViewMatrix, glm::vec3(0.0f, 0.0f, -fCameraDistance));
-	gViewMatrix = glm::rotate(gViewMatrix, _angleVert, glm::vec3(1.0f, 0.0f, 0.0f));
+	float vert = _angleVert;
+	if (stereoView) {
+		// When zoomed in to the player,use horizontal view. The further away from the player,
+        // the higher the camera gets.
+		vert = fCameraDistance*2.0f;
+	}
+	gViewMatrix = glm::rotate(gViewMatrix, vert, glm::vec3(1.0f, 0.0f, 0.0f));
 	gViewMatrix = glm::rotate(gViewMatrix, _angleHor, glm::vec3(0.0f, 1.0f, 0.0f));
 	gViewMatrix = glm::translate(gViewMatrix, -playerOffset);
 }
