@@ -254,67 +254,9 @@ endif
 #    sudo gem install fpm
 # Update the dependency list by doing:
 # ldd ephenation | grep ' lib' | sed 's/ .*//' | sed 's/  /               -d /' | sed 's/\.so\.//' | sed 's/$/\\/'
-DESTDIR := linuxdistro
+DESTDIR := ../linuxdistro
 debian: $(PROGRAM)
-	(umask 0022; mkdir --mode=0755 -p $(DESTDIR)/usr/share/ephenation/sounds)
-	(umask 0022; mkdir --mode=0755 -p $(DESTDIR)/usr/share/ephenation/textures)
-	(umask 0022; mkdir --mode=0755 -p $(DESTDIR)/usr/share/ephenation/shaders)
-	(umask 0022; mkdir --mode=0755 -p $(DESTDIR)/usr/share/ephenation/dialogs)
-	(umask 0022; mkdir --mode=0755 -p $(DESTDIR)/usr/share/ephenation/models)
-	(umask 0022; mkdir --mode=0755 -p $(DESTDIR)/usr/share/ephenation/fonts)
-	chmod +x $(DESTDIR)/usr/bin/ephenation
-	strip $(PROGRAM)
-	cp $(PROGRAM) $(DESTDIR)/usr/share/ephenation/
-	cp -r sounds/* $(DESTDIR)/usr/share/ephenation/sounds/
-	cp textures/* $(DESTDIR)/usr/share/ephenation/textures/
-	cp shaders/*.glsl $(DESTDIR)/usr/share/ephenation/shaders/
-	cp dialogs/* $(DESTDIR)/usr/share/ephenation/dialogs/
-	cp models/* $(DESTDIR)/usr/share/ephenation/models/
-	cp fonts/* $(DESTDIR)/usr/share/ephenation/fonts/
-	cp /usr/lib/x86_64-linux-gnu/libRocketCore.so.1 $(DESTDIR)/usr/share/ephenation
-	cp /usr/lib/x86_64-linux-gnu/libRocketDebugger.so.1 $(DESTDIR)/usr/share/ephenation
-	cp /usr/lib/x86_64-linux-gnu/libRocketControls.so.1 $(DESTDIR)/usr/share/ephenation
-	fpm --verbose -s dir -t deb -n ephenation -v 5.0b1 -f\
-		-d libGLEW1.8\
-		-d libassimp3\
-		-d libglfw2\
-		-d libtinyxml2.6.2\
-		-d libalut0\
-		-d libopenal1\
-		-d libvorbisfile3\
-		-d libudev1\
-		-d libXinerama1\
-		-d libstdc++6\
-		-d libvorbis0a\
-		-d libogg0\
-		-d libfreetype6\
-		-C $(DESTDIR) --license GPL3.0 --category game\
-		--description "MMOPRG adventures in an unlimited world and to create their your own adventures for others to play."\
-		--deb-user root\
-		--deb-group root\
-		--vendor 'Lars Pensjö'\
-		--after-install after-install.sh\
-		--url https://github.com/larspensjo/ephenation-client\
-		--maintainer "Lars Pensjö <lars.pensjo@gmail.com>" .
-#		-d libXdmcp6\
-#		-d libXau6\
-#		-d libXrender1\
-#		-d libxcb1\
-#		-d libXrandr2\
-#		-d libz1\
-#		-d libXext6\
-#		-d libc6\
-#		-d libgcc1\
-#		-d librt1\
-#		-d libdl2\
-#		-d libatiuki1\
-#		-d libm6\
-#		-d libX116\
-#		-d libGL1\
-#		-d libpthread0\
-#		-d libRocketCore1\
-#		-d libRocketDebugger1\
-#		-d libRocketControls1\
+	../makeDeb Source/$(PROGRAM) $(DESTDIR)
 
 clean:
 	$(RM) $(OBJS) $(PROGRAM) $(PROGRAM).exe $(DEPS)
