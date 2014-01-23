@@ -59,8 +59,8 @@ layout(location = 0) out vec4 color;
 void main(void)
 {
 	vec4 origColor = texture(colTex, screen);
-	uint effectType = texture(materialTex, screen).r & 0xf; // High nibbles are used for modulating factor
-	if (effectType != 1) {
+	uint effectType = texture(materialTex, screen).r & 0xfu; // High nibbles are used for modulating factor
+	if (effectType != 1u) {
 		color = origColor;
 		return;
 	}
