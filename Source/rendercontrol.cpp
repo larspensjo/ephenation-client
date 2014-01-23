@@ -553,6 +553,7 @@ void RenderControl::drawSSAO(void) {
 	glActiveTexture(GL_TEXTURE0); // Need to restore it or everything will break.
 	glDisable(GL_CULL_FACE);
 	glDepthMask(GL_FALSE);
+	glBlendFunc(GL_DST_COLOR, GL_ZERO);
 	fAddSSAO->Draw();
 	glDepthMask(GL_TRUE);
 	glEnable(GL_CULL_FACE);

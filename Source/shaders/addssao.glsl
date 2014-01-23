@@ -24,7 +24,7 @@ out vec2 screen;                          // Screen coordinate
 void main(void)
 {
 	gl_Position = vec4(vertex*2-1, 0, 1); // Transform from interval 0 to 1, to interval -1 to 1.
-   screen = vertex;                       // Copy position to the fragment shader. Only x and y is needed.
+    screen = vertex;                       // Copy position to the fragment shader. Only x and y is needed.
 }
 
 -- Fragment
@@ -50,20 +50,19 @@ void main(void)
 	worldPos = texture(posTex, screen);
 	float ref = distance(UBOCamera.xyz, worldPos.xyz);
 	int num = 0;
-	const int SIZE=20;
+	const int SIZE = 13;
 	float py = 1.0/UBOWindowHeight; // Size of one pixel
 	float px = 1.0/UBOWindowWidth; // Size of one pixel
 	for (int i=0; i<SIZE; i++) {
-		int ind = i + abs(int(worldPos.x*12.32));
 		vec2 sampleInd = screen + (rand(worldPos.xy, normal.xy)*2-1)*vec2(px,py)*20;
 		vec3 sample = texture(posTex, sampleInd).xyz;
 		float dist = distance(UBOCamera.xyz, sample);
-		if (abs(dist-ref) > 0.2) { num-=10; }
+		if (dist-ref > 0.2) { num-=10; }
 		if (dist < ref) num++;
 	}
-	if (num > SIZE*0.8)
+	if (num > SIZE*0.76)
 		// As the last step, combine all the diffuse color with the lighting and blending effects
-		light = -0.1;
+		light = 0.64;
 	else {
 		discard; return;
 	}
