@@ -37,7 +37,7 @@ out float extIntensity;
 out float extAmbientLight;
 out vec3 position;
 out float materialEffectDensity;
-out flat int materialEffectType;
+flat out int materialEffectType;
 void main(void)
 {
 	vec4 vertexScaled = vec4(vec3(vertex) / VERTEXSCALING, 1);
@@ -68,7 +68,7 @@ in float extIntensity;
 in float extAmbientLight;
 in vec3 position;       // The model coordinate, as given by the vertex shader
 in float materialEffectDensity;
-in flat int materialEffectType;
+flat in int materialEffectType;
 layout(location = 0) out vec4 diffuseOutput;
 layout(location = 1) out vec4 posOutput;
 layout(location = 2) out vec4 normOutput;
