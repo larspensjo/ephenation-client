@@ -546,8 +546,6 @@ void RenderControl::drawSSAO(void) {
 	static TimeMeasure tm("SSAO ");
 	tm.Start();
 	DrawBuffers(ColAttachLighting);
-	glActiveTexture(GL_TEXTURE2);
-	glBindTexture(GL_TEXTURE_2D, fNormalsTexture);
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, fPositionTexture);
 	glActiveTexture(GL_TEXTURE0); // Need to restore it or everything will break.

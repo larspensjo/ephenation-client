@@ -30,12 +30,10 @@ void main(void)
 -- Fragment
 
 uniform sampler2D posTex;     // World position
-uniform sampler2D normalTex;  // Normals
 in vec2 screen;               // The screen position
 layout(location = 0) out float light;
 
 vec4 worldPos;
-vec4 normal;
 
 vec2 seed;
 
@@ -46,19 +44,18 @@ vec2 rand(vec2 a, vec2 b) {
 
 void main(void)
 {
-	normal = texture(normalTex, screen);
 	worldPos = texture(posTex, screen);
-	float ref = distance(UBOCamera.xyz, worldPos.xyz);
+	float refDist = distance(UBOCamera.xyz, worldPos.xyz);
 	int num = 0;
 	const int SIZE = 13;
 	float py = 1.0/UBOWindowHeight; // Size of one pixel
 	float px = 1.0/UBOWindowWidth; // Size of one pixel
 	for (int i=0; i<SIZE; i++) {
-		vec2 sampleInd = screen + (rand(worldPos.xy, normal.xy)*2-1)*vec2(px,py)*20;
+		vec2 sampleInd = screen + (rand(worldPos.xy, worldPos.zy)*2-1)*vec2(px,py)*20*UBOcalibrationFactor;
 		vec3 sample = texture(posTex, sampleInd).xyz;
-		float dist = distance(UBOCamera.xyz, sample);
-		if (dist-ref > 0.2) { num-=10; }
-		if (dist < ref) num++;
+		float sampleDist = distance(UBOCamera.xyz, sample);
+		if (sampleDist-refDist > 0.2) { num-=10; }
+		if (sampleDist < refDist) num++;
 	}
 	if (num > SIZE*0.76)
 		// As the last step, combine all the diffuse color with the lighting and blending effects
@@ -66,5 +63,4 @@ void main(void)
 	else {
 		discard; return;
 	}
-	//    light = worldPos.a;
 }
