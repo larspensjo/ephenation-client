@@ -133,7 +133,7 @@ RenderControl::~RenderControl() {
 
 void RenderControl::Init(int lightSamplingFactor, bool stereoView) {
 	// This only has to be done first time
-	glGenRenderbuffers(1, &fDepthBuffer);
+	glGenTextures(1, &fDepthBuffer);
 	glGenTextures(1, &fDownSampleLumTexture1); gDebugTextures.push_back(DebugTexture(fDownSampleLumTexture1, "DownSampleLum1"));
 	glGenTextures(1, &fDownSampleLumTexture2); gDebugTextures.push_back(DebugTexture(fDownSampleLumTexture2, "DownSampleLum2"));
 	glGenTextures(1, &fRendertarget1); gDebugTextures.push_back(DebugTexture(fRendertarget1, "Render target 1"));
@@ -193,9 +193,18 @@ void RenderControl::Resize(GLsizei width, GLsizei height) {
 	// as there are some filters that down sample the textures.
 	//==============================================================================
 
-	// Generate and bind the texture depth information
 	glBindRenderbuffer(GL_RENDERBUFFER, fDepthBuffer);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
+
+	// Generate and bind the texture depth information
+	glBindTexture(GL_TEXTURE_2D, fDepthBuffer);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	// No comparison function shall be used, or the depth value would be reported as 0 or 1 only. It is probably not
+	// enabled by default anyway.
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE);
 
 	// Generate and bind the texture for diffuse
 	glBindTexture(GL_TEXTURE_2D, fRendertarget1);
@@ -255,7 +264,7 @@ void RenderControl::Resize(GLsizei width, GLsizei height) {
 
 	// Attach all textures and the depth buffer
 	glBindFramebuffer(GL_FRAMEBUFFER, fboName);
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, fDepthBuffer);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, fDepthBuffer, 0);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, ColAttachRenderTarget1, GL_TEXTURE_2D, fRendertarget1, 0);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, ColAttachRenderTarget2, GL_TEXTURE_2D, fRendertarget2, 0);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, ColAttachPosition, GL_TEXTURE_2D, fPositionTexture, 0);
