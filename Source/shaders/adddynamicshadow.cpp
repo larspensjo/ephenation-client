@@ -59,7 +59,6 @@ void AddDynamicShadow::GetLocations(void) {
 	glUniform1i(this->GetUniformLocation("shadowmapTex"), 4); // The shadow map has to use GL_TEXTURE4
 	glUniform1i(this->GetUniformLocation("normalTex"), 2);
 	glUniform1i(this->GetUniformLocation("posTex"), 1);
-	// glUniform1i(this->GetUniformLocation("Upoissondisk"), 0); // Must match name in common.glsl
 }
 
 void AddDynamicShadow::Draw(const glm::mat4 &mat) {

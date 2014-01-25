@@ -50,7 +50,6 @@ struct GameTexture {
 	static GLuint WEP1, WEP2, WEP3, WEP4;
 	static GLuint WEP1Text, WEP2Text, WEP3Text, WEP4Text;
 	static GLuint Coin, Quest;
-	static GLuint PoissonDisk;
 	static GLuint MousePointerId;
 
 	static const int fgNumBuildBlocks; // Number of available building blocks
@@ -59,8 +58,6 @@ struct GameTexture {
 };
 
 class Image;
-
-extern const glm::vec2 gPoissonDisk[64];
 
 // Load bitmaps to be used for the GUI.
 extern GLuint LoadBitmapForGui(shared_ptr<Image>);

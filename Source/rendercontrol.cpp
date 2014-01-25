@@ -466,7 +466,6 @@ void RenderControl::drawDynamicShadows() {
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, fPositionTexture);
 		glActiveTexture(GL_TEXTURE0); // Need to restore it or everything will break.
-		glBindTexture(GL_TEXTURE_1D, GameTexture::PoissonDisk);
 		glDisable(GL_DEPTH_TEST);
 		glDisable(GL_CULL_FACE);
 		fAddDynamicShadow->Draw(fShadowRender->GetProViewMatrix());
@@ -480,8 +479,6 @@ void RenderControl::drawDeferredLighting(bool underWater, float whitepoint) {
 	static TimeMeasure tm("Deferred");
 	tm.Start();
 	// Prepare the input images needed
-	glActiveTexture(GL_TEXTURE6);
-	glBindTexture(GL_TEXTURE_1D, GameTexture::PoissonDisk);
 	glActiveTexture(GL_TEXTURE5);
 	glBindTexture(GL_TEXTURE_2D, fLightsTexture);
 	glActiveTexture(GL_TEXTURE3);
