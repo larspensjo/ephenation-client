@@ -559,7 +559,8 @@ void RenderControl::drawSSAO(void) {
 	DrawBuffers(ColAttachLighting);
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, fPositionTexture);
-	glActiveTexture(GL_TEXTURE0); // Need to restore it or everything will break.
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, fDepthBuffer);
 	glDisable(GL_CULL_FACE);
 	glDepthMask(GL_FALSE);
 	glBlendFunc(GL_DST_COLOR, GL_ZERO);

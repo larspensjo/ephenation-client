@@ -50,6 +50,7 @@ void AddSSAO::Init(void) {
 void AddSSAO::GetLocations(void) {
 	// The following uniforms only need to be initialized once
 	glUniform1i(this->GetUniformLocation("posTex"), 1);
+	glUniform1i(this->GetUniformLocation("depthTex"), 0);
 
 	checkError("AddSSAO::GetLocations");
 }
