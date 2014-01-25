@@ -1314,7 +1314,9 @@ void gameDialog::UpdateProjection(ViewType v) {
 		if (v == ViewType::left || v == ViewType::right)
 			aspectRatio /= 2;
 	}
-	gProjectionMatrix  = glm::perspective(fRenderViewAngle, aspectRatio, 0.01f, maxRenderDistance);  // Create our perspective projection matrix
+	float nearCutoff = 0.01f;
+	gUniformBuffer.SetFrustum(nearCutoff, maxRenderDistance);
+	gProjectionMatrix  = glm::perspective(fRenderViewAngle, aspectRatio, nearCutoff, maxRenderDistance);  // Create our perspective projection matrix
 	switch(v) {
 	case ViewType::left:
 	case ViewType::right: {

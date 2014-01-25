@@ -37,8 +37,15 @@ layout(std140) uniform GlobalData {
 	float UBOexposure;
 	float UBOambientLight;
 	float UBOcalibrationFactor;
+	float UBOProjK1, UBOProjK2;
 	int UBOEnableDistortion;
 };
+
+// Given a depth texture, compute the distance to a pixel
+float WorldDistance(sampler2D depthSampler, vec2 screen) {
+	float depth = texture(depthSampler, screen).r * 2.0 - 1.0;
+	return UBOProjK1 / (UBOProjK2 - depth);
+}
 
 -- OvrDistortion
 

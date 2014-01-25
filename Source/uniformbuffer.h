@@ -60,6 +60,9 @@ public:
 
 	/// Calibrate shaders during development. Not used in normal game mode.
 	void SetcalibrationFactor(float fact) { fDebugfactor = fact; }
+
+	/// Set the near and far plane cut off of the projection
+	void SetFrustum(float nearCutoff, float farCutoff) { fNearCutoff = nearCutoff; fFarCutoff = farCutoff; }
 private:
 	void BindBufferBase(void) const;
 
@@ -70,6 +73,7 @@ private:
 	glm::vec2 fOvrLensCenter = glm::vec2(0.15f, 0.0f); // Best guess.
 	bool fLeftEeye = true;
 	float fDebugfactor = 1.0f;
+	float fNearCutoff, fFarCutoff;
 };
 
 extern UniformBuffer gUniformBuffer;

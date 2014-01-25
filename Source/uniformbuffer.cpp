@@ -58,6 +58,7 @@ struct Data {
 	float exposure;
 	float ambientLight;
 	float calibrationFactor;
+	float projectionK1, projectionK2; // Used for reverse depth buffer projection
 	int enabledistortion;
 };
 
@@ -101,6 +102,12 @@ void UniformBuffer::Update(bool ovrMode) const {
 	else
 		data.ovrlenscenter = -fOvrLensCenter;
 	data.enabledistortion = ovrMode;
+
+	// Compute constants needed for reverse depth buffer computation
+	// The basic math can be found at http://stackoverflow.com/questions/6652253/getting-the-true-z-value-from-the-depth-buffer
+	// As much as possible is pre-computed into constants here.
+	data.projectionK1 = 2.0f * fFarCutoff * fNearCutoff / (fFarCutoff - fNearCutoff);
+	data.projectionK2 = (fFarCutoff + fNearCutoff) / (fFarCutoff - fNearCutoff);
 
 	glBindBuffer(GL_UNIFORM_BUFFER, fUBOBuffer);
 	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(Data), &data);
