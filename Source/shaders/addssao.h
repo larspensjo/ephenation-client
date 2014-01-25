@@ -25,8 +25,6 @@
 
 class AddSSAO : public ShaderBase {
 public:
-	AddSSAO();
-
 	void Init(void);
 
 	void Draw();

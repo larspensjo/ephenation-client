@@ -41,24 +41,33 @@ vec2 rand(vec2 a, vec2 b) {
 	return seed;
 }
 
+// #define CALIBRATE
+
 void main(void)
 {
-	float depth = texture(depthTex, screen).r * 2.0 - 1.0;
 	float refDist = WorldDistance(depthTex, screen);
-	vec4 worldPos = texture(posTex, screen);
 	int num = 0;
 	const int SIZE = 13;
-	float py = 1.0/UBOWindowHeight; // Size of one pixel
-	float px = 1.0/UBOWindowWidth; // Size of one pixel
+	float py = 1.0/32.0;
+	float px = 1.0/187.0; // Much tighter on x
 	for (int i=0; i<SIZE; i++) {
-		vec2 sampleInd = screen + (rand(worldPos.xy, worldPos.zy)*2-1)*vec2(px,py)*20;
+		vec2 sampleInd = screen + (gPoissonDisk[i]*2-1)*vec2(px,py);
 		float sampleDist = WorldDistance(depthTex, sampleInd);
-		if (sampleDist-refDist > 0.04) { num-=10; }
+		if (sampleDist-refDist > 0.42) { num-=10; }
+		if (refDist-sampleDist > 1.5) { num-=10; }
 		if (sampleDist < refDist) num++;
 	}
-	if (num > SIZE*0.68)
+	if (num > SIZE*0.78)
+#ifdef CALIBRATE
+		light = 1.0;
+#else
 		light = 0.64;
+#endif
 	else {
-		discard; return;
+#ifdef CALIBRATE
+		light = 0.2;
+#else
+		light = 1.0;
+#endif
 	}
 }

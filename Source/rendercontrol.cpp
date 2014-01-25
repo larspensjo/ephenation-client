@@ -341,7 +341,7 @@ void RenderControl::Draw(bool underWater, shared_ptr<const Model::Object> select
 	if ((gOptions.fDynamicShadows || gOptions.fStaticShadows) && !Model::gPlayer.BelowGround())
 		drawDynamicShadows();
 	drawPointLights();
-	// drawSSAO(); // TODO: Not good enough yet.
+	drawSSAO();
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // Restore default
 	glDisable(GL_BLEND);
 
