@@ -47,12 +47,6 @@ float linearToSRGB(float linear) {
 	else return 1.055 * pow(linear, 1/2.4) - 0.055;
 }
 
-vec2 seed;
-vec2 rand(vec2 a, vec2 b) {
-	seed = fract(a*10.23 + b*123.1232+screen*3.123 + seed*82.12354); // A value from 0 to 1
-	return seed;
-}
-
 // Is pixel at 'screenPos' near the distance 'z' and point in general the same direction?
 bool near(float z, vec3 normal, vec2 screenPos) {
 	float sampleDist = texture(posTex, screenPos).z;

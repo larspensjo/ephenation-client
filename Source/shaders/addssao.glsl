@@ -29,17 +29,9 @@ void main(void)
 
 -- Fragment
 
-uniform sampler2D posTex;     // World position
 uniform sampler2D depthTex;   // The depth buffer
 in vec2 screen;               // The screen position
 layout(location = 0) out float light; // Used as a multiplicative effect
-
-vec2 seed;
-
-vec2 rand(vec2 a, vec2 b) {
-	seed = fract(a*10.23 + b*123.1232+screen*3.123 + seed*82.12354); // A value from 0 to 1
-	return seed;
-}
 
 // #define CALIBRATE
 

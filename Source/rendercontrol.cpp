@@ -554,13 +554,11 @@ void RenderControl::drawSSAO(void) {
 	static TimeMeasure tm("SSAO ");
 	tm.Start();
 	DrawBuffers(ColAttachLighting);
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, fPositionTexture);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, fDepthBuffer);
 	glDisable(GL_CULL_FACE);
 	glDepthMask(GL_FALSE);
-	glBlendFunc(GL_DST_COLOR, GL_ZERO);
+	glBlendFunc(GL_DST_COLOR, GL_ZERO); // Use multiplication
 	fAddSSAO->Draw();
 	glDepthMask(GL_TRUE);
 	glEnable(GL_CULL_FACE);

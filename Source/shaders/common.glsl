@@ -62,16 +62,6 @@ vec2 HmdWarp(vec2 in01)
 	return rvector + UBOLensCenter;
 }
 
--- Poissondisk
-
-float seedpoisson;
-uniform sampler1D Upoissondisk;
-vec2 rand2(vec2 n)
-{
-	seedpoisson = fract(seedpoisson + sin(dot(n.xy, vec2(12.9898, 78.233)))* 43758.5453);
-	return 2.0*texture(Upoissondisk, seedpoisson).rg-1.0;
-}
-
 -- DoubleResolutionFunction
 
 // A shader transformation function.
