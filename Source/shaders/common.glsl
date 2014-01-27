@@ -178,7 +178,7 @@ float snoise(vec2 v) {
 -- PoissonDisk
 
 // This table is from http://asawicki.info/Download/Productions/Applications/PoissonDiscGenerator/2D.txt
-const vec2 gPoissonDisk[64] = {
+const vec2 gPoissonDisk[64] = vec2[] (
 	vec2( 0.282571, 0.023957 ),
 	vec2( 0.792657, 0.945738 ),
 	vec2( 0.922361, 0.411756 ),
@@ -243,4 +243,4 @@ const vec2 gPoissonDisk[64] = {
 	vec2( 0.398236, 0.0509049 ),
 	vec2( 0.500473, 0.130253 ),
 	vec2( 0.0332957, 0.526292)
-};
+);
