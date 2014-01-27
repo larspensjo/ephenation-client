@@ -195,7 +195,6 @@ void RenderControl::Resize(GLsizei width, GLsizei height) {
 	// as there are some filters that down sample the textures.
 	//==============================================================================
 
-	glBindRenderbuffer(GL_RENDERBUFFER, fDepthBuffer);
 
 	// Generate and bind the texture depth information
 	glBindTexture(GL_TEXTURE_2D, fDepthBuffer);
@@ -306,7 +305,7 @@ void RenderControl::Resize(GLsizei width, GLsizei height) {
 	fboDownSampleLum2.reset(new FBOFlat);
 	fboDownSampleLum2->AttachTexture(fDownSampleLumTexture2);
 
-	checkError("RenderControl::Resize");
+	checkError("RenderControl::Resize", false);
 }
 
 void RenderControl::Draw(bool underWater, shared_ptr<const Model::Object> selectedObject, bool showMap, bool showInvent, int mapWidth, MainUserInterface *ui, bool stereoView, float renderViewAngle) {
