@@ -34,7 +34,6 @@ static const GLchar *vertexShaderSource[] = {
 /// Using GLSW to define shader
 static const GLchar *fragmentShaderSource[] = {
 	"common.UniformBuffer",
-	"common.PoissonDisk",
 	"addssao.Fragment",
 };
 

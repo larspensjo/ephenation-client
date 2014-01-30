@@ -33,31 +33,65 @@ uniform sampler2D depthTex;   // The depth buffer
 in vec2 screen;               // The screen position
 layout(location = 0) out float light; // Used as a multiplicative effect
 
+#define M_PI 3.1415926535897932384626433832795
+
 // #define CALIBRATE
+
+// These values are a subset from common.glsl.
+// The subset was tested to give a good result
+const vec2 gPoissonDisk[] = vec2[] (
+	vec2( 0.0651875, 0.708609 ),
+	vec2( 0.641987, 0.0233772 ),
+	vec2( 0.376415, 0.944243 ),
+	vec2( 0.827723, 0.723258 )
+);
+
+float refDist;
+float py;
+float px;
+
+bool AcuteAngle(int ind) {
+	vec2 delta = (gPoissonDisk[ind]*2-1)*vec2(px,py);
+	float sampleDist1 = WorldDistance(depthTex, screen+delta);
+	float sampleDist2 = WorldDistance(depthTex, screen-delta);
+	float v1 = atan((refDist - sampleDist1) / length(delta));
+	float v2 = atan((refDist - sampleDist2) / length(delta));
+	float v = M_PI - v1 - v2;
+	const float cutoff = 0.58;
+	if (sampleDist1 < refDist - cutoff)
+		v = M_PI;
+	if (sampleDist2 < refDist - cutoff)
+		v = M_PI;
+	if (v < M_PI*0.20)
+		return true;
+	return false;
+}
 
 void main(void)
 {
-	float refDist = WorldDistance(depthTex, screen);
-	int num = 0;
-	const int SIZE = 13;
-	float py = 1.0/32.0;
-	float px = 1.0/187.0; // Much tighter on x
-	for (int i=0; i<SIZE; i++) {
-		vec2 sampleInd = screen + (gPoissonDisk[i]*2-1)*vec2(px,py);
-		float sampleDist = WorldDistance(depthTex, sampleInd);
-		if (sampleDist-refDist > 0.42) { num-=10; }
-		if (refDist-sampleDist > 1.5) { num-=10; }
-		if (sampleDist < refDist) num++;
+	refDist = WorldDistance(depthTex, screen);
+	float found = 0;
+	float total = 0;
+	py = 0.115/refDist;
+	px = 0.115/refDist;
+	for (int i=0; i<4; i++) {
+		if (AcuteAngle(i))
+			found++;
+		total += 1.0;
 	}
-	if (num > SIZE*0.78)
+
+	float thresh = 0.07;
+	if (found > total*thresh) {
 #ifdef CALIBRATE
-		light = 1.0;
+		const float bs = 0.1;
+		light = bs + (1-bs) * (found - total*thresh) / (1.0 - thresh) / total;
 #else
-		light = 0.64;
+		const float bs = 0.55;
+		light = 1.0 - (1-bs) * (found - total*thresh) / (1.0 - thresh) / total;
 #endif
-	else {
+	} else {
 #ifdef CALIBRATE
-		light = 0.2;
+		light = 0.1;
 #else
 		light = 1.0;
 #endif
