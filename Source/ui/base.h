@@ -1,4 +1,4 @@
-// Copyright 2012, 2013 The Ephenation Authors
+// Copyright 2012-2014 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -30,18 +30,16 @@ using std::string;
 /**
  * @brief A common base class for libRocket dialogs
  *
- * The actual dialog content is defined in external files in dialogs/ *.rml (Rocket Markup Language),
+ * The actual dialog content is defined in external files in dialogs/*.rml (Rocket Markup Language),
  * in a format similar to html.
  * Inherit from Rocket::Core::EventListener to make it possible to register class for Rocket event callbacks.
- * There is a stack of documents, to able to have more than one active document at the same time. Though
- * only the document at the top of the stack will be shown. The stack has to be common between all
+ * There is a stack of documents, to be able to have more than one active document at the same time.
+ * Only the document at the top of the stack will be shown. The stack has to be common between all
  * managers inheriting from this class, which is why it is declared as static.
  */
 class BaseDialog : public Rocket::Core::EventListener {
 public:
 	BaseDialog() : fFocusOnTextarea(false) {}
-
-	virtual ~BaseDialog();
 
 	/**
 	 * @brief Use the specified libRocket document
