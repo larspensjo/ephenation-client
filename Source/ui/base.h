@@ -30,7 +30,7 @@ using std::string;
 /**
  * @brief A common base class for libRocket dialogs
  *
- * The actual dialog content is defined in external files in dialogs/*.rml (Rocket Markup Language),
+ * The actual dialog content is defined in external files in dialogs/ *.rml (Rocket Markup Language),
  * in a format similar to html.
  * Inherit from Rocket::Core::EventListener to make it possible to register class for Rocket event callbacks.
  * There is a stack of documents, to be able to have more than one active document at the same time.
