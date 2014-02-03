@@ -218,7 +218,16 @@ public:
 	void PopTriangles(void);
 
 	bool InSunLight(int ox, int oy, int oz) const;
+
+	/// Find out if a surface is in the direction sky, from a limited number of directions. Return
+	/// a value from 0 to 1. The given coordinate may be just outside the chunk!
+	/// A value of 1.0 means full view of sky in all directions.
 	float ComputeAmbientLight(int ox, int oy, int oz) const;
+
+	/// Count number of near walls being of a certain type
+	///
+	/// Return true if the number is equal or greater than the given threshold.
+	bool CountNearWalls(int ox, int oy, int oz, int type, int threshold) const;
 private:
 	bool fDirty;						  // True if something changed so that the graphics need to be recomputed
 	Chunk *fNext_gl;		// Used for linked list of chunks that need to free gl resources.

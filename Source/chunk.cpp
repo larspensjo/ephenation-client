@@ -80,9 +80,6 @@ bool Chunk::InSunLight(int ox, int oy, int oz) const {
 	return LineToSky(this, ox, oy, oz, -0.577350269f, -0.577350269f, 0.577350269f);
 }
 
-// Find out if a surface is in the direction sky, from a limited number of directions. Return
-// a value from 0 to 1. The given coordinate may be just outside the chunk!
-// A value of 1.0 means full view of sky in all directions.
 float Chunk::ComputeAmbientLight(int ox, int oy, int oz) const {
 	// The direction pointing to the sun is not included.
 	float sky =
@@ -101,11 +98,59 @@ float Chunk::ComputeAmbientLight(int ox, int oy, int oz) const {
 		    LineToSky(this, ox, oy, oz, -0.577350269f, -0.577350269, 0.577350269);
 		num += 4.0f;
 	}
-	glm::vec3 block(ox, oy, oz);
 	float sum = sky * 1.0f / num;
 	if (sum > 1.0f)
 		sum = 1.0f;
 	return sum;
+}
+
+// Look for a specific block type in a given direction.
+// Transparent blocks are ignored.
+static bool RayTraceBlocks(const Chunk *cp, int ox, int oy, int oz, float dx, float dy, float dz, unsigned char type) {
+	float fx = float(ox), fy = float(oy), fz = float(oz);
+
+	ChunkCoord cc = cp->cc;
+	const Chunk *currentChunk = cp;
+	for (int i=0; i<20; i++) {
+		if (fx<0) { fx += CHUNK_SIZE; cc.x--; currentChunk = ChunkFind(&cc, false); }
+		if (fy<0) { fy += CHUNK_SIZE; cc.y--; currentChunk = ChunkFind(&cc, false); }
+		if (fz<0) { fz += CHUNK_SIZE; cc.z--; currentChunk = ChunkFind(&cc, false); }
+		if (fx>=CHUNK_SIZE) { fx -= CHUNK_SIZE; cc.x++; currentChunk = ChunkFind(&cc, false); }
+		if (fy>=CHUNK_SIZE) { fy -= CHUNK_SIZE; cc.y++; currentChunk = ChunkFind(&cc, false); }
+		if (fz>=CHUNK_SIZE) { fz -= CHUNK_SIZE; cc.z++; currentChunk = ChunkFind(&cc, false); }
+
+		// If the distance to the next chunk above is big enough, ignore shadows from it.
+		if (cc.z > cp->cc.z + 2)
+			return true; // Reached the sky!
+		if (currentChunk == 0)
+			return true; // We don't know, so assume there is sky. TODO: Not clever enough.
+		int x = int(floorf(fx)), y = int(floorf(fy)), z = int(floorf(fz));
+		auto bl = currentChunk->GetBlock(x, y, z);
+		fx += dx; fy += dy; fz += dz;
+		if (bl == type)
+			return true;
+		if (!Model::ChunkBlocks::blockIsSemiTransp(bl))
+			return false;
+	}
+	// Don't look any further, give it up
+	return false;
+}
+
+bool Chunk::CountNearWalls(int ox, int oy, int oz, int type, int threshold) const {
+    if (gOptions.fPerformance <= 2) // See drawScreenSpaceReflection() in rendercontrol, which will not draw reflections
+        return false;
+	// The direction pointing to the sun is not included.
+	int num =
+		RayTraceBlocks(this, ox, oy, oz, 0.0f, 0.0f, 1.0f, BT_Stone) +
+		RayTraceBlocks(this, ox, oy, oz, 0.707106781f, 0.0f, 0.707106781f, BT_Stone) +
+		RayTraceBlocks(this, ox, oy, oz, 0.0f, 0.707106781f, 0.707106781f, BT_Stone) +
+		RayTraceBlocks(this, ox, oy, oz, -0.707106781f, 0.0f, 0.707106781f, BT_Stone) +
+		RayTraceBlocks(this, ox, oy, oz, 0.0f, -0.707106781f, 0.707106781f, BT_Stone) +
+		RayTraceBlocks(this, ox, oy, oz, 0.577350269f, -0.577350269, 0.577350269, BT_Stone) +
+		RayTraceBlocks(this, ox, oy, oz, -0.577350269f, 0.577350269, 0.577350269, BT_Stone) +
+		RayTraceBlocks(this, ox, oy, oz, 0.577350269f, 0.577350269, 0.577350269, BT_Stone) +
+		RayTraceBlocks(this, ox, oy, oz, -0.577350269f, -0.577350269, 0.577350269, BT_Stone);
+	return num >= threshold;
 }
 
 void Chunk::UpdateGraphics(void) {
