@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2014 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -65,9 +65,10 @@ in vec2 fragmentTexCoord;
 in float extIntensity;
 in float extAmbientLight;
 in vec3 position;       // The model coordinate, as given by the vertex shader
-out vec4 diffuseOutput; // layout(location = 0)
-out vec4 posOutput;     // layout(location = 1)
-out vec4 normOutput;    // layout(location = 2)
+layout(location = 0) out vec4 diffuseOutput;
+layout(location = 1) out vec4 posOutput;
+layout(location = 2) out vec4 normOutput;
+layout(location = 3) out int materialOutput;
 void main(void)
 {
    if (distance(UBOCamera.xyz, position) > UBOViewingDistance) { discard; return; }
@@ -79,4 +80,5 @@ void main(void)
    posOutput.a = extIntensity; // Use the alpha channel for sun intensity
    normOutput = vec4(fragmentNormal, extAmbientLight); // Use alpha channel of normal for ambient info.
    diffuseOutput = clr;
+   materialOutput = 0; // Not supported yet
 }

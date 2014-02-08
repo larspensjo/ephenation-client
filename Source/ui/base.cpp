@@ -1,4 +1,4 @@
-// Copyright 2012,2013 The Ephenation Authors
+// Copyright 2012-2014 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -24,12 +24,8 @@
 #include "factory.h"
 #include "../gamedialog.h"
 #include "../Splitter.h"
-#include "../Options.h"
-#include "../primitives.h"
-#include "../connection.h"
-#include "../SoundControl.h"
-#include "../Inventory.h"
 #include "../modes.h"
+#include "../Debug.h"
 
 using std::string;
 using std::stringstream;
@@ -52,10 +48,6 @@ struct BaseDialog::DialogState {
 	}
 };
 
-BaseDialog::~BaseDialog() {
-	ASSERT(fStack.size() == 0);
-}
-
 // This event callback is generated automatically from libRocket.
 // Notice that there may be "click" events for any part of the document.
 void BaseDialog::ProcessEvent(Rocket::Core::Event& event) {
@@ -66,10 +58,12 @@ void BaseDialog::ProcessEvent(Rocket::Core::Event& event) {
 		// It was a "submit" event from a form element. The string in 'submit' is a feedback
 		// that is currently not used.
 		string submit = e->GetAttribute("onsubmit", Rocket::Core::String("")).CString();
+		LPLOG("Submit %s", submit.c_str());
 		this->FormEvent(event, submit);
 	} else if (type == "click") {
 		string attr = e->GetAttribute("onclick", Rocket::Core::String("")).CString();
 		// Use the attribute "onclick" to determine what to do.
+		LPLOG("Click %s", attr.c_str());
 		this->ClickEvent(event, attr);
 	} else if (type == "focus") {
 		if (tagname == "textarea") {
@@ -83,6 +77,7 @@ void BaseDialog::ProcessEvent(Rocket::Core::Event& event) {
 bool BaseDialog::ClickEvent(Rocket::Core::Event& event, const string &action) {
 	ASSERT(fStack.size() > 0);
 	Splitter split(action, " ");
+	LPLOG("Action %s", action.c_str());
 	if (action == "Close") {
 		if (!this->Pop())
 			Controller::gGameDialog.ClearInputRedirect();
@@ -111,7 +106,7 @@ void BaseDialog::FormEvent(Rocket::Core::Event& event, const string &action) {
 	// Some common logic needed by all forms.
 	const Rocket::Core::Dictionary *dic = event.GetParameters();
 	int size = dic->Size();
-	// printf("Submit %s: size %d\n", action.c_str(), size);
+	LPLOG("Action %s size %d", action.c_str(), size);
 	// Iterate through the list of arguments given to the event. This list only contains
 	// elements that are used or filled with something. Cleared checkboxes are not included.
 	for (int pos=0, i=0; i<size; i++) {

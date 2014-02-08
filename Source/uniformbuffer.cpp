@@ -46,19 +46,19 @@ struct Data {
 	glm::mat4 projectionviewmatrix;
 	glm::mat4 viewmatrix;
 	glm::vec4 camera; // Only three floats needed, but std140 will align to 4 anyway.
+	glm::vec4 ovrDistortion;
+	glm::vec2 ovrlenscenter;
 	float viewingdistance;
 	int performance;
 	int dynamicshadows;
 	int windowheight; // Height of window, in pixels.
+	int windowWidth;  // Width of window, in pixels.
 	int toggleTesting;
 	int belowGround; // True when player is below ground
 	float exposure;
 	float ambientLight;
-	//
-	// Oculus rift parameters
-	//
-	glm::vec4 ovrDistortion;
-	glm::vec2 ovrlenscenter;
+	float calibrationFactor;
+	float projectionK1, projectionK2; // Used for reverse depth buffer projection
 	int enabledistortion;
 };
 
@@ -90,9 +90,11 @@ void UniformBuffer::Update(bool ovrMode) const {
 	data.camera = fCamera;
 	data.projectionviewmatrix = gProjectionMatrix * gViewMatrix;
 	data.windowheight = gViewport[3];
+	data.windowWidth = gViewport[2];
 	data.toggleTesting = gToggleTesting;
 	data.exposure = gOptions.fExposure;
 	data.ambientLight = gOptions.fAmbientLight / 200.0f;
+	data.calibrationFactor = fDebugfactor;
 	data.belowGround = Model::gPlayer.BelowGround();
 	data.ovrDistortion = fDistortion;
 	if (fLeftEeye)
@@ -100,6 +102,12 @@ void UniformBuffer::Update(bool ovrMode) const {
 	else
 		data.ovrlenscenter = -fOvrLensCenter;
 	data.enabledistortion = ovrMode;
+
+	// Compute constants needed for reverse depth buffer computation
+	// The basic math can be found at http://stackoverflow.com/questions/6652253/getting-the-true-z-value-from-the-depth-buffer
+	// As much as possible is pre-computed into constants here.
+	data.projectionK1 = 2.0f * fFarCutoff * fNearCutoff / (fFarCutoff - fNearCutoff);
+	data.projectionK2 = (fFarCutoff + fNearCutoff) / (fFarCutoff - fNearCutoff);
 
 	glBindBuffer(GL_UNIFORM_BUFFER, fUBOBuffer);
 	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(Data), &data);

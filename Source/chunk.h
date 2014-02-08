@@ -1,4 +1,4 @@
-// Copyright 2012-2013 The Ephenation Authors
+// Copyright 2012-2014 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -66,6 +66,24 @@
 #define BT_RedLight      31 // Add red light
 #define BT_GreenLight    32 // Add green light
 #define BT_BlueLight     33 // Add blue light
+
+// A list of surface effects. There can be up to 15 of them, where number zero means no effect.
+#define BT_EffOffset 100 // Used as a offset.
+#define BT_EffWatery 101
+#define BT_EffRes2   102
+#define BT_EffRes3   103
+#define BT_EffRes4   104
+#define BT_EffRes5   105
+#define BT_EffRes6   106
+#define BT_EffRes7   107
+#define BT_EffRes8   108
+#define BT_EffRes9   109
+#define BT_EffRes10  110
+#define BT_EffRes11  111
+#define BT_EffRes12  112
+#define BT_EffRes13  113
+#define BT_EffRes14  114
+#define BT_EffRes15  115
 
 #define BT_Stone2	127 // Use a free block type
 #define BT_TopSoil	128
@@ -143,7 +161,7 @@ public:
 	bool fScheduledForLoading;
 
 	/// Information about graphical objects.
-	/// The referenced object is a 'const', as the content must not change asynchronosuly.
+	/// The referenced object is a 'const', as the content must not change asynchronously.
 	shared_ptr<const ChunkObject> fChunkObject;
 
 	/// The actual blocks in the chunk. The content may change asynchronously, so it can't be a const.
@@ -185,7 +203,7 @@ public:
 
 	/// Draw all objects in the chunk. If 'forShadows' is true, skip doing things that shall not be
 	/// used in the shadow map. dx, dy and dz is the relative distance to the player chunk.
-	void DrawObjects(StageOneShader *shader, int dx, int dy, int dz, bool forShadows);
+	void DrawObjects(StageOneShader *shader, int dx, int dy, int dz, bool forShadows) const;
 	void PrepareOpenGL(StageOneShader *shader, ChunkShaderPicking *pickShader, DL_Type dlType);
 	void ReleaseOpenGLBuffers(void);
 
@@ -200,7 +218,16 @@ public:
 	void PopTriangles(void);
 
 	bool InSunLight(int ox, int oy, int oz) const;
+
+	/// Find out if a surface is in the direction sky, from a limited number of directions. Return
+	/// a value from 0 to 1. The given coordinate may be just outside the chunk!
+	/// A value of 1.0 means full view of sky in all directions.
 	float ComputeAmbientLight(int ox, int oy, int oz) const;
+
+	/// Count number of near walls being of a certain type
+	///
+	/// Return true if the number is equal or greater than the given threshold.
+	bool CountNearWalls(int ox, int oy, int oz, int type, int threshold) const;
 private:
 	bool fDirty;						  // True if something changed so that the graphics need to be recomputed
 	Chunk *fNext_gl;		// Used for linked list of chunks that need to free gl resources.

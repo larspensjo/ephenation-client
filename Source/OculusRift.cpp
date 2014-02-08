@@ -66,15 +66,17 @@ void OculusRift::Create() {
 	if (pHMD == nullptr) {
 		sgPopupTitle = "Oculus Rift";
 		sgPopup += "No display found.\n";
+		LPLOG("No display found");
 	}
 
 	if (pSensor == nullptr) {
 		sgPopupTitle = "Oculus Rift";
-		sgPopup += "No sensor found, you may need to do 'sudo chmod +rw /dev/hidraw* to enable reading and writing.\n";
+		const string msg = "No sensor found. /dev/hidraw/xx should be read and writeable. Did you run the ConfigurePermissionsAndPackages.sh?";
+		sgPopup += msg + ".\n";
 #ifdef _WIN32
 		LPLOG("No sensor found");
 #else
-		LPLOG("No sensor found, you may need to do 'sudo chmod +rw /dev/hidraw* to enable reaading and writing");
+		LPLOG("%s", msg.c_str());
 #endif // _WIN32
 	}
 
@@ -114,21 +116,6 @@ void OculusRift::Create() {
 	}
 #endif
 	using namespace OVR::Util::Render;
-	StereoConfig stereo;
-	float renderScale;
-	int Width = 1200, Height = 800;
-	// Obtain setup data from the HMD and initialize StereoConfig for stereo rendering.
-	stereo.SetFullViewport(Viewport(0,0, Width, Height));
-	stereo.SetStereoMode(Stereo_LeftRight_Multipass);
-	stereo.SetDistortionFitPointVP(-1.0f, 0.0f);
-	renderScale = stereo.GetDistortionScale();
-
-	StereoEyeParams leftEye = stereo.GetEyeRenderParams(StereoEye_Left);
-	StereoEyeParams rightEye = stereo.GetEyeRenderParams(StereoEye_Right);
-	// Left eye rendering parameters
-	Viewport leftVP = leftEye.VP;
-	Matrix4f leftProjection = leftEye.Projection;
-	Matrix4f leftViewAdjust = leftEye.ViewAdjust;
 
 	LPLOG("FoV: %f", GetFieldOfView());
 	LPLOG("IPD: %f", GetInterpupillaryDistance());

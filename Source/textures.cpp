@@ -68,6 +68,7 @@ static GameTexture gameTextures[] = {
 	{ BT_Tree1,         0, "textures/tree-texture1.bmp", "Small tree", TF_SRGB },
 	{ BT_Tree2,         0, "textures/tree-texture2.bmp", "Medium tree", TF_SRGB },
 	{ BT_Tree3,         0, "textures/tree-texture3.bmp", "Big tree", TF_SRGB },
+	{ BT_EffWatery,     0, "textures/WaterDrop.bmp", "Damp walls", TF_SRGB },
 	{ BT_Tuft,          0, "textures/TuftOfGrass.bmp", "Tuft of grass", TF_SRGB|TF_MIPMAP2|TF_NEAREST|TF_BOOLAPHA },
 	{ BT_Flowers,       0, "textures/RedFlowers.bmp", "Flowers", TF_NOMIPMAP|TF_NEAREST|TF_BOOLAPHA },
 	{ BT_SmallFog,      0, "textures/SmallFog.bmp", "Small fog", TF_SRGB },
@@ -107,76 +108,7 @@ GLuint GameTexture::CompassRose, GameTexture::DamageIndication;
 GLuint GameTexture::WEP1, GameTexture::WEP2, GameTexture::WEP3, GameTexture::WEP4;
 GLuint GameTexture::Coin, GameTexture::Quest;
 GLuint GameTexture::WEP1Text, GameTexture::WEP2Text, GameTexture::WEP3Text, GameTexture::WEP4Text;
-GLuint GameTexture::PoissonDisk, GameTexture::MousePointerId;
-
-using glm::vec2;
-// This table is from http://asawicki.info/Download/Productions/Applications/PoissonDiscGenerator/2D.txt
-const vec2 gPoissonDisk[64] = {
-	vec2( 0.282571, 0.023957 ),
-	vec2( 0.792657, 0.945738 ),
-	vec2( 0.922361, 0.411756 ),
-	vec2( 0.165838, 0.552995 ),
-	vec2( 0.566027, 0.216651 ),
-	vec2( 0.335398, 0.783654 ),
-	vec2( 0.0190741, 0.318522 ),
-	vec2( 0.647572, 0.581896 ),
-	vec2( 0.916288, 0.0120243 ),
-	vec2( 0.0278329, 0.866634 ),
-	vec2( 0.398053, 0.4214 ),
-	vec2( 0.00289926, 0.051149 ),
-	vec2( 0.517624, 0.989044 ),
-	vec2( 0.963744, 0.719901 ),
-	vec2( 0.76867, 0.018128 ),
-	vec2( 0.684194, 0.167302 ),
-	vec2( 0.727103, 0.410871 ),
-	vec2( 0.557482, 0.724143 ),
-	vec2( 0.483352, 0.0527055 ),
-	vec2( 0.162877, 0.351482 ),
-	vec2( 0.959716, 0.180578 ),
-	vec2( 0.140355, 0.112003 ),
-	vec2( 0.796228, 0.223365 ),
-	vec2( 0.187048, 0.787225 ),
-	vec2( 0.55446, 0.35612 ),
-	vec2( 0.449965, 0.640522 ),
-	vec2( 0.438917, 0.194769 ),
-	vec2( 0.791253, 0.565325 ),
-	vec2( 0.719718, 0.794794 ),
-	vec2( 0.0651875, 0.708609 ),
-	vec2( 0.641987, 0.0233772 ),
-	vec2( 0.376415, 0.944243 ),
-	vec2( 0.827723, 0.723258 ),
-	vec2( 0.968627, 0.884518 ),
-	vec2( 0.263405, 0.458968 ),
-	vec2( 0.985717, 0.559587 ),
-	vec2( 0.0616169, 0.468612 ),
-	vec2( 0.159154, 0.934782 ),
-	vec2( 0.287301, 0.284768 ),
-	vec2( 0.550066, 0.849391 ),
-	vec2( 0.353587, 0.003296 ),
-	vec2( 0.000671407, 0.582507 ),
-	vec2( 0.850459, 0.461989 ),
-	vec2( 0.526139, 0.640126 ),
-	vec2( 0.786889, 0.487686 ),
-	vec2( 0.164129, 0.02472 ),
-	vec2( 0.517075, 0.90933 ),
-	vec2( 0.316111, 0.663564 ),
-	vec2( 0.09476, 0.895749 ),
-	vec2( 0.298288, 0.195318 ),
-	vec2( 0.427229, 0.7828 ),
-	vec2( 0.734764, 0.266152 ),
-	vec2( 0.0816065, 0.965972 ),
-	vec2( 0.698935, 0.646352 ),
-	vec2( 0.281899, 0.355144 ),
-	vec2( 0.871334, 0.303171 ),
-	vec2( 0.138249, 0.661214 ),
-	vec2( 0.202399, 0.252449 ),
-	vec2( 0.0734275, 0.399853 ),
-	vec2( 0.786767, 0.660268 ),
-	vec2( 0.933744, 0.508621 ),
-	vec2( 0.398236, 0.0509049 ),
-	vec2( 0.500473, 0.130253 ),
-	vec2( 0.0332957, 0.526292)
-};
+GLuint GameTexture::MousePointerId;
 
 //Makes the image into a texture, and returns the id of the texture. The texture is returned as bound
 GLuint loadTexture(shared_ptr<Image> image, unsigned fl = 0) {
@@ -406,12 +338,6 @@ void GameTexture::Init(void) {
 		if (BlockTypeTotextureId[i] == 0)
 			BlockTypeTotextureId[i] = GameTexture::CompassRose;
 	}
-
-	glGenTextures(1, &PoissonDisk);
-	glBindTexture(GL_TEXTURE_1D, PoissonDisk);
-	glTexImage1D(GL_TEXTURE_1D, 0, GL_RG32F, NELEM(gPoissonDisk), 0, GL_RG, GL_FLOAT, gPoissonDisk);
-	glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 }
 
 // Load bitmaps to be used for the GUI.

@@ -21,7 +21,7 @@
 class StageOneShader: public ShaderBase {
 public:
 	enum InputLocations {
-		Normal, Vertex, SkinWeights, Joints
+		Normal, Vertex, SkinWeights, Joints, Material
 	};
 
 	virtual void Model(const glm::mat4 &) = 0;// Define the Model matrix

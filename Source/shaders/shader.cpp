@@ -1,4 +1,4 @@
-// Copyright 2012-2013 The Ephenation Authors
+// Copyright 2012-2014 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -40,7 +40,7 @@ void ShaderBase::Initglsw(const char *debug, int vertexShaderLines, const char *
 		if (p[0] != '#')
 			p = glswGetShader(p); // Directives are not translated
 		if (p == 0)
-			ErrorDialog("ShaderBase::Initglsw %s failed to load '%s'\n", debug, vertexShaderSource[i]);
+			ErrorDialog("ShaderBase::Initglsw %s failed to load '%s' (%s)\n", debug, vertexShaderSource[i], glswGetError());
 		// LPLOG("%s", p);
 		loadedVertexLines[i+1] = p;
 	}
@@ -52,7 +52,7 @@ void ShaderBase::Initglsw(const char *debug, int vertexShaderLines, const char *
 		if (p[0] != '#')
 			p = glswGetShader(p); // Directives are not translated
 		if (p == 0)
-			ErrorDialog("ShaderBase::Initglsw %s failed to load '%s'\n", debug, fragmentShaderSource[i]);
+			ErrorDialog("ShaderBase::Initglsw %s failed to load '%s' (%s)\n", debug, fragmentShaderSource[i], glswGetError());
 		// LPLOG("%s", p);
 		loadedFragmnetLines[i+1] = p;
 	}
@@ -93,8 +93,8 @@ void ShaderBase::Init(const char *debug, int vertexShaderLines, const char **ver
 
 GLint ShaderBase::GetUniformLocation(const char *name) const {
 	GLint ind = glGetUniformLocation(fProgram, name);
-	if (gDebugOpenGL)
-		ASSERT(ind != -1);
+	if (ind == -1)
+		LPLOG("Failed to find %s", name);
 	return ind;
 }
 

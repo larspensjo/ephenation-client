@@ -1,4 +1,4 @@
-// Copyright 2013 The Ephenation Authors
+// Copyright 2013-2014 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -24,47 +24,76 @@ out vec2 screen;                          // Screen coordinate
 void main(void)
 {
 	gl_Position = vec4(vertex*2-1, 0, 1); // Transform from interval 0 to 1, to interval -1 to 1.
-   screen = vertex;                       // Copy position to the fragment shader. Only x and y is needed.
+    screen = vertex;                       // Copy position to the fragment shader. Only x and y is needed.
 }
 
 -- Fragment
 
-uniform sampler2D posTex;     // World position
-uniform sampler2D normalTex;  // Normals
+uniform sampler2D depthTex;   // The depth buffer
 in vec2 screen;               // The screen position
-layout(location = 0) out float light;
+layout(location = 0) out float light; // Used as a multiplicative effect
 
-vec4 worldPos;
-vec4 normal;
+#define M_PI 3.1415926535897932384626433832795
 
-vec2 seed;
+// #define CALIBRATE
 
-vec2 rand(vec2 a, vec2 b) {
-	seed = fract(a*10.23 + b*123.1232+screen*3.123 + seed*82.12354); // A value from 0 to 1
-	return seed;
+// These values are a subset from common.glsl.
+// The subset was tested to give a good result
+const vec2 gPoissonDisk[] = vec2[] (
+	vec2( 0.0651875, 0.708609 ),
+	vec2( 0.641987, 0.0233772 ),
+	vec2( 0.376415, 0.944243 ),
+	vec2( 0.827723, 0.723258 )
+);
+
+float refDist;
+float py;
+float px;
+
+bool AcuteAngle(int ind) {
+	vec2 delta = (gPoissonDisk[ind]*2-1)*vec2(px,py);
+	float sampleDist1 = WorldDistance(depthTex, screen+delta);
+	float sampleDist2 = WorldDistance(depthTex, screen-delta);
+	float v1 = atan((refDist - sampleDist1) / length(delta));
+	float v2 = atan((refDist - sampleDist2) / length(delta));
+	float v = M_PI - v1 - v2;
+	const float cutoff = 0.58;
+	if (sampleDist1 < refDist - cutoff)
+		v = M_PI;
+	if (sampleDist2 < refDist - cutoff)
+		v = M_PI;
+	if (v < M_PI*0.20)
+		return true;
+	return false;
 }
 
 void main(void)
 {
-	normal = texture(normalTex, screen);
-	worldPos = texture(posTex, screen);
-	float ref = distance(UBOCamera.xyz, worldPos.xyz);
-	int num = 0;
-	const int SIZE=20;
-	float p = 1.0/UBOWindowHeight; // Size of one pixel
-	for (int i=0; i<SIZE; i++) {
-		int ind = i + abs(int(worldPos.x*12.32));
-		vec2 sampleInd = screen + (rand(worldPos.xy, normal.xy)*2-1)*p*20;
-		vec3 sample = texture(posTex, sampleInd).xyz;
-		float dist = distance(UBOCamera.xyz, sample);
-		if (abs(dist-ref) > 0.2) { num-=10; }
-		if (dist < ref) num++;
+	refDist = WorldDistance(depthTex, screen);
+	float found = 0;
+	float total = 0;
+	py = 0.115/refDist;
+	px = 0.115/refDist;
+	for (int i=0; i<4; i++) {
+		if (AcuteAngle(i))
+			found++;
+		total += 1.0;
 	}
-	if (num > SIZE*0.8)
-		// As the last step, combine all the diffuse color with the lighting and blending effects
-		light = -0.1;
-	else {
-		discard; return;
+
+	float thresh = 0.07;
+	if (found > total*thresh) {
+#ifdef CALIBRATE
+		const float bs = 0.1;
+		light = bs + (1-bs) * (found - total*thresh) / (1.0 - thresh) / total;
+#else
+		const float bs = 0.55;
+		light = 1.0 - (1-bs) * (found - total*thresh) / (1.0 - thresh) / total;
+#endif
+	} else {
+#ifdef CALIBRATE
+		light = 0.1;
+#else
+		light = 1.0;
+#endif
 	}
-	//    light = worldPos.a;
 }

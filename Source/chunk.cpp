@@ -1,4 +1,4 @@
-// Copyright 2012-2013 The Ephenation Authors
+// Copyright 2012-2014 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -21,35 +21,23 @@
 #include <math.h>
 #include <string.h>
 #include <map>
-
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/transform2.hpp>
-#include "render.h"
+
 #include "chunk.h"
 #include "chunkcache.h"
-#include "client_prot.h"
 #include "connection.h"
 #include "parse.h"
 #include "textures.h"
-#include "primitives.h"
-#include "shapes/Cylinder.h"
 #include "shaders/StageOneShader.h"
 #include "shaders/ChunkShaderPicking.h"
 #include "ui/Error.h"
 #include "ChunkProcess.h"
-#include "ChunkObject.h"
-#include "ChunkBlocks.h"
-#include "shapes/Tree.h"
 #include "shapes/Cube.h"
-#include "shapes/quadstage1.h"
-#include "assert.h"
 #include "Options.h"
 #include "SuperChunkManager.h"
-#include "manageanimation.h"
-#include "player.h"
-#include "billboard.h"
-#include "uniformbuffer.h"
+#include "client_prot.h"
 #include "modes.h"
 
 #define cChecksumTimeout 15.0
@@ -92,9 +80,6 @@ bool Chunk::InSunLight(int ox, int oy, int oz) const {
 	return LineToSky(this, ox, oy, oz, -0.577350269f, -0.577350269f, 0.577350269f);
 }
 
-// Find out if a surface is in the direction sky, from a limited number of directions. Return
-// a value from 0 to 1. The given coordinate may be just outside the chunk!
-// A value of 1.0 means full view of sky in all directions.
 float Chunk::ComputeAmbientLight(int ox, int oy, int oz) const {
 	// The direction pointing to the sun is not included.
 	float sky =
@@ -113,11 +98,59 @@ float Chunk::ComputeAmbientLight(int ox, int oy, int oz) const {
 		    LineToSky(this, ox, oy, oz, -0.577350269f, -0.577350269, 0.577350269);
 		num += 4.0f;
 	}
-	glm::vec3 block(ox, oy, oz);
 	float sum = sky * 1.0f / num;
 	if (sum > 1.0f)
 		sum = 1.0f;
 	return sum;
+}
+
+// Look for a specific block type in a given direction.
+// Transparent blocks are ignored.
+static bool RayTraceBlocks(const Chunk *cp, int ox, int oy, int oz, float dx, float dy, float dz, unsigned char type) {
+	float fx = float(ox), fy = float(oy), fz = float(oz);
+
+	ChunkCoord cc = cp->cc;
+	const Chunk *currentChunk = cp;
+	for (int i=0; i<20; i++) {
+		if (fx<0) { fx += CHUNK_SIZE; cc.x--; currentChunk = ChunkFind(&cc, false); }
+		if (fy<0) { fy += CHUNK_SIZE; cc.y--; currentChunk = ChunkFind(&cc, false); }
+		if (fz<0) { fz += CHUNK_SIZE; cc.z--; currentChunk = ChunkFind(&cc, false); }
+		if (fx>=CHUNK_SIZE) { fx -= CHUNK_SIZE; cc.x++; currentChunk = ChunkFind(&cc, false); }
+		if (fy>=CHUNK_SIZE) { fy -= CHUNK_SIZE; cc.y++; currentChunk = ChunkFind(&cc, false); }
+		if (fz>=CHUNK_SIZE) { fz -= CHUNK_SIZE; cc.z++; currentChunk = ChunkFind(&cc, false); }
+
+		// If the distance to the next chunk above is big enough, ignore shadows from it.
+		if (cc.z > cp->cc.z + 2)
+			return true; // Reached the sky!
+		if (currentChunk == 0)
+			return true; // We don't know, so assume there is sky. TODO: Not clever enough.
+		int x = int(floorf(fx)), y = int(floorf(fy)), z = int(floorf(fz));
+		auto bl = currentChunk->GetBlock(x, y, z);
+		fx += dx; fy += dy; fz += dz;
+		if (bl == type)
+			return true;
+		if (!Model::ChunkBlocks::blockIsSemiTransp(bl))
+			return false;
+	}
+	// Don't look any further, give it up
+	return false;
+}
+
+bool Chunk::CountNearWalls(int ox, int oy, int oz, int type, int threshold) const {
+    if (gOptions.fPerformance <= 2) // See drawScreenSpaceReflection() in rendercontrol, which will not draw reflections
+        return false;
+	// The direction pointing to the sun is not included.
+	int num =
+		RayTraceBlocks(this, ox, oy, oz, 0.0f, 0.0f, 1.0f, BT_Stone) +
+		RayTraceBlocks(this, ox, oy, oz, 0.707106781f, 0.0f, 0.707106781f, BT_Stone) +
+		RayTraceBlocks(this, ox, oy, oz, 0.0f, 0.707106781f, 0.707106781f, BT_Stone) +
+		RayTraceBlocks(this, ox, oy, oz, -0.707106781f, 0.0f, 0.707106781f, BT_Stone) +
+		RayTraceBlocks(this, ox, oy, oz, 0.0f, -0.707106781f, 0.707106781f, BT_Stone) +
+		RayTraceBlocks(this, ox, oy, oz, 0.577350269f, -0.577350269, 0.577350269, BT_Stone) +
+		RayTraceBlocks(this, ox, oy, oz, -0.577350269f, 0.577350269, 0.577350269, BT_Stone) +
+		RayTraceBlocks(this, ox, oy, oz, 0.577350269f, 0.577350269, 0.577350269, BT_Stone) +
+		RayTraceBlocks(this, ox, oy, oz, -0.577350269f, -0.577350269, 0.577350269, BT_Stone);
+	return num >= threshold;
 }
 
 void Chunk::UpdateGraphics(void) {
@@ -310,183 +343,22 @@ void Chunk::Draw(StageOneShader *shader, ChunkShaderPicking *pickShader, DL_Type
 	glBindVertexArray(0);
 }
 
-void Chunk::DrawObjects(StageOneShader *shader, int dx, int dy, int dz, bool forShadows) {
+void Chunk::DrawObjects(StageOneShader *shader, int dx, int dy, int dz, bool forShadows) const {
 	if (!fChunkObject)
 		return; // Nothing to show yet
 
-	bool belowGround = Model::gPlayer.BelowGround();
-	// Draw all trees.
-	const float billboardLimit = 80.0f;
-	const float billboardShadowLimit = 45.0f;
-	const float rotateShadowBillboard = -45.0f;
-	const float tiltShadowBillboard = -30.0f;
-	for (int i=0; i<fChunkObject->fNumTree; i++) {
-		float treex = (float)fChunkObject->fTreeList[i].x + dx*CHUNK_SIZE + 0.5f;
-		float treey = (float)fChunkObject->fTreeList[i].z + dz*CHUNK_SIZE;
-		float treez = -(float)fChunkObject->fTreeList[i].y - dy*CHUNK_SIZE - 0.5f;
-		glm::mat4 modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(treex, treey, treez));
+	// Create the offset in OpenGL coordinates
+	glm::vec3 offset(dx*CHUNK_SIZE + 0.5f, dz*CHUNK_SIZE, - dy*CHUNK_SIZE - 0.5f);
 
-		glm::vec3 player = Model::gPlayer.GetOffsetToChunk();
-		float d = glm::distance(player, glm::vec3(treex, treey, treez));
-		float limit = billboardLimit;
-		if (forShadows)
-			limit = billboardShadowLimit;
-
-		switch (fChunkObject->fTreeList[i].type) {
-		case BT_Tuft:
-			if (forShadows && gOptions.fPerformance < 4)
-				continue; // Only show shadow if high performance
-			shader->Model(glm::translate(modelMatrix, glm::vec3(0.0f, 0.65f, 0.0f)));
-			glBindTexture(GL_TEXTURE_2D, GameTexture::TuftOfGrass); // This will be used for trunk and all branches.
-			gTuftOfGrass.DrawStatic();
-			break;
-		case BT_Flowers:
-			if (forShadows && gOptions.fPerformance < 4)
-				continue; // Only show shadow if high performance
-			shader->Model(glm::translate(modelMatrix, glm::vec3(0.0f, 0.65f, 0.0f)));
-			glBindTexture(GL_TEXTURE_2D, GameTexture::Flowers); // This will be used for trunk and all branches.
-			gTuftOfGrass.DrawStatic(); // The same model as "tuft of grass" is used, but with a different texture
-			break;
-		case BT_Tree1:
-			if (d > limit) {
-				float angle = -_angleHor;
-				Billboard::Predefined picture = Billboard::tree1;
-				if (forShadows) {
-					angle = rotateShadowBillboard;
-					picture = Billboard::tree1Shadow;
-				}
-				modelMatrix = glm::rotate(modelMatrix, angle, glm::vec3(0, 1, 0));
-				if (forShadows)
-					modelMatrix = glm::rotate(modelMatrix, tiltShadowBillboard, glm::vec3(1, 0, 0));
-				gBillboard.Draw(shader, modelMatrix, picture);
-			} else {
-				shader->Model(modelMatrix);
-				Tree::sfSmallTree.Draw();
-				if ((!gOptions.fDynamicShadows && !gOptions.fStaticShadows) || belowGround) gShadows.Add(treex, treey, treez, 1.5f, 0.8f);
-			}
-			break;
-		case BT_Tree2:
-			if (d > limit) {
-				float angle = -_angleHor;
-				Billboard::Predefined picture = Billboard::tree2;
-				if (forShadows) {
-					angle = rotateShadowBillboard;
-					picture = Billboard::tree2Shadow;
-				}
-				modelMatrix = glm::rotate(modelMatrix, angle, glm::vec3(0, 1, 0));
-				if (forShadows)
-					modelMatrix = glm::rotate(modelMatrix, tiltShadowBillboard, glm::vec3(1, 0, 0));
-				gBillboard.Draw(shader, modelMatrix, picture);
-			} else {
-				shader->Model(modelMatrix);
-				Tree::sfMediumTree.Draw();
-				if ((!gOptions.fDynamicShadows && !gOptions.fStaticShadows) || belowGround) gShadows.Add(treex, treey, treez, 3.0f, 0.8f);
-			}
-			break;
-		case BT_Tree3:
-			if (d > limit) {
-				float angle = -_angleHor;
-				Billboard::Predefined picture = Billboard::tree3;
-				if (forShadows) {
-					angle = rotateShadowBillboard;
-					picture = Billboard::tree3Shadow;
-				}
-				modelMatrix = glm::rotate(modelMatrix, angle, glm::vec3(0, 1, 0));
-				if (forShadows)
-					modelMatrix = glm::rotate(modelMatrix, tiltShadowBillboard, glm::vec3(1, 0, 0));
-				gBillboard.Draw(shader, modelMatrix, picture);
-			} else {
-				shader->Model(modelMatrix);
-				Tree::sfBigTree.Draw();
-				if ((!gOptions.fDynamicShadows && !gOptions.fStaticShadows) || belowGround) gShadows.Add(treex, treey, treez, 4.0f, 0.8f);
-			}
-			break;
-		}
-	}
+	fChunkObject->DrawTrees(shader, offset, forShadows);
 
 	if (forShadows)
 		return; // Skip the rest of the objects
 
-#define LIGHT_EFFECT_RADIUS 12
-
-	for (const auto &item : fChunkObject->fSpecialObject) {
-		float x = (float)item.x + dx*CHUNK_SIZE + 0.5f;
-		float y = (float)item.z + dz*CHUNK_SIZE;
-		float z = -(float)item.y - dy*CHUNK_SIZE - 0.5f;
-		switch (item.type) {
-		case BT_RedLight:
-			gLightSources.AddRed(x, y, z, LIGHT_EFFECT_RADIUS);
-			break;
-		case BT_BlueLight:
-			gLightSources.AddBlue(x, y, z, LIGHT_EFFECT_RADIUS);
-			break;
-		case BT_GreenLight:
-			gLightSources.AddGreen(x, y, z, LIGHT_EFFECT_RADIUS);
-			break;
-		}
-	}
-
-	// Find all fogs.
-	for (int i=0; i<fChunkObject->fNumFogs; i++) {
-		float x = (float)fChunkObject->fFogList[i].x + dx*CHUNK_SIZE + 0.5f;
-		float y = (float)fChunkObject->fFogList[i].z + dz*CHUNK_SIZE;
-		float z = -(float)fChunkObject->fFogList[i].y - dy*CHUNK_SIZE - 0.5f;
-		switch (fChunkObject->fFogList[i].type) {
-		case BT_SmallFog:
-			gFogs.Add(x, y, z, LAMP1_DIST);
-			break;
-		case BT_BigFog:
-			gFogs.Add(x, y, z, LAMP2_DIST);
-			break;
-		}
-	}
-
-	// Draw all lamps
-	for (int i=0; i<fChunkObject->fNumLamps; i++) {
-		float lampx = (float)fChunkObject->fLampList[i].x + dx*CHUNK_SIZE + 0.5f;
-		float lampy = (float)fChunkObject->fLampList[i].z + dz*CHUNK_SIZE;
-		float lampz = -(float)fChunkObject->fLampList[i].y - dy*CHUNK_SIZE - 0.5f;
-		gDrawObjectList.emplace_back(glm::vec3(lampx, lampy, lampz), fChunkObject->fLampList[i].type);
-		glm::mat4 modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(lampx, lampy, lampz));
-		glBindTexture(GL_TEXTURE_2D, GameTexture::LanternSideId); // For now, also used on top and bottom.
-		switch (fChunkObject->fLampList[i].type) {
-		case BT_Lamp1:
-			modelMatrix = glm::scale(modelMatrix, glm::vec3(0.2f, 0.4f, 0.2f));
-			shader->Model(modelMatrix);
-			gLantern.Draw();
-			break;
-		case BT_Lamp2:
-			modelMatrix = glm::scale(modelMatrix, glm::vec3(0.3f, 0.6f, 0.3f));
-			shader->Model(modelMatrix);
-			gLantern.Draw();
-			break;
-		}
-	}
-
-	// Draw the treasures
-	for (int i=0; i<fChunkObject->fNumTreasures; i++) {
-		float x = (float)fChunkObject->fTreasureList[i].x + dx*CHUNK_SIZE + 0.5f;
-		float y = (float)fChunkObject->fTreasureList[i].z + dz*CHUNK_SIZE + 0.5f;
-		float z = -(float)fChunkObject->fTreasureList[i].y - dy*CHUNK_SIZE - 0.5f;
-		gDrawObjectList.emplace_back(glm::vec3(x, y, z), fChunkObject->fTreasureList[i].type);
-		glm::mat4 modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(x, y, z));
-		switch (fChunkObject->fTreasureList[i].type) {
-		case BT_Treasure:
-			glBindTexture(GL_TEXTURE_2D, GameTexture::Coin);
-			modelMatrix = glm::scale(modelMatrix, glm::vec3(0.3f, 0.3f, 0.3f));
-			modelMatrix = glm::rotate(modelMatrix, float(gCurrentFrameTime*360), glm::vec3(0,1,0));
-			shader->Model(modelMatrix);
-			gQuadStage1.DrawDoubleSide();
-			break;
-		case BT_Quest:
-			glBindTexture(GL_TEXTURE_2D, GameTexture::Quest);
-			modelMatrix = glm::scale(modelMatrix, glm::vec3(0.6f, 0.6f, 0.6f));
-			modelMatrix = glm::rotate(modelMatrix, float(gCurrentFrameTime*360), glm::vec3(0,1,0));
-			shader->Model(modelMatrix);
-			gQuadStage1.DrawDoubleSide();
-			break;
-		}
-	}
+	fChunkObject->FindSpecialObjects(offset, 12.0f);
+	fChunkObject->FindFogs(offset);
+	fChunkObject->DrawLamps(shader, offset);
+	fChunkObject->DrawTreasures(shader, offset);
 }
 
 Chunk::~Chunk() {

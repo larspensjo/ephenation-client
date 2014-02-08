@@ -78,6 +78,7 @@
 		<Unit filename="DrawText.h" />
 		<Unit filename="DrawTexture.cpp" />
 		<Unit filename="DrawTexture.h" />
+		<Unit filename="Ephenation.iss" />
 		<Unit filename="HealthBar.cpp" />
 		<Unit filename="HealthBar.h" />
 		<Unit filename="Inventory.cpp" />
@@ -102,6 +103,7 @@
 		<Unit filename="Teleport.h" />
 		<Unit filename="UndoOp.cpp" />
 		<Unit filename="UndoOp.h" />
+		<Unit filename="after-install.sh" />
 		<Unit filename="animationmodels.cpp" />
 		<Unit filename="animationmodels.h" />
 		<Unit filename="assert.cpp" />
@@ -182,8 +184,14 @@
 		<Unit filename="shaders/ColorShader.h" />
 		<Unit filename="shaders/DeferredLighting.cpp" />
 		<Unit filename="shaders/DeferredLighting.h" />
+		<Unit filename="shaders/DistanceBlurring.cpp" />
+		<Unit filename="shaders/DistanceBlurring.glsl" />
+		<Unit filename="shaders/DistanceBlurring.h" />
 		<Unit filename="shaders/MonsterShader.cpp" />
 		<Unit filename="shaders/MonsterShader.h" />
+		<Unit filename="shaders/ScreenSpaceReflection.cpp" />
+		<Unit filename="shaders/ScreenSpaceReflection.glsl" />
+		<Unit filename="shaders/ScreenSpaceReflection.h" />
 		<Unit filename="shaders/SimpleTextureShader.cpp" />
 		<Unit filename="shaders/SimpleTextureShader.h" />
 		<Unit filename="shaders/StageOneShader.cpp" />
@@ -219,6 +227,7 @@
 		<Unit filename="shaders/modulatedtextureshader.cpp" />
 		<Unit filename="shaders/modulatedtextureshader.h" />
 		<Unit filename="shaders/monster.glsl" />
+		<Unit filename="shaders/noise3D.glsl" />
 		<Unit filename="shaders/pointlight.glsl" />
 		<Unit filename="shaders/shader.cpp" />
 		<Unit filename="shaders/shader.h" />

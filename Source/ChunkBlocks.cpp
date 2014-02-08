@@ -204,6 +204,21 @@ static const struct { unsigned char block; unsigned char flag; } propertybase[] 
 	{ BT_RedLight,      BLT_TRANSP                                      },
 	{ BT_GreenLight,    BLT_TRANSP                                      },
 	{ BT_BlueLight,     BLT_TRANSP                                      },
+	{ BT_EffWatery,     BLT_TRANSP                                      },
+	{ BT_EffRes2,       BLT_TRANSP                                      },
+	{ BT_EffRes3,       BLT_TRANSP                                      },
+	{ BT_EffRes4,       BLT_TRANSP                                      },
+	{ BT_EffRes5,       BLT_TRANSP                                      },
+	{ BT_EffRes6,       BLT_TRANSP                                      },
+	{ BT_EffRes7,       BLT_TRANSP                                      },
+	{ BT_EffRes8,       BLT_TRANSP                                      },
+	{ BT_EffRes9,       BLT_TRANSP                                      },
+	{ BT_EffRes10,      BLT_TRANSP                                      },
+	{ BT_EffRes11,      BLT_TRANSP                                      },
+	{ BT_EffRes12,      BLT_TRANSP                                      },
+	{ BT_EffRes13,      BLT_TRANSP                                      },
+	{ BT_EffRes14,      BLT_TRANSP                                      },
+	{ BT_EffRes15,      BLT_TRANSP                                      },
 };
 
 unsigned char property[256];

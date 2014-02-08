@@ -86,7 +86,7 @@ public:
 	void GetActivator(int &dx, int &dy, int &dz, ChunkCoord &cc); // Get the current activator location
 	void ClearSelection(void); // Clear the selected object
 	void AggroFrom(std::shared_ptr<const Model::Object>); // The player now has aggro from this monster
-	enum Calibration { CALIB_EXPOSURE, CALIB_WHITE_POINT, CALIB_AMBIENT, CALIB_NONE };
+	enum class Calibration { Exposure, WhitePoint, Ambient, Factor, None };
 	void CalibrateMode(Calibration);
 
 	/// Manage the running status of the player
@@ -116,7 +116,9 @@ private:
 	bool fMovingLeft;
 	bool fMovingRight;
 	bool fUsingTorch;
-	Calibration fCalibrationMode;
+	Calibration fCalibrationMode = Calibration::None;
+	float fCalibrationFactor = 1.0f;
+	void UpdateCalibrationConstant(bool increase);
 
 	enum class GuiMode { Default, Inventory, Map, EnterText } fGuiMode = GuiMode::Default;
 	bool fShowMouse = false; // Show the built-in mouse. Should only be used when Windows mouse is disabled.

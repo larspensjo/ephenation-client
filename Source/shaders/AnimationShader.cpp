@@ -1,4 +1,4 @@
-// Copyright 2012-2013 The Ephenation Authors
+// Copyright 2012-2014 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -50,10 +50,6 @@ AnimationShader *AnimationShader::Make(void) {
 }
 
 void AnimationShader::PreLinkCallback(GLuint prg) {
-	glBindFragDataLocation(prg, 0, "diffuseOutput");
-	glBindFragDataLocation(prg, 1, "posOutput");
-	glBindFragDataLocation(prg, 2, "normOutput");
-
 	// Ensure that the same index for inputs are always used (to enable the use of the same VAO on other shaders).
 	glBindAttribLocation(prg, StageOneShader::Normal, "normal");
 	glBindAttribLocation(prg, StageOneShader::Vertex, "vertex");

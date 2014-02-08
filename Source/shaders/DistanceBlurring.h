@@ -1,4 +1,4 @@
-// Copyright 2012-2014 The Ephenation Authors
+// Copyright 2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -23,7 +23,7 @@
 
 #include "shader.h"
 
-class AddSSAO : public ShaderBase {
+class DistanceBlurring : public ShaderBase {
 public:
 	void Init(void);
 

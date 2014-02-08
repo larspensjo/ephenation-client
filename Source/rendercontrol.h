@@ -35,6 +35,8 @@ class MainUserInterface;
 class DownSamplingLuminance;
 class FBOFlat;
 class GaussianBlur;
+class ScreenSpaceReflection;
+class DistanceBlurring;
 
 namespace Model {
 	class Object;
@@ -102,8 +104,9 @@ private:
 
 	GLuint fboName;
 	GLuint fDepthBuffer; // Render target buffers
-	GLuint fDiffuseTexture, fPositionTexture, fNormalsTexture, fBlendTexture, fLightsTexture;
-	GLuint fRendertarget = 0;
+	GLuint fPositionTexture, fNormalsTexture, fBlendTexture, fLightsTexture;
+	GLuint fRendertarget1 = 0, fRendertarget2 = 0;
+	GLuint fSurfaceProperties = 0;
 	GLsizei fWidth, fHeight;
 
 	GLuint fDownSampleLumTexture1, fDownSampleLumTexture2;
@@ -119,6 +122,8 @@ private:
 	std::unique_ptr<SkyBox> fSkyBox;
 	std::unique_ptr<DownSamplingLuminance> fDownSamplingLuminance;
 	std::unique_ptr<GaussianBlur> fGaussianBlur;
+	std::unique_ptr<ScreenSpaceReflection> fScreenSpaceReflection;
+	std::unique_ptr<DistanceBlurring> fDistanceBlurring;
 	// Use two FBOs to switch between for blurring
 	std::unique_ptr<FBOFlat> fboDownSampleLum1, fboDownSampleLum2;
 	ChunkShader *fShader;
@@ -153,6 +158,8 @@ private:
 	void drawUI(MainUserInterface *ui);
 	void drawMap(int mapWidth, bool stereoView);
 	void drawSSAO(void);
+	void drawScreenSpaceReflection(void);
+	void drawDistanceBlurring(void);
 	void drawColoredLights() const;
 	void drawMousePointer();
 	void drawFullScreenPixmap(GLuint id, bool stereoView) const;
@@ -161,9 +168,13 @@ private:
 	// Define alias for color attachments. Remember to look at
 	// drawClearFBO() if this list is changed.
 	enum ColorAttachment {
-		ColAttachDiffuse = GL_COLOR_ATTACHMENT0,
-		ColAttachPosition, ColAttachNormals, ColAttachBlend, ColAttachLighting, ColAttachRenderTarget
+		ColAttachRenderTarget1 = GL_COLOR_ATTACHMENT0,
+		ColAttachPosition, ColAttachNormals, ColAttachBlend, ColAttachLighting, ColAttachRenderTarget2, ColAttachSurfaceProps
 	};
+
+	GLuint fCurrentInputColor = 0;
+	ColorAttachment fCurrentColorAttachment = ColAttachRenderTarget1;
+	void ToggleRenderTarget(); // Toggle between the two render targets
 };
 
 }

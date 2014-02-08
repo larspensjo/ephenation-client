@@ -226,6 +226,9 @@
 		<Unit filename="shaders/DeferredLighting.h" />
 		<Unit filename="shaders/MonsterShader.cpp" />
 		<Unit filename="shaders/MonsterShader.h" />
+		<Unit filename="shaders/ScreenSpaceReflection.cpp" />
+		<Unit filename="shaders/ScreenSpaceReflection.glsl" />
+		<Unit filename="shaders/ScreenSpaceReflection.h" />
 		<Unit filename="shaders/SimpleTextureShader.cpp" />
 		<Unit filename="shaders/SimpleTextureShader.h" />
 		<Unit filename="shaders/StageOneShader.cpp" />

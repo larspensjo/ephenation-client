@@ -35,6 +35,7 @@ static const GLchar *vertexShaderSource[] = {
 static const GLchar *fragmentShaderSource[] = {
 	"common.UniformBuffer",
 	"common.DistanceAlphaBlending",
+	"common.SimplexNoise",
 	"transparent.Fragment",
 };
 

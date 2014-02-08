@@ -233,8 +233,8 @@ static int sTestUser = 0;
 
 // True if the game GUI shall be hidden
 static int sHideGUI = 0;
-
 static int sOculusRiftMode = 0;
+static int sCalibrateFlag = 0;
 
 const char *sGameDataDirArg = "gamedata";
 static struct option long_options[] = {
@@ -247,6 +247,7 @@ static struct option long_options[] = {
 	{"ignoreerror", no_argument, &gIgnoreOpenGLErrors, 1},
 	{"ovr",         no_argument, &sOculusRiftMode, 1},
 	{sGameDataDirArg,		required_argument, NULL, 0},
+	{ "calibrate",	no_argument, &sCalibrateFlag, 1},
 	{0, 0, 0, 0}
 };
 
@@ -428,7 +429,7 @@ int main(int argc, char** argv) {
 		dumpGraphicsMemoryStats();
 		// const GLubyte* sExtensions = glGetString(GL_EXTENSIONS);
 		// LPLOG("GL extensions: %s", sExtensions);
-		// glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB);
+		glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB);
 		if (glDebugMessageCallbackARB != 0)
 			glDebugMessageCallbackARB(DebugFunc, (void*)15);
 		else if (glDebugMessageCallbackAMD != 0)
@@ -446,10 +447,11 @@ int main(int argc, char** argv) {
 	gDrawFont.Init("textures/georgia12"); // Must be done before gGameDialog.
 	GameTexture::Init();
 	Controller::gGameDialog.init(sOculusRiftMode);
-	ChunkShader *shader = ChunkShader::Make();
+	if (sCalibrateFlag)
+		Controller::gGameDialog.CalibrateMode(Controller::gameDialog::Calibration::Factor);
 	gChunkShaderPicking.Init();
 	Tree::InitStatic();
-	gLantern.Init(shader);
+	gLantern.Init(true);
 	gQuadStage1.Init();
 	gBillboard.Init();
 

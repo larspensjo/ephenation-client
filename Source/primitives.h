@@ -22,7 +22,9 @@
 #pragma once
 
 #include <vector>
+#include <cstring>
 #include <glm/glm.hpp>
+
 #include "assert.h"
 
 /// Help to encode data into the three RGB bytes.
@@ -39,14 +41,14 @@ union PickingData {
 #define TEXTURESCALING 100
 
 /// Vertex data used for the first phase of the deferred shading.
-/// A voxel based system
-/// use a lot of data, so it is important to pack it well. The current implementation uses only 20 bytes,
+/// A voxel based system use a lot of data, so it is important to pack it well. The current implementation uses 16 bytes,
 /// which includes data for:
 /// * Vertex coordinate
 /// * Normal
 /// * Texture coordiate
 /// * Light intensity
 /// * Ambient light
+/// * Material information
 /// Specifically, the vertex coordinate can be packed efficiently as it is not the world absolute coordinate. It is the coordinate
 /// relative to the chunk that the player is in.
 struct VertexDataf {
@@ -60,17 +62,23 @@ private:
 	char fNormal[4];
 	short fVertex[3];
 	char fTexture[2];
+	unsigned int fMaterial;
 public:
+	void SetMaterial(unsigned int mat) { fMaterial = mat; }
+	static void *GetMaterialOffset(void) { VertexDataf *p = 0; return &p->fMaterial; }
+
 	void SetTexture(float x, float y) { fTexture[0] = ConvertTexture(x); fTexture[1] = ConvertTexture(y); }
 	void SetTexture(const glm::vec2 &texture) { this->SetTexture(texture.x, texture.y); }
 	glm::vec2 GetTexture(void) const { return glm::vec2(fTexture[0]/TEXTURESCALING, fTexture[1]/TEXTURESCALING); }
 	static void *GetTextureOffset(void) { VertexDataf *p = 0; return &p->fTexture[0]; }
+
 	/// Take a value from 0 to 255
 	void SetIntensity(unsigned char intensity) { fNormal[3] = ((intensity>>4) & 0x0F) | (unsigned(fNormal[3]) & 0xF0); }
 	static void *GetIntensityOffset(void) { VertexDataf *p = 0; return &p->fNormal[3]; }
 	unsigned char GetIntensity(void) const { return (unsigned(fNormal[3]) & 0x0F) << 4; }
 	/// Take a value from 0 to 255
 	void SetAmbient(unsigned char ambient) { fNormal[3] = (unsigned(fNormal[3]) & 0x0F) | (ambient & 0xF0); }
+
 	/// Setting normals for picking mode. We want to transfer data as it is, with no scaling.
 	void SetNormal(PickingData data) { fNormal[0] = data.rgb[0]; fNormal[1] = data.rgb[1]; fNormal[2] = data.rgb[2]; }
 	void SetNormal(const glm::vec3 &n) { fNormal[0] = ConvertNormal(n.x); fNormal[1] = ConvertNormal(n.y); fNormal[2] = ConvertNormal(n.z); }
@@ -107,8 +115,9 @@ public:
 		this->SetAmbient(ambient);
 		this->SetIntensity(intensity);
 		this->SetTexture(texture);
+		this->SetMaterial(0);
 	}
-	VertexDataf() {}
+	VertexDataf() { std::memset(this, '\0', sizeof (VertexDataf)); }
 };
 
 struct TriangleSurfacef {

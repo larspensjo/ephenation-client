@@ -1,4 +1,4 @@
-// Copyright 2012-2014 The Ephenation Authors
+// Copyright 2013 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -18,40 +18,40 @@
 #include <GL/glew.h>
 #include <stdio.h>
 #include <stdlib.h>
-
 #include <glm/glm.hpp>
+
 #include "../primitives.h"
-#include "addssao.h"
+#include "DistanceBlurring.h"
 #include "../ui/Error.h"
 #include "../shadowconfig.h"
 #include "../shapes/quad.h"
 
 /// Using GLSW to define shader
 static const GLchar *vertexShaderSource[] = {
-	"addssao.Vertex",
+	"DistanceBlurring.Vertex",
 };
 
 /// Using GLSW to define shader
 static const GLchar *fragmentShaderSource[] = {
 	"common.UniformBuffer",
-	"addssao.Fragment",
+	"DistanceBlurring.Fragment",
 };
 
-void AddSSAO::Init(void) {
+void DistanceBlurring::Init(void) {
 	const GLsizei vertexShaderLines = sizeof(vertexShaderSource) / sizeof(GLchar*);
 	const GLsizei fragmentShaderLines = sizeof(fragmentShaderSource) / sizeof(GLchar*);
-	ShaderBase::Initglsw("AddSSAO", vertexShaderLines, vertexShaderSource, fragmentShaderLines, fragmentShaderSource);
-	checkError("AddSSAO::Init");
+	ShaderBase::Initglsw("DistanceBlurring", vertexShaderLines, vertexShaderSource, fragmentShaderLines, fragmentShaderSource);
+	checkError("DistanceBlurring::Init");
 }
 
-void AddSSAO::GetLocations(void) {
+void DistanceBlurring::GetLocations(void) {
 	// The following uniforms only need to be initialized once
-	glUniform1i(this->GetUniformLocation("depthTex"), 0);
+	glUniform1i(this->GetUniformLocation("colTex"), 0);
 
-	checkError("AddSSAO::GetLocations");
+	checkError("DistanceBlurring::GetLocations");
 }
 
-void AddSSAO::Draw(void) {
+void DistanceBlurring::Draw(void) {
 	glUseProgram(this->Program());
 	gQuad.Draw();
 	glUseProgram(0);
