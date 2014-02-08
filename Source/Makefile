@@ -274,7 +274,7 @@ debian: $(PROGRAM)
 	cp /usr/lib/x86_64-linux-gnu/libRocketCore.so.1 $(DESTDIR)/usr/share/ephenation
 	cp /usr/lib/x86_64-linux-gnu/libRocketDebugger.so.1 $(DESTDIR)/usr/share/ephenation
 	cp /usr/lib/x86_64-linux-gnu/libRocketControls.so.1 $(DESTDIR)/usr/share/ephenation
-	fpm --verbose -s dir -t deb -n ephenation -v 5.0b1 -f\
+	fpm --verbose -s dir -t deb -n ephenation -v 5.0 -f\
 		-d libGLEW1.8\
 		-d libassimp3\
 		-d libglfw2\
@@ -362,6 +362,7 @@ help:
 	@echo '  valgrind  produce binary for memory profiling.'
 	@echo '  pprof     produce binary for profiling.'
 	@echo '  cppcheck  Run cppcheck on source code.'
+	@echo '  debian    Make a debian distribution.'
 	@echo
 
 # Show variables (for debug use only.)

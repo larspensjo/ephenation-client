@@ -7,7 +7,7 @@
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
 AppId={{C788FC6C-60BF-4D59-B6C5-EAB408F761F8}
 AppName=Ephenation
-AppVersion=5.0b1
+AppVersion=5.0
 AppPublisher=Ephenation
 AppPublisherURL=www.ephenation.net
 AppSupportURL=www.ephenation.net
