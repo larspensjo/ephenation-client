@@ -332,7 +332,7 @@ void RenderControl::Draw(bool underWater, shared_ptr<const Model::Object> select
 	drawMonsters();
 	drawTransparentLandscape(stereoView);
 	if (selectedObject)
-		selectedObject->RenderHealthBar(HealthBar::Make(), _angleHor);
+		selectedObject->RenderHealthBar(HealthBar::Make(), Model::gPlayer.fAngleHor);
 
 	// Apply deferred shader filters.
 	glEnable(GL_BLEND);
@@ -376,7 +376,7 @@ void RenderControl::Draw(bool underWater, shared_ptr<const Model::Object> select
 	if (ui)
 		drawUI(ui);
 	if (gMode.Get() == GameMode::TELEPORT) // Draw the teleport mode
-		TeleportClick(HealthBar::Make(), _angleHor, renderViewAngle, 0, 0, false, stereoView);
+		TeleportClick(HealthBar::Make(), Model::gPlayer.fAngleHor, renderViewAngle, 0, 0, false, stereoView);
 	if (fShowMouse)
 		drawMousePointer();
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
@@ -764,7 +764,7 @@ void RenderControl::drawMap(int mapWidth, bool stereoView) {
 	glClearColor(0, 0, 0, 0);
 	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 	fShader->EnableProgram();
-	map->Create(fAnimation, fShader, _angleHor, mapWidth, &fAnimationModels, stereoView);
+	map->Create(fAnimation, fShader, Model::gPlayer.fAngleHor, mapWidth, &fAnimationModels, stereoView);
 	ToggleRenderTarget(); // This restores the saved render target
 	glBindTexture(GL_TEXTURE_2D, fCurrentInputColor);
 	DrawBuffers(fCurrentColorAttachment);
@@ -838,8 +838,8 @@ void RenderControl::UpdateCameraPosition(int wheelDelta, bool stereoView, float 
 	glm::vec3 pd(playerOffset.x, -playerOffset.z, playerOffset.y); // Same offset, but in Ephenation server coordinates
 
 	glm::mat4 T1 = glm::translate(glm::mat4(1), playerOffset);
-	glm::mat4 R1 = glm::rotate(glm::mat4(1), _angleVert, glm::vec3(-1.0f, 0.0f, 0.0f));
-	glm::mat4 R2 = glm::rotate(glm::mat4(1), _angleHor, glm::vec3(0.0f, -1.0f, 0.0f));
+	glm::mat4 R1 = glm::rotate(glm::mat4(1), Model::gPlayer.fAngleVert, glm::vec3(-1.0f, 0.0f, 0.0f));
+	glm::mat4 R2 = glm::rotate(glm::mat4(1), Model::gPlayer.fAngleHor, glm::vec3(0.0f, -1.0f, 0.0f));
 	glm::mat4 T2 = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, fCameraDistance));
 	glm::vec4 camera = T1 * R2 * R1 * T2 * glm::vec4(0,0,0,1);
 
@@ -892,14 +892,14 @@ void RenderControl::UpdateCameraPosition(int wheelDelta, bool stereoView, float 
 		gViewMatrix = glm::rotate(gViewMatrix, yaw, glm::vec3(0.0f, -1.0f, 0.0f));
 	}
 	gViewMatrix = glm::translate(gViewMatrix, glm::vec3(0.0f, 0.0f, -fCameraDistance));
-	float vert = _angleVert;
+	float vert = Model::gPlayer.fAngleVert;
 	if (stereoView) {
 		// When zoomed in to the player,use horizontal view. The further away from the player,
         // the higher the camera gets.
 		vert = fCameraDistance*2.0f;
 	}
 	gViewMatrix = glm::rotate(gViewMatrix, vert, glm::vec3(1.0f, 0.0f, 0.0f));
-	gViewMatrix = glm::rotate(gViewMatrix, _angleHor, glm::vec3(0.0f, 1.0f, 0.0f));
+	gViewMatrix = glm::rotate(gViewMatrix, Model::gPlayer.fAngleHor, glm::vec3(0.0f, 1.0f, 0.0f));
 	gViewMatrix = glm::translate(gViewMatrix, -playerOffset);
 }
 

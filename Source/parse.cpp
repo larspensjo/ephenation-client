@@ -1,4 +1,4 @@
-// Copyright 2012-2013 The Ephenation Authors
+// Copyright 2012-2014 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -61,6 +61,7 @@ string gParseMessageAtLogin;
 Simple::Signal<void (float dmg, unsigned long id)> gMonsterHitByPlayerEvt;
 Simple::Signal<void (float dmg)> gPlayerHitByMonsterEvt;
 Simple::Signal<void (const char *msg)> gServerMessageEvt;
+Simple::Signal<void (float hor, float vert)> gLoginEvt;
 
 using namespace Controller;
 using View::SoundControl;
@@ -321,8 +322,7 @@ void Parse(const unsigned char *b, int n) {
 		Model::gPlayer.fUid = ParseUint32(b+1);
 		unsigned short angleHorRad = Parseuint16(b+5);
 		signed short angleVertRad = Parseuint16(b+7);
-		Model::gPlayer.fAngleHor = _angleHor = angleHorRad * (360.0f / 2 / M_PI / 100);
-		Model::gPlayer.fAngleVert = _angleVert = angleVertRad * (360.0f / 2 / M_PI / 100);
+		gLoginEvt.emit(angleHorRad * (360.0f / 2 / M_PI / 100), angleVertRad * (360.0f / 2 / M_PI / 100));
 		if (n >= 10)
 			Model::gPlayer.fAdmin = b[9];
 		else

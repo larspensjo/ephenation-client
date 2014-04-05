@@ -147,7 +147,7 @@ void ChunkObject::DrawTrees(StageOneShader *shader, glm::vec3 offset, bool forSh
 			break;
 		case BT_Tree1:
 			if (d > limit) {
-				float angle = -_angleHor;
+				float angle = -Model::gPlayer.fAngleHor;
 				Billboard::Predefined picture = Billboard::tree1;
 				if (forShadows) {
 					angle = rotateShadowBillboard;
@@ -165,7 +165,7 @@ void ChunkObject::DrawTrees(StageOneShader *shader, glm::vec3 offset, bool forSh
 			break;
 		case BT_Tree2:
 			if (d > limit) {
-				float angle = -_angleHor;
+				float angle = -Model::gPlayer.fAngleHor;
 				Billboard::Predefined picture = Billboard::tree2;
 				if (forShadows) {
 					angle = rotateShadowBillboard;
@@ -183,7 +183,7 @@ void ChunkObject::DrawTrees(StageOneShader *shader, glm::vec3 offset, bool forSh
 			break;
 		case BT_Tree3:
 			if (d > limit) {
-				float angle = -_angleHor;
+				float angle = -Model::gPlayer.fAngleHor;
 				Billboard::Predefined picture = Billboard::tree3;
 				if (forShadows) {
 					angle = rotateShadowBillboard;

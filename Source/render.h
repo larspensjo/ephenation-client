@@ -1,4 +1,4 @@
-// Copyright 2012-2013 The Ephenation Authors
+// Copyright 2012-2014 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -47,9 +47,6 @@ void DrawLandscapeTopDown(StageOneShader *shader, int width, int height, bool fo
 void DrawLandscapeForShadows(StageOneShader *shader);
 
 void ComputeRelativeChunksSortedDistances();
-
-extern float _angleHor;
-extern float _angleVert;
 
 // Manage a list of all objects that shall be drawn. The list is constructed dymanically during drawing of the chunk,
 // but the obejects are not drawn until after the chunk. Some of them require special shaders, and some of them has

@@ -1,4 +1,4 @@
-// Copyright 2012-2013 The Ephenation Authors
+// Copyright 2012-2014 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -350,16 +350,16 @@ void gameDialog::handleMouseActiveMotion(int x, int y) {
 		int deltax = xStartTurn - x;
 		int deltay = yStartTurn - y;
 		// printf("Turning dx %d dy %d\n", deltax, deltay);
-		_angleHor = angleHorStartTurn + deltax/mouseSens;
-		if (_angleHor > 360.0) _angleHor -= 360.0f;
-		if (_angleHor < 0.0f) _angleHor += 360.0f;
-		_angleVert = angleVertStartTurn + deltay/mouseSens;
-		if (_angleVert > 90.0f) _angleVert = 90.0f;
-		if (_angleVert < -90.0f) _angleVert = -90.0f;
+		fAngleHor = angleHorStartTurn + deltax/mouseSens;
+		if (fAngleHor > 360.0) fAngleHor -= 360.0f;
+		if (fAngleHor < 0.0f) fAngleHor += 360.0f;
+		fAngleVert = angleVertStartTurn + deltay/mouseSens;
+		if (fAngleVert > 90.0f) fAngleVert = 90.0f;
+		if (fAngleVert < -90.0f) fAngleVert = -90.0f;
 		unsigned char b[7];
-		unsigned short angleHorRad = (unsigned short)(_angleHor / 360.0f * 2.0f * M_PI * 100);
-		signed short angleVertRad = (unsigned short)(_angleVert / 360.0f * 2.0f * M_PI * 100);
-		// printf("Dir (%f, %f), (%d, %d)\n", _angleHor, _angleVert, angleHorRad, angleVertRad);
+		unsigned short angleHorRad = (unsigned short)(fAngleHor / 360.0f * 2.0f * M_PI * 100);
+		signed short angleVertRad = (unsigned short)(fAngleVert / 360.0f * 2.0f * M_PI * 100);
+		// printf("Dir (%f, %f), (%d, %d)\n", fAngleHor, fAngleVert, angleHorRad, angleVertRad);
 		b[0] = sizeof b;
 		b[1] = 0;
 		b[2] = CMD_SET_DIR;
@@ -367,8 +367,8 @@ void gameDialog::handleMouseActiveMotion(int x, int y) {
 		EncodeUint16(b+5, angleVertRad);
 		// DumpBytes(b, sizeof b);
 		SendMsg(b, sizeof b);
-		Model::gPlayer.fAngleHor = _angleHor; // Update player data with current looking direction
-		Model::gPlayer.fAngleVert = _angleVert;
+		Model::gPlayer.fAngleHor = fAngleHor; // Update player data with current looking direction
+		Model::gPlayer.fAngleVert = fAngleVert;
 	}
 }
 
@@ -417,8 +417,8 @@ void gameDialog::handleMouse(int button, int action) {
 		if (action == GLFW_PRESS) {
 			xStartTurn = x;
 			yStartTurn = y;
-			angleHorStartTurn = _angleHor;
-			angleVertStartTurn = _angleVert;
+			angleHorStartTurn = fAngleHor;
+			angleVertStartTurn = fAngleVert;
 			sTurning = true;
 		} else {
 			sTurning = false;
@@ -436,7 +436,7 @@ void gameDialog::handleMouse(int button, int action) {
 			glfwGetMousePos(&x, &y);
 		}
 		LPLOG("TP Click at %d, %d", x, y);
-		const ChunkCoord *cc = TeleportClick(fHealthBar, _angleHor, fRenderViewAngle, x, y, true, fStereoView);
+		const ChunkCoord *cc = TeleportClick(fHealthBar, fAngleHor, fRenderViewAngle, x, y, true, fStereoView);
 		if (cc != 0) {
 			LPLOG("TP to chunk %d,%d,%d\n", cc->x, cc->y, cc->z);
 			unsigned char b[6];
@@ -992,7 +992,7 @@ void gameDialog::render(bool hideGUI, int fps) {
 		break;
 	}
 
-	Model::gOtherPlayers.RenderPlayerStats(fHealthBar, _angleHor);
+	Model::gOtherPlayers.RenderPlayerStats(fHealthBar, fAngleHor);
 	bool newHealing = false;
 	if (Model::gPlayer.fFlags & UserFlagHealed) {
 		newHealing = true;
@@ -1067,6 +1067,11 @@ static int GLFWCALL CloseWindowCallback(void) {
 }
 
 void gameDialog::init(bool useOvr) {
+	auto login = [this](float hor, float vert) {
+		Model::gPlayer.fAngleHor = fAngleHor = hor;
+		Model::gPlayer.fAngleVert = fAngleVert = vert;
+	};
+	gLoginEvt.connect(login);
 	fStereoView = useOvr;
 	if (useOvr) {
 		fRenderViewAngle  = OculusRift::sfOvr.GetFieldOfView();

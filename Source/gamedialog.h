@@ -116,6 +116,9 @@ private:
 	bool fMovingLeft;
 	bool fMovingRight;
 	bool fUsingTorch;
+
+	float fAngleHor = 0.0f;            //The rotation of the player
+	float fAngleVert = 0.0f;
 	Calibration fCalibrationMode = Calibration::None;
 	float fCalibrationFactor = 1.0f;
 	void UpdateCalibrationConstant(bool increase);
