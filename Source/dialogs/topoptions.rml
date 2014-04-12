@@ -58,6 +58,7 @@
 						<tr><td class="longlabel">Smooth terrain:</td><td class="description"><input type="checkbox" name="Graphics.SmoothTerrain" value="1"/></td></tr>
 						<tr><td class="longlabel">Merge normals:</td><td class="description"><input type="checkbox" name="Graphics.MergeNormals" value="1"/></td></tr>
 						<tr><td class="longlabel">Random height noise:</td><td class="description"><input type="checkbox" name="Graphics.AddNoise" value="1"/></td></tr>
+						<tr><td class="longlabel">OVR comfort mode:</td><td class="description"><input type="checkbox" name="Display.comfortmode" value="1"/></td></tr>
 						<tr><td class="longlabel">Shadows:</td><td class="description">
 						<select name="Options.shadows">
 							<option name="Options.shadows" value="1">Precomputed</option>

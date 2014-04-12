@@ -45,6 +45,8 @@ void OptionsDialog::UpdateInput(Rocket::Core::Element *e) {
 
 		if (name == "Display.oculusrift" && Options::sfSave.fOculusRift)
 			e->SetAttribute("checked", 1);
+		if (name == "Display.comfortmode" && Options::sfSave.fComforMode)
+			e->SetAttribute("checked", 1);
 		if (name == "Display.vsync" && Options::sfSave.fVSYNC) {
 			e->SetAttribute("checked", 1);
 		}

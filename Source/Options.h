@@ -68,6 +68,7 @@ public:
 	int fAnisotropicFiltering;
 	int fVSYNC;
 	int fOculusRift;
+	int fComforMode = 1;  // In stereomode, all player rotations are discreet steps
 	unsigned fNumThreads; // Not really configurable
 	signed long long fPlayerX, fPlayerY, fPlayerZ; // Remember the last known player position
 
