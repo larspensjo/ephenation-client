@@ -332,10 +332,33 @@ void gameDialog::ClickOnBlock(int x, int y) {
 
 static bool sTurning = false;
 int xStartTurn = 0, yStartTurn = 0;
-float angleHorStartTurn = 0.0f, angleVertStartTurn;
+static float angleHorStartTurn = 0.0f, angleVertStartTurn;
 
 static void handleMouseActiveMotion(int x, int y) {
 	Controller::gGameDialog.handleMouseActiveMotion(x, y);
+}
+
+void gameDialog::UpdateBodyDirection(float hor, float vert) {
+	// printf("Turning dx %d dy %d\n", deltax, deltay);
+	fAngleHor = hor;
+	if (fAngleHor > 360.0) fAngleHor -= 360.0f;
+	if (fAngleHor < 0.0f) fAngleHor += 360.0f;
+	fAngleVert = vert;
+	if (fAngleVert > 90.0f) fAngleVert = 90.0f;
+	if (fAngleVert < -90.0f) fAngleVert = -90.0f;
+	unsigned char b[7];
+	unsigned short angleHorRad = (unsigned short)(fAngleHor / 360.0f * 2.0f * M_PI * 100);
+	signed short angleVertRad = (unsigned short)(fAngleVert / 360.0f * 2.0f * M_PI * 100);
+	// printf("Dir (%f, %f), (%d, %d)\n", fAngleHor, fAngleVert, angleHorRad, angleVertRad);
+	b[0] = sizeof b;
+	b[1] = 0;
+	b[2] = CMD_SET_DIR;
+	EncodeUint16(b+3, angleHorRad);
+	EncodeUint16(b+5, angleVertRad);
+	// DumpBytes(b, sizeof b);
+	SendMsg(b, sizeof b);
+	Model::gPlayer.fAngleHor = fAngleHor; // Update player data with current looking direction
+	Model::gPlayer.fAngleVert = fAngleVert;
 }
 
 void gameDialog::handleMouseActiveMotion(int x, int y) {
@@ -350,25 +373,7 @@ void gameDialog::handleMouseActiveMotion(int x, int y) {
 		int deltax = xStartTurn - x;
 		int deltay = yStartTurn - y;
 		// printf("Turning dx %d dy %d\n", deltax, deltay);
-		fAngleHor = angleHorStartTurn + deltax/mouseSens;
-		if (fAngleHor > 360.0) fAngleHor -= 360.0f;
-		if (fAngleHor < 0.0f) fAngleHor += 360.0f;
-		fAngleVert = angleVertStartTurn + deltay/mouseSens;
-		if (fAngleVert > 90.0f) fAngleVert = 90.0f;
-		if (fAngleVert < -90.0f) fAngleVert = -90.0f;
-		unsigned char b[7];
-		unsigned short angleHorRad = (unsigned short)(fAngleHor / 360.0f * 2.0f * M_PI * 100);
-		signed short angleVertRad = (unsigned short)(fAngleVert / 360.0f * 2.0f * M_PI * 100);
-		// printf("Dir (%f, %f), (%d, %d)\n", fAngleHor, fAngleVert, angleHorRad, angleVertRad);
-		b[0] = sizeof b;
-		b[1] = 0;
-		b[2] = CMD_SET_DIR;
-		EncodeUint16(b+3, angleHorRad);
-		EncodeUint16(b+5, angleVertRad);
-		// DumpBytes(b, sizeof b);
-		SendMsg(b, sizeof b);
-		Model::gPlayer.fAngleHor = fAngleHor; // Update player data with current looking direction
-		Model::gPlayer.fAngleVert = fAngleVert;
+		this->UpdateBodyDirection(angleHorStartTurn + deltax/mouseSens, angleVertStartTurn + deltay/mouseSens);
 	}
 }
 
@@ -723,8 +728,13 @@ void gameDialog::HandleKeyPress(int key) {
 			// printf("Start fwd\n");
 		}
 		break;
-	case 'A':
 	case GLFW_KEY_LEFT:
+		this->UpdateBodyDirection(fAngleHor-30.0f, fAngleVert);
+		break;
+	case GLFW_KEY_RIGHT:
+		this->UpdateBodyDirection(fAngleHor+30.0f, fAngleVert);
+		break;
+	case 'A':
 		if (!fMovingLeft) {
 			fMovingLeft = true;
 			unsigned char b[] = { 0x03, 0x00, 14 };
@@ -742,7 +752,6 @@ void gameDialog::HandleKeyPress(int key) {
 		}
 		break;
 	case 'D':
-	case GLFW_KEY_RIGHT:
 		if (!fMovingRight) {
 			fMovingRight = true;
 			unsigned char b[] = { 0x03, 0x00, 16 };
