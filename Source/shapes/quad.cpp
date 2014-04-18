@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2014 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -37,12 +37,10 @@ struct vertex {
  */
 // =====================================================
 static const vertex vertexData[] = {
-	{{  1,  1 }},
 	{{  0,  0 }},
+	{{  1,  0 }},
 	{{  0,  1 }},
 	{{  1,  1 }},
-	{{  1,  0 }},
-	{{  0,  0 }},
 };
 
 Quad::Quad() {
@@ -82,7 +80,7 @@ void Quad::Draw() {
 	if (fVao == 0)
 		this->Init();
 	glBindVertexArray(fVao);
-	glDrawArrays(GL_TRIANGLES, 0, sizeof vertexData / sizeof (vertex));
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, sizeof vertexData / sizeof (vertex));
 	gNumDraw++;
 	gDrawnQuads += 2;
 	glBindVertexArray(0);
