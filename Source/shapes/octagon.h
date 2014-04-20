@@ -19,17 +19,19 @@
 
 #include <GL/glew.h>
 
+#include "../OpenglBuffer.h"
+
 /// Drawing an octagon from -1 to 1 in x and y.
 class Octagon {
 public:
-	Octagon();
 	~Octagon();
 
 	/// The draw routine
 	void Draw();
 private:
 	void Init(); // Called automatically when needed.
-	GLuint fIndexId, fBufferId, fVao;
+	OpenglBuffer fOpenglBuffer;
+	GLuint fIndexId = 0, fVao = 0;
 };
 
 extern Octagon gOctagon;

@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2014 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -26,13 +26,9 @@
 
 QuadStage1 gQuadStage1;
 
-QuadStage1::QuadStage1() : fBufferId(0), fVao(0) {
-}
-
 QuadStage1::~QuadStage1() {
 	// In case of glew not having run yet.
 	if (glDeleteBuffers != 0) {
-		glDeleteBuffers(1, &fBufferId);
 		glDeleteVertexArrays(1, &fVao);
 	}
 }
@@ -62,15 +58,8 @@ void QuadStage1::Init(void) {
 	glGenVertexArrays(1, &fVao);
 	glBindVertexArray(fVao);
 	StageOneShader::EnableVertexAttribArray();
-	glGenBuffers(1, &fBufferId);
-	glBindBuffer(GL_ARRAY_BUFFER, fBufferId);
-	glBufferData(GL_ARRAY_BUFFER, sizeof vertexData, vertexData, GL_STATIC_DRAW);
-	// check data size in VBO is same as input array, if not return 0 and delete VBO
-	int bufferSize = 0;
-	glGetBufferParameteriv(GL_ARRAY_BUFFER, GL_BUFFER_SIZE, &bufferSize);
-	if ((unsigned)bufferSize != sizeof vertexData) {
-		glDeleteBuffers(1, &fBufferId);
-		fBufferId = 0;
+
+	if (!fBuffer.BindArray(sizeof vertexData, vertexData)) {
 		ErrorDialog("QuadStage1::Init: Data size is mismatch with input array\n");
 	}
 

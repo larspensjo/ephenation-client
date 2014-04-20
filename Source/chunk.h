@@ -23,6 +23,7 @@
 #include "render.h"
 #include "ChunkBlocks.h"
 #include "ChunkObject.h"
+#include "OpenglBuffer.h"
 
 #define CHUNK_SIZE 32
 #define WORLD_HEIGHT 8 // World height measured in chunks
@@ -167,9 +168,9 @@ public:
 	/// The actual blocks in the chunk. The content may change asynchronously, so it can't be a const.
 	shared_ptr<Model::ChunkBlocks> fChunkBlocks;
 
-	/// OpenGL data. One Vertex Array Object for each block type. Usually, only a limited num ber of the block
+	/// OpenGL data. One Vertex Array Object for each block type. Usually, only a limited number of the block
 	/// types are needed.
-	GLuint fBufferId[256];
+	OpenglBuffer fOpenglBuffers[256]; // TODO: Use one single buffer
 	GLuint fVao[256];
 	bool fBuffersDefined;
 

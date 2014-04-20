@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2014 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -36,18 +36,11 @@
 using glm::vec4;
 using glm::vec3;
 
-Tree::Tree() :
-	fLeafBufferId(0), fBranchBufferId(0),
-	fVaoLeaf(0), fVaoBranch(0) {
-}
-
 Tree::~Tree() {
 	if (fVaoLeaf != 0) {
 		// In case of glew not having run yet.
 		glDeleteVertexArrays(1, &fVaoLeaf);
 		glDeleteVertexArrays(1, &fVaoBranch);
-		glDeleteBuffers(1, &fLeafBufferId);
-		glDeleteBuffers(1, &fBranchBufferId);
 	}
 }
 
@@ -112,15 +105,7 @@ void Tree::Init(int numIter, int branching, float height) {
 	glGenVertexArrays(1, &fVaoLeaf);
 	glBindVertexArray(fVaoLeaf);
 	StageOneShader::EnableVertexAttribArray();
-	glGenBuffers(1, &fLeafBufferId);
-	glBindBuffer(GL_ARRAY_BUFFER, fLeafBufferId);
-	glBufferData(GL_ARRAY_BUFFER, fLeafTriangles.size() * sizeof fLeafTriangles[0], &fLeafTriangles[0], GL_STATIC_DRAW);
-	// check data size in VBO is same as input array, if not return 0 and delete VBO
-	GLint bufferSize;
-	glGetBufferParameteriv(GL_ARRAY_BUFFER, GL_BUFFER_SIZE, &bufferSize);
-	if ((unsigned)bufferSize != fLeafTriangles.size() * sizeof fLeafTriangles[0]) {
-		glDeleteBuffers(1, &fLeafBufferId);
-		fLeafBufferId = 0;
+	if (!fLeafBuffer.BindArray(fLeafTriangles.size() * sizeof fLeafTriangles[0], &fLeafTriangles[0])) {
 		ErrorDialog("[Tree::Init leafs] Data size is mismatch with input array\n");
 	}
 	StageOneShader::VertexAttribPointer();
@@ -129,14 +114,7 @@ void Tree::Init(int numIter, int branching, float height) {
 	glGenVertexArrays(1, &fVaoBranch);
 	glBindVertexArray(fVaoBranch);
 	StageOneShader::EnableVertexAttribArray();
-	glGenBuffers(1, &fBranchBufferId);
-	glBindBuffer(GL_ARRAY_BUFFER, fBranchBufferId);
-	glBufferData(GL_ARRAY_BUFFER, fBranchTriangles.size() * sizeof fBranchTriangles[0], &fBranchTriangles[0], GL_STATIC_DRAW);
-	// check data size in VBO is same as input array, if not return 0 and delete VBO
-	glGetBufferParameteriv(GL_ARRAY_BUFFER, GL_BUFFER_SIZE, &bufferSize);
-	if ((unsigned)bufferSize != fBranchTriangles.size() * sizeof fBranchTriangles[0]) {
-		glDeleteBuffers(1, &fBranchBufferId);
-		fLeafBufferId = 0;
+	if (!fBranchBuffer.BindArray(fBranchTriangles.size() * sizeof fBranchTriangles[0], &fBranchTriangles[0])) {
 		ErrorDialog("[Tree::Init branches] Data size is mismatch with input array\n");
 	}
 	StageOneShader::VertexAttribPointer();

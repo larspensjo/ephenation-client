@@ -25,6 +25,9 @@
  *
  * @brief Implementation of the Skybox used in Ephenation.
  *
+ * Even though we don't inherit from StageOneShader, the shading output is designed to be used in
+ * in a deferred shader.
+ *
  * Vertex Shader:
  *      This vertex shader will only draw two triangles, limited to the part of the screen that
  * can be affected.The vertex input is 0,0 in one corner and 1,1 in the other.

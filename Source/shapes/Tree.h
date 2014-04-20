@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2014 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -19,12 +19,11 @@
 
 #include <vector>
 
-#include "../render.h"
 #include "../primitives.h"
+#include "../OpenglBuffer.h"
 
 class Tree {
 public:
-	Tree();
 	virtual ~Tree();
 	// Create a tree with size of main trunk of 1.0.
 	// numIter: number if times to split the trunk into branches
@@ -43,7 +42,7 @@ private:
 
 	std::vector<TriangleSurfacef> fLeafTriangles;
 	std::vector<TriangleSurfacef> fBranchTriangles;
-	GLuint fLeafBufferId, fBranchBufferId;
-	GLuint fVaoLeaf; // The vertex array object for the leafs
-	GLuint fVaoBranch; // The vertex array object for the branches, including the trunk
+	OpenglBuffer fLeafBuffer, fBranchBuffer;
+	GLuint fVaoLeaf = 0; // The vertex array object for the leafs
+	GLuint fVaoBranch = 0; // The vertex array object for the branches, including the trunk
 };

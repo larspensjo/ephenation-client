@@ -370,11 +370,8 @@ void Chunk::ReleaseOpenGLBuffers(void) {
 	if (!this->fBuffersDefined)
 		return;
 	glDeleteVertexArrays(256, fVao); // A buffer with value 0 is ignored.
-	// glDeleteBuffers(256, fBufferId); // Seems to be a bug in AMD. Deleting a buffer 0 will destroy the glBindBufferBase binding
 	for (int blockType = 0; blockType < 256; blockType++) {
-		if (fBufferId[blockType] != 0)
-			glDeleteBuffers(1, &fBufferId[blockType]);
-		fBufferId[blockType] = 0;
+		fOpenglBuffers[blockType].Release();
 		fVao[blockType] = 0;
 	}
 	this->fBuffersDefined = false;
@@ -394,18 +391,11 @@ void Chunk::PrepareOpenGL(StageOneShader *shader, ChunkShaderPicking *pickShader
 			continue; // No blocks of this type to draw.
 		glGenVertexArrays(1, &fVao[blockType]);
 		glBindVertexArray(fVao[blockType]);
-		glGenBuffers(1, &fBufferId[blockType]);
-		glBindBuffer(GL_ARRAY_BUFFER, fBufferId[blockType]);
-		glBufferData(GL_ARRAY_BUFFER, triSize * sizeof(VertexDataf), &fChunkObject->fVisibleTriangles[blockType][0], GL_STATIC_DRAW);
 		// Can't release vertex buffer, as it may be reused after a call to chunk::ReleaseOpenGLBuffers().
 		// check that data size in VBO is the same as the input array, if not return 0 and delete VBO
-		int bufferSize = 0;
-		glGetBufferParameteriv(GL_ARRAY_BUFFER, GL_BUFFER_SIZE, &bufferSize);
-		if ((unsigned)bufferSize != triSize * sizeof(VertexDataf)) {
+		if (!fOpenglBuffers[blockType].BindArray(triSize * sizeof(VertexDataf), &fChunkObject->fVisibleTriangles[blockType][0])) {
 			checkError("Chunk::PrepareOpenGL data size mismatch");
-			glDeleteBuffers(1, &fBufferId[blockType]);
-			fBufferId[blockType] = 0;
-			ErrorDialog("Chunk::PrepareOpenGL: Data size %d is mismatch with input array %d\n", bufferSize, triSize * sizeof(VertexDataf));
+			ErrorDialog("Chunk::PrepareOpenGL: Data size %d is mismatch with input array %d\n", fOpenglBuffers[blockType].GetArraySize(), triSize * sizeof(VertexDataf));
 		}
 
 		switch(dlType) {
@@ -435,7 +425,6 @@ Chunk::Chunk() {
 	fScheduledForComputation = false;
 	fScheduledForLoading = false;
 	for (int i=0; i<256; i++) {
-		fBufferId[i] = 0;
 		fVao[i] = 0;
 	}
 }

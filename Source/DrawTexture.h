@@ -1,4 +1,4 @@
-// Copyright 2012-2013 The Ephenation Authors
+// Copyright 2012-2014 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -18,6 +18,8 @@
 #pragma once
 
 #include <glm/glm.hpp>
+
+#include "OpenglBuffer.h"
 
 // A class for drawing a texture on a quad.
 
@@ -39,10 +41,10 @@ public:
 	/// @param compensateDistortion Enable lens distortion compensation
 	void DrawScreen(bool compensateDistortion) const;
 private:
-	DrawTexture(); // Constructor is private, to make it a singleton class.
 	virtual ~DrawTexture();
 	void Init(void);
 	static DrawTexture fgSingleton;
-	SimpleTextureShader *fShader;
-	GLuint fBufferId, fVao;
+	SimpleTextureShader *fShader = 0;
+	OpenglBuffer fOpenglBuffer;
+	GLuint fVao = 0;
 };
