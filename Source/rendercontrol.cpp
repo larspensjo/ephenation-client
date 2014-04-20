@@ -308,7 +308,7 @@ void RenderControl::Resize(GLsizei width, GLsizei height) {
 	checkError("RenderControl::Resize", false);
 }
 
-void RenderControl::Draw(bool underWater, shared_ptr<const Model::Object> selectedObject, bool showMap, bool showInvent, int mapWidth, MainUserInterface *ui, bool stereoView, float renderViewAngle) {
+void RenderControl::Draw(bool underWater, const Model::Object *selectedObject, bool showMap, bool showInvent, int mapWidth, MainUserInterface *ui, bool stereoView, float renderViewAngle) {
 	if (gShowFramework)
 		glPolygonMode(GL_FRONT, GL_LINE);
 	// Create all bitmaps setup in the frame buffer. This is all stage one shaders.
