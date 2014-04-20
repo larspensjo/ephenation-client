@@ -125,6 +125,8 @@
 		<Unit filename="Map.h" />
 		<Unit filename="OculusRift.cpp" />
 		<Unit filename="OculusRift.h" />
+		<Unit filename="OpenglBuffer.cpp" />
+		<Unit filename="OpenglBuffer.h" />
 		<Unit filename="Options.cpp" />
 		<Unit filename="Options.h" />
 		<Unit filename="ScrollingMessages.cpp" />
@@ -332,7 +334,7 @@
 			<envvars />
 			<debugger>
 				<remote_debugging target="Debug">
-					<options conn_type="0" serial_baud="115200" additional_cmds_before="set args --debug --ovr" />
+					<options conn_type="0" serial_baud="115200" additional_cmds_before="set args --debug" />
 				</remote_debugging>
 			</debugger>
 			<DoxyBlocks>

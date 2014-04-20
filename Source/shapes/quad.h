@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2014 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -17,7 +17,8 @@
 
 #pragma once
 
-// =====================================================
+#include "../OpenglBuffer.h"
+
 /**
  * @class Quad
  *
@@ -25,28 +26,23 @@
  *  A very minimal shape, drawing a quad from 0 to 1 in x and y.
  *  A simple quad drawn using VAO and VBO
  */
- // =====================================================
 class Quad {
 public:
-	Quad();
 	~Quad();
 
-        // =====================================================
-        /**
-         * @brief The draw routine
-         */
-        // =====================================================
+	/**
+	 * @brief The draw routine
+	 */
 	void Draw(void);
 private:
 
-        // =====================================================
-        /**
-         * @brief Creation of the VAO and VBO
-         * @param void
-         */
-        // =====================================================
+	/**
+	 * @brief Creation of the VAO and VBO
+	 * @param void
+	 */
 	void Init();
-	GLuint fBufferId, fVao;
+	OpenglBuffer fBuffer;
+	GLuint fVao = 0;
 };
 
 extern Quad gQuad;

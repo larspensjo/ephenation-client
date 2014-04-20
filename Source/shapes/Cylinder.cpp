@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2014 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -28,13 +28,9 @@
 #include "../shaders/ChunkShader.h"
 #include "../ui/Error.h"
 
-Cylinder::Cylinder() : fBufferId(0), fVao(0) {
-}
-
 Cylinder::~Cylinder() {
 	if (glDeleteBuffers != 0) {
 		// In case of glew not having run yet.
-		glDeleteBuffers(1, &fBufferId);
 		glDeleteVertexArrays(1, &fVao);
 	}
 }
@@ -92,15 +88,8 @@ void Cylinder::Init(StageOneShader *shader, int numSegments) {
 	glGenVertexArrays(1, &fVao);
 	glBindVertexArray(fVao);
 	shader->EnableVertexAttribArray();
-	glGenBuffers(1, &fBufferId);
-	glBindBuffer(GL_ARRAY_BUFFER, fBufferId);
-	glBufferData(GL_ARRAY_BUFFER, fVisibleTriangles.size() * sizeof fVisibleTriangles[0], &fVisibleTriangles[0], GL_STATIC_DRAW);
-	// check data size in VBO is same as input array, if not return 0 and delete VBO
-	int bufferSize = 0;
-	glGetBufferParameteriv(GL_ARRAY_BUFFER, GL_BUFFER_SIZE, &bufferSize);
-	if ((unsigned)bufferSize != fVisibleTriangles.size() * sizeof fVisibleTriangles[0]) {
-		glDeleteBuffers(1, &fBufferId);
-		fBufferId = 0;
+
+	if (!fOpenglBuffer.BindArray(fVisibleTriangles.size() * sizeof fVisibleTriangles[0], &fVisibleTriangles[0])) {
 		ErrorDialog("Cylinder::Init: Data size is mismatch with input array\n");
 	}
 

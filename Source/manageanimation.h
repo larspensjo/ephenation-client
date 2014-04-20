@@ -1,4 +1,4 @@
-// Copyright 2012-2013 The Ephenation Authors
+// Copyright 2012-2014 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -15,15 +15,15 @@
 // along with Ephenation.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-
 #pragma once
 
 #include <string>
 #include <vector>
 #include <map>
 #include <memory>
-
 #include <glm/glm.hpp>
+
+#include "OpenglBuffer.h"
 
 class AnimationShader;
 class aiNode;
@@ -57,7 +57,7 @@ public:
 	/// Modify a transformation matrix that will align the model, as needed.
 	void Align(glm::mat4 &mat) const;
 private:
-	GLuint fBufferId;
+	OpenglBuffer fOpenglBuffer;
 	GLuint fIndexBufferId;
 	GLuint fVao; // A list of Vertex Attribute Object
 	float fRotateXCorrection; // How much to rotate around the X axis to normalize direction

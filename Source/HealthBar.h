@@ -17,6 +17,8 @@
 
 #pragma once
 
+#include "OpenglBuffer.h"
+
 class ColorShader;
 
 namespace View {
@@ -32,12 +34,12 @@ public:
 	void DrawExp(const glm::mat4 &model, float exp) const;
 	void DrawSquare(const glm::mat4 &model, float r, float g, float b, float a) const;
 private:
-	HealthBar(); // Constructor is private, to make it a singleton class.
 	virtual ~HealthBar();
 	void Init(void);
 	static HealthBar fgSingleton;
-	ColorShader *fShader;
-	GLuint fBufferId, fVao;
+	ColorShader *fShader = 0;
+	OpenglBuffer fOpenglBuffer;
+	GLuint fVao = 0;
 };
 
 }

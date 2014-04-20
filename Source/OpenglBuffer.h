@@ -1,4 +1,4 @@
-// Copyright 2012-2014 The Ephenation Authors
+// Copyright 2014 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -17,23 +17,17 @@
 
 #pragma once
 
-#include <vector>
+#include <GL/glew.h>
 
-#include "../primitives.h"
-#include "../OpenglBuffer.h"
-
-class StageOneShader;
-
-// Class for creating a cylinder. The result is a list of triangles
-class Cylinder {
+class OpenglBuffer
+{
 public:
-	~Cylinder();
-	// Create a list of triangles representing a cylinder. The size is a unit size, but transformed using 'transf'.
-	// Argument is number of squares used to make the cylinder
-	void Init(StageOneShader *shader, int numSegments);
-	void Draw(StageOneShader *shader) const;
+	~OpenglBuffer();
+	bool BindArray(GLsizeiptr size, const GLvoid *data, GLenum usage = GL_STATIC_DRAW);
+	void ArraySubData(GLintptr offset, GLsizeiptr size, const GLvoid *data);
+	int GetArraySize() const;
+	void Release();
 private:
-	std::vector<TriangleSurfacef> fVisibleTriangles; // One list for each block type
-	OpenglBuffer fOpenglBuffer;
-	GLuint fVao = 0;
+	void Init();
+	GLuint fBufferId = 0;
 };

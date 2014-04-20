@@ -1,4 +1,4 @@
-// Copyright 2012-2013 The Ephenation Authors
+// Copyright 2012-2014 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -86,7 +86,6 @@ struct ManageAnimation::Animation {
 ManageAnimation View::gSwordModel1, View::gTuftOfGrass, View::gFrog, View::gMorran, View::gAlien;
 
 ManageAnimation::ManageAnimation() : fRotateXCorrection(0.0f), fNumMeshes(0) {
-	fBufferId = 0;
 	fVao = 0;
 	fIndexBufferId = 0;
 	fUsingBones = false;
@@ -95,7 +94,6 @@ ManageAnimation::ManageAnimation() : fRotateXCorrection(0.0f), fNumMeshes(0) {
 ManageAnimation::~ManageAnimation() {
 	// In case of glew not having run yet.
 	if (glDeleteBuffers != 0) {
-		glDeleteBuffers(1, &fBufferId);
 		glDeleteBuffers(1, &fIndexBufferId);
 		glDeleteVertexArrays(1, &fVao);
 	}
@@ -380,23 +378,16 @@ void ManageAnimation::Init(const char *filename, float xRotateCorrection, bool n
 	const int AREA1 = vertexSize*sizeof vertexData[0];
 	const int AREA2 = vertexSize*sizeof weights[0];
 	const int AREA3 = vertexSize*3*sizeof (float);
-	glGenBuffers(1, &fBufferId);
-	glBindBuffer(GL_ARRAY_BUFFER, fBufferId);
 	int bufferSize = AREA1;
 	if (fUsingBones) {
 		// Also need space for weights and bones indices.
 		bufferSize += AREA2 + AREA3;
 	}
-	glBufferData(GL_ARRAY_BUFFER, bufferSize, 0, GL_STATIC_DRAW); // Allocate the buffer, random content so far
-	// check data size in VBO is same as input array, if not return 0 and delete VBO
-	int tst = 0;
-	glGetBufferParameteriv(GL_ARRAY_BUFFER, GL_BUFFER_SIZE, &tst);
-	if (tst != bufferSize) {
-		glDeleteBuffers(1, &fBufferId);
-		fBufferId = 0;
+	// Allocate the buffer, random content so far
+	if (!fOpenglBuffer.BindArray(bufferSize, 0)) {
 		ErrorDialog("ManageAnimation::Init: Data size is mismatch with input array\n");
 	}
-	glBufferSubData(GL_ARRAY_BUFFER, 0, AREA1, vertexData);
+	fOpenglBuffer.ArraySubData(0, AREA1, vertexData);
 	if (this->fUsingBones) {
 		glBufferSubData(GL_ARRAY_BUFFER, AREA1, AREA2, weights);
 		glBufferSubData(GL_ARRAY_BUFFER, AREA1+AREA2, AREA3, joints);
@@ -410,8 +401,8 @@ void ManageAnimation::Init(const char *filename, float xRotateCorrection, bool n
 	bufferSize = 0;
 	glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_SIZE, &bufferSize);
 	if ((unsigned)bufferSize != indexSize*sizeof indexData[0]) {
-		glDeleteBuffers(1, &fBufferId);
-		fBufferId = 0;
+		glDeleteBuffers(1, &fIndexBufferId);
+		fIndexBufferId = 0;
 		ErrorDialog("ManageAnimation::Init: Data size is mismatch with input array\n");
 	}
 

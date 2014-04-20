@@ -1,4 +1,4 @@
-// Copyright 2012-2013 The Ephenation Authors
+// Copyright 2012-2014 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -122,13 +122,6 @@ void BuildingBlocks::Draw(glm::mat4 &projection) {
 	checkError("BuildingBlocks::Draw");
 }
 
-BuildingBlocks::BuildingBlocks() {
-	fNumToDisplay = 0;
-	fShader = 0;
-	fSelectedBlockText = 0;
-	fCurrentSelection = 0;
-}
-
 BuildingBlocks *BuildingBlocks::Make(int numToDisplay) {
 	if (fgSingleton.fShader == 0) {
 		fgSingleton.Init(numToDisplay);
@@ -140,25 +133,16 @@ void BuildingBlocks::Init(int numToDisplay) {
 	fNumToDisplay = numToDisplay;
 	fShader = SimpleTextureShader::Make();
 	glGenVertexArrays(1, &fVao);
-	glBindVertexArray(fVao); // Has to be done before enabling program, where the vertex attrib pointers are enabled.
+	glBindVertexArray(fVao);
 	fShader->EnableVertexAttribArray();
-	glGenBuffers(1, &fBufferId);
-	glBindBuffer(GL_ARRAY_BUFFER, fBufferId);
-	glBufferData(GL_ARRAY_BUFFER, sizeof vertexData, vertexData, GL_STATIC_DRAW);
+	if (!fOpenglBuffer.BindArray(sizeof vertexData, vertexData)) {
+		auto &ss = View::gErrorManager.GetStream(false, false);
+		ss << "[BuildingBlocks::Init] Data size is mismatch with input array";
+	}
 	vertex *p = 0;
 	fShader->TextureAttribPointer(GL_UNSIGNED_BYTE, sizeof (vertex), &p->t);
 	fShader->VertexAttribPointer(GL_BYTE, 2, sizeof (vertex), &p->v);
 	glBindVertexArray(0);
-	// check data size in VBO is same as input array, if not return 0 and delete VBO
-	int bufferSize = 0;
-	glGetBufferParameteriv(GL_ARRAY_BUFFER, GL_BUFFER_SIZE, &bufferSize);
-	if ((unsigned)bufferSize != sizeof vertexData) {
-		glDeleteBuffers(1, &fBufferId);
-		auto &ss = View::gErrorManager.GetStream(false, false);
-		ss << "[BuildingBlocks::Init] Data size is mismatch with input array";
-	}
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	fShader->DisableProgram();
 	fSelectedBlockText = gDrawFont.vsfl.genSentence();
 	BuildingBlocks::UpdateSelection(0); // Last thing
 }

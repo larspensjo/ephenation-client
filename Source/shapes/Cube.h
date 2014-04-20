@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2014 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -20,11 +20,11 @@
 #include <vector>
 
 #include "../primitives.h"
+#include "../OpenglBuffer.h"
 
-// Class for drawing a cube. The result is a list of triangles.
+/// Class for drawing a cube with a stage 1 shader.
 class Cube {
 public:
-	Cube();
 	~Cube();
 	// Create a list of triangles representing a cube. The size is a unit size.
 	void Init(bool invertedNormals = false);
@@ -32,8 +32,8 @@ public:
 	void DrawLines(void) const; // Only draw the edges of the cube.
 private:
 	std::vector<TriangleSurfacef> fVisibleTriangles;
-	GLuint fBufferId;
-	GLuint fVao; // Vertex Attribute Object
+	OpenglBuffer fOpenglBuffer;
+	GLuint fVao = 0; // Vertex Attribute Object
 };
 
 /// The lantern is special as it has normals pointing inwards.

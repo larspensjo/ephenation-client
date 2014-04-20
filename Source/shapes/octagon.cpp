@@ -59,16 +59,9 @@ static const unsigned short indices[] = {
 
 #define NELEM(v) (sizeof v / sizeof v[0])
 
-Octagon::Octagon() {
-	fVao = 0;
-	fBufferId = 0;
-	fIndexId = 0;
-}
-
 Octagon::~Octagon() {
-	if (fBufferId != 0) {
+	if (glDeleteVertexArrays != 0) {
 		glDeleteVertexArrays(1, &fVao);
-		glDeleteBuffers(1, &fBufferId);
 		glDeleteBuffers(1, &fIndexId);
 	}
 }
@@ -77,26 +70,18 @@ void Octagon::Init(void) {
 	glGenVertexArrays(1, &fVao);
 	glBindVertexArray(fVao);
 
-	glGenBuffers(1, &fBufferId);
-	glBindBuffer(GL_ARRAY_BUFFER, fBufferId);
-	glBufferData(GL_ARRAY_BUFFER, sizeof vertexData, vertexData, GL_STATIC_DRAW);
+	if (!fOpenglBuffer.BindArray(sizeof vertexData, vertexData)) {
+		ErrorDialog("Octagon::Init: vertexData size is mismatch with input array\n");
+	}
 
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof (vertex), 0); // GL_ARRAY_BUFFER must be bound when doing this.
-
-	// check data size in VBO
-	int bufferSize = 0;
-	glGetBufferParameteriv(GL_ARRAY_BUFFER, GL_BUFFER_SIZE, &bufferSize);
-	if ((unsigned)bufferSize != sizeof vertexData) {
-		glDeleteBuffers(1, &fBufferId);
-		ErrorDialog("Octagon::Init: vertexData size is mismatch with input array\n");
-	}
 
 	glGenBuffers(1, &fIndexId);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, fIndexId);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof indices, indices, GL_STATIC_DRAW);
 	// check data size in VBO is same as input array, if not return 0 and delete VBO
-	bufferSize = 0;
+	int bufferSize = 0;
 	glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_SIZE, &bufferSize);
 	if ((unsigned)bufferSize != sizeof indices) {
 		glDeleteBuffers(1, &fIndexId);
