@@ -87,14 +87,12 @@ ManageAnimation View::gSwordModel1, View::gTuftOfGrass, View::gFrog, View::gMorr
 
 ManageAnimation::ManageAnimation() : fRotateXCorrection(0.0f), fNumMeshes(0) {
 	fVao = 0;
-	fIndexBufferId = 0;
 	fUsingBones = false;
 }
 
 ManageAnimation::~ManageAnimation() {
 	// In case of glew not having run yet.
-	if (glDeleteBuffers != 0) {
-		glDeleteBuffers(1, &fIndexBufferId);
+	if (glDeleteVertexArrays != 0) {
 		glDeleteVertexArrays(1, &fVao);
 	}
 }
@@ -393,23 +391,13 @@ void ManageAnimation::Init(const char *filename, float xRotateCorrection, bool n
 		glBufferSubData(GL_ARRAY_BUFFER, AREA1+AREA2, AREA3, joints);
 	}
 
-	// Allocate the index data in OpenGL
-	glGenBuffers(1, &fIndexBufferId);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, fIndexBufferId);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexSize*sizeof indexData[0], indexData, GL_STATIC_DRAW); // Allocate and copy
-	// check data size in VBO is same as input array, if not return 0 and delete VBO
-	bufferSize = 0;
-	glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_SIZE, &bufferSize);
-	if ((unsigned)bufferSize != indexSize*sizeof indexData[0]) {
-		glDeleteBuffers(1, &fIndexBufferId);
-		fIndexBufferId = 0;
-		ErrorDialog("ManageAnimation::Init: Data size is mismatch with input array\n");
-	}
-
 	glGenVertexArrays(1, &fVao);
 	glBindVertexArray(fVao);
 	StageOneShader::EnableVertexAttribArray(this->fUsingBones); // Will be remembered in the VAO state
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, fIndexBufferId); // Will be remembered in the VAO state
+	// Allocate the index data in OpenGL
+	if (!fIndexBuffer.BindElementsArray(indexSize*sizeof indexData[0], indexData)) {
+		ErrorDialog("ManageAnimation::Init: Data size is mismatch with input array\n");
+	}
 	StageOneShader::VertexAttribPointer();
 	if (this->fUsingBones)
 		StageOneShader::VertexAttribPointerSkinWeights(AREA1, AREA1+AREA2);

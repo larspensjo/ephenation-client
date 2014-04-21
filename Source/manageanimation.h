@@ -57,8 +57,7 @@ public:
 	/// Modify a transformation matrix that will align the model, as needed.
 	void Align(glm::mat4 &mat) const;
 private:
-	OpenglBuffer fOpenglBuffer;
-	GLuint fIndexBufferId;
+	OpenglBuffer fOpenglBuffer, fIndexBuffer;
 	GLuint fVao; // A list of Vertex Attribute Object
 	float fRotateXCorrection; // How much to rotate around the X axis to normalize direction
 

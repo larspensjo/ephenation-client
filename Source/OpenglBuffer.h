@@ -19,15 +19,25 @@
 
 #include <GL/glew.h>
 
+/// Interface to an OpenGL buffer
 class OpenglBuffer
 {
 public:
 	~OpenglBuffer();
+
+	/// Bind GL_ARRAY_BUFFER, allocate and load with data (if any)
 	bool BindArray(GLsizeiptr size, const GLvoid *data, GLenum usage = GL_STATIC_DRAW);
+
+	/// Bind GL_ELEMENT_ARRAY_BUFFER, allocate and load with data (if any)
+	bool BindElementsArray(GLsizeiptr size, const GLvoid *data, GLenum usage = GL_STATIC_DRAW);
+
+	/// Bind GL_ARRAY_BUFFER and load data
 	void ArraySubData(GLintptr offset, GLsizeiptr size, const GLvoid *data);
-	int GetArraySize() const;
+	int GetSize() const;
 	void Release();
 private:
 	void Init();
+	void Bind(GLenum target);
 	GLuint fBufferId = 0;
+	GLenum fTarget = GL_ARRAY_BUFFER;
 };

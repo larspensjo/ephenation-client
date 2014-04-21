@@ -62,7 +62,6 @@ static const unsigned short indices[] = {
 Octagon::~Octagon() {
 	if (glDeleteVertexArrays != 0) {
 		glDeleteVertexArrays(1, &fVao);
-		glDeleteBuffers(1, &fIndexId);
 	}
 }
 
@@ -77,14 +76,7 @@ void Octagon::Init(void) {
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof (vertex), 0); // GL_ARRAY_BUFFER must be bound when doing this.
 
-	glGenBuffers(1, &fIndexId);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, fIndexId);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof indices, indices, GL_STATIC_DRAW);
-	// check data size in VBO is same as input array, if not return 0 and delete VBO
-	int bufferSize = 0;
-	glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_SIZE, &bufferSize);
-	if ((unsigned)bufferSize != sizeof indices) {
-		glDeleteBuffers(1, &fIndexId);
+	if (!fIndexBuffer.BindElementsArray(sizeof indices, indices)) {
 		ErrorDialog("Octagon::Init: indices size is mismatch with input array\n");
 	}
 
