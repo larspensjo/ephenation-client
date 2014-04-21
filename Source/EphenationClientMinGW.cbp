@@ -228,6 +228,9 @@
 		<Unit filename="shaders/DeferredLighting.h" />
 		<Unit filename="shaders/MonsterShader.cpp" />
 		<Unit filename="shaders/MonsterShader.h" />
+		<Unit filename="shaders/ParticleShader.cpp" />
+		<Unit filename="shaders/ParticleShader.glsl" />
+		<Unit filename="shaders/ParticleShader.h" />
 		<Unit filename="shaders/ScreenSpaceReflection.cpp" />
 		<Unit filename="shaders/ScreenSpaceReflection.glsl" />
 		<Unit filename="shaders/ScreenSpaceReflection.h" />
