@@ -17,6 +17,7 @@
 
 #include "OpenglBuffer.h"
 #include "assert.h"
+#include "primitives.h"
 
 OpenglBuffer::~OpenglBuffer() {
 	this->Release();
@@ -33,12 +34,34 @@ void OpenglBuffer::Init() {
 	glGenBuffers(1, &fBufferId);
 }
 
+void OpenglBuffer::Bind(GLenum target) {
+	fTarget = target;
+	glBindBuffer(fTarget, fBufferId);
+}
+
 bool OpenglBuffer::BindArray(GLsizeiptr size, const GLvoid *data, GLenum usage) {
 	if (fBufferId == 0)
 		this->Init();
-	glBindBuffer(GL_ARRAY_BUFFER, fBufferId);
-	glBufferData(GL_ARRAY_BUFFER, size, data, usage);
-	return this->GetArraySize() == size;
+	this->Bind(GL_ARRAY_BUFFER);
+	glBindBuffer(fTarget, fBufferId);
+	glBufferData(fTarget, size, data, usage);
+	return this->GetSize() == size;
+}
+
+bool OpenglBuffer::BindElementsArray(GLsizeiptr size, const GLvoid *data, GLenum usage) {
+#ifdef DEBUG
+	if (gDebugOpenGL) {
+		GLint binding = 0;
+		glGetIntegerv(GL_VERTEX_ARRAY_BINDING, &binding);
+		ASSERT(binding != 0);
+	}
+#endif
+
+	if (fBufferId == 0)
+		this->Init();
+	this->Bind(GL_ELEMENT_ARRAY_BUFFER);
+	glBufferData(fTarget, size, data, usage);
+	return this->GetSize() == size;
 }
 
 void OpenglBuffer::ArraySubData(GLintptr offset, GLsizeiptr size, const GLvoid *data) {
@@ -46,8 +69,8 @@ void OpenglBuffer::ArraySubData(GLintptr offset, GLsizeiptr size, const GLvoid *
 	glBufferSubData(GL_ARRAY_BUFFER, offset, size, data);
 }
 
-int OpenglBuffer::GetArraySize() const {
+int OpenglBuffer::GetSize() const {
 	int bufferSize = 0;
-	glGetBufferParameteriv(GL_ARRAY_BUFFER, GL_BUFFER_SIZE, &bufferSize);
+	glGetBufferParameteriv(fTarget, GL_BUFFER_SIZE, &bufferSize);
 	return bufferSize;
 }

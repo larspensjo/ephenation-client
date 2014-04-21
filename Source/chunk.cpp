@@ -395,7 +395,7 @@ void Chunk::PrepareOpenGL(StageOneShader *shader, ChunkShaderPicking *pickShader
 		// check that data size in VBO is the same as the input array, if not return 0 and delete VBO
 		if (!fOpenglBuffers[blockType].BindArray(triSize * sizeof(VertexDataf), &fChunkObject->fVisibleTriangles[blockType][0])) {
 			checkError("Chunk::PrepareOpenGL data size mismatch");
-			ErrorDialog("Chunk::PrepareOpenGL: Data size %d is mismatch with input array %d\n", fOpenglBuffers[blockType].GetArraySize(), triSize * sizeof(VertexDataf));
+			ErrorDialog("Chunk::PrepareOpenGL: Data size %d is mismatch with input array %d\n", fOpenglBuffers[blockType].GetSize(), triSize * sizeof(VertexDataf));
 		}
 
 		switch(dlType) {

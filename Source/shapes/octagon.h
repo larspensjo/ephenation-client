@@ -30,8 +30,8 @@ public:
 	void Draw();
 private:
 	void Init(); // Called automatically when needed.
-	OpenglBuffer fOpenglBuffer;
-	GLuint fIndexId = 0, fVao = 0;
+	OpenglBuffer fOpenglBuffer, fIndexBuffer;
+	GLuint fVao = 0;
 };
 
 extern Octagon gOctagon;
