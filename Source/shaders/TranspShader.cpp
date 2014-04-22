@@ -1,4 +1,4 @@
-// Copyright 2012-2013 The Ephenation Authors
+// Copyright 2012-2014 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -55,7 +55,6 @@ void TranspShader::PreLinkCallback(GLuint prg) {
 void TranspShader::GetLocations(void) {
 	fModelMatrixIndex = this->GetUniformLocation("modelMatrix");
 	fDepthDependingAlpha = this->GetUniformLocation("depthDependingAlpha");
-	fTimeIdx = this->GetUniformLocation("time");
 
 	glUniform1i(this->GetUniformLocation("firstTexture"), 0);
 	glUniform1i(this->GetUniformLocation("posTexture"), 1);
@@ -67,18 +66,8 @@ void TranspShader::Model(const glm::mat4 &mat) {
 	glUniformMatrix4fv(fModelMatrixIndex, 1, GL_FALSE, &mat[0][0]); // Send our modelView matrix to the shader
 }
 
-void TranspShader::View(float time) {
-	glUniform1f(fTimeIdx, time);
-}
-
 void TranspShader::DrawingWater(bool flag) {
 	glUniform1i(fDepthDependingAlpha, flag);
-}
-
-TranspShader::TranspShader() {
-	fModelMatrixIndex = -1;
-	fDepthDependingAlpha = -1;
-	fTimeIdx = -1;
 }
 
 TranspShader::~TranspShader() {

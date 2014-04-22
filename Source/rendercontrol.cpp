@@ -429,7 +429,6 @@ void RenderControl::drawTransparentLandscape(bool stereoView) {
 	glBindTexture(GL_TEXTURE_2D, fPositionTexture); // Position data is used by the transparent shader for distance computation.
 	glActiveTexture(GL_TEXTURE0);
 	gTranspShader.EnableProgram();
-	gTranspShader.View(float(gCurrentFrameTime));
 	DrawLandscape(&gTranspShader, DL_OnlyTransparent, stereoView);
 	gTranspShader.DisableProgram();
 	glDepthMask(GL_TRUE);

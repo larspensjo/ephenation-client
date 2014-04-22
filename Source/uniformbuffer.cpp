@@ -49,6 +49,7 @@ struct Data {
 	glm::vec4 ovrDistortion;
 	glm::vec2 ovrlenscenter;
 	float viewingdistance;
+	float time;
 	int performance;
 	int dynamicshadows;
 	int windowheight; // Height of window, in pixels.
@@ -86,6 +87,7 @@ void UniformBuffer::Update(bool ovrMode) const {
 		data.dynamicshadows = 0;
 	data.projectionmatrix = gProjectionMatrix;
 	data.viewmatrix = gViewMatrix;
+	data.time = float(gCurrentFrameTime);
 	data.viewingdistance = maxRenderDistance;
 	data.camera = fCamera;
 	data.projectionviewmatrix = gProjectionMatrix * gViewMatrix;
