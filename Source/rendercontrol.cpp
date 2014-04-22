@@ -53,7 +53,6 @@
 #include "monsters.h"
 #include "timemeasure.h"
 #include "shaders/skybox.h"
-#include "shapes/quadstage1.h"
 #include "otherplayers.h"
 #include "textures.h"
 #include "Map.h"
@@ -956,4 +955,28 @@ void RenderControl::ToggleRenderTarget() {
 		fCurrentInputColor = fRendertarget2;
 		fCurrentColorAttachment = ColAttachRenderTarget1;
 	}
+}
+
+#include "shapes/quadstage1.h"
+#include "shaders/ParticleShader.h"
+
+void RenderControl::drawParticlesTest(void) {
+	ParticleShader *shader = ParticleShader::Make();
+	DrawBuffers(fCurrentColorAttachment, ColAttachPosition, ColAttachNormals, ColAttachSurfaceProps);
+	ChunkCoord cc;
+	Model::gPlayer.GetChunkCoord(&cc);
+	float dx = (Model::gPlayer.x - (signed long long)cc.x*BLOCK_COORD_RES * CHUNK_SIZE)/(float)BLOCK_COORD_RES;
+	float dy = (Model::gPlayer.y - (signed long long)cc.y*BLOCK_COORD_RES * CHUNK_SIZE)/(float)BLOCK_COORD_RES;
+	float dz = (Model::gPlayer.z - (signed long long)cc.z*BLOCK_COORD_RES * CHUNK_SIZE)/(float)BLOCK_COORD_RES;
+
+	glm::mat4 model(1.0f);
+	model = glm::translate(model, glm::vec3(dx, dz-PLAYER_HEIGHT*2.0f, -dy));
+	model = glm::rotate(model, -Model::gPlayer.fAngleHor, glm::vec3(0.0f, 1.0f, 0.0f));
+	model = glm::scale(model, glm::vec3(PLAYER_HEIGHT, PLAYER_HEIGHT, PLAYER_HEIGHT)/10.0f);
+
+	glBindTexture(GL_TEXTURE_2D, GameTexture::Coin);
+	shader->EnableProgram();
+	shader->Model(model);
+	gQuadStage1.DrawSingleSideInstances(200);
+	shader->DisableProgram();
 }

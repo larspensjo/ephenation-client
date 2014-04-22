@@ -27,16 +27,17 @@
 /// Using GLSW to define shader
 static const GLchar *vertexShaderSource[] = {
 	"common.UniformBuffer",
+	"common.SimplexNoise",
 	"#define VERTEXSCALING "  STR(VERTEXSCALING) "\n", // The is the scaling factor used for vertices
 	"#define NORMALSCALING "  STR(NORMALSCALING) "\n", // The is the scaling factor used for normals
 	"#define TEXTURESCALING "  STR(TEXTURESCALING) "\n", // The is the scaling factor used for textures
-	"chunkshader.Vertex",
+	"ParticleShader.Vertex",
 };
 
 /// Using GLSW to define shader
 static const GLchar *fragmentShaderSource[] = {
 	"common.UniformBuffer",
-	"chunkshader.Fragment",
+	"ParticleShader.Fragment",
 };
 
 ParticleShader *ParticleShader::Make(void) {

@@ -34,6 +34,9 @@ public:
 	void DrawSingleSide(void) const;
 	/// Only draw the edges.
 	void DrawLines(void) const;
+	/// Draw a QuadStage1, on front size, using the currently bound texture0.
+	/// @param count the number of instances to draw
+	void DrawSingleSideInstances(int count) const;
 private:
 	OpenglBuffer fBuffer;
 	GLuint fVao = 0; // Vertex Attribute Object

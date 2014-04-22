@@ -68,6 +68,14 @@ void QuadStage1::Init(void) {
 	glBindVertexArray(0);
 }
 
+void QuadStage1::DrawSingleSideInstances(int count) const {
+	glBindVertexArray(fVao);
+	glDrawArraysInstanced(GL_TRIANGLES, 0, VERTICES/2, count);
+	glBindVertexArray(0);
+	gNumDraw++;
+	gDrawnQuads += VERTICES/2*count;
+}
+
 void QuadStage1::DrawDoubleSide(void) const {
 	glBindVertexArray(fVao);
 	glDrawArrays(GL_TRIANGLES, 0, VERTICES);

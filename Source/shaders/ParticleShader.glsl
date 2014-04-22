@@ -40,6 +40,18 @@ out float materialEffectDensity;
 flat out int materialEffectType;
 void main(void)
 {
+	mat4 newModelMatrix = modelMatrix;
+	float dx, dy, dz;
+	if (0) {
+		dx = snoise(vec2(gl_InstanceID/1.1234, UBOTime/10.0))*5.0;
+		dy = snoise(vec2(gl_InstanceID/1.6331, UBOTime/10.0))*5.0;
+		dz = snoise(vec2(gl_InstanceID/1.3451, UBOTime/10.0))*5.0;
+	} else {
+		dx = snoise(vec2(gl_InstanceID/40.0+UBOTime/5.0, 0.0))*10.0;
+		dy = snoise(vec2(gl_InstanceID/45.0+UBOTime/5.0, 0.0))*10.0;
+		dz = snoise(vec2(gl_InstanceID/50.0+UBOTime/5.0, 0.0))*10.0;
+	}
+	newModelMatrix[3] += vec4(dx, dy, dz, 0.0);
 	vec4 vertexScaled = vec4(vec3(vertex) / VERTEXSCALING, 1);
 	int t1 = int(vertex[3]); // Extract the texture data
 	vec2 textureScaled = vec2(ConvertIntToTexture(t1&0xFF), ConvertIntToTexture(t1>>8));
@@ -47,9 +59,9 @@ void main(void)
 	if (intens2 < 0) intens2 += 256;
 	float textMult = textOffsMulti.z;
 	fragmentTexCoord = textureScaled*textMult + textOffsMulti.xy;
-	fragmentNormal = normalize((modelMatrix*vec4(normal.xyz/NORMALSCALING, 0.0)).xyz);
-	gl_Position = UBOProjectionviewMatrix * modelMatrix * vertexScaled;
-	position = vec3(modelMatrix * vertexScaled); // Copy position to the fragment shader
+	fragmentNormal = normalize((newModelMatrix*vec4(normal.xyz/NORMALSCALING, 0.0)).xyz);
+	gl_Position = UBOProjectionviewMatrix * newModelMatrix * vertexScaled;
+	position = vec3(newModelMatrix * vertexScaled); // Copy position to the fragment shader
 	// Scale the intensity from [0..255] to [0..1].
 	extIntensity = (intens2 & 0x0F)/15.0;
 	// "	extIntensity = 0.1;
