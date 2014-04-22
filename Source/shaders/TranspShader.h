@@ -1,4 +1,4 @@
-// Copyright 2012-2013 The Ephenation Authors
+// Copyright 2012-2014 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -23,12 +23,10 @@
 // Texture 0 has to be the diffuse texture, and 1 the position texture.
 class TranspShader : public StageOneShader {
 public:
-	TranspShader();
 	virtual ~TranspShader();
 	void Init(void);
 
 	void Model(const glm::mat4 &);// Define the Model matrix
-	void View(float time);// The view depends on the time.
 
 	virtual void DrawingWater(bool);
 protected:
@@ -38,9 +36,8 @@ private:
 	// Callback that defines all uniform and attribute indices.
 	virtual void GetLocations(void);
 
-	GLint fModelMatrixIndex;
-	GLint fDepthDependingAlpha;
-	GLint fTimeIdx;
+	GLint fModelMatrixIndex = -1;
+	GLint fDepthDependingAlpha = -1;
 };
 
 extern TranspShader gTranspShader;

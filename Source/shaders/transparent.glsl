@@ -41,7 +41,6 @@ uniform sampler2D posTexture;
 uniform sampler2D USkyBox;
 uniform bool depthDependingAlpha = false;
 uniform vec2 screenSize = vec2(1920, 1003); // A default as a safety precaution
-uniform float time = 0; // Number of seconds since the game was started
 
 in vec2 screen;               // The screen position
 in vec2 fragmentTexCoord;
@@ -50,9 +49,9 @@ in vec3 position;       // The model coordinate, as given by the vertex shader
 layout(location = 0) out vec4 blendOutput;
 
 float height(vec3 pos) {
-	float wave1 = snoise(vec2(pos.x/3, pos.z+time/2.5))/10;
-	float wave2 = snoise(vec2(pos.x/3+1000, pos.z+time/2.5))/10;
-	return wave2*sin(time) + wave1*sin(time+3.14/2);
+	float wave1 = snoise(vec2(pos.x/3, pos.z+UBOTime/2.5))/10;
+	float wave2 = snoise(vec2(pos.x/3+1000, pos.z+UBOTime/2.5))/10;
+	return wave2*sin(UBOTime) + wave1*sin(UBOTime+3.14/2);
 }
 
 void main(void) {

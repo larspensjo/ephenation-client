@@ -28,6 +28,7 @@ layout(std140) uniform GlobalData {
 	vec4 UBOOVRDistortion;
 	vec2 UBOLensCenter;
 	float UBOViewingDistance;
+	float UBOTime;
 	int UBOPerformance;
 	int UBODynamicshadows;
 	int UBOWindowHeight;
