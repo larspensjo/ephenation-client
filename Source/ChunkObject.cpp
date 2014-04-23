@@ -126,6 +126,7 @@ void ChunkObject::DrawTrees(StageOneShader *shader, glm::vec3 offset, bool forSh
 
 		glm::vec3 player = Model::gPlayer.GetOffsetToChunk();
 		float d = glm::distance(player, glm::vec3(treex, treey, treez));
+		float dp1 = d+1.0f;
 		float limit = billboardLimit;
 		if (forShadows)
 			limit = billboardShadowLimit;
@@ -146,6 +147,7 @@ void ChunkObject::DrawTrees(StageOneShader *shader, glm::vec3 offset, bool forSh
 			gTuftOfGrass.DrawStatic(); // The same model as "tuft of grass" is used, but with a different texture
 			break;
 		case BT_Tree1:
+			gTreeDensity += 1.0f / dp1 / dp1;
 			if (d > limit) {
 				float angle = -Model::gPlayer.fAngleHor;
 				Billboard::Predefined picture = Billboard::tree1;
@@ -164,6 +166,7 @@ void ChunkObject::DrawTrees(StageOneShader *shader, glm::vec3 offset, bool forSh
 			}
 			break;
 		case BT_Tree2:
+			gTreeDensity += 2.0f / dp1 / dp1;
 			if (d > limit) {
 				float angle = -Model::gPlayer.fAngleHor;
 				Billboard::Predefined picture = Billboard::tree2;
@@ -182,6 +185,7 @@ void ChunkObject::DrawTrees(StageOneShader *shader, glm::vec3 offset, bool forSh
 			}
 			break;
 		case BT_Tree3:
+			gTreeDensity += 4.0f / dp1 / dp1;
 			if (d > limit) {
 				float angle = -Model::gPlayer.fAngleHor;
 				Billboard::Predefined picture = Billboard::tree3;

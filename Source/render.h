@@ -106,3 +106,8 @@ public:
 };
 
 extern Fogs gFogs;
+
+/// A measure of the tree density
+/// It is proportional to the number of trees, but inverse proportional to the square of the
+/// distance to each tree from the player. A typical highest value is about 1.0.
+extern float gTreeDensity;

@@ -285,6 +285,8 @@ static void DrawChunkBorders(StageOneShader *shader) {
 
 // TODO: This function should be split into a separate function for picking mode.
 void DrawLandscape(StageOneShader *shader, DL_Type dlType, bool stereoView) {
+	if (dlType == DL_NoTransparent)
+		gTreeDensity = 0.0f;
 	if (!Model::gPlayer.KnownPosition())
 		return;
 	if (dlType == DL_NoTransparent) {
@@ -573,3 +575,5 @@ void Fogs::Add(float x, float y, float z, int radius) {
 	}
 }
 std::vector<DrawObjectList> gDrawObjectList;
+
+float gTreeDensity;
