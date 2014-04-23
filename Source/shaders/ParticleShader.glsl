@@ -42,10 +42,10 @@ void main(void)
 {
 	mat4 newModelMatrix = modelMatrix;
 	float dx, dy, dz;
-	if (0) {
-		dx = snoise(vec2(gl_InstanceID/1.1234, UBOTime/10.0))*5.0;
-		dy = snoise(vec2(gl_InstanceID/1.6331, UBOTime/10.0))*5.0;
-		dz = snoise(vec2(gl_InstanceID/1.3451, UBOTime/10.0))*5.0;
+	if (true) {
+		dx = snoise(vec2(gl_InstanceID/1.1234, UBOTime/5.0))*5.0;
+		dy = snoise(vec2(gl_InstanceID/1.6331, UBOTime/5.0))*5.0;
+		dz = snoise(vec2(gl_InstanceID/1.3451, UBOTime/5.0))*5.0;
 	} else {
 		dx = snoise(vec2(gl_InstanceID/40.0+UBOTime/5.0, 0.0))*10.0;
 		dy = snoise(vec2(gl_InstanceID/45.0+UBOTime/5.0, 0.0))*10.0;

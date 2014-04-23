@@ -327,6 +327,7 @@ void RenderControl::Draw(bool underWater, const Model::Object *selectedObject, b
 	drawOpaqueLandscape(stereoView);
 	if (this->ThirdPersonView() && gMode.Get() != GameMode::LOGIN)
 		drawPlayer(); // Draw self, but not if camera is too close
+	drawParticles();
 	drawOtherPlayers();
 	drawMonsters();
 	drawTransparentLandscape(stereoView);
@@ -960,7 +961,11 @@ void RenderControl::ToggleRenderTarget() {
 #include "shapes/quadstage1.h"
 #include "shaders/ParticleShader.h"
 
-void RenderControl::drawParticlesTest(void) {
+void RenderControl::drawParticles(void) {
+	static TimeMeasure tm("Particle");
+	tm.Start();
+
+	/// Draw flies around the player
 	ParticleShader *shader = ParticleShader::Make();
 	DrawBuffers(fCurrentColorAttachment, ColAttachPosition, ColAttachNormals, ColAttachSurfaceProps);
 	ChunkCoord cc;
@@ -972,11 +977,12 @@ void RenderControl::drawParticlesTest(void) {
 	glm::mat4 model(1.0f);
 	model = glm::translate(model, glm::vec3(dx, dz-PLAYER_HEIGHT*2.0f, -dy));
 	model = glm::rotate(model, -Model::gPlayer.fAngleHor, glm::vec3(0.0f, 1.0f, 0.0f));
-	model = glm::scale(model, glm::vec3(PLAYER_HEIGHT, PLAYER_HEIGHT, PLAYER_HEIGHT)/10.0f);
+	model = glm::scale(model, glm::vec3(PLAYER_HEIGHT, PLAYER_HEIGHT, PLAYER_HEIGHT)/100.0f);
 
-	glBindTexture(GL_TEXTURE_2D, GameTexture::Coin);
+	glBindTexture(GL_TEXTURE_2D, GameTexture::Fly);
 	shader->EnableProgram();
 	shader->Model(model);
-	gQuadStage1.DrawSingleSideInstances(200);
+	gQuadStage1.DrawSingleSideInstances(100*gTreeDensity);
 	shader->DisableProgram();
+	tm.Stop();
 }
