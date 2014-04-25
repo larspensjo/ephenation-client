@@ -59,9 +59,16 @@ void ParticleShader::PreLinkCallback(GLuint prg) {
 void ParticleShader::GetLocations(void) {
 	fModelMatrixIndex = this->GetUniformLocation("modelMatrix");
 	fTextOffsMultiInd = this->GetUniformLocation("textOffsMulti");
+	fTimeScaling = this->GetUniformLocation("UtimeScaling");
+	fDistribute = this->GetUniformLocation("Udistribute");
 
 	glUniform1i(this->GetUniformLocation("firstTexture"), 0); // Always 0
 	checkError("ParticleShader::GetLocations");
+}
+
+void ParticleShader::Configure(float timeScaling, float distribute) {
+	glUniform1f(fTimeScaling, timeScaling);
+	glUniform1f(fDistribute, distribute);
 }
 
 void ParticleShader::Model(const glm::mat4 &mat) {
@@ -71,15 +78,6 @@ void ParticleShader::Model(const glm::mat4 &mat) {
 
 void ParticleShader::TextureOffsetMulti(float offsX, float offsY, float mult) {
 	glUniform3f(fTextOffsMultiInd, offsX, offsY, mult);
-}
-
-ParticleShader::ParticleShader() {
-	fModelMatrixIndex = -1;
-	fTextOffsMultiInd = -1;
-}
-
-ParticleShader::~ParticleShader() {
-	// TODO Auto-generated destructor stub
 }
 
 ParticleShader ParticleShader::fgSingleton;

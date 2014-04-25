@@ -28,6 +28,8 @@ uniform mat4 modelMatrix;
 // This contains both a offset and a multiplier to be used for the bitmap. It enables the use
 // of atlas bitmaps.
 uniform vec3 textOffsMulti = vec3(0,0,1);
+uniform float UtimeScaling = 5.0;
+uniform float Udistribute = 5.0;
 in vec4 normal;
 in vec4 vertex; // First 3 are vertex coordinates, the 4:th is texture data coded as two scaled bytes
 in int material;
@@ -43,13 +45,13 @@ void main(void)
 	mat4 newModelMatrix = modelMatrix;
 	float dx, dy, dz;
 	if (true) {
-		dx = snoise(vec2(gl_InstanceID/1.1234, UBOTime/5.0))*5.0;
-		dy = snoise(vec2(gl_InstanceID/1.6331, UBOTime/5.0))*5.0;
-		dz = snoise(vec2(gl_InstanceID/1.3451, UBOTime/5.0))*5.0;
+		dx = snoise(vec2(gl_InstanceID/1.1234, UBOTime/UtimeScaling))*Udistribute;
+		dy = snoise(vec2(gl_InstanceID/1.6331, UBOTime/UtimeScaling))*Udistribute;
+		dz = snoise(vec2(gl_InstanceID/1.3451, UBOTime/UtimeScaling))*Udistribute;
 	} else {
-		dx = snoise(vec2(gl_InstanceID/40.0+UBOTime/5.0, 0.0))*10.0;
-		dy = snoise(vec2(gl_InstanceID/45.0+UBOTime/5.0, 0.0))*10.0;
-		dz = snoise(vec2(gl_InstanceID/50.0+UBOTime/5.0, 0.0))*10.0;
+		dx = snoise(vec2(gl_InstanceID/40.0+UBOTime/UtimeScaling, 0.0))*Udistribute;
+		dy = snoise(vec2(gl_InstanceID/45.0+UBOTime/UtimeScaling, 0.0))*Udistribute;
+		dz = snoise(vec2(gl_InstanceID/50.0+UBOTime/UtimeScaling, 0.0))*Udistribute;
 	}
 	newModelMatrix[3] += vec4(dx, dy, dz, 0.0);
 	vec4 vertexScaled = vec4(vec3(vertex) / VERTEXSCALING, 1);

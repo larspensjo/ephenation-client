@@ -29,6 +29,11 @@ public:
 	/// Define the Model matrix
 	void Model(const glm::mat4 &);
 
+	/// Configure the behaviour
+	/// @param timeScaling Thefactor time is scaled down.
+	/// @param distribute How big area to distribute the effects.
+	void Configure(float timeScaling, float distribute);
+
 	virtual void TextureOffsetMulti(float offsX, float offsY, float mult); // Override
 protected:
 	virtual void PreLinkCallback(GLuint prg);
@@ -36,10 +41,10 @@ protected:
 private:
 	// Callback that defines all uniform and attribute indices.
 	virtual void GetLocations(void);
-	ParticleShader(); // Only allow access through the maker.
-	virtual ~ParticleShader(); // Don't allow destruction as this is a singleton.
 	static ParticleShader fgSingleton; // This is the singleton instance
 
-	GLint fModelMatrixIndex;
-	GLint fTextOffsMultiInd;
+	GLint fModelMatrixIndex = -1;
+	GLint fTextOffsMultiInd = -1;
+	GLint fTimeScaling = -1;
+	GLint fDistribute = -1;
 };

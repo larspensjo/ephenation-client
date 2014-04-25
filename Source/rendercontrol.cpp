@@ -982,6 +982,7 @@ void RenderControl::drawParticles(void) {
 	glBindTexture(GL_TEXTURE_2D, GameTexture::Fly);
 	shader->EnableProgram();
 	shader->Model(model);
+	shader->Configure(5.0f, 5.0f);
 	gQuadStage1.DrawSingleSideInstances(100*gTreeDensity);
 	shader->DisableProgram();
 	tm.Stop();
