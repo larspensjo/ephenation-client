@@ -984,6 +984,22 @@ void RenderControl::drawParticles(void) {
 	shader->Model(model);
 	shader->Configure(5.0f, 5.0f);
 	gQuadStage1.DrawSingleSideInstances(100*gTreeDensity);
+
+	model = glm::mat4(1.0f);
+	model = glm::translate(model, glm::vec3(dx, dz-PLAYER_HEIGHT*2.0f, -dy));
+	model = glm::rotate(model, -Model::gPlayer.fAngleHor, glm::vec3(0.0f, 1.0f, 0.0f));
+	model = glm::scale(model, glm::vec3(PLAYER_HEIGHT, PLAYER_HEIGHT, PLAYER_HEIGHT)/30.0f);
+
+	DrawBuffers(ColAttachBlend);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA); // Use alpha 1 for source channel, as the colors are premultiplied by the alpha.
+	glBindTexture(GL_TEXTURE_2D, GameTexture::Wad);
+	shader->EnableProgram();
+	shader->Model(model);
+	shader->Configure(50.0f, 20.0f);
+	gQuadStage1.DrawSingleSideInstances(50*gTreeDensity);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // Restore to default
+	glDisable(GL_BLEND);
 	shader->DisableProgram();
 	tm.Stop();
 }
