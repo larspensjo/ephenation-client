@@ -998,20 +998,33 @@ void RenderControl::drawTransparentParticles(void) {
 	float dy = (Model::gPlayer.y - (signed long long)cc.y*BLOCK_COORD_RES * CHUNK_SIZE)/(float)BLOCK_COORD_RES;
 	float dz = (Model::gPlayer.z - (signed long long)cc.z*BLOCK_COORD_RES * CHUNK_SIZE)/(float)BLOCK_COORD_RES;
 	glm::mat4 model(1.0f);
+	DrawBuffers(ColAttachBlend);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA); // Use alpha 1 for source channel, as the colors are premultiplied by the alpha.
+
+#if 0
+	// Draw raindrops
+	model = glm::translate(model, glm::vec3(dx, dz-PLAYER_HEIGHT*2.0f, -dy));
+	model = glm::rotate(model, -Model::gPlayer.fAngleHor, glm::vec3(0.0f, 1.0f, 0.0f));
+	model = glm::scale(model, glm::vec3(PLAYER_HEIGHT, PLAYER_HEIGHT, PLAYER_HEIGHT)/10.0f);
+	glBindTexture(GL_TEXTURE_2D, GameTexture::Raindrops);
+	shader->EnableProgram();
+	shader->Model(model);
+	shader->Configure(1000.0f, 20.0f, 10.0f);
+	gQuadStage1.DrawSingleSideInstances(1000);
+#endif
 
 	// Draw wads
 	model = glm::mat4(1.0f);
 	model = glm::translate(model, glm::vec3(dx, dz-PLAYER_HEIGHT*2.0f, -dy));
 	model = glm::rotate(model, -Model::gPlayer.fAngleHor, glm::vec3(0.0f, 1.0f, 0.0f));
 	model = glm::scale(model, glm::vec3(PLAYER_HEIGHT, PLAYER_HEIGHT, PLAYER_HEIGHT)/30.0f);
-	DrawBuffers(ColAttachBlend);
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA); // Use alpha 1 for source channel, as the colors are premultiplied by the alpha.
 	glBindTexture(GL_TEXTURE_2D, GameTexture::Wad);
 	shader->EnableProgram();
 	shader->Model(model);
 	shader->Configure(50.0f, 20.0f);
 	gQuadStage1.DrawSingleSideInstances(50*gTreeDensity);
+
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // Restore to default
 	glDisable(GL_BLEND);
 	shader->DisableProgram();

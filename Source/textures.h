@@ -51,7 +51,7 @@ struct GameTexture {
 	static GLuint WEP1Text, WEP2Text, WEP3Text, WEP4Text;
 	static GLuint Coin, Quest;
 	static GLuint MousePointerId;
-	static GLuint Fly, Wad;
+	static GLuint Fly, Wad, Raindrops;
 
 	static const int fgNumBuildBlocks; // Number of available building blocks
 
