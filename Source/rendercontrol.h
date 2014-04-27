@@ -151,7 +151,8 @@ private:
 	void drawTransparentLandscape(bool stereoView);
 	void drawPointShadows(void);
 	void drawPlayer(void);
-	void drawParticles(void);
+	void drawOpaqueParticles(void);
+	void drawTransparentParticles();
 	void drawOtherPlayers(void);
 	void drawSkyBox(GLenum diffuse, GLenum position, bool disableDistortion);
 	void drawLocalFog(void);

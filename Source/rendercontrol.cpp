@@ -64,6 +64,8 @@
 #include "modes.h"
 #include "fboflat.h"
 #include "HudTransformation.h"
+#include "shapes/quadstage1.h"
+#include "shaders/ParticleShader.h"
 
 #define NELEM(x) (sizeof x / sizeof x[0])
 
@@ -327,10 +329,11 @@ void RenderControl::Draw(bool underWater, const Model::Object *selectedObject, b
 	drawOpaqueLandscape(stereoView);
 	if (this->ThirdPersonView() && gMode.Get() != GameMode::LOGIN)
 		drawPlayer(); // Draw self, but not if camera is too close
-	drawParticles();
+	drawOpaqueParticles();
 	drawOtherPlayers();
 	drawMonsters();
 	drawTransparentLandscape(stereoView);
+	drawTransparentParticles();
 	if (selectedObject)
 		selectedObject->RenderHealthBar(HealthBar::Make(), Model::gPlayer.fAngleHor);
 
@@ -958,14 +961,10 @@ void RenderControl::ToggleRenderTarget() {
 	}
 }
 
-#include "shapes/quadstage1.h"
-#include "shaders/ParticleShader.h"
-
-void RenderControl::drawParticles(void) {
-	static TimeMeasure tm("Particle");
+void RenderControl::drawOpaqueParticles(void) {
+	static TimeMeasure tm("OpaqPart");
 	tm.Start();
 
-	/// Draw flies around the player
 	ParticleShader *shader = ParticleShader::Make();
 	DrawBuffers(fCurrentColorAttachment, ColAttachPosition, ColAttachNormals, ColAttachSurfaceProps);
 	ChunkCoord cc;
@@ -974,22 +973,37 @@ void RenderControl::drawParticles(void) {
 	float dy = (Model::gPlayer.y - (signed long long)cc.y*BLOCK_COORD_RES * CHUNK_SIZE)/(float)BLOCK_COORD_RES;
 	float dz = (Model::gPlayer.z - (signed long long)cc.z*BLOCK_COORD_RES * CHUNK_SIZE)/(float)BLOCK_COORD_RES;
 
+	// Draw flies around the player
 	glm::mat4 model(1.0f);
 	model = glm::translate(model, glm::vec3(dx, dz-PLAYER_HEIGHT*2.0f, -dy));
 	model = glm::rotate(model, -Model::gPlayer.fAngleHor, glm::vec3(0.0f, 1.0f, 0.0f));
 	model = glm::scale(model, glm::vec3(PLAYER_HEIGHT, PLAYER_HEIGHT, PLAYER_HEIGHT)/100.0f);
-
 	glBindTexture(GL_TEXTURE_2D, GameTexture::Fly);
 	shader->EnableProgram();
 	shader->Model(model);
 	shader->Configure(5.0f, 5.0f);
 	gQuadStage1.DrawSingleSideInstances(100*gTreeDensity);
+	shader->DisableProgram();
+	tm.Stop();
+}
 
+void RenderControl::drawTransparentParticles(void) {
+	static TimeMeasure tm("TransPart");
+	tm.Start();
+
+	ParticleShader *shader = ParticleShader::Make();
+	ChunkCoord cc;
+	Model::gPlayer.GetChunkCoord(&cc);
+	float dx = (Model::gPlayer.x - (signed long long)cc.x*BLOCK_COORD_RES * CHUNK_SIZE)/(float)BLOCK_COORD_RES;
+	float dy = (Model::gPlayer.y - (signed long long)cc.y*BLOCK_COORD_RES * CHUNK_SIZE)/(float)BLOCK_COORD_RES;
+	float dz = (Model::gPlayer.z - (signed long long)cc.z*BLOCK_COORD_RES * CHUNK_SIZE)/(float)BLOCK_COORD_RES;
+	glm::mat4 model(1.0f);
+
+	// Draw wads
 	model = glm::mat4(1.0f);
 	model = glm::translate(model, glm::vec3(dx, dz-PLAYER_HEIGHT*2.0f, -dy));
 	model = glm::rotate(model, -Model::gPlayer.fAngleHor, glm::vec3(0.0f, 1.0f, 0.0f));
 	model = glm::scale(model, glm::vec3(PLAYER_HEIGHT, PLAYER_HEIGHT, PLAYER_HEIGHT)/30.0f);
-
 	DrawBuffers(ColAttachBlend);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA); // Use alpha 1 for source channel, as the colors are premultiplied by the alpha.
