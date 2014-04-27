@@ -61,14 +61,16 @@ void ParticleShader::GetLocations(void) {
 	fTextOffsMultiInd = this->GetUniformLocation("textOffsMulti");
 	fTimeScaling = this->GetUniformLocation("UtimeScaling");
 	fDistribute = this->GetUniformLocation("Udistribute");
+	fFallingSpeed = this->GetUniformLocation("UfallingSpeed");
 
 	glUniform1i(this->GetUniformLocation("firstTexture"), 0); // Always 0
 	checkError("ParticleShader::GetLocations");
 }
 
-void ParticleShader::Configure(float timeScaling, float distribute) {
+void ParticleShader::Configure(float timeScaling, float distribute, float fallingSpeed) {
 	glUniform1f(fTimeScaling, timeScaling);
 	glUniform1f(fDistribute, distribute);
+	glUniform1f(fFallingSpeed, fallingSpeed);
 }
 
 void ParticleShader::Model(const glm::mat4 &mat) {

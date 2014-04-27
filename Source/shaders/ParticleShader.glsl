@@ -30,6 +30,8 @@ uniform mat4 modelMatrix;
 uniform vec3 textOffsMulti = vec3(0,0,1);
 uniform float UtimeScaling = 5.0;
 uniform float Udistribute = 5.0;
+uniform float UfallingSpeed = 0.0;
+
 in vec4 normal;
 in vec4 vertex; // First 3 are vertex coordinates, the 4:th is texture data coded as two scaled bytes
 in int material;
@@ -52,6 +54,12 @@ void main(void)
 		dx = snoise(vec2(gl_InstanceID/40.0+UBOTime/UtimeScaling, 0.0))*Udistribute;
 		dy = snoise(vec2(gl_InstanceID/45.0+UBOTime/UtimeScaling, 0.0))*Udistribute;
 		dz = snoise(vec2(gl_InstanceID/50.0+UBOTime/UtimeScaling, 0.0))*Udistribute;
+	}
+	if (UfallingSpeed > 0.0) {
+		int tmp = int((dy - UfallingSpeed*UBOTime)*100.0); // Measured in cm
+		const int height = 2000;
+		tmp = tmp % height - height/2;
+		dy = float(tmp) / 100.0;
 	}
 	newModelMatrix[3] += vec4(dx, dy, dz, 0.0);
 	vec4 vertexScaled = vec4(vec3(vertex) / VERTEXSCALING, 1);

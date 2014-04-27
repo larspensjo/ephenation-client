@@ -32,7 +32,8 @@ public:
 	/// Configure the behaviour
 	/// @param timeScaling Thefactor time is scaled down.
 	/// @param distribute How big area to distribute the effects.
-	void Configure(float timeScaling, float distribute);
+	/// @param fallingSpeed Let particles fall, and reappear
+	void Configure(float timeScaling, float distribute, float fallingSpeed = 0.0f);
 
 	virtual void TextureOffsetMulti(float offsX, float offsY, float mult); // Override
 protected:
@@ -47,4 +48,5 @@ private:
 	GLint fTextOffsMultiInd = -1;
 	GLint fTimeScaling = -1;
 	GLint fDistribute = -1;
+	GLint fFallingSpeed = -1;
 };
