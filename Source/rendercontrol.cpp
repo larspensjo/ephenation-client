@@ -325,6 +325,7 @@ void RenderControl::Draw(bool underWater, const Model::Object *selectedObject, b
 	gDrawObjectList.clear();
 	ToggleRenderTarget();
 	drawOpaqueLandscape(stereoView);
+	TemporalReprojection::sgTemporalReprojection.Poll("4.5");
 	if (this->ThirdPersonView() && gMode.Get() != GameMode::LOGIN)
 		drawPlayer(); // Draw self, but not if camera is too close
 	TemporalReprojection::sgTemporalReprojection.Poll("5");
@@ -335,6 +336,7 @@ void RenderControl::Draw(bool underWater, const Model::Object *selectedObject, b
 		selectedObject->RenderHealthBar(HealthBar::Make(), Model::gPlayer.fAngleHor);
 
 	// Apply deferred shader filters.
+	TemporalReprojection::sgTemporalReprojection.Poll("5.5");
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_ONE, GL_ONE);
 	if ((gOptions.fDynamicShadows || gOptions.fStaticShadows) && !Model::gPlayer.BelowGround())
@@ -376,6 +378,7 @@ void RenderControl::Draw(bool underWater, const Model::Object *selectedObject, b
 		drawMap(mapWidth, stereoView);
 	if (showInvent)
 		drawInventory(stereoView);
+	TemporalReprojection::sgTemporalReprojection.Poll("8.5");
 	if (ui)
 		drawUI(ui);
 	if (gMode.Get() == GameMode::TELEPORT) // Draw the teleport mode

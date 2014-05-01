@@ -30,7 +30,6 @@
 #include "monsters.h"
 #include "Options.h"
 #include "fboflat.h"
-#include "TemporalReprojection.h"
 
 using namespace View;
 
@@ -106,8 +105,6 @@ void ShadowRender::Render(int width, int height, const AnimationModels *animatio
 	glDepthFunc(GL_LESS);
 	glDepthMask(GL_TRUE);
 
-	TemporalReprojection::sgTemporalReprojection.Poll("SR1");
-
 	DrawLandscapeForShadows(fShader.get());
 
 	if (gOptions.fDynamicShadows) {
@@ -116,16 +113,13 @@ void ShadowRender::Render(int width, int height, const AnimationModels *animatio
 		anim->EnableProgram();
 		anim->Shadowmap(true, fProjViewMatrix);
 		Model::gMonsters.RenderMonsters(true, false, animationModels);
-		TemporalReprojection::sgTemporalReprojection.Poll("SR2");
 		Model::gPlayer.Draw(anim, fShader.get(), false, animationModels);
 		anim->EnableProgram(); // This is lost in the player drawing for weapons.
 		anim->Shadowmap(false, fProjViewMatrix);
 	}
-	TemporalReprojection::sgTemporalReprojection.Poll("SR3");
 
 	// Blur the depth buffer, before the default viewport is restored.
 	this->Blur(blurShader);
-	TemporalReprojection::sgTemporalReprojection.Poll("SR4");
 
 	glViewport(gViewport[0], gViewport[1], gViewport[2], gViewport[3]); // Restore default viewport.
 	glBindFramebuffer (GL_FRAMEBUFFER, 0);

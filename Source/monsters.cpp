@@ -33,7 +33,6 @@
 #include "Options.h"
 #include "animationmodels.h"
 #include "Debug.h"
-#include "TemporalReprojection.h"
 
 using std::stringstream;
 using std::shared_ptr;
@@ -151,7 +150,6 @@ void Monsters::RenderMonsters(bool forShadows, bool selectionMode, const View::A
 			continue;
 		if (!gOptions.fDynamicShadows || sun == 0)
 			gShadows.Add(pos.x, pos.y, pos.z, size);
-		TemporalReprojection::sgTemporalReprojection.Poll("Monster");
 	}
 }
 

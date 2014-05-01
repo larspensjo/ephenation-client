@@ -50,7 +50,6 @@
 #include "Options.h"
 #include "SuperChunkManager.h"
 #include "SoundControl.h"
-#include "TemporalReprojection.h"
 
 #define NELEM(x) (sizeof(x)/sizeof(x[0]))
 
@@ -295,7 +294,6 @@ void DrawLandscape(StageOneShader *shader, DL_Type dlType, bool stereoView) {
 	}
 
 	FindAllNearChunks(sChunkDistances);
-	TemporalReprojection::sgTemporalReprojection.Poll("render1");
 	ChunkCoord player_cc;
 	Model::gPlayer.GetChunkCoord(&player_cc);
 
@@ -345,8 +343,6 @@ void DrawLandscape(StageOneShader *shader, DL_Type dlType, bool stereoView) {
 	float distanceToNearTP2 = 1000.0f*1000.0f; // Distance^2 to the nearest TP, initialized to something big.
 	glm::vec3 TPPosition;
 	for (int i=0; i<visibleChunklistLength; i++) {
-		if (i % 10 == 0)
-			TemporalReprojection::sgTemporalReprojection.Poll("render2");
 #ifdef USE_QUERY_OPTIMIZATITON
 		if (i%NUMQUERIES == 0 && dlType == DL_NoTransparent) {
 			// Request NUMQUERIES queries, every NUMQUERIES chunk.
@@ -450,7 +446,6 @@ void DrawLandscape(StageOneShader *shader, DL_Type dlType, bool stereoView) {
 			}
 		}
 	}
-	TemporalReprojection::sgTemporalReprojection.Poll("render3");
 	if (dlType == DL_NoTransparent)
 		opaque.Stop();
 
@@ -530,7 +525,6 @@ void DrawLandscapeForShadows(StageOneShader *shader) {
 
 	// Draw all visible chunks. Chunks that are not loaded will trigger a reload from the server. The top chunks
 	// should be loaded first, as they affect the lighting on the chunks below.
-	int n = 0;
 	for (auto it=sShadowChunks.begin(); it != sShadowChunks.end(); it++ ) {
 		Chunk *cp = ChunkFind(&(*it), true);
 
@@ -538,9 +532,6 @@ void DrawLandscapeForShadows(StageOneShader *shader) {
 			// This chunk exists, is updated, but contains nothing.
 			continue;
 		}
-
-		if (n++ % 10 == 0)
-			TemporalReprojection::sgTemporalReprojection.Poll("shadow");
 
 		int dx = cp->cc.x - player_cc.x;
 		int dy = cp->cc.y - player_cc.y;
