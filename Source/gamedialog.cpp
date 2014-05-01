@@ -72,6 +72,7 @@
 #include "OculusRift.h"
 #include "Debug.h"
 #include "HudTransformation.h"
+#include "TemporalReprojection.h"
 
 using namespace Controller;
 using View::SoundControl;
@@ -929,8 +930,10 @@ void gameDialog::DrawScreen(bool hideGUI) {
 
 	this->Update();
 	fRenderControl.drawClear(fUnderWater); // Clear the screen
+	TemporalReprojection::sgTemporalReprojection.Poll("1");
 	if (!Model::gPlayer.BelowGround())
 		fRenderControl.ComputeShadowMap();
+	TemporalReprojection::sgTemporalReprojection.Poll("2");
 	glm::mat4 saveView = gViewMatrix;
 	if (fGuiMode == GuiMode::Inventory)
 		hideGUI = true;
@@ -1346,6 +1349,7 @@ void gameDialog::UpdateProjection(ViewType v) {
 	}
 	if (fStereoView)
 		View::gHudTransformation.Update();
+	TemporalReprojection::sgTemporalReprojection.Poll("3");
 }
 
 void gameDialog::SetMessage(const char *str) {

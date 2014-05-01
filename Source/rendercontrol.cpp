@@ -320,12 +320,14 @@ void RenderControl::Draw(bool underWater, const Model::Object *selectedObject, b
 	if (!Model::gPlayer.IsDead() && !Model::gPlayer.BelowGround() && !underWater)
 		diffuseSky = ColAttachRenderTarget;
 	drawSkyBox(diffuseSky, ColAttachPosition, stereoView);
+	TemporalReprojection::sgTemporalReprojection.Poll("4");
 
 	gDrawObjectList.clear();
 	ToggleRenderTarget();
 	drawOpaqueLandscape(stereoView);
 	if (this->ThirdPersonView() && gMode.Get() != GameMode::LOGIN)
 		drawPlayer(); // Draw self, but not if camera is too close
+	TemporalReprojection::sgTemporalReprojection.Poll("5");
 	drawOtherPlayers();
 	drawMonsters();
 	drawTransparentLandscape(stereoView);
@@ -337,6 +339,7 @@ void RenderControl::Draw(bool underWater, const Model::Object *selectedObject, b
 	glBlendFunc(GL_ONE, GL_ONE);
 	if ((gOptions.fDynamicShadows || gOptions.fStaticShadows) && !Model::gPlayer.BelowGround())
 		drawDynamicShadows();
+	TemporalReprojection::sgTemporalReprojection.Poll("6");
 	drawPointLights();
 	drawSSAO();
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // Restore default
@@ -348,6 +351,7 @@ void RenderControl::Draw(bool underWater, const Model::Object *selectedObject, b
 	ToggleRenderTarget();
 	DrawBuffers(ColAttachRenderTarget);
 	drawDeferredLighting(underWater, gOptions.fWhitePoint);
+	TemporalReprojection::sgTemporalReprojection.Poll("7");
 	// Do some post processing
 	if (!underWater)
 		drawPointShadows();
@@ -362,6 +366,7 @@ void RenderControl::Draw(bool underWater, const Model::Object *selectedObject, b
 		ToggleRenderTarget();
 		drawScreenSpaceReflection();
 	}
+	TemporalReprojection::sgTemporalReprojection.Poll("8");
 	if (gOptions.fPerformance > 1 && !stereoView) {
 		// The Oculus will have its own blurring functionality
 		ToggleRenderTarget();
@@ -380,7 +385,9 @@ void RenderControl::Draw(bool underWater, const Model::Object *selectedObject, b
 	ToggleRenderTarget(); // This time, only the input texture is needed
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 	glViewport(gViewport[0], gViewport[1], gViewport[2], gViewport[3]); // Restore default viewport.
+	TemporalReprojection::sgTemporalReprojection.Poll("9");
 	drawFullScreenPixmap(fCurrentInputColor, stereoView);
+	TemporalReprojection::sgTemporalReprojection.Poll("10");
 }
 
 void RenderControl::drawClear(bool underWater) {

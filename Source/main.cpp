@@ -1,4 +1,4 @@
-// Copyright 2012-2013 The Ephenation Authors
+// Copyright 2012-2014 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -67,6 +67,7 @@
 #include "errormanager.h"
 #include "OculusRift.h"
 #include "Debug.h"
+#include "TemporalReprojection.h"
 
 #ifndef GL_VERSION_3_2
 #define GL_CONTEXT_CORE_PROFILE_BIT       0x00000001
@@ -493,7 +494,9 @@ int main(int argc, char** argv) {
 				ListenForServerMessages();
 		}
 
+		TemporalReprojection::sgTemporalReprojection.Reset();
 		Controller::gGameDialog.DrawScreen(sHideGUI);
+		TemporalReprojection::sgTemporalReprojection.Poll("After");
 
 		View::Chunk::DegradeBusyList_gl();
 

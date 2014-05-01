@@ -142,6 +142,8 @@
 		<Unit filename="TSExec.h" />
 		<Unit filename="Teleport.cpp" />
 		<Unit filename="Teleport.h" />
+		<Unit filename="TemporalReprojection.cpp" />
+		<Unit filename="TemporalReprojection.h" />
 		<Unit filename="UndoOp.cpp" />
 		<Unit filename="UndoOp.h" />
 		<Unit filename="animationmodels.cpp" />
