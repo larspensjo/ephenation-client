@@ -308,7 +308,7 @@ void RenderControl::Resize(GLsizei width, GLsizei height) {
 	checkError("RenderControl::Resize", false);
 }
 
-void RenderControl::Draw(bool underWater, const Model::Object *selectedObject, bool showMap, bool showInvent, int mapWidth, MainUserInterface *ui, bool stereoView, float renderViewAngle) {
+void RenderControl::Draw(bool underWater, const Model::Object *selectedObject, bool stereoView) {
 	if (gShowFramework)
 		glPolygonMode(GL_FRONT, GL_LINE);
 	// Create all bitmaps setup in the frame buffer. This is all stage one shaders.
@@ -363,7 +363,6 @@ void RenderControl::Draw(bool underWater, const Model::Object *selectedObject, b
 	if (!underWater)
 		drawLocalFog(); // This should come late in the drawing process, as we don't want light effects added to fog
 
-	// Add gadgets, ui, maps and other overlays
 	if (gOptions.fPerformance > 2) {
 		ToggleRenderTarget();
 		drawScreenSpaceReflection();
@@ -374,6 +373,9 @@ void RenderControl::Draw(bool underWater, const Model::Object *selectedObject, b
 		ToggleRenderTarget();
 		drawDistanceBlurring();
 	}
+}
+
+void RenderControl::DrawStationaryEffects(bool showMap, int mapWidth, bool stereoView, bool showInvent, MainUserInterface *ui, float renderViewAngle) {
 	if (showMap)
 		drawMap(mapWidth, stereoView);
 	if (showInvent)

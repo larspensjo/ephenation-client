@@ -964,7 +964,8 @@ void gameDialog::render(bool hideGUI, int fps) {
 		gBillboard.InitializeTextures(fShader);
 	}
 
-	fRenderControl.Draw(fUnderWater, fSelectedObject.get(), fGuiMode == GuiMode::Map && !gDebugOpenGL, fGuiMode == GuiMode::Inventory, fMapWidth, (hideGUI && fCurrentRocketContextInput == 0) ? 0 : &fMainUserInterface, fStereoView, fRenderViewAngle);
+	fRenderControl.Draw(fUnderWater, fSelectedObject.get(), fStereoView);
+	fRenderControl.DrawStationaryEffects(fGuiMode == GuiMode::Map && !gDebugOpenGL, fMapWidth, fStereoView, fGuiMode == GuiMode::Inventory, (hideGUI && fCurrentRocketContextInput == 0) ? 0 : &fMainUserInterface, fRenderViewAngle);
 
 	//=========================================================================
 	// Various effects drawn after the deferred shader

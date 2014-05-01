@@ -74,7 +74,10 @@ public:
 	/// @param ui Pointer to the user interface
 	/// @param stereoView True when using OVR
     /// @param renderViewAngle The view angle to use
-	void Draw(bool underWater, const Model::Object *selectedObject, bool showMap, bool showInvent, int mapWidth, MainUserInterface *ui, bool stereoView, float renderViewAngle);
+	void Draw(bool underWater, const Model::Object *selectedObject, bool stereoView);
+
+	/// Add constant things, like UI, maps and other overlays
+	void DrawStationaryEffects(bool showMap, int mapWidth, bool stereoView, bool showInvent, MainUserInterface *ui, float renderViewAngle);
 
 	/// Update the camera position.
 	/// Check if camera position is inside a wall.
