@@ -263,11 +263,9 @@ void RenderControl::Resize(GLsizei width, GLsizei height) {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-	// Attach all textures and the depth buffer
+	// Attach all textures and the depth buffer. The diffuse targets are attached dynamically to ColAttachRenderTarget.
 	glBindFramebuffer(GL_FRAMEBUFFER, fboName);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, fDepthBuffer, 0);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, ColAttachRenderTarget1, GL_TEXTURE_2D, fRendertarget1, 0);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, ColAttachRenderTarget2, GL_TEXTURE_2D, fRendertarget2, 0);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, ColAttachPosition, GL_TEXTURE_2D, fPositionTexture, 0);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, ColAttachNormals, GL_TEXTURE_2D, fNormalsTexture, 0);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, ColAttachBlend, GL_TEXTURE_2D, fBlendTexture, 0);
@@ -315,12 +313,10 @@ void RenderControl::Draw(bool underWater, const Model::Object *selectedObject, b
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fboName);
 	glViewport(0, 0, fWidth, fHeight);
 	drawClearFBO();
-	fCurrentColorAttachment = ColAttachRenderTarget2;
-	fCurrentInputColor = fRendertarget1;
 	// If the player is dead, he will get a gray sky.
 	int diffuseSky = GL_NONE;
 	if (!Model::gPlayer.IsDead() && !Model::gPlayer.BelowGround() && !underWater)
-		diffuseSky = fCurrentColorAttachment;
+		diffuseSky = ColAttachRenderTarget;
 	drawSkyBox(diffuseSky, ColAttachPosition, stereoView);
 
 	gDrawObjectList.clear();
@@ -348,7 +344,7 @@ void RenderControl::Draw(bool underWater, const Model::Object *selectedObject, b
 	if (gShowFramework)
 		glPolygonMode(GL_FRONT, GL_FILL); // Restore normal drawing.
 	ToggleRenderTarget();
-	DrawBuffers(fCurrentColorAttachment);
+	DrawBuffers(ColAttachRenderTarget);
 	drawDeferredLighting(underWater, gOptions.fWhitePoint);
 	// Do some post processing
 	if (!underWater)
@@ -379,9 +375,9 @@ void RenderControl::Draw(bool underWater, const Model::Object *selectedObject, b
 		TeleportClick(HealthBar::Make(), Model::gPlayer.fAngleHor, renderViewAngle, 0, 0, false, stereoView);
 	if (fShowMouse)
 		drawMousePointer();
+	ToggleRenderTarget(); // This time, only the input texture is needed
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 	glViewport(gViewport[0], gViewport[1], gViewport[2], gViewport[3]); // Restore default viewport.
-	ToggleRenderTarget();
 	drawFullScreenPixmap(fCurrentInputColor, stereoView);
 }
 
@@ -395,7 +391,10 @@ void RenderControl::drawClear(bool underWater) {
 }
 
 void RenderControl::drawClearFBO(void) {
-	DrawBuffers(ColAttachRenderTarget1, ColAttachRenderTarget2);
+	fCurrentInputColor = fRendertarget1;
+	glFramebufferTexture2D(GL_FRAMEBUFFER, ColAttachRenderTarget, GL_TEXTURE_2D, fRendertarget2, 0);
+
+	DrawBuffers(ColAttachRenderTarget);
 	glClearColor(0.584f, 0.620f, 0.698f, 1.0f); // Gray background, will only be used where there is no sky box.
 	glClear(GL_COLOR_BUFFER_BIT);
 
@@ -410,7 +409,7 @@ void RenderControl::drawClearFBO(void) {
 void RenderControl::drawOpaqueLandscape(bool stereoView) {
 	static TimeMeasure tm("Landsc");
 	tm.Start();
-	DrawBuffers(fCurrentColorAttachment, ColAttachPosition, ColAttachNormals, ColAttachSurfaceProps); // Nothing is transparent here, do not produce any blending data on the 4:th render target.
+	DrawBuffers(ColAttachRenderTarget, ColAttachPosition, ColAttachNormals, ColAttachSurfaceProps); // Nothing is transparent here, do not produce any blending data on the 4:th render target.
 	fShader->EnableProgram(); // Get program back again after the skybox.
 	DrawLandscape(fShader, DL_NoTransparent, stereoView);
 	tm.Stop();
@@ -440,13 +439,13 @@ void RenderControl::drawTransparentLandscape(bool stereoView) {
 void RenderControl::drawMonsters(void) {
 	static TimeMeasure tm("Monst");
 	tm.Start();
-	DrawBuffers(fCurrentColorAttachment, ColAttachPosition, ColAttachNormals, ColAttachSurfaceProps);
+	DrawBuffers(ColAttachRenderTarget, ColAttachPosition, ColAttachNormals, ColAttachSurfaceProps);
 	Model::gMonsters.RenderMonsters(false, false, &fAnimationModels);
 	tm.Stop();
 }
 
 void RenderControl::drawPlayer(void) {
-	DrawBuffers(fCurrentColorAttachment, ColAttachPosition, ColAttachNormals, ColAttachSurfaceProps);
+	DrawBuffers(ColAttachRenderTarget, ColAttachPosition, ColAttachNormals, ColAttachSurfaceProps);
 	fAnimation->EnableProgram();
 	Model::gPlayer.Draw(fAnimation, fShader, false, &fAnimationModels);
 	fAnimation->DisableProgram();
@@ -566,7 +565,7 @@ void RenderControl::drawSSAO(void) {
 void RenderControl::drawScreenSpaceReflection(void) {
 	static TimeMeasure tm("SSRefl ");
 	tm.Start();
-	DrawBuffers(fCurrentColorAttachment);
+	DrawBuffers(ColAttachRenderTarget);
 	glActiveTexture(GL_TEXTURE3);
 	glBindTexture(GL_TEXTURE_2D, fSurfaceProperties);
 	glActiveTexture(GL_TEXTURE2);
@@ -586,7 +585,7 @@ void RenderControl::drawScreenSpaceReflection(void) {
 void RenderControl::drawDistanceBlurring(void) {
 	static TimeMeasure tm("Blur ");
 	tm.Start();
-	DrawBuffers(fCurrentColorAttachment);
+	DrawBuffers(ColAttachRenderTarget);
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, fCurrentInputColor);
 	glDisable(GL_CULL_FACE);
@@ -759,14 +758,14 @@ void RenderControl::drawMap(int mapWidth, bool stereoView) {
 	// Very inefficient algorithm, computing the map every frame.
 	std::unique_ptr<Map> map(new Map);
 	ToggleRenderTarget(); // Save the current render target
-	DrawBuffers(fCurrentColorAttachment);
+	DrawBuffers(ColAttachRenderTarget);
 	glClearColor(0, 0, 0, 0);
 	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 	fShader->EnableProgram();
 	map->Create(fAnimation, fShader, Model::gPlayer.fAngleHor, mapWidth, &fAnimationModels, stereoView);
 	ToggleRenderTarget(); // This restores the saved render target
 	glBindTexture(GL_TEXTURE_2D, fCurrentInputColor);
-	DrawBuffers(fCurrentColorAttachment);
+	DrawBuffers(ColAttachRenderTarget);
 	map->Draw(0.6f, stereoView);
 }
 
@@ -951,9 +950,9 @@ void RenderControl::ComputeAverageLighting(bool underWater) {
 void RenderControl::ToggleRenderTarget() {
 	if (fCurrentInputColor == fRendertarget2) {
 		fCurrentInputColor = fRendertarget1;
-		fCurrentColorAttachment = ColAttachRenderTarget2;
+		glFramebufferTexture2D(GL_FRAMEBUFFER, ColAttachRenderTarget, GL_TEXTURE_2D, fRendertarget2, 0);
 	} else {
 		fCurrentInputColor = fRendertarget2;
-		fCurrentColorAttachment = ColAttachRenderTarget1;
+		glFramebufferTexture2D(GL_FRAMEBUFFER, ColAttachRenderTarget, GL_TEXTURE_2D, fRendertarget1, 0);
 	}
 }

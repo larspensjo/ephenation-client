@@ -168,13 +168,14 @@ private:
 	// Define alias for color attachments. Remember to look at
 	// drawClearFBO() if this list is changed.
 	enum ColorAttachment {
-		ColAttachRenderTarget1 = GL_COLOR_ATTACHMENT0,
-		ColAttachPosition, ColAttachNormals, ColAttachBlend, ColAttachLighting, ColAttachRenderTarget2, ColAttachSurfaceProps
+		ColAttachRenderTarget = GL_COLOR_ATTACHMENT0,
+		ColAttachPosition, ColAttachNormals, ColAttachBlend, ColAttachLighting, ColAttachSurfaceProps
 	};
 
 	GLuint fCurrentInputColor = 0;
-	ColorAttachment fCurrentColorAttachment = ColAttachRenderTarget1;
-	void ToggleRenderTarget(); // Toggle between the two render targets
+	// Toggle between the two render targets. It will also setup the previous
+	// render target as fCurrentInputColor.
+	void ToggleRenderTarget();
 };
 
 }
