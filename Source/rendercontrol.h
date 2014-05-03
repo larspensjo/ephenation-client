@@ -69,14 +69,14 @@ public:
 	/// Do the actual drawing
 	/// @param underWater True if underwater effects shall be applied
 	/// @param selectedObject This object shall be visibly marked
-	/// @param showMap True if a map shall be shown
-	/// @param mapWidth Pixels in width used when drawing a map
-	/// @param ui Pointer to the user interface
 	/// @param stereoView True when using OVR
-    /// @param renderViewAngle The view angle to use
 	void Draw(bool underWater, const Model::Object *selectedObject, bool stereoView);
 
 	/// Add constant things, like UI, maps and other overlays
+	/// @param showMap True if a map shall be shown
+	/// @param mapWidth Pixels in width used when drawing a map
+	/// @param ui Pointer to the user interface
+	/// @param renderViewAngle The view angle to use
 	void DrawStationaryEffects(bool showMap, int mapWidth, bool stereoView, bool showInvent, MainUserInterface *ui, float renderViewAngle);
 
 	/// Update the camera position.

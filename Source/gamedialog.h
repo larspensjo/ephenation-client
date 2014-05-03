@@ -66,7 +66,10 @@ public:
 	void DrawScreen(bool hideGUI);
 	/// Render many things.
 	/// @todo Nothing should be rendered from here, it should all go into the View of the MVC.
-	void render(bool hideGUI, int fps);
+	void render();
+
+	/// Apply post render effects
+	void postRender(bool hideGUI, int fps);
 	void init(bool useOvr);
 	~gameDialog();
 	void handleMouse(int button, int action);

@@ -939,22 +939,35 @@ void gameDialog::DrawScreen(bool hideGUI) {
 		hideGUI = true;
 	if (fStereoView) {
 		this->UpdateProjection(Controller::gameDialog::ViewType::left);
-		this->render(hideGUI, int(slAverageFps));
+		this->render();
+		this->postRender(hideGUI, int(slAverageFps));
 
 		gViewMatrix = saveView;
 		this->UpdateProjection(Controller::gameDialog::ViewType::right);
-		this->render(hideGUI, int(slAverageFps));
+		this->render();
+		this->postRender(hideGUI, int(slAverageFps));
 	} else {
 		if (fGuiMode == GuiMode::Map && !gDebugOpenGL)
 			hideGUI = true;
 		this->UpdateProjection(Controller::gameDialog::ViewType::single);
-		this->render(hideGUI, int(slAverageFps));
+		this->render();
+		this->postRender(hideGUI, int(slAverageFps));
 	}
 	glfwSwapBuffers();
 	gViewMatrix = saveView;
+
+	if (gDebugOpenGL) {
+		checkError("gameDialog::render debug", false);
+		static double prevPrint = 0.0;
+		if (gCurrentFrameTime > prevPrint + 5.0) {
+			WorstTime::Report();
+			TimeMeasure::Report();
+			prevPrint = gCurrentFrameTime;
+		}
+	}
 }
 
-void gameDialog::render(bool hideGUI, int fps) {
+void gameDialog::render() {
 	static bool first = true; // Only true first time function is called
 	// Clear list of special effects. It will be added again automatically every frame
 	gShadows.Clear();
@@ -962,9 +975,13 @@ void gameDialog::render(bool hideGUI, int fps) {
 
 	if (first) {
 		gBillboard.InitializeTextures(fShader);
+		first = false;
 	}
 
 	fRenderControl.Draw(fUnderWater, fSelectedObject.get(), fStereoView);
+}
+
+void gameDialog::postRender(bool hideGUI, int fps) {
 	fRenderControl.DrawStationaryEffects(fGuiMode == GuiMode::Map && !gDebugOpenGL, fMapWidth, fStereoView, fGuiMode == GuiMode::Inventory, (hideGUI && fCurrentRocketContextInput == 0) ? 0 : &fMainUserInterface, fRenderViewAngle);
 
 	//=========================================================================
@@ -1051,17 +1068,6 @@ void gameDialog::render(bool hideGUI, int fps) {
 
 		gScrollingMessages.Update();
 	}
-
-	if (gDebugOpenGL) {
-		checkError("gameDialog::render debug", false);
-		static double prevPrint = 0.0;
-		if (gCurrentFrameTime > prevPrint + 5.0) {
-			WorstTime::Report();
-			TimeMeasure::Report();
-			prevPrint = gCurrentFrameTime;
-		}
-	}
-	first = false;
 }
 
 // Catch the window close request by the player.
@@ -1517,7 +1523,8 @@ void gameDialog::SaveScreen() {
     // Make the BYTE array, factor of 3 because it's RBG.
     // unsigned char pixels[ 4 * w * h*2];
     std::unique_ptr<unsigned char[]> pixels(new unsigned char[3*w*h]);
-    this->render(true, 0);
+    this->render();
+    this->postRender(true, 0);
 
     glReadPixels(0, 0, w, h, GL_BGR, GL_UNSIGNED_BYTE, pixels.get());
 
