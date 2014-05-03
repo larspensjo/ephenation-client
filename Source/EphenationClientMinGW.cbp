@@ -129,6 +129,8 @@
 		<Unit filename="OpenglBuffer.h" />
 		<Unit filename="Options.cpp" />
 		<Unit filename="Options.h" />
+		<Unit filename="RenderTarget.cpp" />
+		<Unit filename="RenderTarget.h" />
 		<Unit filename="ScrollingMessages.cpp" />
 		<Unit filename="ScrollingMessages.h" />
 		<Unit filename="SoundControl.cpp" />

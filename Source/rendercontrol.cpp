@@ -65,6 +65,7 @@
 #include "modes.h"
 #include "fboflat.h"
 #include "HudTransformation.h"
+#include "RenderTarget.h"
 
 #define NELEM(x) (sizeof x / sizeof x[0])
 
@@ -188,6 +189,7 @@ void RenderControl::Init(int lightSamplingFactor, bool stereoView) {
 }
 
 void RenderControl::Resize(GLsizei width, GLsizei height) {
+	RenderTarget::Resize(width, height);
 	fWidth = width; fHeight = height;
 
 	//==============================================================================
@@ -756,15 +758,15 @@ void RenderControl::drawUI(MainUserInterface *ui) {
 
 void RenderControl::drawMap(int mapWidth, bool stereoView) {
 	// Very inefficient algorithm, computing the map every frame.
+	RenderTarget tmp;
 	std::unique_ptr<Map> map(new Map);
-	ToggleRenderTarget(); // Save the current render target
-	DrawBuffers(ColAttachRenderTarget);
+	tmp.FramebufferTexture2D(ColAttachTempRenderTarget);
+	DrawBuffers(ColAttachTempRenderTarget);
 	glClearColor(0, 0, 0, 0);
 	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 	fShader->EnableProgram();
 	map->Create(fAnimation, fShader, Model::gPlayer.fAngleHor, mapWidth, &fAnimationModels, stereoView);
-	ToggleRenderTarget(); // This restores the saved render target
-	glBindTexture(GL_TEXTURE_2D, fCurrentInputColor);
+	glBindTexture(GL_TEXTURE_2D, tmp.GetTexture());
 	DrawBuffers(ColAttachRenderTarget);
 	map->Draw(0.6f, stereoView);
 }

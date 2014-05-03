@@ -169,7 +169,12 @@ private:
 	// drawClearFBO() if this list is changed.
 	enum ColorAttachment {
 		ColAttachRenderTarget = GL_COLOR_ATTACHMENT0,
-		ColAttachPosition, ColAttachNormals, ColAttachBlend, ColAttachLighting, ColAttachSurfaceProps
+		ColAttachPosition,
+		ColAttachNormals,
+		ColAttachBlend,
+		ColAttachLighting,
+		ColAttachSurfaceProps,
+		ColAttachTempRenderTarget, // Used for temporary targets
 	};
 
 	GLuint fCurrentInputColor = 0;
