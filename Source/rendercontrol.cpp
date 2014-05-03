@@ -66,6 +66,7 @@
 #include "fboflat.h"
 #include "HudTransformation.h"
 #include "RenderTarget.h"
+#include "TemporalReprojection.h"
 
 #define NELEM(x) (sizeof x / sizeof x[0])
 
