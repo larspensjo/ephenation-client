@@ -21,6 +21,7 @@
 #include <glm/glm.hpp>
 
 #include "animationmodels.h"
+#include "RenderTarget.h"
 
 class ChunkShader;
 class AddDynamicShadow;
@@ -44,6 +45,7 @@ namespace Model {
 
 namespace View {
 	class ShadowRender;
+	class RenderTarget;
 
 /// @brief This is the top level View of the Model/View/Controller
 ///
@@ -70,15 +72,17 @@ public:
 	/// @param underWater True if underwater effects shall be applied
 	/// @param selectedObject This object shall be visibly marked
 	/// @param stereoView True when using OVR
-	void Draw(bool underWater, const Model::Object *selectedObject, bool stereoView);
+	/// @return The texture target of the drawing
+	std::unique_ptr<RenderTarget> Draw(bool underWater, const Model::Object *selectedObject, bool stereoView);
 
-	/// Add constant things, like UI, maps and other overlays
+	/// Add constant things, like UI, maps and other overlays.
+	/// It is things that stays at the same position in the screen. Use the currently bound FBO and render targets.
+	/// @param current Use this as the current render target
 	/// @param showMap True if a map shall be shown
 	/// @param mapWidth Pixels in width used when drawing a map
 	/// @param ui Pointer to the user interface
 	/// @param renderViewAngle The view angle to use
-	/// @return The texture id of the result
-	GLuint DrawStationaryEffects(bool showMap, int mapWidth, bool stereoView, bool showInvent, MainUserInterface *ui, float renderViewAngle);
+	void DrawStationaryEffects(bool showMap, int mapWidth, bool stereoView, bool showInvent, MainUserInterface *ui, float renderViewAngle);
 
 	/// Update the camera position.
 	/// Check if camera position is inside a wall.
@@ -112,7 +116,6 @@ private:
 	GLuint fboName;
 	GLuint fDepthBuffer; // Render target buffers
 	GLuint fPositionTexture, fNormalsTexture, fBlendTexture, fLightsTexture;
-	GLuint fRendertarget1 = 0, fRendertarget2 = 0;
 	GLuint fSurfaceProperties = 0;
 	GLsizei fWidth, fHeight;
 
@@ -149,7 +152,7 @@ private:
 
 	void ComputeAverageLighting(bool underWater);
 
-	void drawClearFBO(void); // Initialize all images in the FBO
+	void drawClearFBO(RenderTarget *r); // Initialize all images in the FBO
 	void drawOpaqueLandscape(bool stereoView);
 	void drawDynamicShadows(void);
 	void drawDeferredLighting(bool underWater, float whitepoint);
@@ -184,9 +187,9 @@ private:
 	};
 
 	GLuint fCurrentInputColor = 0;
-	// Toggle between the two render targets. It will also setup the previous
+	// Toggle between the two render targets and setup the previous
 	// render target as fCurrentInputColor.
-	void ToggleRenderTarget();
+	void ToggleRenderTarget(std::unique_ptr<RenderTarget> &current, std::unique_ptr<RenderTarget> &previous);
 };
 
 }

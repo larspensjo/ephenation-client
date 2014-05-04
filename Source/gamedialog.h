@@ -24,6 +24,7 @@
 #include "rendercontrol.h"
 #include "chunk.h"
 #include "UndoOp.h"
+#include "RenderTarget.h"
 
 namespace View {
 	class Chunk;
@@ -66,10 +67,12 @@ public:
 	void DrawScreen(bool hideGUI);
 	/// Render many things.
 	/// @todo Nothing should be rendered from here, it should all go into the View of the MVC.
-	void render();
+	/// @return The resulting render target
+	std::unique_ptr<View::RenderTarget> render();
 
 	/// Apply post render effects
-	void postRender(bool hideGUI, int fps);
+	/// @param source The render target to add the effects to
+	void postRender(std::unique_ptr<View::RenderTarget> source, bool hideGUI, int fps);
 	void init(bool useOvr);
 	~gameDialog();
 	void handleMouse(int button, int action);

@@ -939,19 +939,19 @@ void gameDialog::DrawScreen(bool hideGUI) {
 		hideGUI = true;
 	if (fStereoView) {
 		this->UpdateProjection(Controller::gameDialog::ViewType::left);
-		this->render();
-		this->postRender(hideGUI, int(slAverageFps));
+		auto rt = this->render();
+		this->postRender(std::move(rt), hideGUI, int(slAverageFps));
 
 		gViewMatrix = saveView;
 		this->UpdateProjection(Controller::gameDialog::ViewType::right);
-		this->render();
-		this->postRender(hideGUI, int(slAverageFps));
+		rt = this->render();
+		this->postRender(std::move(rt), hideGUI, int(slAverageFps));
 	} else {
 		if (fGuiMode == GuiMode::Map && !gDebugOpenGL)
 			hideGUI = true;
 		this->UpdateProjection(Controller::gameDialog::ViewType::single);
-		this->render();
-		this->postRender(hideGUI, int(slAverageFps));
+		auto rt = this->render();
+		this->postRender(std::move(rt), hideGUI, int(slAverageFps));
 	}
 	glfwSwapBuffers();
 	gViewMatrix = saveView;
@@ -967,7 +967,7 @@ void gameDialog::DrawScreen(bool hideGUI) {
 	}
 }
 
-void gameDialog::render() {
+std::unique_ptr<View::RenderTarget> gameDialog::render() {
 	static bool first = true; // Only true first time function is called
 	// Clear list of special effects. It will be added again automatically every frame
 	gShadows.Clear();
@@ -978,12 +978,20 @@ void gameDialog::render() {
 		first = false;
 	}
 
-	fRenderControl.Draw(fUnderWater, fSelectedObject.get(), fStereoView);
+	return fRenderControl.Draw(fUnderWater, fSelectedObject.get(), fStereoView);
 }
 
-void gameDialog::postRender(bool hideGUI, int fps) {
-	GLuint texture = fRenderControl.DrawStationaryEffects(fGuiMode == GuiMode::Map && !gDebugOpenGL, fMapWidth, fStereoView, fGuiMode == GuiMode::Inventory, (hideGUI && fCurrentRocketContextInput == 0) ? 0 : &fMainUserInterface, fRenderViewAngle);
-	fRenderControl.drawFullScreenPixmap(texture, fStereoView);
+void gameDialog::postRender(std::unique_ptr<View::RenderTarget> source, bool hideGUI, int fps) {
+	fRenderControl.DrawStationaryEffects(
+		fGuiMode == GuiMode::Map && !gDebugOpenGL,
+		fMapWidth,
+		fStereoView,
+		fGuiMode == GuiMode::Inventory,
+		(hideGUI && fCurrentRocketContextInput == 0) ? 0 : &fMainUserInterface,
+		fRenderViewAngle
+	);
+
+	fRenderControl.drawFullScreenPixmap(source->GetTexture(), fStereoView);
 
 	//=========================================================================
 	// Various effects drawn after the deferred shader
@@ -1524,8 +1532,8 @@ void gameDialog::SaveScreen() {
     // Make the BYTE array, factor of 3 because it's RBG.
     // unsigned char pixels[ 4 * w * h*2];
     std::unique_ptr<unsigned char[]> pixels(new unsigned char[3*w*h]);
-    this->render();
-    this->postRender(true, 0);
+    auto rt = this->render();
+    this->postRender(std::move(rt), true, 0);
 
     glReadPixels(0, 0, w, h, GL_BGR, GL_UNSIGNED_BYTE, pixels.get());
 
