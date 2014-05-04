@@ -376,7 +376,7 @@ void RenderControl::Draw(bool underWater, const Model::Object *selectedObject, b
 	}
 }
 
-void RenderControl::DrawStationaryEffects(bool showMap, int mapWidth, bool stereoView, bool showInvent, MainUserInterface *ui, float renderViewAngle) {
+GLuint RenderControl::DrawStationaryEffects(bool showMap, int mapWidth, bool stereoView, bool showInvent, MainUserInterface *ui, float renderViewAngle) {
 	if (showMap)
 		drawMap(mapWidth, stereoView);
 	if (showInvent)
@@ -392,8 +392,7 @@ void RenderControl::DrawStationaryEffects(bool showMap, int mapWidth, bool stere
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 	glViewport(gViewport[0], gViewport[1], gViewport[2], gViewport[3]); // Restore default viewport.
 	TemporalReprojection::sgTemporalReprojection.Poll("9");
-	drawFullScreenPixmap(fCurrentInputColor, stereoView);
-	TemporalReprojection::sgTemporalReprojection.Poll("10");
+	return fCurrentInputColor;
 }
 
 void RenderControl::drawClear(bool underWater) {

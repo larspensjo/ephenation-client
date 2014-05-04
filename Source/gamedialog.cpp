@@ -982,7 +982,8 @@ void gameDialog::render() {
 }
 
 void gameDialog::postRender(bool hideGUI, int fps) {
-	fRenderControl.DrawStationaryEffects(fGuiMode == GuiMode::Map && !gDebugOpenGL, fMapWidth, fStereoView, fGuiMode == GuiMode::Inventory, (hideGUI && fCurrentRocketContextInput == 0) ? 0 : &fMainUserInterface, fRenderViewAngle);
+	GLuint texture = fRenderControl.DrawStationaryEffects(fGuiMode == GuiMode::Map && !gDebugOpenGL, fMapWidth, fStereoView, fGuiMode == GuiMode::Inventory, (hideGUI && fCurrentRocketContextInput == 0) ? 0 : &fMainUserInterface, fRenderViewAngle);
+	fRenderControl.drawFullScreenPixmap(texture, fStereoView);
 
 	//=========================================================================
 	// Various effects drawn after the deferred shader

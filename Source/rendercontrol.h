@@ -77,7 +77,8 @@ public:
 	/// @param mapWidth Pixels in width used when drawing a map
 	/// @param ui Pointer to the user interface
 	/// @param renderViewAngle The view angle to use
-	void DrawStationaryEffects(bool showMap, int mapWidth, bool stereoView, bool showInvent, MainUserInterface *ui, float renderViewAngle);
+	/// @return The texture id of the result
+	GLuint DrawStationaryEffects(bool showMap, int mapWidth, bool stereoView, bool showInvent, MainUserInterface *ui, float renderViewAngle);
 
 	/// Update the camera position.
 	/// Check if camera position is inside a wall.
@@ -102,6 +103,9 @@ public:
 
 	/// Get the pointer screen coordinate (if there is one)
 	void GetVirtualPointer(int *x, int *y) const  { *x = fPointerX+0.5f; *y = fPointerY+0.5f; }
+
+	/// Copy the final texture to the screen
+	void drawFullScreenPixmap(GLuint id, bool stereoView) const;
 
 private:
 
@@ -165,7 +169,6 @@ private:
 	void drawDistanceBlurring(void);
 	void drawColoredLights() const;
 	void drawMousePointer();
-	void drawFullScreenPixmap(GLuint id, bool stereoView) const;
 	void drawInventory(bool stereoView) const;
 
 	// Define alias for color attachments. Remember to look at
