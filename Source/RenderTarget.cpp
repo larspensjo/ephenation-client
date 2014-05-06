@@ -18,6 +18,7 @@
 #include "RenderTarget.h"
 #include "primitives.h"
 #include "assert.h"
+#include "Debug.h"
 
 using namespace View;
 
@@ -38,6 +39,7 @@ RenderTarget::RenderTarget() {
 		fRendertarget = fFreeTextures.back();
 		fFreeTextures.pop_back();
 	} else {
+		LPLOG("Allocate new (%d)", fNumAllocated+1);
 		glGenTextures(1, &fRendertarget);
 		glBindTexture(GL_TEXTURE_2D, fRendertarget);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, fWidth, fHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
