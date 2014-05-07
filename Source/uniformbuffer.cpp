@@ -61,6 +61,7 @@ struct Data {
 	float calibrationFactor;
 	float projectionK1, projectionK2; // Used for reverse depth buffer projection
 	int enabledistortion;
+	float raining; // 0.0 means blue sky, 1.0 is worst possible rain
 };
 
 // Use index 0 always
@@ -110,6 +111,8 @@ void UniformBuffer::Update(bool ovrMode) const {
 	// As much as possible is pre-computed into constants here.
 	data.projectionK1 = 2.0f * fFarCutoff * fNearCutoff / (fFarCutoff - fNearCutoff);
 	data.projectionK2 = (fFarCutoff + fNearCutoff) / (fFarCutoff - fNearCutoff);
+
+	data.raining = 0.0f; // TODO: Make a weather simulation model
 
 	glBindBuffer(GL_UNIFORM_BUFFER, fUBOBuffer);
 	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(Data), &data);
