@@ -70,6 +70,6 @@ void main(void)
 	if (inSun > 0 && UBODynamicshadows > 0)
 		inSun = ShadowMap(worldPos.xyz, normal.xyz); // Override with dynamic shadows
 	// As the last step, combine all the diffuse color with the lighting and blending effects
-	light = inSun*sun*1.5;
-	// light = worldPos.a;
+	// Rain will take away sun lighting, but not all.
+	light = inSun * sun * 1.5 * (1-UBORaining*0.9);
 }
