@@ -974,9 +974,25 @@ void RenderControl::drawOpaqueParticles(void) {
 	float dx = (Model::gPlayer.x - (signed long long)cc.x*BLOCK_COORD_RES * CHUNK_SIZE)/(float)BLOCK_COORD_RES;
 	float dy = (Model::gPlayer.y - (signed long long)cc.y*BLOCK_COORD_RES * CHUNK_SIZE)/(float)BLOCK_COORD_RES;
 	float dz = (Model::gPlayer.z - (signed long long)cc.z*BLOCK_COORD_RES * CHUNK_SIZE)/(float)BLOCK_COORD_RES;
+	glm::mat4 model(1.0f);
+
+	// Draw raindrops
+	model = glm::mat4(1.0f);
+	model = glm::translate(model, glm::vec3(dx, dz-PLAYER_HEIGHT*2.0f, -dy));
+	model = glm::rotate(model, -Model::gPlayer.fAngleHor, glm::vec3(0.0f, 1.0f, 0.0f));
+	model = glm::scale(model, glm::vec3(PLAYER_HEIGHT, PLAYER_HEIGHT, PLAYER_HEIGHT)/10.0f);
+	glBindTexture(GL_TEXTURE_2D, GameTexture::Raindrops);
+	shader->EnableProgram();
+	shader->Model(model);
+	shader->Configure(1000.0f, 20.0f, 10.0f);
+	float rain = Model::Weather::sgWeather.GetRain();
+	int rainVolume = 0;
+	if (rain > 0.5f)
+		rainVolume = 4000 * (rain - 0.5) * 2.0f;
+	gQuadStage1.DrawSingleSideInstances(rainVolume);
 
 	// Draw flies around the player
-	glm::mat4 model(1.0f);
+	model = glm::mat4(1.0f);
 	model = glm::translate(model, glm::vec3(dx, dz-PLAYER_HEIGHT*2.0f, -dy));
 	model = glm::rotate(model, -Model::gPlayer.fAngleHor, glm::vec3(0.0f, 1.0f, 0.0f));
 	model = glm::scale(model, glm::vec3(PLAYER_HEIGHT, PLAYER_HEIGHT, PLAYER_HEIGHT)/100.0f);
@@ -1003,22 +1019,6 @@ void RenderControl::drawTransparentParticles(void) {
 	DrawBuffers(ColAttachBlend);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA); // Use alpha 1 for source channel, as the colors are premultiplied by the alpha.
-
-#if 0
-	// Draw raindrops
-	model = glm::translate(model, glm::vec3(dx, dz-PLAYER_HEIGHT*2.0f, -dy));
-	model = glm::rotate(model, -Model::gPlayer.fAngleHor, glm::vec3(0.0f, 1.0f, 0.0f));
-	model = glm::scale(model, glm::vec3(PLAYER_HEIGHT, PLAYER_HEIGHT, PLAYER_HEIGHT)/10.0f);
-	glBindTexture(GL_TEXTURE_2D, GameTexture::Raindrops);
-	shader->EnableProgram();
-	shader->Model(model);
-	shader->Configure(1000.0f, 20.0f, 10.0f);
-	float rain = Model::Weather::sgWeather.GetRain();
-	int rainVolume = 0;
-	if (rain > 0.5f)
-		rainVolume = 4000 * (rain - 0.5) * 2.0f;
-	gQuadStage1.DrawSingleSideInstances(rainVolume);
-#endif
 
 	// Draw wads
 	model = glm::mat4(1.0f);
