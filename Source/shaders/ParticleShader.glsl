@@ -57,7 +57,7 @@ void main(void)
 	}
 	if (UfallingSpeed > 0.0) {
 		int tmp = int((dy - UfallingSpeed*UBOTime)*100.0); // Measured in cm
-		const int height = 2000;
+		const int height = 3000;
 		tmp = tmp % height - height/2;
 		dy = float(tmp) / 100.0;
 	}
