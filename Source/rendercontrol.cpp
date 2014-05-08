@@ -989,6 +989,8 @@ void RenderControl::drawOpaqueParticles(void) {
 	int rainVolume = 0;
 	if (rain > 0.5f)
 		rainVolume = 4000 * (rain - 0.5) * 2.0f;
+	if (Model::gPlayer.BelowGround())
+		rainVolume = 0;
 	gQuadStage1.DrawSingleSideInstances(rainVolume);
 
 	// Draw flies around the player
@@ -1000,7 +1002,9 @@ void RenderControl::drawOpaqueParticles(void) {
 	shader->EnableProgram();
 	shader->Model(model);
 	shader->Configure(5.0f, 5.0f);
-	gQuadStage1.DrawSingleSideInstances(100*gTreeDensity);
+	if (!Model::gPlayer.BelowGround())
+		gQuadStage1.DrawSingleSideInstances(100*gTreeDensity);
+
 	shader->DisableProgram();
 	tm.Stop();
 }
@@ -1030,7 +1034,8 @@ void RenderControl::drawTransparentParticles(void) {
 	shader->EnableProgram();
 	shader->Model(model);
 	shader->Configure(50.0f, 20.0f);
-	gQuadStage1.DrawSingleSideInstances(50*gTreeDensity*(1-rain));
+	if (!Model::gPlayer.BelowGround())
+		gQuadStage1.DrawSingleSideInstances(50*gTreeDensity*(1-rain));
 
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // Restore to default
 	glDisable(GL_BLEND);
