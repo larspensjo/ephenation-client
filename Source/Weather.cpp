@@ -23,10 +23,11 @@
 using namespace Model;
 
 float Weather::GetRain() const {
-	glm::vec2 seed(0.0f, float(gCurrentFrameTime/3.0));
+	glm::vec2 seed(0.0f, float(gCurrentFrameTime/30.0));
 	// Very simple model for now.
-	// return glm::simplex(seed)/2.0f + 0.5f;
-	return 0.0f;
+	float f = glm::simplex(seed)/2.0f + 0.5f;
+	return f * f;
+	// return 0.0f;
 }
 
 Weather Weather::sgWeather;
