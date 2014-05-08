@@ -967,6 +967,7 @@ void RenderControl::drawOpaqueParticles(void) {
 	static TimeMeasure tm("OpaqPart");
 	tm.Start();
 
+	float rain = Model::Weather::sgWeather.GetRain();
 	ParticleShader *shader = ParticleShader::Make();
 	DrawBuffers(ColAttachRenderTarget, ColAttachPosition, ColAttachNormals, ColAttachSurfaceProps);
 	ChunkCoord cc;
@@ -985,7 +986,6 @@ void RenderControl::drawOpaqueParticles(void) {
 	shader->EnableProgram();
 	shader->Model(model);
 	shader->Configure(1000.0f, 20.0f, 10.0f);
-	float rain = Model::Weather::sgWeather.GetRain();
 	int rainVolume = 0;
 	if (rain > 0.5f)
 		rainVolume = 4000 * (rain - 0.5) * 2.0f;
@@ -1009,6 +1009,7 @@ void RenderControl::drawTransparentParticles(void) {
 	static TimeMeasure tm("TransPart");
 	tm.Start();
 
+	float rain = Model::Weather::sgWeather.GetRain();
 	ParticleShader *shader = ParticleShader::Make();
 	ChunkCoord cc;
 	Model::gPlayer.GetChunkCoord(&cc);
@@ -1029,7 +1030,7 @@ void RenderControl::drawTransparentParticles(void) {
 	shader->EnableProgram();
 	shader->Model(model);
 	shader->Configure(50.0f, 20.0f);
-	gQuadStage1.DrawSingleSideInstances(50*gTreeDensity);
+	gQuadStage1.DrawSingleSideInstances(50*gTreeDensity*(1-rain));
 
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // Restore to default
 	glDisable(GL_BLEND);
