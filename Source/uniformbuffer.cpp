@@ -113,8 +113,7 @@ void UniformBuffer::Update(bool ovrMode) const {
 	data.projectionK1 = 2.0f * fFarCutoff * fNearCutoff / (fFarCutoff - fNearCutoff);
 	data.projectionK2 = (fFarCutoff + fNearCutoff) / (fFarCutoff - fNearCutoff);
 
-	// data.raining = Model::Weather::sgWeather.GetRain();
-	data.raining = 0.0f;
+	data.raining = Model::Weather::sgWeather.GetRain();
 
 	glBindBuffer(GL_UNIFORM_BUFFER, fUBOBuffer);
 	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(Data), &data);

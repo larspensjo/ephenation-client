@@ -65,7 +65,7 @@ void main(void)
 	worldPos = texture(posTex, screen);
 	float ambient = normal.a; // The ambient light is in the alpha channel.
 	// Add a little ambient lighting if cloudy weather (more scattered light).
-	ambient += (1.0-UBOBelowGround) * (UBORaining) * 3.0;
+	ambient += (1.0-UBOBelowGround) * (UBORaining) * 2.0;
 	vec4 hdr = diffuse/(1-diffuse);
 	// Temporary helper data
 	vec3 cameraToWorld = UBOCamera.xyz-worldPos.xyz;

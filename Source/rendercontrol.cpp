@@ -67,6 +67,7 @@
 #include "RenderTarget.h"
 #include "shapes/quadstage1.h"
 #include "shaders/ParticleShader.h"
+#include "Weather.h"
 
 #define NELEM(x) (sizeof x / sizeof x[0])
 
@@ -1012,7 +1013,11 @@ void RenderControl::drawTransparentParticles(void) {
 	shader->EnableProgram();
 	shader->Model(model);
 	shader->Configure(1000.0f, 20.0f, 10.0f);
-	gQuadStage1.DrawSingleSideInstances(1000);
+	float rain = Model::Weather::sgWeather.GetRain();
+	int rainVolume = 0;
+	if (rain > 0.5f)
+		rainVolume = 4000 * (rain - 0.5) * 2.0f;
+	gQuadStage1.DrawSingleSideInstances(rainVolume);
 #endif
 
 	// Draw wads
