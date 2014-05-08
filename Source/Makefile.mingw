@@ -81,7 +81,8 @@ MY_LIBS   =\
 	-lWs2_32 -lole32 -lcomctl32 -lgdi32 -lcomdlg32 -luuid -lWinmm -lSetupapi
 
 # The pre-processor options used by the cpp (man cpp for more).
-CPPFLAGS  = -Wall
+# -Wno-strict-aliasing is because annoying warning in libRocket files.
+CPPFLAGS  = -Wall -Wno-strict-aliasing
 
 # The options used in linking as well as in any direct use of ld.
 LDFLAGS   =

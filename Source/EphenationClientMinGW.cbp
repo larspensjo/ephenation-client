@@ -129,6 +129,8 @@
 		<Unit filename="OpenglBuffer.h" />
 		<Unit filename="Options.cpp" />
 		<Unit filename="Options.h" />
+		<Unit filename="RenderTarget.cpp" />
+		<Unit filename="RenderTarget.h" />
 		<Unit filename="ScrollingMessages.cpp" />
 		<Unit filename="ScrollingMessages.h" />
 		<Unit filename="SoundControl.cpp" />
@@ -142,6 +144,8 @@
 		<Unit filename="Teleport.h" />
 		<Unit filename="UndoOp.cpp" />
 		<Unit filename="UndoOp.h" />
+		<Unit filename="Weather.cpp" />
+		<Unit filename="Weather.h" />
 		<Unit filename="animationmodels.cpp" />
 		<Unit filename="animationmodels.h" />
 		<Unit filename="assert.cpp" />

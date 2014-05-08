@@ -40,6 +40,7 @@ layout(std140) uniform GlobalData {
 	float UBOcalibrationFactor;
 	float UBOProjK1, UBOProjK2;
 	int UBOEnableDistortion;
+	float UBORaining;
 };
 
 // Given a depth texture, compute the distance to a pixel
