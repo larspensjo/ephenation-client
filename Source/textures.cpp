@@ -323,7 +323,7 @@ void GameTexture::Init(void) {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-	Raindrops = loadTexture(loadBMP("textures/RainDrops.bmp"), TF_NOMIPMAP);
+	Raindrops = loadTexture(loadBMP("textures/RainDrops.bmp"), TF_NOMIPMAP|TF_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
