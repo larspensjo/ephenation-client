@@ -1,4 +1,4 @@
-// Copyright 2013 The Ephenation Authors
+// Copyright 2013-2014 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -38,7 +38,6 @@ void main(void)
 -- Fragment
 
 uniform sampler2D UTextureSampler;
-uniform bool UDisableDistortion = true;
 in vec3 worldPos;       // The model coordinate, as given by the vertex shader
 in vec2 TexCoord;
 
@@ -53,6 +52,8 @@ void main(void)
 	vec3 eyeDir = normalize(cameraToWorld);
 	float vertFogGrad = 1.0 - clamp(dot(-eyeDir, vec3(0,1,0))-0.1, 0.0, 0.25) / 0.25;
 	vec3 fogColor = vec3(0.6, 0.6, 0.6);
-	diffuseOutput = mix(color, fogColor, vertFogGrad);
+	vec3 verticalMixture = mix(color, fogColor, vertFogGrad);
+	vec3 cloudySky = vec3(0.5, 0.5, 0.5);
+	diffuseOutput = mix(verticalMixture, cloudySky, UBORaining);
 	posOutput = vec4(worldPos, 1); // Last byte is sun intensity
 }
