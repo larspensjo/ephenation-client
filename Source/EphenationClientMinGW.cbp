@@ -142,6 +142,8 @@
 		<Unit filename="Teleport.h" />
 		<Unit filename="UndoOp.cpp" />
 		<Unit filename="UndoOp.h" />
+		<Unit filename="Weather.cpp" />
+		<Unit filename="Weather.h" />
 		<Unit filename="animationmodels.cpp" />
 		<Unit filename="animationmodels.h" />
 		<Unit filename="assert.cpp" />
