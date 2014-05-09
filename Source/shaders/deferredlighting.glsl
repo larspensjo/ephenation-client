@@ -121,6 +121,12 @@ void main(void)
 	    float a = clamp(0.3+length(cameraToWorld)/50, 0, 1);
 	    if (skyPixel) a = 1;
 	    fragColor = mix(fragColor, vec3(0, 0.1, 0.5), a);
+	} else if (UBOBelowGround == 0 && UBORaining > 0.5) {
+		// The distance where there is only fog to see
+		float maxDistance = mix(50, UBOViewingDistance, (1-UBORaining)*2); // Range from 50
+		//		Raining, add fog of distance
+		float a = clamp(length(cameraToWorld)/maxDistance, 0, 1);
+		fragColor = mix(fragColor, vec3(0.5, 0.5, 0.5), a);
 	}
 	if (Udead) {
 		//		Player is dead, draw everything in black and white.
