@@ -361,6 +361,12 @@ std::unique_ptr<RenderTarget> RenderControl::Draw(bool underWater, const Model::
 	return current;
 }
 
+void RenderControl::SetSingleTarget(RenderTarget *target) {
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fboName);
+	DrawBuffers(ColAttachRenderTarget);
+	target->FramebufferTexture2D(ColAttachRenderTarget);
+}
+
 void RenderControl::DrawStationaryEffects(bool showMap, int mapWidth, bool stereoView, bool showInvent, MainUserInterface *ui, float renderViewAngle) {
 	if (showMap)
 		drawMap(mapWidth, stereoView);

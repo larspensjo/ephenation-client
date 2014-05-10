@@ -937,21 +937,30 @@ void gameDialog::DrawScreen(bool hideGUI) {
 	glm::mat4 saveView = gViewMatrix;
 	if (fGuiMode == GuiMode::Inventory)
 		hideGUI = true;
-	if (fStereoView) {
-		this->UpdateProjection(Controller::gameDialog::ViewType::left);
-		auto rt = this->render();
-		this->postRender(std::move(rt), hideGUI, int(slAverageFps));
-
-		gViewMatrix = saveView;
-		this->UpdateProjection(Controller::gameDialog::ViewType::right);
-		rt = this->render();
-		this->postRender(std::move(rt), hideGUI, int(slAverageFps));
-	} else {
 		if (fGuiMode == GuiMode::Map && !gDebugOpenGL)
 			hideGUI = true;
-		this->UpdateProjection(Controller::gameDialog::ViewType::single);
+	if (fStereoView) {
+		this->UpdateProjection(ViewType::left);
+		auto left = this->render();
+
+		gViewMatrix = saveView;
+		this->UpdateProjection(ViewType::right);
+		auto right = this->render();
+
+		this->postRender(hideGUI, int(slAverageFps));
+		fRenderControl.drawFullScreenPixmap(right->GetTexture(), fStereoView);
+		right.release(); // Force early release, as it is an expensive resource
+
+		gViewMatrix = saveView;
+		this->UpdateProjection(ViewType::left);
+		(void)fRenderControl.SetSingleTarget(left.get());
+		this->postRender(hideGUI, int(slAverageFps));
+		fRenderControl.drawFullScreenPixmap(left->GetTexture(), fStereoView);
+	} else {
+		this->UpdateProjection(ViewType::single);
 		auto rt = this->render();
-		this->postRender(std::move(rt), hideGUI, int(slAverageFps));
+		this->postRender(hideGUI, int(slAverageFps));
+		fRenderControl.drawFullScreenPixmap(rt->GetTexture(), fStereoView);
 	}
 	glfwSwapBuffers();
 	gViewMatrix = saveView;
@@ -981,7 +990,7 @@ std::unique_ptr<View::RenderTarget> gameDialog::render() {
 	return fRenderControl.Draw(fUnderWater, fSelectedObject.get(), fStereoView);
 }
 
-void gameDialog::postRender(std::unique_ptr<View::RenderTarget> source, bool hideGUI, int fps) {
+void gameDialog::postRender(bool hideGUI, int fps) {
 	fRenderControl.DrawStationaryEffects(
 		fGuiMode == GuiMode::Map && !gDebugOpenGL,
 		fMapWidth,
@@ -990,8 +999,6 @@ void gameDialog::postRender(std::unique_ptr<View::RenderTarget> source, bool hid
 		(hideGUI && fCurrentRocketContextInput == 0) ? 0 : &fMainUserInterface,
 		fRenderViewAngle
 	);
-
-	fRenderControl.drawFullScreenPixmap(source->GetTexture(), fStereoView);
 
 	//=========================================================================
 	// Various effects drawn after the deferred shader
@@ -1533,7 +1540,8 @@ void gameDialog::SaveScreen() {
     // unsigned char pixels[ 4 * w * h*2];
     std::unique_ptr<unsigned char[]> pixels(new unsigned char[3*w*h]);
     auto rt = this->render();
-    this->postRender(std::move(rt), true, 0);
+	this->postRender(true, 0);
+	fRenderControl.drawFullScreenPixmap(rt->GetTexture(), fStereoView);
 
     glReadPixels(0, 0, w, h, GL_BGR, GL_UNSIGNED_BYTE, pixels.get());
 

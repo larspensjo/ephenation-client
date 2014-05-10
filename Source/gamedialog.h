@@ -72,7 +72,7 @@ public:
 
 	/// Apply post render effects
 	/// @param source The render target to add the effects to
-	void postRender(std::unique_ptr<View::RenderTarget> source, bool hideGUI, int fps);
+	void postRender(bool hideGUI, int fps);
 	void init(bool useOvr);
 	~gameDialog();
 	void handleMouse(int button, int action);

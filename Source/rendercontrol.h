@@ -75,6 +75,9 @@ public:
 	/// @return The texture target of the drawing
 	std::unique_ptr<RenderTarget> Draw(bool underWater, const Model::Object *selectedObject, bool stereoView);
 
+	/// Setup a single rendertarget for the FBO.
+	void SetSingleTarget(RenderTarget *target);
+
 	/// Add constant things, like UI, maps and other overlays.
 	/// It is things that stays at the same position in the screen. Use the currently bound FBO and render targets.
 	/// @param current Use this as the current render target
