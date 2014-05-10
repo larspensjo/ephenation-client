@@ -949,7 +949,7 @@ void gameDialog::DrawScreen(bool hideGUI) {
 
 		this->postRender(hideGUI, int(slAverageFps));
 		fRenderControl.drawFullScreenPixmap(right->GetTexture(), fStereoView);
-		right.release(); // Force early release, as it is an expensive resource
+		right.reset(); // Force early release, as it is an expensive resource
 
 		gViewMatrix = saveView;
 		this->UpdateProjection(ViewType::left);
