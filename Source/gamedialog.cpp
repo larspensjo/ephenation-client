@@ -940,6 +940,11 @@ void gameDialog::DrawScreen(bool hideGUI) {
 		if (fGuiMode == GuiMode::Map && !gDebugOpenGL)
 			hideGUI = true;
 	if (fStereoView) {
+		View::gHudTransformation.Update();
+		float yawPitchRoll[3] = { 0.0f, 0.0f, 0.0f };
+		OculusRift::sfOvr.GetYawPitchRoll(yawPitchRoll);
+		float yaw = yawPitchRoll[0], pitch = yawPitchRoll[1];
+
 		this->UpdateProjection(ViewType::left);
 		auto left = this->render();
 
@@ -947,14 +952,20 @@ void gameDialog::DrawScreen(bool hideGUI) {
 		this->UpdateProjection(ViewType::right);
 		auto right = this->render();
 
+		OculusRift::sfOvr.GetYawPitchRoll(yawPitchRoll);
+		float deltaYaw = (yaw - yawPitchRoll[0]) /fRenderViewAngle * gViewport[2];
+		float deltaPitch = (pitch - yawPitchRoll[1]) / fRenderViewAngle / fAspectRatio * gViewport[3];
+
 		this->postRender(hideGUI, int(slAverageFps));
+		right = fRenderControl.MovePixels(std::move(right), -deltaYaw, deltaPitch);
 		fRenderControl.drawFullScreenPixmap(right->GetTexture(), fStereoView);
 		right.reset(); // Force early release, as it is an expensive resource
 
 		gViewMatrix = saveView;
 		this->UpdateProjection(ViewType::left);
-		(void)fRenderControl.SetSingleTarget(left.get());
+		fRenderControl.SetSingleTarget(left.get());
 		this->postRender(hideGUI, int(slAverageFps));
+		left = fRenderControl.MovePixels(std::move(left), -deltaYaw, deltaPitch);
 		fRenderControl.drawFullScreenPixmap(left->GetTexture(), fStereoView);
 	} else {
 		this->UpdateProjection(ViewType::single);
@@ -1338,16 +1349,16 @@ void gameDialog::UpdateProjection(ViewType v) {
 	}
 	glViewport(xOffset, 0, width, fScreenHeight);
 	gViewport = glm::vec4((float)xOffset, 0.0f, (float)width, (float)fScreenHeight );
-	float aspectRatio = (float)width / (float)fScreenHeight;
+	fAspectRatio = (float)width / (float)fScreenHeight;
 	// In full screen mode, the window is stretched to match the desktop mode.
 	if (gOptions.fFullScreen) {
-		aspectRatio = gDesktopAspectRatio;
+		fAspectRatio = gDesktopAspectRatio;
 		if (v == ViewType::left || v == ViewType::right)
-			aspectRatio /= 2;
+			fAspectRatio /= 2;
 	}
 	float nearCutoff = 0.01f;
 	gUniformBuffer.SetFrustum(nearCutoff, maxRenderDistance);
-	gProjectionMatrix  = glm::perspective(fRenderViewAngle, aspectRatio, nearCutoff, maxRenderDistance);  // Create our perspective projection matrix
+	gProjectionMatrix  = glm::perspective(fRenderViewAngle, fAspectRatio, nearCutoff, maxRenderDistance);  // Create our perspective projection matrix
 	switch(v) {
 	case ViewType::left:
 	case ViewType::right: {
@@ -1370,8 +1381,6 @@ void gameDialog::UpdateProjection(ViewType v) {
 		Options::sfSave.fWindowWidth = fScreenWidth; // This will override any option dialog changes.
 		Options::sfSave.fWindowHeight = fScreenHeight;
 	}
-	if (fStereoView)
-		View::gHudTransformation.Update();
 	TemporalReprojection::sgTemporalReprojection.Poll("3");
 }
 

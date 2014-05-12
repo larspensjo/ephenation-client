@@ -111,6 +111,12 @@ public:
 	/// Get the pointer screen coordinate (if there is one)
 	void GetVirtualPointer(int *x, int *y) const  { *x = fPointerX+0.5f; *y = fPointerY+0.5f; }
 
+	/// Move a picture a number of pixels.
+	/// @param source The current render target
+	/// @param x,y The number of pixels
+	/// @return A new texture, also set as default target for next operation.
+	std::unique_ptr<RenderTarget> MovePixels(std::unique_ptr<RenderTarget> source, float x, float y);
+
 	/// Copy the final texture to the screen
 	void drawFullScreenPixmap(GLuint id, bool stereoView) const;
 

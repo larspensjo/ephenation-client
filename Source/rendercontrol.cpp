@@ -799,6 +799,20 @@ void RenderControl::drawMousePointer() {
 	}
 }
 
+std::unique_ptr<RenderTarget> RenderControl::MovePixels(std::unique_ptr<RenderTarget> source, float x, float y) {
+	std::unique_ptr<RenderTarget> dest(new RenderTarget);
+	SetSingleTarget(dest.get());
+	glm::mat4 model(1);
+	model = glm::scale(model, glm::vec3(2.0f, 2.0f, 1.0f));
+	model = glm::translate(model, glm::vec3(2.0f * x / gViewport[2] - 0.5, 2.0f * y / gViewport[3] - 0.5f, 0.0f));
+	glBindTexture(GL_TEXTURE_2D, source->GetTexture());
+	glDepthMask(GL_FALSE);
+	glDisable(GL_DEPTH_TEST);
+	DrawTexture::Make()->Draw(glm::mat4(1), model, 1.0f);
+	glDepthMask(GL_TRUE);
+	return dest;
+}
+
 void RenderControl::drawFullScreenPixmap(GLuint id, bool stereoView) const {
 	static TimeMeasure tm("Screen");
 	tm.Start();
