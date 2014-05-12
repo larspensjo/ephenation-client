@@ -338,7 +338,7 @@
 			<envvars />
 			<debugger>
 				<remote_debugging target="Debug">
-					<options conn_type="0" serial_baud="115200" additional_cmds_before="set args --debug" />
+					<options conn_type="0" serial_baud="115200" additional_cmds_before="set args --debug --ovr --windowed" />
 				</remote_debugging>
 			</debugger>
 			<DoxyBlocks>
