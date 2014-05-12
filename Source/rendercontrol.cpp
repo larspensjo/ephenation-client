@@ -988,7 +988,7 @@ void RenderControl::drawOpaqueParticles(void) {
 	shader->Configure(1000.0f, 20.0f, 10.0f);
 	int rainVolume = 0;
 	if (rain > 0.5f)
-		rainVolume = 4000 * (rain - 0.5) * 2.0f;
+		rainVolume = 40000 * (rain - 0.5) * 2.0f;
 	if (Model::gPlayer.BelowGround())
 		rainVolume = 0;
 	gQuadStage1.DrawSingleSideInstances(rainVolume);
