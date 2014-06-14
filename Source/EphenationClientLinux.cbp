@@ -64,6 +64,8 @@
 			<Add library="udev" />
 			<Add library="Xinerama" />
 		</Linker>
+		<Unit filename="Atmosphere.cpp" />
+		<Unit filename="Atmosphere.h" />
 		<Unit filename="BuildingBlocks.cpp" />
 		<Unit filename="BuildingBlocks.h" />
 		<Unit filename="ChunkBlocks.cpp" />
