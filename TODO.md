@@ -49,6 +49,7 @@ Refactoring
 * The transformation of a chunk into printable data should be managed by a Streaming class
 * glsw should be moved to a separate github repository, and included as a submodule
 * Remove glfw 2.7.9 shared library from debian installer, as soon as it is standard in Ubuntu.
+* Glm should be used with radians instead of degrees. This would get rid of lot of warnings.
 
 Installation
 ------------
