@@ -21,7 +21,7 @@
 #include <vector>
 #include <map>
 #include <memory>
-#include <glm/glm.hpp>
+#include <glm/fwd.hpp>
 
 #include "OpenglBuffer.h"
 

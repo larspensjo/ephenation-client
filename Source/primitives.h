@@ -1,4 +1,4 @@
-// Copyright 2012-2013 The Ephenation Authors
+// Copyright 2012-2014 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -24,6 +24,7 @@
 #include <vector>
 #include <cstring>
 #include <glm/glm.hpp>
+#include <math.h>
 
 #include "assert.h"
 

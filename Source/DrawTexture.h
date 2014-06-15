@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include <glm/glm.hpp>
+#include <glm/fwd.hpp>
 
 #include "OpenglBuffer.h"
 

@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2014 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -24,7 +24,7 @@
 #include <vector>
 #include <memory>
 #include <string>
-#include <glm/glm.hpp>
+#include <glm/fwd.hpp>
 
 #include "manageanimation.h"
 
