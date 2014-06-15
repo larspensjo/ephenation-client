@@ -29,20 +29,19 @@ Atmosphere::Atmosphere()
 	//ctor
 }
 
-float Atmosphere::HeightParameterized(float h) const {
+static float HeightParameterized(float h) {
 	return std::sqrt(h);
 }
 
-float Atmosphere::ViewAngleParameterized(float cv, float h) const {
-	float r = R_Earth / H_Atm; // Normalize
-	float ch = - std::sqrt(h * (2 * r + h)) / (r + h); // The Angle between the horizon and zenith for the current height
+static float ViewAngleParameterized(float cv, float h) {
+	float ch = - std::sqrt(h * (2 * R_Earth + h)) / (R_Earth + h); // The Angle between the horizon and zenith for the current height
 	if (cv > ch)
 		return 0.5f * std::pow((cv-ch) / (1-ch), 0.2f) + 0.5f;
 	else
 		return 0.5f * std::pow((ch-cv) / (ch+1), 0x2f);
 }
 
-float Atmosphere::SunAngleParameterization(float cs) const {
+static float SunAngleParameterization(float cs) {
 	float tmp = std::tan(1.26f * 1.1f);
 	return 0.5f * std::atan(std::max(cs, -0.1975f) * tmp) / 1.1f + (1-0.26f);
 }
@@ -54,11 +53,11 @@ static const float MieExtinctionCoefficient = MieScatterCoefficient / 0.9f;
 static const glm::vec3 RayleighScatterCoefficient(6.55e-6, 1.73e-5, 2.30e-5);
 
 static float getDensityRayleigh(float h) {
-	return std::exp(-h / (8000 / H_Atm));
+	return std::exp(-h / 8000);
 }
 
 static float getDensityMie(float h) {
-	return std::exp(-h / (1200 / H_Atm));
+	return std::exp(-h / 1200);
 }
 
 glm::vec3 Atmosphere::Transmittance(glm::vec3 pa, glm::vec3 pb) const {
@@ -68,9 +67,8 @@ glm::vec3 Atmosphere::Transmittance(glm::vec3 pa, glm::vec3 pb) const {
 	float previousDensityMie = 0.0f, previousDensityReyleigh = 0.0f;
 	for (int step=0; step < INTEGRATION_STEPS; ++step) {
 		glm::vec3 s = pa + step * stepSize * dir;
-		float h = s.y / H_Atm; // Normalized
-		float currentDensityMie = getDensityMie(h);
-		float currentDensityRayleigh = getDensityRayleigh(h);
+		float currentDensityMie = getDensityMie(s.y);
+		float currentDensityRayleigh = getDensityRayleigh(s.y);
 		totalDensityMie += (currentDensityMie + previousDensityMie) / 2 * stepSize;
 		totalDensityRayleigh += (currentDensityRayleigh + previousDensityReyleigh) / 2 * stepSize;
 		previousDensityMie = currentDensityMie;

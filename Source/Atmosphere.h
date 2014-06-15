@@ -29,9 +29,6 @@ private:
 	enum { NHEIGHT=32, NVIEW_ANGLE=64, NSUN_ANGLE=32};
 	glm::vec3 fScattering[NHEIGHT][NVIEW_ANGLE][NSUN_ANGLE];
 
-	float HeightParameterized(float h) const;
-	float ViewAngleParameterized(float cv, float h) const;
-	float SunAngleParameterization(float cs) const;
 
 	glm::vec3 Transmittance(glm::vec3 pa, glm::vec3 pb) const;
 };
