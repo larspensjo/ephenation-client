@@ -559,7 +559,7 @@ void ManageAnimation::DrawAnimation(AnimationShader *shader, const glm::mat4 &mo
 	// Find the time interval from this key frame to next
 	double keyFrameLength = fAnimations[a].times[keyNext] - fAnimations[a].times[key];
 	// 'w' is a value between 0 and 1, Depending on the distance between previous key frame and next.
-	double w = 1.0;
+	float w = 1.0;
 	if (keyFrameLength > 0)
 		w = keyFrameOffset / keyFrameLength;
 	shader->Model(rot);
