@@ -17,12 +17,16 @@
 
 #include <cmath>
 #include <algorithm>
+#include <glm/gtx/intersect.hpp>
+#include <glm/gtc/constants.hpp>
+#include <glm/gtx/rotate_vector.hpp>
 
 #include "Atmosphere.h"
 #include "Debug.h"
 
 static const float H_Atm = 80000.0f;
 static const float R_Earth = 6371*1000;
+static const glm::vec3 sunRGB(192.0f/255.0f,191.0f/255.0f,173.0f/255.0f); // As taken from http://forums.cgarchitect.com/8108-rgb-colour-sun.html#post242155
 
 Atmosphere::Atmosphere()
 {
@@ -77,6 +81,35 @@ glm::vec3 Atmosphere::Transmittance(glm::vec3 pa, glm::vec3 pb) const {
 	return glm::exp(-(totalDensityRayleigh * RayleighScatterCoefficient + totalDensityMie * MieExtinctionCoefficient));
 }
 
+void Atmosphere::SingleScattering(glm::vec3 pa, glm::vec3 v, glm::vec3 &mie, glm::vec3 &rayleigh) const {
+	// Compute the intersection
+	const glm::vec3 planeOrig(0, H_Atm, 0);
+	const glm::vec3 planeNormal(0, -1.0f, 0);
+	// TODO: Sun direction shall not be a constant
+	const glm::vec3 sunDir(-0.577350269f, 0.577350269f, 0.577350269f); // Copied from sundir in common.glsl.
+	float intersectionDistance;
+	glm::intersectRayPlane(pa, -v, planeOrig, planeNormal, intersectionDistance);
+	float stepSize = intersectionDistance / INTEGRATION_STEPS;
+	glm::vec3 totalInscatteringMie(0,0,0), totalInscatteringRayleigh(0,0,0), previousInscatteringMie(0,0,0), previousInscatteringRayleigh(0,0,0);
+	for (int step=0; step < INTEGRATION_STEPS; ++step) {
+		const glm::vec3 p = pa + stepSize * (step+0.5f) * (-v);
+		glm::vec3 transmittance = Transmittance(pa, p);
+		glm::intersectRayPlane(p, sunDir, planeOrig, planeNormal, intersectionDistance);
+		const glm::vec3 pc = p + sunDir * intersectionDistance;
+		transmittance *= Transmittance(p, pc);
+		glm::vec3 currentInscatteringMie = getDensityMie(p.y) * transmittance;
+		glm::vec3 currentInscatteringRayleigh = getDensityRayleigh(p.y) * transmittance;
+		totalInscatteringMie += (currentInscatteringMie + previousInscatteringMie)/2.0f * stepSize;
+		totalInscatteringRayleigh += (currentInscatteringRayleigh + previousInscatteringRayleigh)/2.0f * stepSize;
+		previousInscatteringMie = currentInscatteringMie;
+		previousInscatteringRayleigh = currentInscatteringRayleigh;
+	}
+	totalInscatteringMie *= MieScatterCoefficient / (4.0f * glm::pi<float>()) * sunRGB;
+	totalInscatteringRayleigh *= RayleighScatterCoefficient / (4.0f * glm::pi<float>()) * sunRGB;
+	mie = totalInscatteringMie;
+	rayleigh = totalInscatteringRayleigh;
+}
+
 void Atmosphere::Debug() {
 	glm::vec3 pa(0,0,0);
 	glm::vec3 pb(1000, 0, 0);
@@ -91,5 +124,15 @@ void Atmosphere::Debug() {
 		glm::vec3 transm = Transmittance(pa, pb);
 		LPLOG("Transmittance height %.0fm: %f, %f, %f", pb.y, transm.r, transm.g, transm.b);
 		pb.y /= 10.0f;
+	}
+
+	glm::vec3 v(0,-1,0);
+	for (int i=0; i<8; i++) {
+		glm::vec3 mie, rayleigh;
+		SingleScattering(pa, v, mie, rayleigh);
+		LPLOG("Single scattering dir (%f, %f, %f)", v.x, v.y, v.z);
+		LPLOG("Mie      (%f, %f, %f)", mie.r, mie.g, mie.b);
+		LPLOG("Rayleigh (%f, %f, %f)", rayleigh.r, rayleigh.g, rayleigh.b);
+		v = glm::rotateX(v, 90.0f/8.0f);
 	}
 }
