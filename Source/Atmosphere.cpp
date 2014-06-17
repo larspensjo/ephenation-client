@@ -36,7 +36,11 @@ Atmosphere::Atmosphere()
 }
 
 static float HeightParameterized(float h) {
-	return std::sqrt(h);
+	return std::sqrt(h / H_Atm);
+}
+
+static float HeightParameterizedInverse(float uh) {
+	return uh*uh*H_Atm;
 }
 
 static float ViewAngleParameterized(float cv, float h) {
@@ -47,9 +51,21 @@ static float ViewAngleParameterized(float cv, float h) {
 		return 0.5f * std::pow((ch-cv) / (ch+1), 0x2f);
 }
 
+static float ViewAngleParameterizedInverse(float uv, float h) {
+	float ch = - std::sqrt(h * (2 * R_Earth + h)) / (R_Earth + h); // The Angle between the horizon and zenith for the current height
+	if (uv > 0.5f)
+		return ch + std::pow(uv-0.5f, 5.0f) * (1.0f - ch);
+	else
+		return ch - std::pow(uv, 5.0f) * (1.0f + ch);
+}
+
 static float SunAngleParameterization(float cs) {
 	float tmp = std::tan(1.26f * 1.1f);
 	return 0.5f * std::atan(std::max(cs, -0.1975f) * tmp) / 1.1f + (1-0.26f);
+}
+
+static float SunAngleParameterizationInverse(float us) {
+	return std::tan((2*us - 1.0f + 0.26f) * 0.75f) / std::tan(1.26f * 0.75f);
 }
 
 static const int INTEGRATION_STEPS = 10;
