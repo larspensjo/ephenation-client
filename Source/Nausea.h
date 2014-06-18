@@ -23,9 +23,15 @@ class Nausea
 {
 public:
 	float FieldOfViewOffset() const;
+	float RollOffset() const;
+	float YawOffset() const;
+	float PitchOffset() const;
+	float HeightOffset() const;
 	static Nausea sgNausea;
 private:
+	bool fEnabled = true;
+	float fTimefactor = 0.1f;
+	float fScale = 1.0f;
 };
 
 }
-

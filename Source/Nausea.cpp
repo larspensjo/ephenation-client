@@ -24,5 +24,36 @@ using namespace View;
 Nausea Nausea::sgNausea;
 
 float Nausea::FieldOfViewOffset() const {
-	return snoise1(gCurrentFrameTime/2)*5;
+	if (fEnabled)
+		return snoise1(gCurrentFrameTime*fTimefactor)*5*fScale;
+	else
+		return 0;
+}
+
+float Nausea::RollOffset() const {
+	if (fEnabled)
+		return snoise1(gCurrentFrameTime*fTimefactor+1000)*50*fScale;
+	else
+		return 0;
+}
+
+float Nausea::YawOffset() const {
+	if (fEnabled)
+		return snoise1(gCurrentFrameTime*fTimefactor+2000)*50*fScale;
+	else
+		return 0;
+}
+
+float Nausea::PitchOffset() const {
+	if (fEnabled)
+		return snoise1(gCurrentFrameTime*fTimefactor+3000)*50*fScale;
+	else
+		return 0;
+}
+
+float Nausea::HeightOffset() const {
+	if (fEnabled)
+		return snoise1(gCurrentFrameTime*fTimefactor+4000)*fScale;
+	else
+		return 0;
 }
