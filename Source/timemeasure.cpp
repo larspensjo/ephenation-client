@@ -17,6 +17,7 @@
 
 #include <GL/glew.h>
 #include <string>
+#include <stdio.h>
 
 #include "timemeasure.h"
 

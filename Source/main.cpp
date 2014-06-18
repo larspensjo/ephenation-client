@@ -37,6 +37,7 @@
 #include <getopt.h>
 #include <glm/glm.hpp>
 #include <unistd.h>
+#include <cstdlib>
 
 #include "connection.h"
 #include "modes.h"
