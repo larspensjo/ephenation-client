@@ -73,6 +73,7 @@
 #include "Debug.h"
 #include "HudTransformation.h"
 #include "TemporalReprojection.h"
+#include "Nausea.h"
 
 using namespace Controller;
 using View::SoundControl;
@@ -1358,7 +1359,7 @@ void gameDialog::UpdateProjection(ViewType v) {
 	}
 	float nearCutoff = 0.01f;
 	gUniformBuffer.SetFrustum(nearCutoff, maxRenderDistance);
-	gProjectionMatrix  = glm::perspective(fRenderViewAngle, fAspectRatio, nearCutoff, maxRenderDistance);  // Create our perspective projection matrix
+	gProjectionMatrix  = glm::perspective(fRenderViewAngle + View::Nausea::sgNausea.FieldOfViewOffset(), fAspectRatio, nearCutoff, maxRenderDistance);  // Create our perspective projection matrix
 	switch(v) {
 	case ViewType::left:
 	case ViewType::right: {

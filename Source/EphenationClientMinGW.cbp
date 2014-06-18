@@ -123,6 +123,8 @@
 		<Unit filename="Makefile.mingw" />
 		<Unit filename="Map.cpp" />
 		<Unit filename="Map.h" />
+		<Unit filename="Nausea.cpp" />
+		<Unit filename="Nausea.h" />
 		<Unit filename="OculusRift.cpp" />
 		<Unit filename="OculusRift.h" />
 		<Unit filename="OpenglBuffer.cpp" />
