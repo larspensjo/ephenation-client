@@ -68,6 +68,7 @@
 #include "OculusRift.h"
 #include "Debug.h"
 #include "TemporalReprojection.h"
+#include "MainEventSignals.h"
 
 #ifndef GL_VERSION_3_2
 #define GL_CONTEXT_CORE_PROFILE_BIT       0x00000001
@@ -481,6 +482,7 @@ int main(int argc, char** argv) {
 			sTestUser = false; // Try this only once
 		}
 		static WorstTime tm(" Mainloop");
+		gPreFrameUpdate.emit();
 		tm.Start();
 		gCurrentFrameTime = glfwGetTime();
 		if (gShowPing && gCurrentFrameTime - gLastPing > 5.0) {
@@ -545,3 +547,5 @@ int main(int argc, char** argv) {
 	Options::sfSave.Save();
 	return 0;
 }
+
+Simple::Signal<void ()> gPreFrameUpdate;
