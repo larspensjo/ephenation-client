@@ -905,9 +905,9 @@ void RenderControl::UpdateCameraPosition(int wheelDelta, bool stereoView, float 
 
 	gViewMatrix = glm::mat4(1.0f);
 	if (stereoView) {
-		gViewMatrix = glm::rotate(gViewMatrix, roll + View::Nausea::sgNausea.RollOffset(), glm::vec3(0.0f, 0.0f, -1.0f));
-		gViewMatrix = glm::rotate(gViewMatrix, pitch + View::Nausea::sgNausea.PitchOffset(), glm::vec3(-1.0f, 0.0f, 0.0f));
-		gViewMatrix = glm::rotate(gViewMatrix, yaw + View::Nausea::sgNausea.YawOffset(), glm::vec3(0.0f, -1.0f, 0.0f));
+		gViewMatrix = glm::rotate(gViewMatrix, roll, glm::vec3(0.0f, 0.0f, -1.0f));
+		gViewMatrix = glm::rotate(gViewMatrix, pitch, glm::vec3(-1.0f, 0.0f, 0.0f));
+		gViewMatrix = glm::rotate(gViewMatrix, yaw, glm::vec3(0.0f, -1.0f, 0.0f));
 	}
 	gViewMatrix = glm::translate(gViewMatrix, glm::vec3(0.0f, 0.0f, -fCameraDistance));
 	float vert = Model::gPlayer.fAngleVert;

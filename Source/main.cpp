@@ -69,6 +69,7 @@
 #include "Debug.h"
 #include "TemporalReprojection.h"
 #include "MainEventSignals.h"
+#include "Nausea.h"
 
 #ifndef GL_VERSION_3_2
 #define GL_CONTEXT_CORE_PROFILE_BIT       0x00000001
@@ -460,6 +461,7 @@ int main(int argc, char** argv) {
 	gLantern.Init(true);
 	gQuadStage1.Init();
 	gBillboard.Init();
+	View::Nausea::sgNausea.Init();
 
 	View::gSoundControl.RequestMusicMode(View::SoundControl::SMusicModeMenu);
 	glEnable(GL_DEPTH_TEST); // Always enabled by default
@@ -482,8 +484,8 @@ int main(int argc, char** argv) {
 			sTestUser = false; // Try this only once
 		}
 		static WorstTime tm(" Mainloop");
-		gPreFrameUpdate.emit();
 		tm.Start();
+		gPreFrameUpdate.emit();
 		gCurrentFrameTime = glfwGetTime();
 		if (gShowPing && gCurrentFrameTime - gLastPing > 5.0) {
 			// It was a request, so we need to send a response

@@ -23,6 +23,7 @@ using namespace std;
 
 #include "OculusRift.h"
 #include "Debug.h"
+#include "Nausea.h"
 
 extern string sgPopup, sgPopupTitle; // Ugly, sorry
 
@@ -134,9 +135,9 @@ void OculusRift::GetYawPitchRoll(float ret[3]) {
 
 	float yaw, pitch, roll;
 	quaternion.GetEulerAngles<Axis_Y, Axis_X, Axis_Z>(&yaw, &pitch, &roll);
-	ret[0] = RadToDegree(yaw);
-	ret[1] = RadToDegree(pitch);
-	ret[2] = RadToDegree(roll);
+	ret[0] = RadToDegree(yaw) + View::Nausea::sgNausea.YawOffset();
+	ret[1] = RadToDegree(pitch) + View::Nausea::sgNausea.PitchOffset();
+	ret[2] = RadToDegree(roll) + View::Nausea::sgNausea.RollOffset();
 }
 
 float OculusRift::GetFieldOfView() const {

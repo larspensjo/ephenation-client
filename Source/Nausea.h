@@ -22,6 +22,7 @@ namespace View {
 class Nausea
 {
 public:
+	void Init();
 	float FieldOfViewOffset() const;
 	float RollOffset() const;
 	float YawOffset() const;
@@ -29,9 +30,13 @@ public:
 	float HeightOffset() const;
 	static Nausea sgNausea;
 private:
+	float Noise(float offset) const;
+	void Update();
+
 	bool fEnabled = true;
 	float fTimefactor = 0.1f;
-	float fScale = 1.0f;
+	float fScale = 0.0f;
+	double fStartTimer = 0.0;
 };
 
 }

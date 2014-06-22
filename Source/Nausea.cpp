@@ -18,42 +18,59 @@
 #include "Nausea.h"
 #include "primitives.h"
 #include "simplexnoise1234.h"
+#include "MainEventSignals.h"
+#include "Debug.h"
 
 using namespace View;
 
 Nausea Nausea::sgNausea;
 
+void Nausea::Init() {
+	gPreFrameUpdate.connect(Simple::slot (&sgNausea, &Nausea::Update));
+	fStartTimer = gCurrentFrameTime;
+}
+
+void Nausea::Update() {
+	if (!fEnabled)
+		return;
+	fScale = (gCurrentFrameTime - fStartTimer) / 20;
+}
+
+float Nausea::Noise(float offset) const {
+	return snoise1(gCurrentFrameTime*fTimefactor + offset)*fScale;
+}
+
 float Nausea::FieldOfViewOffset() const {
 	if (fEnabled)
-		return snoise1(gCurrentFrameTime*fTimefactor)*5*fScale;
+		return Noise(0)*5;
 	else
 		return 0;
 }
 
 float Nausea::RollOffset() const {
 	if (fEnabled)
-		return snoise1(gCurrentFrameTime*fTimefactor+1000)*50*fScale;
+		return Noise(1232.12312)*50;
 	else
 		return 0;
 }
 
 float Nausea::YawOffset() const {
 	if (fEnabled)
-		return snoise1(gCurrentFrameTime*fTimefactor+2000)*50*fScale;
+		return Noise(93.12321)*50;
 	else
 		return 0;
 }
 
 float Nausea::PitchOffset() const {
 	if (fEnabled)
-		return snoise1(gCurrentFrameTime*fTimefactor+3000)*50*fScale;
+		return Noise(23123.12312)*50;
 	else
 		return 0;
 }
 
 float Nausea::HeightOffset() const {
 	if (fEnabled)
-		return snoise1(gCurrentFrameTime*fTimefactor+4000)*fScale;
+		return Noise(4201.23123);
 	else
 		return 0;
 }
