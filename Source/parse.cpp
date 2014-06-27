@@ -61,6 +61,7 @@ string gParseMessageAtLogin;
 Simple::Signal<void (float dmg, unsigned long id)> gMonsterHitByPlayerEvt;
 Simple::Signal<void (float dmg)> gPlayerHitByMonsterEvt;
 Simple::Signal<void (const char *msg)> gServerMessageEvt;
+Simple::Signal<void (const char *msg)> gServerSpecialMessageEvt;
 Simple::Signal<void (float hor, float vert)> gLoginEvt;
 
 using namespace Controller;
@@ -188,6 +189,10 @@ static void ServerMessage(const char *msg) {
 			return;
 		}
 		sgPopup = sgPopup + &msg[1] + "\n";
+		return;
+	}
+	if (msg[0] == '@') {
+		gServerSpecialMessageEvt.emit(msg+1);
 		return;
 	}
 	gServerMessageEvt.emit(msg);

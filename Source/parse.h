@@ -39,6 +39,11 @@ extern Simple::Signal<void (float dmg)> gPlayerHitByMonsterEvt;
 /// @param msg The string with the message
 extern Simple::Signal<void (const char *msg)> gServerMessageEvt;
 
+/// Event generated when there is a special text message from the server
+/// Special messages are prefixed by the character '@'.
+/// @param msg The string with the message, excluding '@'
+extern Simple::Signal<void (const char *msg)> gServerSpecialMessageEvt;
+
 /// Event generated when player is logged in
 /// @param hor The horisontal looking direction
 /// @param vert The vertical looking direction
