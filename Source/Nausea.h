@@ -32,8 +32,9 @@ public:
 private:
 	float Noise(float offset) const;
 	void Update();
+	void ServerSpecialMessage(const char *msg);
 
-	bool fEnabled = true;
+	bool fEnabled = false;
 	float fTimefactor = 0.1f;
 	float fScale = 0.0f;
 	double fStartTimer = 0.0;

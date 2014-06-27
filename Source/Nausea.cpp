@@ -20,6 +20,7 @@
 #include "simplexnoise1234.h"
 #include "MainEventSignals.h"
 #include "Debug.h"
+#include "parse.h"
 
 using namespace View;
 
@@ -27,7 +28,16 @@ Nausea Nausea::sgNausea;
 
 void Nausea::Init() {
 	gPreFrameUpdate.connect(Simple::slot (&sgNausea, &Nausea::Update));
+	gServerSpecialMessageEvt.connect(Simple::slot (&sgNausea, &Nausea::ServerSpecialMessage));
 	fStartTimer = gCurrentFrameTime;
+}
+
+void Nausea::ServerSpecialMessage(const char *msg) {
+	if (strcmp(msg, "NAUSEA") == 0) {
+		fEnabled = true;
+		fStartTimer = gCurrentFrameTime;
+		return;
+	}
 }
 
 void Nausea::Update() {
