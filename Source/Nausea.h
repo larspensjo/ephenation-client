@@ -28,6 +28,8 @@ public:
 	float YawOffset() const;
 	float PitchOffset() const;
 	float HeightOffset() const;
+	/// How much to decay signals. Default is 1.0, which will decay all
+	float Decay() const;
 	static Nausea sgNausea;
 private:
 	float Noise(float offset) const;

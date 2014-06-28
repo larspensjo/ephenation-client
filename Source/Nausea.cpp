@@ -15,6 +15,8 @@
 // along with Ephenation.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <cmath>
+
 #include "Nausea.h"
 #include "primitives.h"
 #include "simplexnoise1234.h"
@@ -48,6 +50,10 @@ void Nausea::Update() {
 
 float Nausea::Noise(float offset) const {
 	return snoise1(gCurrentFrameTime*fTimefactor + offset)*fScale;
+}
+
+float Nausea::Decay() const {
+	return std::exp(-fScale);
 }
 
 float Nausea::FieldOfViewOffset() const {

@@ -135,9 +135,22 @@ void OculusRift::GetYawPitchRoll(float ret[3]) {
 
 	float yaw, pitch, roll;
 	quaternion.GetEulerAngles<Axis_Y, Axis_X, Axis_Z>(&yaw, &pitch, &roll);
-	ret[0] = RadToDegree(yaw) + View::Nausea::sgNausea.YawOffset();
-	ret[1] = RadToDegree(pitch) + View::Nausea::sgNausea.PitchOffset();
-	ret[2] = RadToDegree(roll) + View::Nausea::sgNausea.RollOffset();
+	// TODO: This should be done elsewhere.
+	// Add an optional delay, for extra nauseous feeling.
+	// TODO: The decay should depend on the time.
+	static float sYaw, sPitch, sRoll;
+	static bool first = true;
+	if (first) {
+		sYaw = yaw; sPitch = pitch; sRoll = roll;
+		first = false;
+	}
+	float f = View::Nausea::sgNausea.Decay();
+	sYaw = f * yaw + (1-f) * sYaw;
+	sPitch = f * pitch + (1-f) * sPitch;
+	sRoll = f * roll + (1-f) * sRoll;
+	ret[0] = RadToDegree(sYaw) + View::Nausea::sgNausea.YawOffset();
+	ret[1] = RadToDegree(sPitch) + View::Nausea::sgNausea.PitchOffset();
+	ret[2] = RadToDegree(sRoll) + View::Nausea::sgNausea.RollOffset();
 }
 
 float OculusRift::GetFieldOfView() const {
