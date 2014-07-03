@@ -67,7 +67,6 @@
 #include "errormanager.h"
 #include "OculusRift.h"
 #include "Debug.h"
-#include "TemporalReprojection.h"
 
 #ifndef GL_VERSION_3_2
 #define GL_CONTEXT_CORE_PROFILE_BIT       0x00000001
@@ -498,9 +497,7 @@ int main(int argc, char** argv) {
 				ListenForServerMessages();
 		}
 
-		TemporalReprojection::sgTemporalReprojection.Reset();
 		Controller::gGameDialog.DrawScreen(sHideGUI);
-		TemporalReprojection::sgTemporalReprojection.Poll("After");
 
 		View::Chunk::DegradeBusyList_gl();
 
