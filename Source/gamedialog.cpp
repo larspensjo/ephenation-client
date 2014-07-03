@@ -934,24 +934,57 @@ void gameDialog::DrawScreen(bool hideGUI) {
 	glm::mat4 saveView = gViewMatrix;
 	if (fGuiMode == GuiMode::Inventory)
 		hideGUI = true;
-	if (fStereoView) {
-		this->UpdateProjection(Controller::gameDialog::ViewType::left);
-		this->render(hideGUI, int(slAverageFps));
-
-		gViewMatrix = saveView;
-		this->UpdateProjection(Controller::gameDialog::ViewType::right);
-		this->render(hideGUI, int(slAverageFps));
-	} else {
 		if (fGuiMode == GuiMode::Map && !gDebugOpenGL)
 			hideGUI = true;
-		this->UpdateProjection(Controller::gameDialog::ViewType::single);
-		this->render(hideGUI, int(slAverageFps));
+	if (fStereoView) {
+		View::gHudTransformation.Update();
+		float yawPitchRoll[3] = { 0.0f, 0.0f, 0.0f };
+		OculusRift::sfOvr.GetYawPitchRoll(yawPitchRoll);
+		float yaw = yawPitchRoll[0], pitch = yawPitchRoll[1];
+
+		this->UpdateProjection(ViewType::left);
+		auto left = this->render();
+
+		gViewMatrix = saveView;
+		this->UpdateProjection(ViewType::right);
+		auto right = this->render();
+
+		OculusRift::sfOvr.GetYawPitchRoll(yawPitchRoll);
+		float deltaYaw = (yaw - yawPitchRoll[0]) /fRenderViewAngle * gViewport[2];
+		float deltaPitch = (pitch - yawPitchRoll[1]) / fRenderViewAngle / fAspectRatio * gViewport[3];
+
+		this->postRender(hideGUI, int(slAverageFps));
+		right = fRenderControl.MovePixels(std::move(right), -deltaYaw, deltaPitch);
+		fRenderControl.drawFullScreenPixmap(right->GetTexture(), fStereoView);
+		right.reset(); // Force early release, as it is an expensive resource
+
+		gViewMatrix = saveView;
+		this->UpdateProjection(ViewType::left);
+		fRenderControl.SetSingleTarget(left.get());
+		this->postRender(hideGUI, int(slAverageFps));
+		left = fRenderControl.MovePixels(std::move(left), -deltaYaw, deltaPitch);
+		fRenderControl.drawFullScreenPixmap(left->GetTexture(), fStereoView);
+	} else {
+		this->UpdateProjection(ViewType::single);
+		auto rt = this->render();
+		this->postRender(hideGUI, int(slAverageFps));
+		fRenderControl.drawFullScreenPixmap(rt->GetTexture(), fStereoView);
 	}
 	glfwSwapBuffers();
 	gViewMatrix = saveView;
+
+	if (gDebugOpenGL) {
+		checkError("gameDialog::render debug", false);
+		static double prevPrint = 0.0;
+		if (gCurrentFrameTime > prevPrint + 5.0) {
+			WorstTime::Report();
+			TimeMeasure::Report();
+			prevPrint = gCurrentFrameTime;
+		}
+	}
 }
 
-void gameDialog::render(bool hideGUI, int fps) {
+std::unique_ptr<View::RenderTarget> gameDialog::render() {
 	static bool first = true; // Only true first time function is called
 	// Clear list of special effects. It will be added again automatically every frame
 	gShadows.Clear();
@@ -959,9 +992,21 @@ void gameDialog::render(bool hideGUI, int fps) {
 
 	if (first) {
 		gBillboard.InitializeTextures(fShader);
+		first = false;
 	}
 
-	fRenderControl.Draw(fUnderWater, fSelectedObject.get(), fGuiMode == GuiMode::Map && !gDebugOpenGL, fGuiMode == GuiMode::Inventory, fMapWidth, (hideGUI && fCurrentRocketContextInput == 0) ? 0 : &fMainUserInterface, fStereoView, fRenderViewAngle);
+	return fRenderControl.Draw(fUnderWater, fSelectedObject.get(), fStereoView);
+}
+
+void gameDialog::postRender(bool hideGUI, int fps) {
+	fRenderControl.DrawStationaryEffects(
+		fGuiMode == GuiMode::Map && !gDebugOpenGL,
+		fMapWidth,
+		fStereoView,
+		fGuiMode == GuiMode::Inventory,
+		(hideGUI && fCurrentRocketContextInput == 0) ? 0 : &fMainUserInterface,
+		fRenderViewAngle
+	);
 
 	//=========================================================================
 	// Various effects drawn after the deferred shader
@@ -1047,17 +1092,6 @@ void gameDialog::render(bool hideGUI, int fps) {
 
 		gScrollingMessages.Update();
 	}
-
-	if (gDebugOpenGL) {
-		checkError("gameDialog::render debug", false);
-		static double prevPrint = 0.0;
-		if (gCurrentFrameTime > prevPrint + 5.0) {
-			WorstTime::Report();
-			TimeMeasure::Report();
-			prevPrint = gCurrentFrameTime;
-		}
-	}
-	first = false;
 }
 
 // Catch the window close request by the player.
@@ -1312,16 +1346,16 @@ void gameDialog::UpdateProjection(ViewType v) {
 	}
 	glViewport(xOffset, 0, width, fScreenHeight);
 	gViewport = glm::vec4((float)xOffset, 0.0f, (float)width, (float)fScreenHeight );
-	float aspectRatio = (float)width / (float)fScreenHeight;
+	fAspectRatio = (float)width / (float)fScreenHeight;
 	// In full screen mode, the window is stretched to match the desktop mode.
 	if (gOptions.fFullScreen) {
-		aspectRatio = gDesktopAspectRatio;
+		fAspectRatio = gDesktopAspectRatio;
 		if (v == ViewType::left || v == ViewType::right)
-			aspectRatio /= 2;
+			fAspectRatio /= 2;
 	}
 	float nearCutoff = 0.01f;
 	gUniformBuffer.SetFrustum(nearCutoff, maxRenderDistance);
-	gProjectionMatrix  = glm::perspective(fRenderViewAngle, aspectRatio, nearCutoff, maxRenderDistance);  // Create our perspective projection matrix
+	gProjectionMatrix  = glm::perspective(fRenderViewAngle, fAspectRatio, nearCutoff, maxRenderDistance);  // Create our perspective projection matrix
 	switch(v) {
 	case ViewType::left:
 	case ViewType::right: {
@@ -1344,8 +1378,6 @@ void gameDialog::UpdateProjection(ViewType v) {
 		Options::sfSave.fWindowWidth = fScreenWidth; // This will override any option dialog changes.
 		Options::sfSave.fWindowHeight = fScreenHeight;
 	}
-	if (fStereoView)
-		View::gHudTransformation.Update();
 }
 
 void gameDialog::SetMessage(const char *str) {
@@ -1512,7 +1544,9 @@ void gameDialog::SaveScreen() {
     // Make the BYTE array, factor of 3 because it's RBG.
     // unsigned char pixels[ 4 * w * h*2];
     std::unique_ptr<unsigned char[]> pixels(new unsigned char[3*w*h]);
-    this->render(true, 0);
+    auto rt = this->render();
+	this->postRender(true, 0);
+	fRenderControl.drawFullScreenPixmap(rt->GetTexture(), fStereoView);
 
     glReadPixels(0, 0, w, h, GL_BGR, GL_UNSIGNED_BYTE, pixels.get());
 

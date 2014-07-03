@@ -24,25 +24,34 @@ namespace View {
 
 /// Manage render targets
 ///
-/// These objects can only be created dynamically after an OpenGL context is available.
+/// These objects can only be created dynamically after an OpenGL context is available. There
+/// is a pool of all available render targets, which is not  normally deallocated.
 class RenderTarget
 {
 public:
 	RenderTarget();
 	~RenderTarget();
 
-	static void Resize(GLsizei width, GLsizei height);
-
 	/// Setup this texture as a render target.
 	/// There must be a FBO bound before calling this function.
 	void FramebufferTexture2D(GLenum attachment);
 
+	/// Get the texture id.
 	GLuint GetTexture() const { return fRendertarget; }
 private:
-	static void ReleaseAll();
     RenderTarget(const RenderTarget&) = delete; // No support for copying the object
 
 	GLuint fRendertarget = 0; // The texture
+
+public:
+	/// Resize all render targets in the pool.
+	/// For now, it can only be done when none of them are allocated.
+	static void Resize(GLsizei width, GLsizei height);
+
+private:
+	/// Release all render targets in the free list
+	static void ReleaseAll();
+
 	static GLsizei fWidth, fHeight; // All targets have to have the same size (for now)
 	static std::vector<GLuint> fFreeTextures;
 	static int fNumAllocated;

@@ -24,6 +24,7 @@
 #include "rendercontrol.h"
 #include "chunk.h"
 #include "UndoOp.h"
+#include "RenderTarget.h"
 
 namespace View {
 	class Chunk;
@@ -66,7 +67,12 @@ public:
 	void DrawScreen(bool hideGUI);
 	/// Render many things.
 	/// @todo Nothing should be rendered from here, it should all go into the View of the MVC.
-	void render(bool hideGUI, int fps);
+	/// @return The resulting render target
+	std::unique_ptr<View::RenderTarget> render();
+
+	/// Apply post render effects
+	/// @param source The render target to add the effects to
+	void postRender(bool hideGUI, int fps);
 	void init(bool useOvr);
 	~gameDialog();
 	void handleMouse(int button, int action);
@@ -162,6 +168,7 @@ private:
 	int fMapWidth;
 	float fDefaultRenderViewAngle = 60.0f;
 	float fRenderViewAngle = fDefaultRenderViewAngle;
+	float fAspectRatio = 1.0f;
 
 	/// Draw the player weapon
 	/// @todo Should go int the View of the MVC.
