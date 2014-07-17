@@ -133,7 +133,7 @@ gameDialog::~gameDialog() {
 // data about it to the pointers.
 View::Chunk *gameDialog::FindSelectedSurface(int x, int y, ChunkOffsetCoord *coc, int *surfaceDir) {
 	if (fStereoView) {
-		this->SetViewport(0, 0, fScreenWidth/2, fScreenHeight);
+		this->SetViewport(0, fScreenWidth/2, fScreenHeight);
 		this->UpdateProjection(ViewType::left);
 	}
 	gChunkShaderPicking.EnableProgram();
@@ -432,7 +432,7 @@ void gameDialog::handleMouse(int button, int action) {
 		if (fStereoView) {
 			// Get the mouse pointer that we draw on the left screen
 			fRenderControl.GetVirtualPointer(&x, &y);
-			this->SetViewport(0, 0, fScreenWidth/2, fScreenHeight);
+			this->SetViewport(0, fScreenWidth/2, fScreenHeight);
 			this->UpdateProjection(ViewType::left); // Would get right side otherwise
 		} else {
 			// Get the mouse pointer as reported by the system
@@ -923,19 +923,18 @@ glm::mat4 gViewMatrix; // Store the view matrix
 
 void gameDialog::DisplayReprojection(float yaw, float pitch, View::RenderTarget &rightOriginal, View::RenderTarget &leftOriginal) {
 	float yawPitchRoll[3] = { 0.0f, 0.0f, 0.0f };
-
 	OculusRift::sfOvr.GetYawPitchRoll(yawPitchRoll);
 	float deltaYaw = (yaw - yawPitchRoll[0]) / fRenderViewAngle * gViewport[2];
 	float deltaPitch = (pitch - yawPitchRoll[1]) / fRenderViewAngle / fAspectRatio * gViewport[3];
 
-	this->SetViewport(0, 0, fScreenWidth/2, fScreenHeight);
-	auto rightCorrection = fRenderControl.MovePixels(rightOriginal.GetTexture(), -deltaYaw, deltaPitch);
-	this->SetViewport(fScreenWidth/2, 0, fScreenWidth/2, fScreenHeight);
-	fRenderControl.drawFullScreenPixmap(rightCorrection->GetTexture(), fStereoView);
+	this->SetViewport(0, fScreenWidth/2, fScreenHeight);
+	auto correction = fRenderControl.MovePixels(rightOriginal.GetTexture(), -deltaYaw, deltaPitch);
+	this->SetViewport(fScreenWidth/2, fScreenWidth/2, fScreenHeight);
+	fRenderControl.drawFullScreenPixmap(correction->GetTexture(), fStereoView);
 
-	this->SetViewport(0, 0, fScreenWidth/2, fScreenHeight);
-	auto leftCorrection = fRenderControl.MovePixels(leftOriginal.GetTexture(), -deltaYaw, deltaPitch);
-	fRenderControl.drawFullScreenPixmap(leftCorrection->GetTexture(), fStereoView);
+	this->SetViewport(0, fScreenWidth/2, fScreenHeight);
+	correction = fRenderControl.MovePixels(leftOriginal.GetTexture(), -deltaYaw, deltaPitch);
+	fRenderControl.drawFullScreenPixmap(correction->GetTexture(), fStereoView);
 
 	glfwSwapBuffers();
 	static double delta = 0.0;
@@ -966,13 +965,13 @@ void gameDialog::DrawScreen(bool hideGUI) {
 		OculusRift::sfOvr.GetYawPitchRoll(yawPitchRoll);
 		float yaw = yawPitchRoll[0], pitch = yawPitchRoll[1];
 
-		this->SetViewport(0, 0, fScreenWidth/2, fScreenHeight);
+		this->SetViewport(0, fScreenWidth/2, fScreenHeight);
 		this->UpdateProjection(ViewType::left);
 		auto leftOriginal = this->render();
 		this->postRender(hideGUI, int(slAverageFps));
 
 		gViewMatrix = saveView;
-		this->SetViewport(fScreenWidth/2, 0, fScreenWidth/2, fScreenHeight);
+		this->SetViewport(fScreenWidth/2, fScreenWidth/2, fScreenHeight);
 		this->UpdateProjection(ViewType::right);
 		auto rightOriginal = this->render();
 		this->postRender(hideGUI, int(slAverageFps));
@@ -987,7 +986,7 @@ void gameDialog::DrawScreen(bool hideGUI) {
 	} else {
 		if (!Model::gPlayer.BelowGround())
 			fRenderControl.ComputeShadowMap();
-		this->SetViewport(0, 0, fScreenWidth, fScreenHeight);
+		this->SetViewport(0, fScreenWidth, fScreenHeight);
 		this->UpdateProjection(ViewType::single);
 		auto rt = this->render();
 		this->postRender(hideGUI, int(slAverageFps));

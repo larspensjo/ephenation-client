@@ -124,9 +124,11 @@ private:
 	/// Compute the projection matrix.
 	enum class ViewType { left, right, single };
 	void UpdateProjection(ViewType v);
-	void SetViewport(float x, float y, float w, float h) {
-		glViewport(x, y, w, h);
-		gViewport = glm::vec4(x, y, w, h);
+
+	/// For now, the y offset is always 0.
+	void SetViewport(float x, float w, float h) {
+		glViewport(x, 0, w, h);
+		gViewport = glm::vec4(x, 0, w, h);
 	}
 
 	Effect fCurrentEffect;
