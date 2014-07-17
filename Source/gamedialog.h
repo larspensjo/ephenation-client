@@ -31,6 +31,7 @@ namespace View {
 	class RenderControl;
 	class HealthBar;
     class BuildingBlocks;
+	class RenderTarget;
 }
 
 namespace Model {
@@ -65,6 +66,8 @@ public:
 	/// Called every frame
 	/// @param hideGUI Hide all GUI, for use when taking pictures, etc.
 	void DrawScreen(bool hideGUI);
+	void DisplayReprojection(float yaw, float pitch, View::RenderTarget &rightOriginal, View::RenderTarget &leftOriginal, const glm::mat4 &saveView);
+
 	/// Render many things.
 	/// @todo Nothing should be rendered from here, it should all go into the View of the MVC.
 	/// @return The resulting render target
@@ -115,6 +118,10 @@ private:
 	/// Compute the projection matrix.
 	enum class ViewType { left, right, single };
 	void UpdateProjection(ViewType v);
+	void SetViewport(float x, float y, float w, float h) {
+		glViewport(x, y, w, h);
+		gViewport = glm::vec4(x, y, w, h);
+	}
 
 	Effect fCurrentEffect;
 	bool fMovingFwd;

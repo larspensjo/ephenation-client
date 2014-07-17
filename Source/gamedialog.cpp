@@ -918,6 +918,32 @@ static void revive(void) {
 
 glm::mat4 gViewMatrix; // Store the view matrix
 
+void gameDialog::DisplayReprojection(float yaw, float pitch, View::RenderTarget &rightOriginal, View::RenderTarget &leftOriginal, const glm::mat4 &saveView) {
+	float yawPitchRoll[3] = { 0.0f, 0.0f, 0.0f };
+
+	OculusRift::sfOvr.GetYawPitchRoll(yawPitchRoll);
+	float deltaYaw = (yaw - yawPitchRoll[0]) / fRenderViewAngle * gViewport[2];
+	float deltaPitch = (pitch - yawPitchRoll[1]) / fRenderViewAngle / fAspectRatio * gViewport[3];
+
+	this->SetViewport(0, 0, fScreenWidth/2, fScreenHeight);
+	auto rightCorrection = fRenderControl.MovePixels(rightOriginal.GetTexture(), -deltaYaw, deltaPitch);
+	gViewMatrix = saveView;
+	this->UpdateProjection(ViewType::right); // TODO: Only the viewport settins are needed
+	fRenderControl.drawFullScreenPixmap(rightCorrection->GetTexture(), fStereoView);
+
+	this->SetViewport(0 ,0, fScreenWidth/2, fScreenHeight);
+	auto leftCorrection = fRenderControl.MovePixels(leftOriginal.GetTexture(), -deltaYaw, deltaPitch);
+	gViewMatrix = saveView;
+	this->UpdateProjection(ViewType::left); // TODO: Only the viewport settins are needed
+	fRenderControl.drawFullScreenPixmap(leftCorrection->GetTexture(), fStereoView);
+
+	glfwSwapBuffers();
+	static double delta = 0.0;
+	double now = glfwGetTime();
+	LPLOG("Time: %f", now - delta);
+	delta = now;
+}
+
 void gameDialog::DrawScreen(bool hideGUI) {
 	static double slAverageFps = 0.0;
 	double tm = gCurrentFrameTime;
@@ -929,8 +955,6 @@ void gameDialog::DrawScreen(bool hideGUI) {
 
 	this->Update();
 	fRenderControl.drawClear(fUnderWater); // Clear the screen
-	if (!Model::gPlayer.BelowGround())
-		fRenderControl.ComputeShadowMap();
 	glm::mat4 saveView = gViewMatrix;
 	if (fGuiMode == GuiMode::Inventory)
 		hideGUI = true;
@@ -943,33 +967,30 @@ void gameDialog::DrawScreen(bool hideGUI) {
 		float yaw = yawPitchRoll[0], pitch = yawPitchRoll[1];
 
 		this->UpdateProjection(ViewType::left);
-		auto left = this->render();
+		auto leftOriginal = this->render();
+		this->postRender(hideGUI, int(slAverageFps));
 
 		gViewMatrix = saveView;
 		this->UpdateProjection(ViewType::right);
-		auto right = this->render();
-
-		OculusRift::sfOvr.GetYawPitchRoll(yawPitchRoll);
-		float deltaYaw = (yaw - yawPitchRoll[0]) /fRenderViewAngle * gViewport[2];
-		float deltaPitch = (pitch - yawPitchRoll[1]) / fRenderViewAngle / fAspectRatio * gViewport[3];
-
+		auto rightOriginal = this->render();
 		this->postRender(hideGUI, int(slAverageFps));
-		right = fRenderControl.MovePixels(std::move(right), -deltaYaw, deltaPitch);
-		fRenderControl.drawFullScreenPixmap(right->GetTexture(), fStereoView);
-		right.reset(); // Force early release, as it is an expensive resource
 
-		gViewMatrix = saveView;
-		this->UpdateProjection(ViewType::left);
-		this->postRender(hideGUI, int(slAverageFps));
-		left = fRenderControl.MovePixels(std::move(left), -deltaYaw, deltaPitch);
-		fRenderControl.drawFullScreenPixmap(left->GetTexture(), fStereoView);
+		this->DisplayReprojection(yaw, pitch, *rightOriginal, *leftOriginal, saveView);
+
+		// This will compute the shadow map afterwards instead of before, which adds a very small amount of delay on the shadows.
+		if (!Model::gPlayer.BelowGround()) {
+			fRenderControl.ComputeShadowMap();
+			this->DisplayReprojection(yaw, pitch, *rightOriginal, *leftOriginal, saveView);
+		}
 	} else {
+		if (!Model::gPlayer.BelowGround())
+			fRenderControl.ComputeShadowMap();
 		this->UpdateProjection(ViewType::single);
 		auto rt = this->render();
 		this->postRender(hideGUI, int(slAverageFps));
 		fRenderControl.drawFullScreenPixmap(rt->GetTexture(), fStereoView);
+		glfwSwapBuffers();
 	}
-	glfwSwapBuffers();
 	gViewMatrix = saveView;
 
 	if (gDebugOpenGL) {
@@ -1343,8 +1364,7 @@ void gameDialog::UpdateProjection(ViewType v) {
 	case ViewType::single:
 		break;
 	}
-	glViewport(xOffset, 0, width, fScreenHeight);
-	gViewport = glm::vec4((float)xOffset, 0.0f, (float)width, (float)fScreenHeight );
+	this->SetViewport(xOffset, 0, width, fScreenHeight);
 	fAspectRatio = (float)width / (float)fScreenHeight;
 	// In full screen mode, the window is stretched to match the desktop mode.
 	if (gOptions.fFullScreen) {

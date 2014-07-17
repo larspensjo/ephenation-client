@@ -808,13 +808,12 @@ void RenderControl::drawFullScreenPixmap(GLuint id, bool stereoView) const {
 	tm.Start();
 
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-	glViewport(gViewport[0], gViewport[1], gViewport[2], gViewport[3]); // Restore default viewport.
-
 	glBindTexture(GL_TEXTURE_2D, id); // Override
 	glDepthMask(GL_FALSE);                // The depth buffer shall not be updated, or some transparent blocks behind each other will not be shown.
 	glDisable(GL_DEPTH_TEST);
 	DrawTexture::Make()->DrawScreen(stereoView);
 	glDepthMask(GL_TRUE);
+
 	tm.Stop();
 }
 
