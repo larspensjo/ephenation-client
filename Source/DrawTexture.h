@@ -37,9 +37,12 @@ public:
 	void DrawDepth(const glm::mat4 &projection, const glm::mat4 &model, float offsX, float offsY, float mult) const;
 	// Draw without changing any uniforms or program
 	void DrawBasic(void) const;
+
 	/// Draw texture to complete screen, using OVR distortion if needed
-	/// @param compensateDistortion Enable lens distortion compensation
-	void DrawScreen(bool compensateDistortion) const;
+	void DrawScreen() const;
+
+	/// Draw texture to complete screen, using OVR distortion
+	void DrawBarrelDistortion() const;
 private:
 	virtual ~DrawTexture();
 	void Init(void);

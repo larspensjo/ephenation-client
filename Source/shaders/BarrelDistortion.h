@@ -1,4 +1,4 @@
-// Copyright 2012-2013 The Ephenation Authors
+// Copyright 2014 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -21,27 +21,26 @@
 
 #include "shader.h"
 
-class SimpleTextureShader : ShaderBase {
+namespace Shaders {
+
+class BarrelDistortion : ShaderBase {
 public:
-	static SimpleTextureShader *Make(void);
+	static BarrelDistortion *Make(void);
 	void EnableProgram(void);
 	void DisableProgram(void);
 	void ModelView(const glm::mat4 &); // Define the ModelView matrix
-	void Projection(const glm::mat4 &); // Define the projection matrix
-	void ForceTransparent(float alpha); // This will change alpha to a lower value for all colors.
-	void TextureOffsetMulti(float offsX, float offsY, float mult);
 	// Define memory layout for the vertices. A buffer must be bound to do this.
 	void VertexAttribPointer(GLenum type, GLint size, GLsizei stride, const GLvoid * pointer);
 	// Define memory layout for the textures. A buffer must be bound to do this.
 	void TextureAttribPointer(GLenum type, GLsizei stride, const GLvoid * pointer);
 
 	void EnableVertexAttribArray(void);
-	void SetColorOffset(const glm::vec3 &);
 private:
 	// Define all uniform and attribute indices.
 	virtual void GetLocations(void);
-	SimpleTextureShader(); // Only allow access through the maker.
-	static SimpleTextureShader fgSingleton; // This is the singleton instance
-	GLint fgProjectionMatrixIndex, fgVertexIndex, fgTexCoordIndex, fModelViewMatrixIndex, fColorOffsetIdx;
-	GLint fgForceTranspInd, fTextOffsMultiInd;
+	static BarrelDistortion fgSingleton; // This is the singleton instance
+	GLint fgVertexIndex = -1, fgTexCoordIndex = -1, fModelViewMatrixIndex = -1;
+	bool fInitialized = false;
 };
+
+}

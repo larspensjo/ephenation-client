@@ -1,4 +1,4 @@
-// Copyright 2012-2013 The Ephenation Authors
+// Copyright 2012-2014 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -47,21 +47,6 @@ layout(std140) uniform GlobalData {
 float WorldDistance(sampler2D depthSampler, vec2 screen) {
 	float depth = texture(depthSampler, screen).r * 2.0 - 1.0;
 	return UBOProjK1 / (UBOProjK2 - depth);
-}
-
--- OvrDistortion
-
-// Apply distortion effect to a coordinate. It has to be centered at 0,0, and range from -1 to +1.
-vec2 HmdWarp(vec2 in01)
-{
-	vec2 theta = in01 - UBOLensCenter;
-	float rSq = theta.x * theta.x + theta.y * theta.y;
-	vec2 rvector = theta * (UBOOVRDistortion.x +
-							UBOOVRDistortion.y * rSq +
-							UBOOVRDistortion.z * rSq * rSq +
-							UBOOVRDistortion.w * rSq * rSq * rSq
-			);
-	return rvector + UBOLensCenter;
 }
 
 -- DoubleResolutionFunction

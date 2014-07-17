@@ -51,7 +51,6 @@ void SimpleTextureShader::GetLocations(void) {
 	fgTexCoordIndex = this->GetAttribLocation("texCoord");
 	fTextOffsMultiInd = this->GetUniformLocation("textOffsMulti");
 	fColorOffsetIdx = this->GetUniformLocation("colorOffset");
-	fCompensateDistInd = this->GetUniformLocation("UCompensateDistortion");
 	this->TextureOffsetMulti(0.0f, 0.0f, 1.0f);
 }
 

@@ -811,7 +811,10 @@ void RenderControl::drawFullScreenPixmap(GLuint id, bool stereoView) const {
 	glBindTexture(GL_TEXTURE_2D, id); // Override
 	glDepthMask(GL_FALSE);                // The depth buffer shall not be updated, or some transparent blocks behind each other will not be shown.
 	glDisable(GL_DEPTH_TEST);
-	DrawTexture::Make()->DrawScreen(stereoView);
+	if (stereoView)
+		DrawTexture::Make()->DrawBarrelDistortion();
+	else
+		DrawTexture::Make()->DrawScreen();
 	glDepthMask(GL_TRUE);
 
 	tm.Stop();
