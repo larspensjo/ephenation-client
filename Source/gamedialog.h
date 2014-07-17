@@ -66,7 +66,13 @@ public:
 	/// Called every frame
 	/// @param hideGUI Hide all GUI, for use when taking pictures, etc.
 	void DrawScreen(bool hideGUI);
-	void DisplayReprojection(float yaw, float pitch, View::RenderTarget &rightOriginal, View::RenderTarget &leftOriginal, const glm::mat4 &saveView);
+
+	/// Display a stereo view, using reprojection to correct for delay
+	/// @param yaw The yaw angle used to create the original pictures
+	/// @param yaw The pitch angle used to create the original pictures
+	/// @param rightOriginal The texture for the right eye, not corrected
+	/// @param leftOriginal The texture for the left ete, not corrected
+	void DisplayReprojection(float yaw, float pitch, View::RenderTarget &rightOriginal, View::RenderTarget &leftOriginal);
 
 	/// Render many things.
 	/// @todo Nothing should be rendered from here, it should all go into the View of the MVC.

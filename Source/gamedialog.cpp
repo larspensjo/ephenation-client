@@ -132,8 +132,10 @@ gameDialog::~gameDialog() {
 // In build mode, find the block at the given screen position. Return the chunk and the
 // data about it to the pointers.
 View::Chunk *gameDialog::FindSelectedSurface(int x, int y, ChunkOffsetCoord *coc, int *surfaceDir) {
-	if (fStereoView)
+	if (fStereoView) {
+		this->SetViewport(0, 0, fScreenWidth/2, fScreenHeight);
 		this->UpdateProjection(ViewType::left);
+	}
 	gChunkShaderPicking.EnableProgram();
 
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f); // Use black sky for picking
@@ -430,6 +432,7 @@ void gameDialog::handleMouse(int button, int action) {
 		if (fStereoView) {
 			// Get the mouse pointer that we draw on the left screen
 			fRenderControl.GetVirtualPointer(&x, &y);
+			this->SetViewport(0, 0, fScreenWidth/2, fScreenHeight);
 			this->UpdateProjection(ViewType::left); // Would get right side otherwise
 		} else {
 			// Get the mouse pointer as reported by the system
@@ -918,7 +921,7 @@ static void revive(void) {
 
 glm::mat4 gViewMatrix; // Store the view matrix
 
-void gameDialog::DisplayReprojection(float yaw, float pitch, View::RenderTarget &rightOriginal, View::RenderTarget &leftOriginal, const glm::mat4 &saveView) {
+void gameDialog::DisplayReprojection(float yaw, float pitch, View::RenderTarget &rightOriginal, View::RenderTarget &leftOriginal) {
 	float yawPitchRoll[3] = { 0.0f, 0.0f, 0.0f };
 
 	OculusRift::sfOvr.GetYawPitchRoll(yawPitchRoll);
@@ -927,14 +930,11 @@ void gameDialog::DisplayReprojection(float yaw, float pitch, View::RenderTarget 
 
 	this->SetViewport(0, 0, fScreenWidth/2, fScreenHeight);
 	auto rightCorrection = fRenderControl.MovePixels(rightOriginal.GetTexture(), -deltaYaw, deltaPitch);
-	gViewMatrix = saveView;
-	this->UpdateProjection(ViewType::right); // TODO: Only the viewport settins are needed
+	this->SetViewport(fScreenWidth/2, 0, fScreenWidth/2, fScreenHeight);
 	fRenderControl.drawFullScreenPixmap(rightCorrection->GetTexture(), fStereoView);
 
-	this->SetViewport(0 ,0, fScreenWidth/2, fScreenHeight);
+	this->SetViewport(0, 0, fScreenWidth/2, fScreenHeight);
 	auto leftCorrection = fRenderControl.MovePixels(leftOriginal.GetTexture(), -deltaYaw, deltaPitch);
-	gViewMatrix = saveView;
-	this->UpdateProjection(ViewType::left); // TODO: Only the viewport settins are needed
 	fRenderControl.drawFullScreenPixmap(leftCorrection->GetTexture(), fStereoView);
 
 	glfwSwapBuffers();
@@ -966,25 +966,28 @@ void gameDialog::DrawScreen(bool hideGUI) {
 		OculusRift::sfOvr.GetYawPitchRoll(yawPitchRoll);
 		float yaw = yawPitchRoll[0], pitch = yawPitchRoll[1];
 
+		this->SetViewport(0, 0, fScreenWidth/2, fScreenHeight);
 		this->UpdateProjection(ViewType::left);
 		auto leftOriginal = this->render();
 		this->postRender(hideGUI, int(slAverageFps));
 
 		gViewMatrix = saveView;
+		this->SetViewport(fScreenWidth/2, 0, fScreenWidth/2, fScreenHeight);
 		this->UpdateProjection(ViewType::right);
 		auto rightOriginal = this->render();
 		this->postRender(hideGUI, int(slAverageFps));
 
-		this->DisplayReprojection(yaw, pitch, *rightOriginal, *leftOriginal, saveView);
+		this->DisplayReprojection(yaw, pitch, *rightOriginal, *leftOriginal);
 
 		// This will compute the shadow map afterwards instead of before, which adds a very small amount of delay on the shadows.
 		if (!Model::gPlayer.BelowGround()) {
 			fRenderControl.ComputeShadowMap();
-			this->DisplayReprojection(yaw, pitch, *rightOriginal, *leftOriginal, saveView);
+			this->DisplayReprojection(yaw, pitch, *rightOriginal, *leftOriginal);
 		}
 	} else {
 		if (!Model::gPlayer.BelowGround())
 			fRenderControl.ComputeShadowMap();
+		this->SetViewport(0, 0, fScreenWidth, fScreenHeight);
 		this->UpdateProjection(ViewType::single);
 		auto rt = this->render();
 		this->postRender(hideGUI, int(slAverageFps));
@@ -1342,7 +1345,6 @@ void gameDialog::Update() {
 
 void gameDialog::UpdateProjection(ViewType v) {
 	int width = fScreenWidth;
-	int xOffset = 0;
 	switch (v) {
 	case ViewType::left:
 		{
@@ -1358,13 +1360,11 @@ void gameDialog::UpdateProjection(ViewType v) {
 			float horViewAdjust = OculusRift::sfOvr.GetHorViewAdjustment() * 2.0f; // Multiply with two as there are two units to every meter
 			gViewMatrix = glm::translate(glm::mat4(1), glm::vec3(horViewAdjust, 0.0f, 0.0f)) * gViewMatrix; // Move half distance from center to right eye
 			width /= 2;
-			xOffset = width;
 			break;
 		}
 	case ViewType::single:
 		break;
 	}
-	this->SetViewport(xOffset, 0, width, fScreenHeight);
 	fAspectRatio = (float)width / (float)fScreenHeight;
 	// In full screen mode, the window is stretched to match the desktop mode.
 	if (gOptions.fFullScreen) {
