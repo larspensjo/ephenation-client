@@ -353,10 +353,10 @@ std::unique_ptr<RenderTarget> RenderControl::Draw(bool underWater, const Model::
 	return current;
 }
 
-void RenderControl::SetSingleTarget(RenderTarget *target) {
+void RenderControl::SetSingleTarget(const RenderTarget &target) {
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fboName);
 	DrawBuffers(ColAttachRenderTarget);
-	target->FramebufferTexture2D(ColAttachRenderTarget);
+	target.FramebufferTexture2D(ColAttachRenderTarget);
 }
 
 void RenderControl::DrawStationaryEffects(bool showMap, int mapWidth, bool stereoView, bool showInvent, MainUserInterface *ui, float renderViewAngle) {
@@ -789,13 +789,13 @@ void RenderControl::drawMousePointer() {
 	}
 }
 
-std::unique_ptr<RenderTarget> RenderControl::MovePixels(std::unique_ptr<RenderTarget> source, float x, float y) {
+std::unique_ptr<RenderTarget> RenderControl::MovePixels(GLuint source, float x, float y) {
 	std::unique_ptr<RenderTarget> dest(new RenderTarget);
-	SetSingleTarget(dest.get());
+	SetSingleTarget(*dest);
 	glm::mat4 model(1);
 	model = glm::scale(model, glm::vec3(2.0f, 2.0f, 1.0f));
 	model = glm::translate(model, glm::vec3(2.0f * x / gViewport[2] - 0.5, 2.0f * y / gViewport[3] - 0.5f, 0.0f));
-	glBindTexture(GL_TEXTURE_2D, source->GetTexture());
+	glBindTexture(GL_TEXTURE_2D, source);
 	glDepthMask(GL_FALSE);
 	glDisable(GL_DEPTH_TEST);
 	DrawTexture::Make()->Draw(glm::mat4(1), model, 1.0f);

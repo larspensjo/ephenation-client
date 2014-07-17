@@ -34,7 +34,7 @@ public:
 
 	/// Setup this texture as a render target.
 	/// There must be a FBO bound before calling this function.
-	void FramebufferTexture2D(GLenum attachment);
+	void FramebufferTexture2D(GLenum attachment) const;
 
 	/// Get the texture id.
 	GLuint GetTexture() const { return fRendertarget; }

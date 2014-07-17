@@ -75,9 +75,6 @@ public:
 	/// @return The texture target of the drawing
 	std::unique_ptr<RenderTarget> Draw(bool underWater, const Model::Object *selectedObject, bool stereoView);
 
-	/// Setup a single rendertarget for the FBO.
-	void SetSingleTarget(RenderTarget *target);
-
 	/// Add constant things, like UI, maps and other overlays.
 	/// It is things that stays at the same position in the screen. Use the currently bound FBO and render targets.
 	/// @param current Use this as the current render target
@@ -112,10 +109,10 @@ public:
 	void GetVirtualPointer(int *x, int *y) const  { *x = fPointerX+0.5f; *y = fPointerY+0.5f; }
 
 	/// Move a picture a number of pixels.
-	/// @param source The current render target
+	/// @param source The input texture
 	/// @param x,y The number of pixels
 	/// @return A new texture, also set as default target for next operation.
-	std::unique_ptr<RenderTarget> MovePixels(std::unique_ptr<RenderTarget> source, float x, float y);
+	std::unique_ptr<RenderTarget> MovePixels(GLuint source, float x, float y);
 
 	/// Copy the final texture to the screen
 	void drawFullScreenPixmap(GLuint id, bool stereoView) const;
@@ -196,9 +193,13 @@ private:
 	};
 
 	GLuint fCurrentInputColor = 0;
+
 	// Toggle between the two render targets and setup the previous
 	// render target as fCurrentInputColor.
 	void ToggleRenderTarget(std::unique_ptr<RenderTarget> &current, std::unique_ptr<RenderTarget> &previous);
+
+	/// Setup a single rendertarget for the FBO.
+	void SetSingleTarget(const RenderTarget &target);
 };
 
 }

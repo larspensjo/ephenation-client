@@ -960,7 +960,6 @@ void gameDialog::DrawScreen(bool hideGUI) {
 
 		gViewMatrix = saveView;
 		this->UpdateProjection(ViewType::left);
-		fRenderControl.SetSingleTarget(left.get());
 		this->postRender(hideGUI, int(slAverageFps));
 		left = fRenderControl.MovePixels(std::move(left), -deltaYaw, deltaPitch);
 		fRenderControl.drawFullScreenPixmap(left->GetTexture(), fStereoView);

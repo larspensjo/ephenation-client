@@ -65,6 +65,6 @@ void RenderTarget::ReleaseAll() {
 	fFreeTextures.clear();
 }
 
-void RenderTarget::FramebufferTexture2D(GLenum attachment) {
+void RenderTarget::FramebufferTexture2D(GLenum attachment) const {
 	glFramebufferTexture2D(GL_FRAMEBUFFER, attachment, GL_TEXTURE_2D, fRendertarget, 0);
 }
