@@ -29,21 +29,21 @@ void main(void)
 -- Fragment
 
 uniform sampler2D firstTexture;
-uniform vec4 UOVRDistortion;
+uniform vec4 UOVRDistortion = vec4(1.0f, 0.22f, 0.24f, 0.0f); // Best guess
 uniform vec2 ULensCenter;
 in vec2 fragmentTexCoord;
 
 // Apply distortion effect to a coordinate. It has to be centered at 0,0, and range from -1 to +1.
 vec2 HmdWarp(vec2 in01)
 {
-	vec2 theta = in01 - UBOLensCenter;
+	vec2 theta = in01 - ULensCenter;
 	float rSq = theta.x * theta.x + theta.y * theta.y;
-	vec2 rvector = theta * (UBOOVRDistortion.x +
-							UBOOVRDistortion.y * rSq +
-							UBOOVRDistortion.z * rSq * rSq +
-							UBOOVRDistortion.w * rSq * rSq * rSq
+	vec2 rvector = theta * (UOVRDistortion.x +
+							UOVRDistortion.y * rSq +
+							UOVRDistortion.z * rSq * rSq +
+							UOVRDistortion.w * rSq * rSq * rSq
 			);
-	return rvector + UBOLensCenter;
+	return rvector + ULensCenter;
 }
 
 void main(void)

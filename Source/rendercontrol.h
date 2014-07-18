@@ -115,7 +115,10 @@ public:
 	std::unique_ptr<RenderTarget> MovePixels(GLuint source, float x, float y);
 
 	/// Copy the final texture to the screen
-	void drawFullScreenPixmap(GLuint id, bool stereoView) const;
+	/// @param id The texture id to draw
+	/// @param stereoView True if drawing stereoscopic view requiring barrel distortion
+	/// @param leftEye Used when drawing stereo view
+	void drawFullScreenPixmap(GLuint id, bool stereoView, bool leftEye) const;
 
 private:
 

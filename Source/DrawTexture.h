@@ -42,7 +42,7 @@ public:
 	void DrawScreen() const;
 
 	/// Draw texture to complete screen, using OVR distortion
-	void DrawBarrelDistortion() const;
+	void DrawBarrelDistortion(bool leftEye) const;
 private:
 	virtual ~DrawTexture();
 	void Init(void);

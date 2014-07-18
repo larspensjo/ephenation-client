@@ -31,7 +31,6 @@ static const GLchar *vertexShaderSource[] = {
 
 /// Using GLSW to define shader
 static const GLchar *fragmentShaderSource[] = {
-	"common.UniformBuffer",
 	"barreldistortion.Fragment",
 };
 
@@ -71,10 +70,13 @@ void BarrelDistortion::ModelView(const glm::mat4 &mat) {
 	glUniformMatrix4fv(fModelViewMatrixIndex, 1, GL_FALSE, &mat[0][0]); // Send our modelView matrix to the shader
 }
 
-void BarrelDistortion::SetOVRConstants(const float *dist, float lensCenter) {
+void BarrelDistortion::SetOVRConstants(const float dist[4], float lensCenter) {
 	fOvrLensCenter.x = lensCenter*2; // Double the value to scale from the interval 0 to +1, to the interval -1 to +1.
 	fOvrLensCenter.y = 0;
 	glUniform4fv(fOVRDistortionIdx, 1, dist);
+	float dest[4] = {0, 0, 0, 0};
+	glGetUniformfv(this->Program(), fOVRDistortionIdx, dest);
+	glUseProgram(this->Program());
 }
 
 void BarrelDistortion::ConfigureEye(bool left) {

@@ -803,7 +803,7 @@ std::unique_ptr<RenderTarget> RenderControl::MovePixels(GLuint source, float x, 
 	return dest;
 }
 
-void RenderControl::drawFullScreenPixmap(GLuint id, bool stereoView) const {
+void RenderControl::drawFullScreenPixmap(GLuint id, bool stereoView, bool leftEye) const {
 	static TimeMeasure tm("Screen");
 	tm.Start();
 
@@ -812,7 +812,7 @@ void RenderControl::drawFullScreenPixmap(GLuint id, bool stereoView) const {
 	glDepthMask(GL_FALSE);                // The depth buffer shall not be updated, or some transparent blocks behind each other will not be shown.
 	glDisable(GL_DEPTH_TEST);
 	if (stereoView)
-		DrawTexture::Make()->DrawBarrelDistortion();
+		DrawTexture::Make()->DrawBarrelDistortion(leftEye);
 	else
 		DrawTexture::Make()->DrawScreen();
 	glDepthMask(GL_TRUE);

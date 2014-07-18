@@ -7,7 +7,6 @@ Oculus Rift
 * Drawing monster stats should use gProjectionView
 * Use bold font for better readability
 * Dialogs are usually made for high resolution screens, so they become very big
-* Use bigger render target, to use more of the OVR display
 * The mouse pointer should be hidden when not needed
 * The map should only be computed once in OVR mode, not once for each eye
 * Text in options windows doesn't always show
@@ -54,3 +53,7 @@ Refactoring
 Installation
 ------------
 * Uninstalling the game should also remove the cache.
+
+UI
+--
+* When logging in, pressing ESC of "Cancel" shall quit the game.

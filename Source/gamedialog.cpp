@@ -930,11 +930,11 @@ void gameDialog::DisplayReprojection(float yaw, float pitch, View::RenderTarget 
 	this->SetViewport(0, fScreenWidth/2, fScreenHeight);
 	auto correction = fRenderControl.MovePixels(rightOriginal.GetTexture(), -deltaYaw, deltaPitch);
 	this->SetViewport(fScreenWidth/2, fScreenWidth/2, fScreenHeight);
-	fRenderControl.drawFullScreenPixmap(correction->GetTexture(), fStereoView);
+	fRenderControl.drawFullScreenPixmap(correction->GetTexture(), true, false);
 
 	this->SetViewport(0, fScreenWidth/2, fScreenHeight);
 	correction = fRenderControl.MovePixels(leftOriginal.GetTexture(), -deltaYaw, deltaPitch);
-	fRenderControl.drawFullScreenPixmap(correction->GetTexture(), fStereoView);
+	fRenderControl.drawFullScreenPixmap(correction->GetTexture(), true, true);
 
 	glfwSwapBuffers();
 	static double delta = 0.0;
@@ -990,7 +990,7 @@ void gameDialog::DrawScreen(bool hideGUI) {
 		this->UpdateProjection(ViewType::single);
 		auto rt = this->render();
 		this->postRender(hideGUI, int(slAverageFps));
-		fRenderControl.drawFullScreenPixmap(rt->GetTexture(), fStereoView);
+		fRenderControl.drawFullScreenPixmap(rt->GetTexture(), false, false);
 		glfwSwapBuffers();
 	}
 	gViewMatrix = saveView;
@@ -1379,7 +1379,6 @@ void gameDialog::UpdateProjection(ViewType v) {
 	case ViewType::right: {
 		float projectionCenterOffset = OculusRift::sfOvr.GetHorProjectionAdjustment();
 		gProjectionMatrix = glm::translate(glm::mat4(1), glm::vec3(projectionCenterOffset, 0, 0)) * gProjectionMatrix;
-		gUniformBuffer.SelectEye(v == ViewType::left);
 		gUniformBuffer.Update(true); // Transfer settings to the graphics card
 		break;
 	}
@@ -1564,7 +1563,7 @@ void gameDialog::SaveScreen() {
     std::unique_ptr<unsigned char[]> pixels(new unsigned char[3*w*h]);
     auto rt = this->render();
 	this->postRender(true, 0);
-	fRenderControl.drawFullScreenPixmap(rt->GetTexture(), fStereoView);
+	fRenderControl.drawFullScreenPixmap(rt->GetTexture(), fStereoView, true);
 
     glReadPixels(0, 0, w, h, GL_BGR, GL_UNSIGNED_BYTE, pixels.get());
 

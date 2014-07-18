@@ -369,7 +369,6 @@ int main(int argc, char** argv) {
 		fullScreen = !sWindowedMode; // Unless forcing windowed mode, default is going into full screen regardless of settings
 		windowHeight = Controller::OculusRift::sfOvr.GetVerResolution();
 		windowWidth = Controller::OculusRift::sfOvr.GetHorResolution();
-		gUniformBuffer.SetOVRConstants(Controller::OculusRift::sfOvr.GetDistortionConstants(), Controller::OculusRift::sfOvr.GetLensSeparationDistance());
 	}
 
 	// If there was a saved position, use it for initialization.
@@ -443,7 +442,9 @@ int main(int argc, char** argv) {
 
 	if (sOculusRiftMode) {
 		auto shader = Shaders::BarrelDistortion::Make();
+		shader->EnableProgram();
 		shader->SetOVRConstants(Controller::OculusRift::sfOvr.GetDistortionConstants(), Controller::OculusRift::sfOvr.GetLensSeparationDistance());
+		shader->DisableProgram();
 	}
 
 	glfwSwapInterval(gOptions.fVSYNC); // 0 means do not wait for VSYNC, which would delay the FPS sometimes.

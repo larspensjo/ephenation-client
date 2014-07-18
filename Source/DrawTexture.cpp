@@ -103,10 +103,11 @@ void DrawTexture::DrawScreen() const {
 	glBindVertexArray(0);
 }
 
-void DrawTexture::DrawBarrelDistortion() const {
+void DrawTexture::DrawBarrelDistortion(bool leftEye) const {
 	glBindVertexArray(fVao);
 	auto shader = Shaders::BarrelDistortion::Make();
 	shader->EnableProgram();
+	shader->ConfigureEye(leftEye);
 	glm::mat4 scale = glm::scale(glm::mat4(1), glm::vec3(2,2,1));
 	glm::mat4 transl = glm::translate(glm::mat4(1), glm::vec3(-1, -1, 0));
 	shader->ModelView(transl * scale);

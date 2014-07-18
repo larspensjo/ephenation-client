@@ -36,7 +36,7 @@ public:
 	void ModelView(const glm::mat4 &);
 
 	/// Set the constants that control the effects
-	void SetOVRConstants(const float *dist, float lensCenter);
+	void SetOVRConstants(const float dist[4], float lensCenter);
 
 	/// Define memory layout for the vertices. A buffer must be bound to do this.
 	void VertexAttribPointer(GLenum type, GLint size, GLsizei stride, const GLvoid * pointer);
