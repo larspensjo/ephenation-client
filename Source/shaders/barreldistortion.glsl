@@ -29,6 +29,8 @@ void main(void)
 -- Fragment
 
 uniform sampler2D firstTexture;
+uniform vec4 UOVRDistortion;
+uniform vec2 ULensCenter;
 in vec2 fragmentTexCoord;
 
 // Apply distortion effect to a coordinate. It has to be centered at 0,0, and range from -1 to +1.

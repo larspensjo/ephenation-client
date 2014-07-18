@@ -1,4 +1,4 @@
-// Copyright 2012-2014 The Ephenation Authors
+// Copyright 2014 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -50,6 +50,8 @@ void BarrelDistortion::GetLocations(void) {
 	glUniform1i(this->GetUniformLocation("firstTexture"), 0); // Always at texture 0
 	fgVertexIndex = this->GetAttribLocation("vertex");
 	fgTexCoordIndex = this->GetAttribLocation("texCoord");
+	fOVRDistortionIdx = this->GetUniformLocation("UOVRDistortion");
+	fLensCenterIdx = this->GetUniformLocation("ULensCenter");
 }
 
 void BarrelDistortion::EnableVertexAttribArray(void) {
@@ -67,6 +69,19 @@ void BarrelDistortion::DisableProgram(void) {
 
 void BarrelDistortion::ModelView(const glm::mat4 &mat) {
 	glUniformMatrix4fv(fModelViewMatrixIndex, 1, GL_FALSE, &mat[0][0]); // Send our modelView matrix to the shader
+}
+
+void BarrelDistortion::SetOVRConstants(const float *dist, float lensCenter) {
+	fOvrLensCenter.x = lensCenter*2; // Double the value to scale from the interval 0 to +1, to the interval -1 to +1.
+	fOvrLensCenter.y = 0;
+	glUniform4fv(fOVRDistortionIdx, 1, dist);
+}
+
+void BarrelDistortion::ConfigureEye(bool left) {
+    glm::vec2 lc = fOvrLensCenter;
+    if (!left)
+		lc = -fOvrLensCenter;
+	glUniform2fv(fLensCenterIdx, 1, &lc[0]);
 }
 
 void BarrelDistortion::VertexAttribPointer(GLenum type, GLint size, GLsizei stride, const GLvoid * pointer) {

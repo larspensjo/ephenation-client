@@ -27,6 +27,7 @@ Graphical effects
 * Make three sets of skyboxes, for different time of day
 * Implement SSAO
 * Make water splash when a player or monsters falls into water
+* Move all shaders to the Shaders namespace
 
 Sound
 -----

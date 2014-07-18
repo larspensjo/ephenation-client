@@ -67,6 +67,7 @@
 #include "errormanager.h"
 #include "OculusRift.h"
 #include "Debug.h"
+#include "shaders/BarrelDistortion.h"
 
 #ifndef GL_VERSION_3_2
 #define GL_CONTEXT_CORE_PROFILE_BIT       0x00000001
@@ -438,6 +439,11 @@ int main(int argc, char** argv) {
 			glDebugMessageCallbackARB(DebugFunc, (void*)15);
 		else if (glDebugMessageCallbackAMD != 0)
 			glDebugMessageCallbackAMD(DebugFuncAMD, (void*)15);
+	}
+
+	if (sOculusRiftMode) {
+		auto shader = Shaders::BarrelDistortion::Make();
+		shader->SetOVRConstants(Controller::OculusRift::sfOvr.GetDistortionConstants(), Controller::OculusRift::sfOvr.GetLensSeparationDistance());
 	}
 
 	glfwSwapInterval(gOptions.fVSYNC); // 0 means do not wait for VSYNC, which would delay the FPS sometimes.
