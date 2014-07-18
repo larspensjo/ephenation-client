@@ -970,10 +970,18 @@ void gameDialog::DrawScreen(bool hideGUI) {
 		auto leftOriginal = this->render();
 		this->postRender(hideGUI, int(slAverageFps));
 
+		static std::unique_ptr<View::RenderTarget> rightOriginal; // Need to save the old one
+		if (rightOriginal) {
+			// Add an extra frame here. The right picture is older than the left
+
+			this->DisplayReprojection(yaw, pitch, *rightOriginal, *leftOriginal);
+
+		}
+
 		gViewMatrix = saveView;
 		this->SetViewport(fScreenWidth/2, fScreenWidth/2, fScreenHeight);
 		this->UpdateProjection(ViewType::right);
-		auto rightOriginal = this->render();
+		rightOriginal = this->render();
 		this->postRender(hideGUI, int(slAverageFps));
 
 		this->DisplayReprojection(yaw, pitch, *rightOriginal, *leftOriginal);
