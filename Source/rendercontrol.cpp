@@ -794,7 +794,7 @@ std::unique_ptr<RenderTarget> RenderControl::MovePixels(GLuint source, float x, 
 	SetSingleTarget(*dest);
 	glm::mat4 model(1);
 	model = glm::scale(model, glm::vec3(2.0f, 2.0f, 1.0f));
-	model = glm::translate(model, glm::vec3(2.0f * x / gViewport[2] - 0.5, 2.0f * y / gViewport[3] - 0.5f, 0.0f));
+	model = glm::translate(model, glm::vec3(2.0f * x / gViewport[2] - 0.5, y / gViewport[3] - 0.5f, 0.0f));
 	glBindTexture(GL_TEXTURE_2D, source);
 	glDepthMask(GL_FALSE);
 	glDisable(GL_DEPTH_TEST);
