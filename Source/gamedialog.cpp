@@ -958,7 +958,6 @@ void gameDialog::DrawScreen(bool hideGUI) {
 	static double prevTime = 0.0;
 	double deltaTime = tm - prevTime;
 	// Use a decay filter on the FPS
-	slAverageFps = 0.97*slAverageFps + 0.03/deltaTime;
 	prevTime = tm;
 
 	this->Update();
@@ -970,6 +969,15 @@ void gameDialog::DrawScreen(bool hideGUI) {
 			hideGUI = true;
 	if (fStereoView) {
 		View::gHudTransformation.Update();
+		static std::unique_ptr<View::RenderTarget> rightOriginal, leftOriginal; // Need to save the old ones
+		static glm::quat quatOld; // And save the angles to go with the old one
+		deltaTime = 0.0; // Instead, use the biggest value from DisplayReprojection
+
+		if (!Model::gPlayer.BelowGround()) {
+			fRenderControl.ComputeShadowMap();
+			if (rightOriginal && leftOriginal)
+				deltaTime = this->DisplayReprojection(quatOld, quatOld, *leftOriginal, *rightOriginal);
+		}
 
 		glm::quat quat;
 		OculusRift::sfOvr.GetQuat(&quat.x);
@@ -977,15 +985,15 @@ void gameDialog::DrawScreen(bool hideGUI) {
 
 		this->SetViewport(0, fScreenWidth/2, fScreenHeight);
 		this->UpdateProjection(ViewType::left);
-		auto leftOriginal = this->render();
+		leftOriginal = this->render();
 		this->postRender(hideGUI, int(slAverageFps));
 
-		static std::unique_ptr<View::RenderTarget> rightOriginal; // Need to save the old one
-		static glm::quat quatOld; // And save the angles to go with the old one
 		if (rightOriginal) {
 			// Add an extra frame here. The right picture is older than the left
-			this->DisplayReprojection(quat, quatOld, *leftOriginal, *rightOriginal);
+			double lastDelta = this->DisplayReprojection(quat, quatOld, *leftOriginal, *rightOriginal);
 			quatOld = quat;
+			if (lastDelta > deltaTime)
+				deltaTime = lastDelta;
 		}
 
 		gViewMatrix = saveView;
@@ -999,13 +1007,9 @@ void gameDialog::DrawScreen(bool hideGUI) {
 		glm::quat diff = quat * glm::inverse(quat2);
 		LPLOG("Quat diff %f %f %f %f", diff.x, diff.y, diff.z, diff.w);
 		LPLOG("Quat euler delta: %.2f %.2f %.2f", glm::yaw(diff), glm::pitch(diff), glm::roll(diff));
-		this->DisplayReprojection(quat, quat, *leftOriginal, *rightOriginal);
-
-		// This will compute the shadow map afterwards instead of before, which adds a very small amount of delay on the shadows.
-		if (!Model::gPlayer.BelowGround()) {
-			fRenderControl.ComputeShadowMap();
-			this->DisplayReprojection(quat, quat, *leftOriginal, *rightOriginal);
-		}
+		double lastDelta = this->DisplayReprojection(quat, quat, *leftOriginal, *rightOriginal);
+		if (lastDelta > deltaTime)
+			deltaTime = lastDelta;
 	} else {
 		if (!Model::gPlayer.BelowGround())
 			fRenderControl.ComputeShadowMap();
@@ -1017,6 +1021,7 @@ void gameDialog::DrawScreen(bool hideGUI) {
 		glfwSwapBuffers();
 	}
 	gViewMatrix = saveView;
+	slAverageFps = 0.97*slAverageFps + 0.03/deltaTime;
 
 	if (gDebugOpenGL) {
 		checkError("gameDialog::render debug", false);
