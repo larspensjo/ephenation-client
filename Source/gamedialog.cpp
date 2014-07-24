@@ -930,7 +930,6 @@ double gameDialog::DisplayReprojection(const glm::quat &quatLeft, const glm::qua
 
 	float deltaYawPixels = glm::yaw(deltaQuatRight) / fRenderViewAngle * gViewport[2];
 	float deltaPitchPixels = glm::pitch(deltaQuatRight) / fRenderViewAngle / fAspectRatio * gViewport[3];
-	LPLOG("Delta 2: %.2f %.2f %.2f", glm::yaw(deltaQuatRight), glm::pitch(deltaQuatRight), glm::roll(deltaQuatRight));
 	this->SetViewport(0, fScreenWidth/2, fScreenHeight);
 	auto correction = fRenderControl.MovePixels(rightOriginal.GetTexture(), -deltaYawPixels, deltaPitchPixels);
 	this->SetViewport(fScreenWidth/2, fScreenWidth/2, fScreenHeight);
@@ -947,7 +946,6 @@ double gameDialog::DisplayReprojection(const glm::quat &quatLeft, const glm::qua
 	static double last = 0.0;
 	double now = glfwGetTime();
 	double delta = now - last;
-	LPLOG("Time: %f", delta);
 	last = now;
 	return delta;
 }
@@ -981,7 +979,6 @@ void gameDialog::DrawScreen(bool hideGUI) {
 
 		glm::quat quat;
 		OculusRift::sfOvr.GetQuat(&quat.x);
-		LPLOG("2 Yaw %.2f Pitch %.2f Roll %.2f", glm::yaw(quat), glm::pitch(quat), glm::roll(quat));
 
 		this->SetViewport(0, fScreenWidth/2, fScreenHeight);
 		this->UpdateProjection(ViewType::left);
@@ -1002,11 +999,6 @@ void gameDialog::DrawScreen(bool hideGUI) {
 		rightOriginal = this->render();
 		this->postRender(hideGUI, int(slAverageFps));
 
-		glm::quat quat2;
-		OculusRift::sfOvr.GetQuat(&quat2.x);
-		glm::quat diff = quat * glm::inverse(quat2);
-		LPLOG("Quat diff %f %f %f %f", diff.x, diff.y, diff.z, diff.w);
-		LPLOG("Quat euler delta: %.2f %.2f %.2f", glm::yaw(diff), glm::pitch(diff), glm::roll(diff));
 		double lastDelta = this->DisplayReprojection(quat, quat, *leftOriginal, *rightOriginal);
 		if (lastDelta > deltaTime)
 			deltaTime = lastDelta;
