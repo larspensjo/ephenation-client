@@ -309,7 +309,7 @@ Debug:
 	$(MAKE) -j -f Makefile.mingw CFLAGS="-g -O2 --std=gnu++11 -DDEBUG"
 
 Release:
-	$(MAKE) -j -f Makefile.mingw CFLAGS="-O3 --std=gnu++11 -DDEBUG"
+	$(MAKE) -j -f Makefile.mingw CFLAGS="-O3 --std=gnu++11"
 
 ## End of the Makefile ##  Suggestions are welcome  ## All rights reserved ##
 #############################################################################
