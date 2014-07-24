@@ -19,8 +19,8 @@
 
 #include <string>
 
-#define CLIENT_MAJOR_VERSION 4
-#define CLIENT_MINOR_VERSION 3
+#define CLIENT_MAJOR_VERSION 5
+#define CLIENT_MINOR_VERSION 0
 
 namespace Rocket {
 	namespace Controls {
