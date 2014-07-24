@@ -18,6 +18,7 @@
 #pragma once
 
 #include <memory>
+#include <glm/gtc/quaternion.hpp>
 
 #include "ui/mainuserinterface.h"
 #include "ui/RocketGui.h"
@@ -72,7 +73,7 @@ public:
 	/// @param yawPitchRollRight The yaw, pitch and roll angle used to create the original right picture
 	/// @param rightOriginal The texture for the right eye, not corrected
 	/// @param leftOriginal The texture for the left ete, not corrected
-	void DisplayReprojection(float yawPitchRollLeft[3], float yawPitchRollRight[3], View::RenderTarget &rightOriginal, View::RenderTarget &leftOriginal);
+	void DisplayReprojection(float yawPitchRollLeft[3], float yawPitchRollRight[3], const glm::quat &quatLeft, const glm::quat &quatRight, View::RenderTarget &leftOriginal, View::RenderTarget &rightOriginal);
 
 	/// Render many things.
 	/// @todo Nothing should be rendered from here, it should all go into the View of the MVC.
