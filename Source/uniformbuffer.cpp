@@ -32,13 +32,6 @@ UniformBuffer::~UniformBuffer() {
 		glDeleteBuffers(1, &fUBOBuffer);
 }
 
-void UniformBuffer::SetOVRConstants(const float *dist, float lensCenter) {
-	for (int i=0; i<4; i++)
-		fDistortion[i] = dist[i];
-	// Double the value to scale from the interval 0 to +1, to the interval -1 to +1.
-	fOvrLensCenter.x = lensCenter*2.0f;
-}
-
 // This data description must match the content of the UBO.
 // The content and layout must match UniformBuffer in common.glsl.
 // "bool" didn't work, probably because of alignment definitions of layout(std140).
@@ -47,8 +40,6 @@ struct Data {
 	glm::mat4 projectionviewmatrix;
 	glm::mat4 viewmatrix;
 	glm::vec4 camera; // Only three floats needed, but std140 will align to 4 anyway.
-	glm::vec4 ovrDistortion;
-	glm::vec2 ovrlenscenter;
 	float viewingdistance;
 	float time;
 	int performance;
@@ -100,11 +91,6 @@ void UniformBuffer::Update(bool ovrMode) const {
 	data.ambientLight = gOptions.fAmbientLight / 200.0f;
 	data.calibrationFactor = fDebugfactor;
 	data.belowGround = Model::gPlayer.BelowGround();
-	data.ovrDistortion = fDistortion;
-	if (fLeftEeye)
-		data.ovrlenscenter = fOvrLensCenter;
-	else
-		data.ovrlenscenter = -fOvrLensCenter;
 	data.enabledistortion = ovrMode;
 
 	// Compute constants needed for reverse depth buffer computation
