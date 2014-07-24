@@ -1349,7 +1349,9 @@ void gameDialog::SetMessage(const char *str) {
 
 void gameDialog::DrawWeapon(void) const {
 	GLuint text = GameTexture::WEP1;
-	switch(Model::gPlayer.fWeaponType) {
+	unsigned weaponType = Model::gPlayer.fWeaponType;
+again: // Ugly way to catch missing weapon definitions
+	switch(weaponType) {
 	case 0:
 		return; // No weapon equipped
 	case 1:
@@ -1360,9 +1362,17 @@ void gameDialog::DrawWeapon(void) const {
 		break;
 	case 3:
 		text = GameTexture::WEP3;
+		if (text == 0) {
+			weaponType = 2;
+			goto again;
+		}
 		break;
 	case 4:
 		text = GameTexture::WEP4;
+		if (text == 0) {
+			weaponType = 3;
+			goto again;
+		}
 		break;
 	}
 	glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(0.536f, -0.85640, 0.0f));
