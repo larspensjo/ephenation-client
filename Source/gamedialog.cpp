@@ -923,14 +923,10 @@ static void revive(void) {
 
 glm::mat4 gViewMatrix; // Store the view matrix
 
-void gameDialog::DisplayReprojection(float yawPitchRollLeft[3], float yawPitchRollRight[3], const glm::quat &quatLeft, const glm::quat &quatRight, View::RenderTarget &leftOriginal, View::RenderTarget &rightOriginal) {
+double gameDialog::DisplayReprojection(const glm::quat &quatLeft, const glm::quat &quatRight, View::RenderTarget &leftOriginal, View::RenderTarget &rightOriginal) {
 	glm::quat updatedQuat;
 	OculusRift::sfOvr.GetQuat(&updatedQuat.x);
 	glm::quat deltaQuatRight = quatRight * glm::inverse(updatedQuat);
-
-	float UpdatedYawPitchRoll[3] = { 0.0f, 0.0f, 0.0f };
-	OculusRift::sfOvr.GetYawPitchRoll(UpdatedYawPitchRoll);
-	LPLOG("Delta 1: %.2f %.2f %.2f", yawPitchRollRight[0] - UpdatedYawPitchRoll[0], yawPitchRollRight[1] - UpdatedYawPitchRoll[1], yawPitchRollRight[2] - UpdatedYawPitchRoll[2]);
 
 	float deltaYawPixels = glm::yaw(deltaQuatRight) / fRenderViewAngle * gViewport[2];
 	float deltaPitchPixels = glm::pitch(deltaQuatRight) / fRenderViewAngle / fAspectRatio * gViewport[3];
@@ -948,10 +944,12 @@ void gameDialog::DisplayReprojection(float yawPitchRollLeft[3], float yawPitchRo
 	fRenderControl.drawFullScreenPixmap(correction->GetTexture(), true, true);
 
 	glfwSwapBuffers();
-	static double delta = 0.0;
+	static double last = 0.0;
 	double now = glfwGetTime();
-	LPLOG("Time: %f", now - delta);
-	delta = now;
+	double delta = now - last;
+	LPLOG("Time: %f", delta);
+	last = now;
+	return delta;
 }
 
 void gameDialog::DrawScreen(bool hideGUI) {
@@ -972,13 +970,9 @@ void gameDialog::DrawScreen(bool hideGUI) {
 			hideGUI = true;
 	if (fStereoView) {
 		View::gHudTransformation.Update();
-		glm::vec3 yawPitchRoll;
-		OculusRift::sfOvr.GetYawPitchRoll(&yawPitchRoll[0]);
-		LPLOG("1 Yaw %.2f Pitch %.2f Roll %.2f", yawPitchRoll[0], yawPitchRoll[1], yawPitchRoll[2]);
 
 		glm::quat quat;
 		OculusRift::sfOvr.GetQuat(&quat.x);
-		// quat = glm::rotate(quat, 90.0f, glm::vec3(1, 0, 0));
 		LPLOG("2 Yaw %.2f Pitch %.2f Roll %.2f", glm::yaw(quat), glm::pitch(quat), glm::roll(quat));
 
 		this->SetViewport(0, fScreenWidth/2, fScreenHeight);
@@ -988,12 +982,10 @@ void gameDialog::DrawScreen(bool hideGUI) {
 
 		static std::unique_ptr<View::RenderTarget> rightOriginal; // Need to save the old one
 		static glm::quat quatOld; // And save the angles to go with the old one
-		static glm::vec3 yawPitchRollOld; // And save the angles to go with the old one
 		if (rightOriginal) {
 			// Add an extra frame here. The right picture is older than the left
-			this->DisplayReprojection(&yawPitchRoll[0], &yawPitchRollOld[0], quat, quatOld, *leftOriginal, *rightOriginal);
+			this->DisplayReprojection(quat, quatOld, *leftOriginal, *rightOriginal);
 			quatOld = quat;
-			yawPitchRollOld = yawPitchRoll;
 		}
 
 		gViewMatrix = saveView;
@@ -1005,15 +997,14 @@ void gameDialog::DrawScreen(bool hideGUI) {
 		glm::quat quat2;
 		OculusRift::sfOvr.GetQuat(&quat2.x);
 		glm::quat diff = quat * glm::inverse(quat2);
-		// diff = glm::normalize(diff);
 		LPLOG("Quat diff %f %f %f %f", diff.x, diff.y, diff.z, diff.w);
 		LPLOG("Quat euler delta: %.2f %.2f %.2f", glm::yaw(diff), glm::pitch(diff), glm::roll(diff));
-		this->DisplayReprojection(&yawPitchRoll[0], &yawPitchRoll[0], quat, quat, *leftOriginal, *rightOriginal);
+		this->DisplayReprojection(quat, quat, *leftOriginal, *rightOriginal);
 
 		// This will compute the shadow map afterwards instead of before, which adds a very small amount of delay on the shadows.
 		if (!Model::gPlayer.BelowGround()) {
 			fRenderControl.ComputeShadowMap();
-			this->DisplayReprojection(&yawPitchRoll[0], &yawPitchRoll[0], quat, quat, *leftOriginal, *rightOriginal);
+			this->DisplayReprojection(quat, quat, *leftOriginal, *rightOriginal);
 		}
 	} else {
 		if (!Model::gPlayer.BelowGround())
