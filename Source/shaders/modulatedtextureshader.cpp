@@ -1,4 +1,4 @@
-// Copyright 2012-2013 The Ephenation Authors
+// Copyright 2012-2014 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -24,7 +24,6 @@
 /// Using GLSW to define shader
 static const GLchar *vertexShaderSource[] = {
 	"common.UniformBuffer",
-	"common.OvrDistortion",
 	"modulatedtexture.Vertex"
 };
 

@@ -20,6 +20,7 @@
 #include "primitives.h"
 #include "render.h"
 #include "player.h"
+#include "Weather.h"
 
 UniformBuffer gUniformBuffer;
 
@@ -31,13 +32,6 @@ UniformBuffer::~UniformBuffer() {
 		glDeleteBuffers(1, &fUBOBuffer);
 }
 
-void UniformBuffer::SetOVRConstants(const float *dist, float lensCenter) {
-	for (int i=0; i<4; i++)
-		fDistortion[i] = dist[i];
-	// Double the value to scale from the interval 0 to +1, to the interval -1 to +1.
-	fOvrLensCenter.x = lensCenter*2.0f;
-}
-
 // This data description must match the content of the UBO.
 // The content and layout must match UniformBuffer in common.glsl.
 // "bool" didn't work, probably because of alignment definitions of layout(std140).
@@ -46,8 +40,6 @@ struct Data {
 	glm::mat4 projectionviewmatrix;
 	glm::mat4 viewmatrix;
 	glm::vec4 camera; // Only three floats needed, but std140 will align to 4 anyway.
-	glm::vec4 ovrDistortion;
-	glm::vec2 ovrlenscenter;
 	float viewingdistance;
 	float time;
 	int performance;
@@ -61,6 +53,7 @@ struct Data {
 	float calibrationFactor;
 	float projectionK1, projectionK2; // Used for reverse depth buffer projection
 	int enabledistortion;
+	float raining; // 0.0 means blue sky, 1.0 is worst possible rain
 };
 
 // Use index 0 always
@@ -98,11 +91,6 @@ void UniformBuffer::Update(bool ovrMode) const {
 	data.ambientLight = gOptions.fAmbientLight / 200.0f;
 	data.calibrationFactor = fDebugfactor;
 	data.belowGround = Model::gPlayer.BelowGround();
-	data.ovrDistortion = fDistortion;
-	if (fLeftEeye)
-		data.ovrlenscenter = fOvrLensCenter;
-	else
-		data.ovrlenscenter = -fOvrLensCenter;
 	data.enabledistortion = ovrMode;
 
 	// Compute constants needed for reverse depth buffer computation
@@ -110,6 +98,9 @@ void UniformBuffer::Update(bool ovrMode) const {
 	// As much as possible is pre-computed into constants here.
 	data.projectionK1 = 2.0f * fFarCutoff * fNearCutoff / (fFarCutoff - fNearCutoff);
 	data.projectionK2 = (fFarCutoff + fNearCutoff) / (fFarCutoff - fNearCutoff);
+
+	// data.raining = Model::Weather::sgWeather.GetRain();
+	data.raining = 0.0f;
 
 	glBindBuffer(GL_UNIFORM_BUFFER, fUBOBuffer);
 	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(Data), &data);

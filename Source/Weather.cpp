@@ -1,4 +1,4 @@
-// Copyright 2012-2014 The Ephenation Authors
+// Copyright 2014 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -15,21 +15,17 @@
 // along with Ephenation.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#pragma once
+#include <glm/gtc/noise.hpp>
 
-class TemporalReprojection
-{
-public:
-    void Reset();
-    void Poll(const char *debug = "");
+#include "Weather.h"
+#include "primitives.h"
 
-    /// This is a global instance
-    static TemporalReprojection sgTemporalReprojection;
-private:
-	// Time since last frame
-	double fTimer = 0.0;
-	double fPreviousPoll = 0.0;
-	const char *fWorstDebug = "", *fShordebug = "";
-	double fWorst = 0.0, fShortest = 1.0;
-	int fCount = 0;
-};
+using namespace Model;
+
+float Weather::GetRain() const {
+	glm::vec2 seed(0.0f, float(gCurrentFrameTime/3.0));
+	// Very simple model for now.
+	return glm::simplex(seed);
+}
+
+Weather Weather::sgWeather;

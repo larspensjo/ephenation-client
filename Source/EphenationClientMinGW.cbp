@@ -147,10 +147,10 @@
 		<Unit filename="TSExec.h" />
 		<Unit filename="Teleport.cpp" />
 		<Unit filename="Teleport.h" />
-		<Unit filename="TemporalReprojection.cpp" />
-		<Unit filename="TemporalReprojection.h" />
 		<Unit filename="UndoOp.cpp" />
 		<Unit filename="UndoOp.h" />
+		<Unit filename="Weather.cpp" />
+		<Unit filename="Weather.h" />
 		<Unit filename="animationmodels.cpp" />
 		<Unit filename="animationmodels.h" />
 		<Unit filename="assert.cpp" />
@@ -227,6 +227,8 @@
 		<Unit filename="rendercontrol.h" />
 		<Unit filename="shaders/AnimationShader.cpp" />
 		<Unit filename="shaders/AnimationShader.h" />
+		<Unit filename="shaders/BarrelDistortion.cpp" />
+		<Unit filename="shaders/BarrelDistortion.h" />
 		<Unit filename="shaders/ChunkShader.cpp" />
 		<Unit filename="shaders/ChunkShader.h" />
 		<Unit filename="shaders/ChunkShaderPicking.cpp" />
@@ -259,6 +261,7 @@
 		<Unit filename="shaders/addssao.glsl" />
 		<Unit filename="shaders/addssao.h" />
 		<Unit filename="shaders/animationshader.glsl" />
+		<Unit filename="shaders/barreldistortion.glsl" />
 		<Unit filename="shaders/chunkshader.glsl" />
 		<Unit filename="shaders/chunkshaderpicking.glsl" />
 		<Unit filename="shaders/colorshader.glsl" />

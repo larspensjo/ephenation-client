@@ -130,6 +130,15 @@ const float *OculusRift::GetDistortionConstants() const {
 	return fInfo.DistortionK;
 }
 
+void OculusRift::GetQuat(float ret[4]) {
+	Quatf quaternion = mFusionResult->GetOrientation();
+
+	ret[0] = quaternion.x;
+	ret[1] = quaternion.y;
+	ret[2] = quaternion.z;
+	ret[3] = quaternion.w;
+}
+
 void OculusRift::GetYawPitchRoll(float ret[3]) {
 	Quatf quaternion = mFusionResult->GetOrientation();
 

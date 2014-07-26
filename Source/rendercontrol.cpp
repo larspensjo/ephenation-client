@@ -66,7 +66,6 @@
 #include "fboflat.h"
 #include "HudTransformation.h"
 #include "RenderTarget.h"
-#include "TemporalReprojection.h"
 #include "Nausea.h"
 
 #define NELEM(x) (sizeof x / sizeof x[0])
@@ -305,16 +304,13 @@ std::unique_ptr<RenderTarget> RenderControl::Draw(bool underWater, const Model::
 	if (!Model::gPlayer.IsDead() && !Model::gPlayer.BelowGround() && !underWater)
 		diffuseSky = ColAttachRenderTarget;
 	drawSkyBox(diffuseSky, ColAttachPosition, stereoView);
-	TemporalReprojection::sgTemporalReprojection.Poll("4");
 
 	gDrawObjectList.clear();
 
 	ToggleRenderTarget(current, previous);
 	drawOpaqueLandscape(stereoView);
-	TemporalReprojection::sgTemporalReprojection.Poll("4.5");
 	if (this->ThirdPersonView() && gMode.Get() != GameMode::LOGIN)
 		drawPlayer(); // Draw self, but not if camera is too close
-	TemporalReprojection::sgTemporalReprojection.Poll("5");
 	drawOtherPlayers();
 	drawMonsters();
 	drawTransparentLandscape(stereoView);
@@ -322,12 +318,10 @@ std::unique_ptr<RenderTarget> RenderControl::Draw(bool underWater, const Model::
 		selectedObject->RenderHealthBar(HealthBar::Make(), Model::gPlayer.fAngleHor);
 
 	// Apply deferred shader filters.
-	TemporalReprojection::sgTemporalReprojection.Poll("5.5");
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_ONE, GL_ONE);
 	if ((gOptions.fDynamicShadows || gOptions.fStaticShadows) && !Model::gPlayer.BelowGround())
 		drawDynamicShadows();
-	TemporalReprojection::sgTemporalReprojection.Poll("6");
 	drawPointLights();
 	drawSSAO();
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); // Restore default
@@ -339,7 +333,6 @@ std::unique_ptr<RenderTarget> RenderControl::Draw(bool underWater, const Model::
 	ToggleRenderTarget(current, previous);
 	DrawBuffers(ColAttachRenderTarget);
 	drawDeferredLighting(underWater, gOptions.fWhitePoint);
-	TemporalReprojection::sgTemporalReprojection.Poll("7");
 	// Do some post processing
 	if (!underWater)
 		drawPointShadows();
@@ -353,7 +346,6 @@ std::unique_ptr<RenderTarget> RenderControl::Draw(bool underWater, const Model::
 		ToggleRenderTarget(current, previous);
 		drawScreenSpaceReflection();
 	}
-	TemporalReprojection::sgTemporalReprojection.Poll("8");
 	if (gOptions.fPerformance > 1 && !stereoView) {
 		// The Oculus will have its own blurring functionality
 		ToggleRenderTarget(current, previous);
@@ -362,10 +354,10 @@ std::unique_ptr<RenderTarget> RenderControl::Draw(bool underWater, const Model::
 	return current;
 }
 
-void RenderControl::SetSingleTarget(RenderTarget *target) {
+void RenderControl::SetSingleTarget(const RenderTarget &target) {
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fboName);
 	DrawBuffers(ColAttachRenderTarget);
-	target->FramebufferTexture2D(ColAttachRenderTarget);
+	target.FramebufferTexture2D(ColAttachRenderTarget);
 }
 
 void RenderControl::DrawStationaryEffects(bool showMap, int mapWidth, bool stereoView, bool showInvent, MainUserInterface *ui, float renderViewAngle) {
@@ -373,14 +365,12 @@ void RenderControl::DrawStationaryEffects(bool showMap, int mapWidth, bool stere
 		drawMap(mapWidth, stereoView);
 	if (showInvent)
 		drawInventory(stereoView);
-	TemporalReprojection::sgTemporalReprojection.Poll("8.5");
 	if (ui)
 		drawUI(ui);
 	if (gMode.Get() == GameMode::TELEPORT) // Draw the teleport mode
 		TeleportClick(HealthBar::Make(), Model::gPlayer.fAngleHor, renderViewAngle, 0, 0, false, stereoView);
 	if (fShowMouse)
 		drawMousePointer();
-	TemporalReprojection::sgTemporalReprojection.Poll("9");
 }
 
 void RenderControl::drawClear(bool underWater) {
@@ -800,13 +790,13 @@ void RenderControl::drawMousePointer() {
 	}
 }
 
-std::unique_ptr<RenderTarget> RenderControl::MovePixels(std::unique_ptr<RenderTarget> source, float x, float y) {
+std::unique_ptr<RenderTarget> RenderControl::MovePixels(GLuint source, float x, float y) {
 	std::unique_ptr<RenderTarget> dest(new RenderTarget);
-	SetSingleTarget(dest.get());
+	SetSingleTarget(*dest);
 	glm::mat4 model(1);
 	model = glm::scale(model, glm::vec3(2.0f, 2.0f, 1.0f));
-	model = glm::translate(model, glm::vec3(2.0f * x / gViewport[2] - 0.5, 2.0f * y / gViewport[3] - 0.5f, 0.0f));
-	glBindTexture(GL_TEXTURE_2D, source->GetTexture());
+	model = glm::translate(model, glm::vec3(2.0f * x / gViewport[2] - 0.5, y / gViewport[3] - 0.5f, 0.0f));
+	glBindTexture(GL_TEXTURE_2D, source);
 	glDepthMask(GL_FALSE);
 	glDisable(GL_DEPTH_TEST);
 	DrawTexture::Make()->Draw(glm::mat4(1), model, 1.0f);
@@ -814,18 +804,20 @@ std::unique_ptr<RenderTarget> RenderControl::MovePixels(std::unique_ptr<RenderTa
 	return dest;
 }
 
-void RenderControl::drawFullScreenPixmap(GLuint id, bool stereoView) const {
+void RenderControl::drawFullScreenPixmap(GLuint id, bool stereoView, bool leftEye) const {
 	static TimeMeasure tm("Screen");
 	tm.Start();
 
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-	glViewport(gViewport[0], gViewport[1], gViewport[2], gViewport[3]); // Restore default viewport.
-
 	glBindTexture(GL_TEXTURE_2D, id); // Override
 	glDepthMask(GL_FALSE);                // The depth buffer shall not be updated, or some transparent blocks behind each other will not be shown.
 	glDisable(GL_DEPTH_TEST);
-	DrawTexture::Make()->DrawScreen(stereoView);
+	if (stereoView)
+		DrawTexture::Make()->DrawBarrelDistortion(leftEye);
+	else
+		DrawTexture::Make()->DrawScreen();
 	glDepthMask(GL_TRUE);
+
 	tm.Stop();
 }
 
