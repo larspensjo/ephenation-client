@@ -81,6 +81,8 @@
 		<Unit filename="Ephenation.iss" />
 		<Unit filename="HealthBar.cpp" />
 		<Unit filename="HealthBar.h" />
+		<Unit filename="HudTransformation.cpp" />
+		<Unit filename="HudTransformation.h" />
 		<Unit filename="Inventory.cpp" />
 		<Unit filename="Inventory.h" />
 		<Unit filename="Makefile" />
@@ -89,12 +91,17 @@
 		<Unit filename="Map.h" />
 		<Unit filename="OculusRift.cpp" />
 		<Unit filename="OculusRift.h" />
+		<Unit filename="OpenglBuffer.cpp" />
+		<Unit filename="OpenglBuffer.h" />
 		<Unit filename="Options.cpp" />
 		<Unit filename="Options.h" />
+		<Unit filename="RenderTarget.cpp" />
+		<Unit filename="RenderTarget.h" />
 		<Unit filename="ScrollingMessages.cpp" />
 		<Unit filename="ScrollingMessages.h" />
 		<Unit filename="SoundControl.cpp" />
 		<Unit filename="SoundControl.h" />
+		<Unit filename="Splitter.h" />
 		<Unit filename="SuperChunkManager.cpp" />
 		<Unit filename="SuperChunkManager.h" />
 		<Unit filename="TSExec.cpp" />
@@ -121,6 +128,7 @@
 		<Unit filename="clipboard.h" />
 		<Unit filename="connection.cpp" />
 		<Unit filename="connection.h" />
+		<Unit filename="contrib/SimpleSignal/SimpleSignal.h" />
 		<Unit filename="contrib/bstrlib.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -178,6 +186,8 @@
 		<Unit filename="rendercontrol.h" />
 		<Unit filename="shaders/AnimationShader.cpp" />
 		<Unit filename="shaders/AnimationShader.h" />
+		<Unit filename="shaders/BarrelDistortion.cpp" />
+		<Unit filename="shaders/BarrelDistortion.h" />
 		<Unit filename="shaders/ChunkShader.cpp" />
 		<Unit filename="shaders/ChunkShader.h" />
 		<Unit filename="shaders/ChunkShaderPicking.cpp" />
@@ -213,8 +223,10 @@
 		<Unit filename="shaders/addssao.glsl" />
 		<Unit filename="shaders/addssao.h" />
 		<Unit filename="shaders/animationshader.glsl" />
+		<Unit filename="shaders/barreldistortion.glsl" />
 		<Unit filename="shaders/chunkshader.glsl" />
 		<Unit filename="shaders/chunkshaderpicking.glsl" />
+		<Unit filename="shaders/colorshader.glsl" />
 		<Unit filename="shaders/common.glsl" />
 		<Unit filename="shaders/deferredlighting.glsl" />
 		<Unit filename="shaders/downsmpllum.cpp" />

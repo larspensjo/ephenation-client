@@ -18,6 +18,7 @@
 #include "RenderTarget.h"
 #include "primitives.h"
 #include "assert.h"
+#include "Debug.h"
 
 using namespace View;
 
@@ -45,6 +46,7 @@ RenderTarget::RenderTarget() {
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER); // Get a black border when outside
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+		LPLOG("Allocate new (%d)", fRendertarget);
 	}
 	fNumAllocated++;
 }
@@ -63,6 +65,6 @@ void RenderTarget::ReleaseAll() {
 	fFreeTextures.clear();
 }
 
-void RenderTarget::FramebufferTexture2D(GLenum attachment) {
+void RenderTarget::FramebufferTexture2D(GLenum attachment) const {
 	glFramebufferTexture2D(GL_FRAMEBUFFER, attachment, GL_TEXTURE_2D, fRendertarget, 0);
 }
