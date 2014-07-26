@@ -44,6 +44,8 @@ public:
 
 	void GetYawPitchRoll(float[3]);
 
+	void GetQuat(float[4]);
+
 	static OculusRift sfOvr; // An instance of this class.
 private:
 	OVR::System fSystem;

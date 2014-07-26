@@ -1,4 +1,4 @@
-// Copyright 2012-2013 The Ephenation Authors
+// Copyright 2012-2014 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -30,7 +30,6 @@ static const GLchar *vertexShaderSource[] = {
 /// Using GLSW to define shader
 static const GLchar *fragmentShaderSource[] = {
 	"common.UniformBuffer",
-	"common.OvrDistortion",
 	"simpletexture.Fragment",
 };
 
@@ -52,7 +51,6 @@ void SimpleTextureShader::GetLocations(void) {
 	fgTexCoordIndex = this->GetAttribLocation("texCoord");
 	fTextOffsMultiInd = this->GetUniformLocation("textOffsMulti");
 	fColorOffsetIdx = this->GetUniformLocation("colorOffset");
-	fCompensateDistInd = this->GetUniformLocation("UCompensateDistortion");
 	this->TextureOffsetMulti(0.0f, 0.0f, 1.0f);
 }
 

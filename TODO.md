@@ -7,11 +7,12 @@ Oculus Rift
 * Drawing monster stats should use gProjectionView
 * Use bold font for better readability
 * Dialogs are usually made for high resolution screens, so they become very big
-* Use bigger render target, to use more of the OVR display
 * The mouse pointer should be hidden when not needed
 * The map should only be computed once in OVR mode, not once for each eye
 * Text in options windows doesn't always show
 * Tilting the head should also tilt the head of the avatar, for other players to see
+* Enlarge the compass a little, it is hard to find.
+* A better frame is needed for OVR mode, to make it more obvious what the moving direction is.
 
 Graphical effects
 -----------------
@@ -25,8 +26,10 @@ Graphical effects
 * libRocket Dialogs projected on blocks (a special case of the action block)
 * For underground, use automatic green tints for positive up normals
 * Make three sets of skyboxes, for different time of day
-* Implement SSAO
 * Make water splash when a player or monsters falls into water
+* Move all shaders to the Shaders namespace
+* Use particle effects to draw grass
+* Use atmospheric based realistic lighting
 
 Sound
 -----
@@ -36,7 +39,7 @@ Sound
 
 Other
 -----
-* Fix the issue with low initial FPS
+* Fix the issue with low initial lagging FPS
 * Timers should also be drawn live on the screen
 * Pre-load chunks of teleport destination
 * Update to newer version of libRocket
@@ -54,3 +57,7 @@ Refactoring
 Installation
 ------------
 * Uninstalling the game should also remove the cache.
+
+UI
+--
+* When logging in, pressing ESC of "Cancel" shall quit the game.
