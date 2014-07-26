@@ -63,6 +63,8 @@ void LoginDialog::UpdateInput(Rocket::Core::Element *e) {
 				ss << "<p style=\"color:red;\">Running beta version: " << CLIENT_MAJOR_VERSION << "." << CLIENT_MINOR_VERSION << "b</p>";
 			else
 				ss << "Client version: " << CLIENT_MAJOR_VERSION << "." << CLIENT_MINOR_VERSION;
+			if (Options::sfSave.fLicenseKey == "")
+				ss << "<br />Get free license key from www.ephenation.net";
 			if (gParseMessageAtLogin != "")
 				ss << "<br /><p style=\"color:red;\">" << gParseMessageAtLogin << "</p>";
 			e->SetInnerRML(ss.str().c_str());
