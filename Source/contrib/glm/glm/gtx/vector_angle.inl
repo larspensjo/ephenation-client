@@ -9,7 +9,7 @@
 
 namespace glm
 {
-	template <typename genType> 
+	template <typename genType>
 	GLM_FUNC_QUALIFIER genType angle
 	(
 		genType const & x,
@@ -23,12 +23,12 @@ namespace glm
 #ifdef GLM_FORCE_RADIANS
 		return Angle;
 #else
-#		pragma message("GLM: angle function returning degrees is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.")
+//#		pragma message("GLM: angle function returning degrees is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.")
 		return degrees(Angle);
 #endif
 	}
 
-	template <typename T, precision P, template <typename, precision> class vecType> 
+	template <typename T, precision P, template <typename, precision> class vecType>
 	GLM_FUNC_QUALIFIER T angle
 	(
 		vecType<T, P> const & x,
@@ -42,7 +42,7 @@ namespace glm
 #ifdef GLM_FORCE_RADIANS
 		return Angle;
 #else
-#		pragma message("GLM: angle function returning degrees is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.")
+//#		pragma message("GLM: angle function returning degrees is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.")
 		return degrees(Angle);
 #endif
 	}
@@ -62,7 +62,7 @@ namespace glm
 #ifdef GLM_FORCE_RADIANS
 		T const Angle(acos(Dot));
 #else
-#		pragma message("GLM: orientedAngle function returning degrees is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.")
+//#		pragma message("GLM: orientedAngle function returning degrees is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.")
 		T const Angle(degrees(acos(Dot)));
 #endif
 		detail::tvec2<T, P> const TransformedVector(glm::rotate(x, Angle));
@@ -87,7 +87,7 @@ namespace glm
 #ifdef GLM_FORCE_RADIANS
 		T const Angle(acos(Dot));
 #else
-#		pragma message("GLM: orientedAngle function returning degrees is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.")
+//#		pragma message("GLM: orientedAngle function returning degrees is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.")
 		T const Angle(degrees(acos(Dot)));
 #endif
 

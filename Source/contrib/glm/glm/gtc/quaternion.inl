@@ -8,10 +8,10 @@
 /// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 /// copies of the Software, and to permit persons to whom the Software is
 /// furnished to do so, subject to the following conditions:
-/// 
+///
 /// The above copyright notice and this permission notice shall be included in
 /// all copies or substantial portions of the Software.
-/// 
+///
 /// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 /// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 /// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -89,7 +89,7 @@ namespace detail
 	//////////////////////////////////////////////////////////////
 	// tquat conversions
 
-	//template <typename valType> 
+	//template <typename valType>
 	//GLM_FUNC_QUALIFIER tquat<valType>::tquat
 	//(
 	//	valType const & pitch,
@@ -100,7 +100,7 @@ namespace detail
 	//	tvec3<valType> eulerAngle(pitch * valType(0.5), yaw * valType(0.5), roll * valType(0.5));
 	//	tvec3<valType> c = glm::cos(eulerAngle * valType(0.5));
 	//	tvec3<valType> s = glm::sin(eulerAngle * valType(0.5));
-	//	
+	//
 	//	this->w = c.x * c.y * c.z + s.x * s.y * s.z;
 	//	this->x = s.x * c.y * c.z - c.x * s.y * s.z;
 	//	this->y = c.x * s.y * c.z + s.x * c.y * s.z;
@@ -129,11 +129,11 @@ namespace detail
 	{
 		tvec3<T, P> c = glm::cos(eulerAngle * T(0.5));
 		tvec3<T, P> s = glm::sin(eulerAngle * T(0.5));
-		
+
 		this->w = c.x * c.y * c.z + s.x * s.y * s.z;
 		this->x = s.x * c.y * c.z - c.x * s.y * s.z;
 		this->y = c.x * s.y * c.z + s.x * c.y * s.z;
-		this->z = c.x * c.y * s.z - s.x * s.y * c.z;		
+		this->z = c.x * c.y * s.z - s.x * s.y * c.z;
 	}
 
 	template <typename T, precision P>
@@ -157,7 +157,7 @@ namespace detail
 	//////////////////////////////////////////////////////////////
 	// tquat<T, P> accesses
 
-	template <typename T, precision P> 
+	template <typename T, precision P>
 	GLM_FUNC_QUALIFIER T & tquat<T, P>::operator[] (length_t i)
 	{
 		assert(i >= 0 && i < this->length());
@@ -223,7 +223,7 @@ namespace detail
 		return *this;
 	}
 
-	template <typename T, precision P> 
+	template <typename T, precision P>
 	GLM_FUNC_QUALIFIER tquat<T, P> & tquat<T, P>::operator *=
 	(
 		T const & s
@@ -236,7 +236,7 @@ namespace detail
 		return *this;
 	}
 
-	template <typename T, precision P> 
+	template <typename T, precision P>
 	GLM_FUNC_QUALIFIER tquat<T, P> & tquat<T, P>::operator /=
 	(
 		T const & s
@@ -442,8 +442,8 @@ namespace detail
 	template <typename T, precision P>
 	GLM_FUNC_QUALIFIER detail::tquat<T, P> mix
 	(
-		detail::tquat<T, P> const & x, 
-		detail::tquat<T, P> const & y, 
+		detail::tquat<T, P> const & x,
+		detail::tquat<T, P> const & y,
 		T const & a
 	)
 	{
@@ -484,8 +484,8 @@ namespace detail
 	template <typename T, precision P>
 	GLM_FUNC_QUALIFIER detail::tquat<T, P> mix2
 	(
-		detail::tquat<T, P> const & x, 
-		detail::tquat<T, P> const & y, 
+		detail::tquat<T, P> const & x,
+		detail::tquat<T, P> const & y,
 		T const & a
 	)
 	{
@@ -514,7 +514,7 @@ namespace detail
 
 		if(flip)
 			alpha = -alpha;
-		
+
 		return normalize(beta * x + alpha * y);
 	}
 */
@@ -550,8 +550,8 @@ namespace detail
 	template <typename T, precision P>
 	GLM_FUNC_QUALIFIER detail::tquat<T, P> lerp
 	(
-		detail::tquat<T, P> const & x, 
-		detail::tquat<T, P> const & y, 
+		detail::tquat<T, P> const & x,
+		detail::tquat<T, P> const & y,
 		T const & a
 	)
 	{
@@ -574,7 +574,7 @@ namespace detail
 
 		T cosTheta = dot(x, y);
 
-		// If cosTheta < 0, the interpolation will take the long way around the sphere. 
+		// If cosTheta < 0, the interpolation will take the long way around the sphere.
 		// To fix this, one quat must be negated.
 		if (cosTheta < T(0))
 		{
@@ -623,7 +623,7 @@ namespace detail
 #ifdef GLM_FORCE_RADIANS
 		T const AngleRad(angle);
 #else
-#		pragma message("GLM: rotate function taking degrees as a parameter is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.")
+//#		pragma message("GLM: rotate function taking degrees as a parameter is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.")
 		T const AngleRad = radians(angle);
 #endif
 		T const Sin = sin(AngleRad * T(0.5));
@@ -650,7 +650,7 @@ namespace detail
 #ifdef GLM_FORCE_RADIANS
 		return T(atan(T(2) * (q.x * q.y + q.w * q.z), q.w * q.w + q.x * q.x - q.y * q.y - q.z * q.z));
 #else
-#		pragma message("GLM: roll function returning degrees is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.")
+//#		pragma message("GLM: roll function returning degrees is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.")
 		return glm::degrees(atan(T(2) * (q.x * q.y + q.w * q.z), q.w * q.w + q.x * q.x - q.y * q.y - q.z * q.z));
 #endif
 	}
@@ -664,7 +664,7 @@ namespace detail
 #ifdef GLM_FORCE_RADIANS
 		return T(atan(T(2) * (q.y * q.z + q.w * q.x), q.w * q.w - q.x * q.x - q.y * q.y + q.z * q.z));
 #else
-#		pragma message("GLM: pitch function returning degrees is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.")
+//#		pragma message("GLM: pitch function returning degrees is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.")
 		return glm::degrees(atan(T(2) * (q.y * q.z + q.w * q.x), q.w * q.w - q.x * q.x - q.y * q.y + q.z * q.z));
 #endif
 	}
@@ -678,7 +678,7 @@ namespace detail
 #ifdef GLM_FORCE_RADIANS
 		return asin(T(-2) * (q.x * q.z - q.w * q.y));
 #else
-#		pragma message("GLM: yaw function returning degrees is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.")
+//#		pragma message("GLM: yaw function returning degrees is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.")
 		return glm::degrees(asin(T(-2) * (q.x * q.z - q.w * q.y)));
 #endif
 	}
@@ -782,7 +782,7 @@ namespace detail
 			Result.y = (m[1][2] + m[2][1]) * mult;
 			Result.z = biggestVal;
 			break;
-			
+
 		default:					// Silence a -Wswitch-default warning in GCC. Should never actually get here. Assert is just for sanity.
 			assert(false);
 			break;
@@ -808,7 +808,7 @@ namespace detail
 #ifdef GLM_FORCE_RADIANS
 		return acos(x.w) * T(2);
 #else
-#		pragma message("GLM: angle function returning degrees is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.")
+//#		pragma message("GLM: angle function returning degrees is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.")
 		return glm::degrees(acos(x.w) * T(2));
 #endif
 	}
@@ -838,7 +838,7 @@ namespace detail
 #ifdef GLM_FORCE_RADIANS
 		T const a(angle);
 #else
-#		pragma message("GLM: angleAxis function taking degrees as a parameter is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.")
+//#		pragma message("GLM: angleAxis function taking degrees as a parameter is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.")
 		T const a(glm::radians(angle));
 #endif
 		T s = glm::sin(a * T(0.5));

@@ -21,7 +21,7 @@ namespace glm
 		T const Cos(cos(angle));
 		T const Sin(sin(angle));
 #else
-#		pragma message("GLM: rotate function taking degrees as parameters is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.")
+//#		pragma message("GLM: rotate function taking degrees as parameters is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.")
 		T const Cos = cos(radians(angle));
 		T const Sin = sin(radians(angle));
 #endif
@@ -76,7 +76,7 @@ namespace glm
 		T const Cos(cos(angle));
 		T const Sin(sin(angle));
 #else
-#		pragma message("GLM: rotateX function taking degrees as parameters is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.")
+//#		pragma message("GLM: rotateX function taking degrees as parameters is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.")
 		T const Cos = cos(radians(angle));
 		T const Sin = sin(radians(angle));
 #endif
@@ -99,7 +99,7 @@ namespace glm
 		T const Cos(cos(angle));
 		T const Sin(sin(angle));
 #else
-#		pragma message("GLM: rotateY function taking degrees as parameters is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.")
+//#		pragma message("GLM: rotateY function taking degrees as parameters is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.")
 		T const Cos(cos(radians(angle)));
 		T const Sin(sin(radians(angle)));
 #endif
@@ -122,7 +122,7 @@ namespace glm
 		T const Cos(cos(angle));
 		T const Sin(sin(angle));
 #else
-#		pragma message("GLM: rotateZ function taking degrees as parameters is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.")
+//#		pragma message("GLM: rotateZ function taking degrees as parameters is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.")
 		T const Cos(cos(radians(angle)));
 		T const Sin(sin(radians(angle)));
 #endif
@@ -145,7 +145,7 @@ namespace glm
 		T const Cos(cos(angle));
 		T const Sin(sin(angle));
 #else
-#		pragma message("GLM: rotateX function taking degrees as parameters is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.")
+//#		pragma message("GLM: rotateX function taking degrees as parameters is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.")
 		T const Cos(cos(radians(angle)));
 		T const Sin(sin(radians(angle)));
 #endif
@@ -168,7 +168,7 @@ namespace glm
 		T const Cos(cos(angle));
 		T const Sin(sin(angle));
 #else
-#		pragma message("GLM: rotateX function taking degrees as parameters is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.")
+//#		pragma message("GLM: rotateX function taking degrees as parameters is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.")
 		T const Cos(cos(radians(angle)));
 		T const Sin(sin(radians(angle)));
 #endif
@@ -191,7 +191,7 @@ namespace glm
 		T const Cos(cos(angle));
 		T const Sin(sin(angle));
 #else
-#		pragma message("GLM: rotateZ function taking degrees as parameters is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.")
+//#		pragma message("GLM: rotateZ function taking degrees as parameters is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.")
 		T const Cos(cos(radians(angle)));
 		T const Sin(sin(radians(angle)));
 #endif
@@ -215,7 +215,7 @@ namespace glm
 #		ifdef GLM_FORCE_RADIANS
 			T Angle = acos(dot(Normal, Up));
 #		else
-#			pragma message("GLM: rotateZ function taking degrees as parameters is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.")
+//#			pragma message("GLM: rotateZ function taking degrees as parameters is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.")
 			T Angle = degrees(acos(dot(Normal, Up)));
 #		endif
 		return rotate(Angle, RotationAxis);
