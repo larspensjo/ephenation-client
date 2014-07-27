@@ -1,4 +1,4 @@
-// Copyright 2012-2013 The Ephenation Authors
+// Copyright 2012-2014 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -18,7 +18,7 @@
 #pragma once
 
 #include <memory>
-#include <glm/glm.hpp>
+#include <glm/fwd.hpp>
 
 #include "animationmodels.h"
 #include "RenderTarget.h"
