@@ -8,10 +8,10 @@
 /// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 /// copies of the Software, and to permit persons to whom the Software is
 /// furnished to do so, subject to the following conditions:
-/// 
+///
 /// The above copyright notice and this permission notice shall be included in
 /// all copies or substantial portions of the Software.
-/// 
+///
 /// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 /// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 /// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -39,7 +39,7 @@ namespace glm
 #ifdef GLM_FORCE_RADIANS
 		T a = angle;
 #else
-#		pragma message("GLM: rotateNormalizedAxis function taking degrees as parameters is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.")
+//#		pragma message("GLM: rotateNormalizedAxis function taking degrees as parameters is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.")
 		T a = radians(angle);
 #endif
 		T c = cos(a);
@@ -73,7 +73,7 @@ namespace glm
 	template <typename T, precision P>
 	GLM_FUNC_QUALIFIER detail::tquat<T, P> rotateNormalizedAxis
 	(
-		detail::tquat<T, P> const & q, 
+		detail::tquat<T, P> const & q,
 		T const & angle,
 		detail::tvec3<T, P> const & v
 	)
@@ -83,7 +83,7 @@ namespace glm
 #ifdef GLM_FORCE_RADIANS
 		T const AngleRad(angle);
 #else
-#		pragma message("GLM: rotateNormalizedAxis function taking degrees as parameters is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.")
+//#		pragma message("GLM: rotateNormalizedAxis function taking degrees as parameters is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.")
 		T const AngleRad = radians(angle);
 #endif
 		T const Sin = sin(AngleRad * T(0.5));

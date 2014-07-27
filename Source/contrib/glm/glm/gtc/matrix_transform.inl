@@ -8,10 +8,10 @@
 /// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 /// copies of the Software, and to permit persons to whom the Software is
 /// furnished to do so, subject to the following conditions:
-/// 
+///
 /// The above copyright notice and this permission notice shall be included in
 /// all copies or substantial portions of the Software.
-/// 
+///
 /// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 /// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 /// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -43,7 +43,7 @@ namespace glm
 		Result[3] = m[0] * v[0] + m[1] * v[1] + m[2] * v[2] + m[3];
 		return Result;
 	}
-	
+
 	template <typename T, precision P>
 	GLM_FUNC_QUALIFIER detail::tmat4x4<T, P> rotate
 	(
@@ -55,7 +55,7 @@ namespace glm
 #ifdef GLM_FORCE_RADIANS
 		T a = angle;
 #else
-#		pragma message("GLM: rotate function taking degrees as a parameter is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.")
+//#		pragma message("GLM: rotate function taking degrees as a parameter is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.")
 		T a = radians(angle);
 #endif
 		T c = cos(a);
@@ -84,19 +84,19 @@ namespace glm
 		Result[3] = m[3];
 		return Result;
 	}
-		
+
 	template <typename T, precision P>
 	GLM_FUNC_QUALIFIER detail::tmat4x4<T, P> rotate_slow
 	(
 		detail::tmat4x4<T, P> const & m,
-		T const & angle, 
+		T const & angle,
 		detail::tvec3<T, P> const & v
 	)
 	{
 #ifdef GLM_FORCE_RADIANS
 		T const a = angle;
 #else
-#		pragma message("GLM: rotate_slow function taking degrees as a parameter is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.")
+//#		pragma message("GLM: rotate_slow function taking degrees as a parameter is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.")
 		T const a = radians(angle);
 #endif
 		T c = cos(a);
@@ -229,7 +229,7 @@ namespace glm
 #ifdef GLM_FORCE_RADIANS
 		valType const rad = fovy;
 #else
-#		pragma message("GLM: perspective function taking degrees as a parameter is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.")
+//#		pragma message("GLM: perspective function taking degrees as a parameter is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.")
 		valType const rad = glm::radians(fovy);
 #endif
 
@@ -243,7 +243,7 @@ namespace glm
 		Result[3][2] = - (valType(2) * zFar * zNear) / (zFar - zNear);
 		return Result;
 	}
-	
+
 	template <typename valType>
 	GLM_FUNC_QUALIFIER detail::tmat4x4<valType, defaultp> perspectiveFov
 	(
@@ -257,11 +257,11 @@ namespace glm
 		assert(width > valType(0));
 		assert(height > valType(0));
 		assert(fov > valType(0));
-	
+
 #ifdef GLM_FORCE_RADIANS
 		valType rad = fov;
 #else
-#		pragma message("GLM: perspectiveFov function taking degrees as a parameter is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.")
+//#		pragma message("GLM: perspectiveFov function taking degrees as a parameter is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.")
 		valType rad = glm::radians(fov);
 #endif
 		valType h = glm::cos(valType(0.5) * rad) / glm::sin(valType(0.5) * rad);
@@ -285,10 +285,10 @@ namespace glm
 	)
 	{
 #ifdef GLM_FORCE_RADIANS
-		T const range = tan(fovy / T(2)) * zNear;	
+		T const range = tan(fovy / T(2)) * zNear;
 #else
-#		pragma message("GLM: infinitePerspective function taking degrees as a parameter is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.")
-		T const range = tan(radians(fovy / T(2))) * zNear;	
+//#		pragma message("GLM: infinitePerspective function taking degrees as a parameter is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.")
+		T const range = tan(radians(fovy / T(2))) * zNear;
 #endif
 		T left = -range * aspect;
 		T right = range * aspect;
@@ -313,10 +313,10 @@ namespace glm
 	)
 	{
 #ifdef GLM_FORCE_RADIANS
-		T range = tan(fovy / T(2)) * zNear;	
+		T range = tan(fovy / T(2)) * zNear;
 #else
-#		pragma message("GLM: tweakedInfinitePerspective function taking degrees as a parameter is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.")
-		T range = tan(radians(fovy / T(2))) * zNear;	
+//#		pragma message("GLM: tweakedInfinitePerspective function taking degrees as a parameter is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.")
+		T range = tan(radians(fovy / T(2))) * zNear;
 #endif
 		T left = -range * aspect;
 		T right = range * aspect;

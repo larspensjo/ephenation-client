@@ -49,7 +49,7 @@
 ##==========================================================================
 
 # The pre-processor and compiler options.
-MY_CFLAGS = -Dunix -Icontrib/glm -Icontrib/libovr/include
+MY_CFLAGS = -Dunix -Icontrib/glm -Icontrib/libovr/include -Wstrict-aliasing=0
 
 # The linker options.
 MY_LIBS   = -lGL\

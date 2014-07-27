@@ -42,6 +42,7 @@ Other
 * Update to newer version of libRocket
 * Teleport shall use a jump parabola instead of instant transfer. If inside rock, black will have to be used.
 * Create About-dialog
+* New glm produced lots of warnings. Enable -Wstrict-aliasing again.
 
 Refactoring
 -----------
