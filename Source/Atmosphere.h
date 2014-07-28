@@ -25,10 +25,18 @@ public:
 	Atmosphere();
 
 	void Debug();
-private:
-	enum { NHEIGHT=32, NVIEW_ANGLE=64, NSUN_ANGLE=32};
-	glm::vec3 fScattering[NHEIGHT][NVIEW_ANGLE][NSUN_ANGLE];
 
+private:
+	enum { NHEIGHT=32, NVIEW_ANGLE=64, NSUN_ANGLE=32, NTRANS_HOR_RES = 128};
+	glm::vec3 fScattering[NHEIGHT][NVIEW_ANGLE][NSUN_ANGLE];
+	glm::vec3 fTransmittance[NHEIGHT][NTRANS_HOR_RES]; // Precomputed transmittance for RGB
+
+	void PreComputeTransmittance();
+
+	/// Compute transmittance
+	/// @param pa Starting point
+	/// @param pb End point
+	/// @return Transmittance for R, G and B
 	glm::vec3 Transmittance(glm::vec3 pa, glm::vec3 pb) const;
 	void SingleScattering(glm::vec3 pa, glm::vec3 v, glm::vec3 &mie, glm::vec3 &rayleigh) const;
 };

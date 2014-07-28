@@ -43,6 +43,20 @@ static float HeightParameterizedInverse(float uh) {
 	return uh*uh*H_Atm;
 }
 
+
+static const float maxHorizontalDist = 1000000.0f;
+static const float minHorizontalDist = 100.0f; // Shorter than this has no effect
+static const float coeffHor = glm::log(maxHorizontalDist / minHorizontalDist);
+
+static float HorizontalDistParameterized(float x) {
+	return glm::log(x/minHorizontalDist) / coeffHor;
+}
+
+// Convert from interval [0,1] to [minHorizontalDist, maxHorizontalDist]
+static float HorizontalDistParameterizedInverse(float x) {
+	return minHorizontalDist * glm::exp(coeffHor * x);
+}
+
 static float ViewAngleParameterized(float cv, float h) {
 	float ch = - std::sqrt(h * (2 * R_Earth + h)) / (R_Earth + h); // The Angle between the horizon and zenith for the current height
 	if (cv > ch)
@@ -128,20 +142,31 @@ void Atmosphere::SingleScattering(vec3 pa, vec3 v, vec3 &mie, vec3 &rayleigh) co
 	rayleigh = totalInscatteringRayleigh;
 }
 
+void Atmosphere::PreComputeTransmittance() {
+	const glm::vec3 pb(0,0,0);
+	for (int xi = 0; xi < NTRANS_HOR_RES; xi++) {
+		float ux = float(xi) / NTRANS_HOR_RES;
+		for (int hi = 0; hi < NHEIGHT; hi++) {
+			float uh = float(hi) / NHEIGHT;
+			glm::vec3 pa(HorizontalDistParameterizedInverse(ux), HeightParameterizedInverse(uh), 0);
+			fTransmittance[hi][xi] = this->Transmittance(pa, pb);
+		}
+	}
+}
+
 void Atmosphere::Debug() {
+	this->PreComputeTransmittance();
 	vec3 pa(0,0,0);
-	vec3 pb(1000, 0, 0);
-	for (int i=0; i<5; i++) {
+	for (float i=1; i>=0; i -= 0.15f) {
+		vec3 pb(HorizontalDistParameterizedInverse(i), 0, 0);
 		vec3 transm = Transmittance(pa, pb);
 		LPLOG("Transmittance dist %.0fm: %f, %f, %f", pb.x, transm.r, transm.g, transm.b);
-		pb.x *= 10.0f;
 	}
 
-	pb = vec3(100000, H_Atm, 0);
-	for (int i=0; i<6; i++) {
+	for (float i=1; i>=0; i -= 0.15f) {
+		vec3 pb(100000, HeightParameterizedInverse(i), 0);
 		vec3 transm = Transmittance(pa, pb);
 		LPLOG("Transmittance height %.0fm: %f, %f, %f", pb.y, transm.r, transm.g, transm.b);
-		pb.y /= 10.0f;
 	}
 
 	vec3 v(0,-1,0);
