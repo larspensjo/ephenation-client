@@ -28,7 +28,8 @@ using glm::vec3;
 
 static const float H_Atm = 80000.0f;
 static const float R_Earth = 6371*1000;
-static const vec3 sunRGB(192.0f/255.0f,191.0f/255.0f,173.0f/255.0f); // As taken from http://forums.cgarchitect.com/8108-rgb-colour-sun.html#post242155
+// As taken from http://www.vendian.org/mncharity/dir3/blackbody/UnstableURLs/bbr_color.html at 5800K and converted from SRGB
+static const vec3 sunRGB(1, 0.73694, 0.63461);
 
 Atmosphere::Atmosphere()
 {
