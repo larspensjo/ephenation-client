@@ -163,14 +163,14 @@ void Atmosphere::PreComputeTransmittance() {
 }
 
 void Atmosphere::PreComputeSingleScattering() {
-	vec3 pa(0,0,0); // Assume player stationary at surface
 	for (int heightIndex = 0; heightIndex < NHEIGHT; heightIndex++) {
 		float uHeight = float(heightIndex) / NHEIGHT;
 		float h = HeightParameterizedInverse(uHeight);
+		vec3 pa(0,h,0);
 		for (int viewAngleIndex = 0; viewAngleIndex < NVIEW_ANGLE; viewAngleIndex++) {
 			float uViewAngle = float(viewAngleIndex) / NVIEW_ANGLE;
 			float cosViewAngle = ViewAngleParameterizedInverse(uViewAngle, h);
-			float sinViewAngle = glm::sqrt(1-cosViewAngle*cosViewAngle); // Pythagoras
+			float sinViewAngle = glm::sqrt(1 - cosViewAngle*cosViewAngle); // Pythagoras
 			// The view angle is the angle from the azimuth
 			vec3 v(sinViewAngle, cosViewAngle, 0); // Pointing to 'pa'
 			for (int sunAngleIndex = 0; sunAngleIndex < NSUN_ANGLE; sunAngleIndex++) {
