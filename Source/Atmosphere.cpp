@@ -65,7 +65,7 @@ static float ViewAngleParameterized(float cv, float h) {
 	if (cv > ch)
 		return 0.5f * std::pow((cv-ch) / (1-ch), 0.2f) + 0.5f;
 	else
-		return 0.5f * std::pow((ch-cv) / (ch+1), 0x2f);
+		return 0.5f * std::pow((ch-cv) / (ch+1), 0.2f);
 }
 
 static float ViewAngleParameterizedInverse(float uv, float h) {
