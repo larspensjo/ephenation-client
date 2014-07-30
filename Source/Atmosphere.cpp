@@ -71,9 +71,9 @@ static float ViewAngleParameterized(float cv, float h) {
 static float ViewAngleParameterizedInverse(float uv, float h) {
 	float ch = - std::sqrt(h * (2 * R_Earth + h)) / (R_Earth + h); // The Angle between the horizon and zenith for the current height
 	if (uv > 0.5f)
-		return ch + std::pow(uv-0.5f, 5.0f) * (1.0f - ch);
+		return ch + std::pow((uv-0.5f)*2, 5.0f) * (1.0f - ch);
 	else
-		return ch - std::pow(uv, 5.0f) * (1.0f + ch);
+		return ch - std::pow(uv*2, 5.0f) * (1.0f + ch);
 }
 
 static float SunAngleParameterization(float cs) {
