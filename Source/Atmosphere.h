@@ -32,11 +32,19 @@ private:
 	glm::vec3 fTransmittance[NHEIGHT][NTRANS_HOR_RES]; // Precomputed transmittance for RGB
 
 	void PreComputeTransmittance();
+	void PreComputeSingleScattering();
 
 	/// Compute transmittance
 	/// @param pa Starting point
 	/// @param pb End point
 	/// @return Transmittance for R, G and B
 	glm::vec3 Transmittance(glm::vec3 pa, glm::vec3 pb) const;
-	void SingleScattering(glm::vec3 pa, glm::vec3 v, glm::vec3 &mie, glm::vec3 &rayleigh) const;
+
+	/// Compute the single inscattering
+	/// @param pa The player position
+	/// @param l Direction from the sun
+	/// @param v The direction into 'pa'
+	void SingleScattering(glm::vec3 pa, glm::vec3 l, glm::vec3 v, glm::vec3 &mie, glm::vec3 &rayleigh) const;
+	glm::vec3 GatheredLight(glm::vec3 p, glm::vec3 v, glm::vec3 l) const;
+	glm::vec3 fetchScattered(float h, float thetaV, float thetaS) const;
 };

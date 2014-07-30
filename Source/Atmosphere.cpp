@@ -30,6 +30,8 @@ static const float H_Atm = 80000.0f;
 static const float R_Earth = 6371*1000;
 // As taken from http://www.vendian.org/mncharity/dir3/blackbody/UnstableURLs/bbr_color.html at 5800K and converted from SRGB
 static const vec3 sunRGB(1, 0.73694, 0.63461);
+// TODO: Sun direction shall not be a constant
+static const vec3 sunDir(-0.577350269f, 0.577350269f, 0.577350269f); // Copied from sundir in common.glsl.
 
 Atmosphere::Atmosphere()
 {
@@ -75,11 +77,13 @@ static float ViewAngleParameterizedInverse(float uv, float h) {
 }
 
 static float SunAngleParameterization(float cs) {
+	// Using radians!
 	float tmp = std::tan(1.26f * 1.1f);
 	return 0.5f * std::atan(std::max(cs, -0.1975f) * tmp) / 1.1f + (1-0.26f);
 }
 
 static float SunAngleParameterizationInverse(float us) {
+	// Using radians!
 	return std::tan((2*us - 1.0f + 0.26f) * 0.75f) / std::tan(1.26f * 0.75f);
 }
 
@@ -114,21 +118,24 @@ vec3 Atmosphere::Transmittance(vec3 pa, vec3 pb) const {
 	return glm::exp(-(totalDensityRayleigh * RayleighScatterCoefficient + totalDensityMie * MieExtinctionCoefficient));
 }
 
-void Atmosphere::SingleScattering(vec3 pa, vec3 v, vec3 &mie, vec3 &rayleigh) const {
-	// Compute the intersection
-	const vec3 planeOrig(0, H_Atm, 0);
-	const vec3 planeNormal(0, -1.0f, 0);
-	// TODO: Sun direction shall not be a constant
-	const vec3 sunDir(-0.577350269f, 0.577350269f, 0.577350269f); // Copied from sundir in common.glsl.
+void Atmosphere::SingleScattering(vec3 pa, vec3 l, vec3 v, vec3 &mie, vec3 &rayleigh) const {
+	// Compute the intersection distance to the point 'pb' where the ray leaves the atmosphere.
+	// See figure 4.
 	float intersectionDistance;
-	glm::intersectRayPlane(pa, -v, planeOrig, planeNormal, intersectionDistance);
+	glm::vec3 earthCenter(0, -R_Earth, 0); // Height 0 is ground level
+	const float atmSquared = (R_Earth+H_Atm) * (R_Earth+H_Atm);
+	bool found = glm::intersectRaySphere(pa, -v, earthCenter, atmSquared, intersectionDistance);
+	if (!found)
+		return;
 	float stepSize = intersectionDistance / INTEGRATION_STEPS;
 	vec3 totalInscatteringMie(0,0,0), totalInscatteringRayleigh(0,0,0), previousInscatteringMie(0,0,0), previousInscatteringRayleigh(0,0,0);
 	for (int step=0; step < INTEGRATION_STEPS; ++step) {
-		const vec3 p = pa + stepSize * (step+0.5f) * (-v);
+		// 'p' will iterate over the line from 'pa' to 'pb'.
+		const vec3 p = pa - stepSize * (step+0.5f) * v; // Step backwards from pa
 		vec3 transmittance = Transmittance(pa, p);
-		glm::intersectRayPlane(p, sunDir, planeOrig, planeNormal, intersectionDistance);
-		const vec3 pc = p + sunDir * intersectionDistance;
+		found = glm::intersectRaySphere(p, -l, earthCenter, atmSquared, intersectionDistance);
+		const vec3 pc = p - l * intersectionDistance; // Step backwards from p
+		// TODO: Use precomputed fTransmittance instead
 		transmittance *= Transmittance(p, pc);
 		vec3 currentInscatteringMie = getDensityMie(p.y) * transmittance;
 		vec3 currentInscatteringRayleigh = getDensityRayleigh(p.y) * transmittance;
@@ -155,8 +162,34 @@ void Atmosphere::PreComputeTransmittance() {
 	}
 }
 
+void Atmosphere::PreComputeSingleScattering() {
+	vec3 pa(0,0,0); // Assume player stationary at surface
+	for (int heightIndex = 0; heightIndex < NHEIGHT; heightIndex++) {
+		float uHeight = float(heightIndex) / NHEIGHT;
+		float h = HeightParameterizedInverse(uHeight);
+		for (int viewAngleIndex = 0; viewAngleIndex < NVIEW_ANGLE; viewAngleIndex++) {
+			float uViewAngle = float(viewAngleIndex) / NVIEW_ANGLE;
+			float cosViewAngle = ViewAngleParameterizedInverse(uViewAngle, h);
+			float sinViewAngle = glm::sqrt(1-cosViewAngle*cosViewAngle); // Pythagoras
+			// The view angle is the angle from the azimuth
+			vec3 v(sinViewAngle, cosViewAngle, 0); // Pointing to 'pa'
+			for (int sunAngleIndex = 0; sunAngleIndex < NSUN_ANGLE; sunAngleIndex++) {
+				float uSunAngle = float(sunAngleIndex) / NSUN_ANGLE;
+				float cosSunAngle = SunAngleParameterizationInverse(uSunAngle);
+				float sinSunAgle = glm::sqrt(1 - cosSunAngle*cosSunAngle);
+				// The sun angle is the angle between the azimuth and the sun
+				glm::vec3 l(sinSunAgle, cosSunAngle, 0); // Pointing toward 'pa'
+				vec3 mie, rayleigh;
+				SingleScattering(pa, l, v, mie, rayleigh);
+				fScattering[heightIndex][viewAngleIndex][sunAngleIndex] = mie + rayleigh;
+			}
+		}
+	}
+}
+
 void Atmosphere::Debug() {
 	this->PreComputeTransmittance();
+	this->PreComputeSingleScattering();
 	vec3 pa(0,0,0);
 	for (float i=1; i>=0; i -= 0.15f) {
 		vec3 pb(HorizontalDistParameterizedInverse(i), 0, 0);
@@ -171,12 +204,12 @@ void Atmosphere::Debug() {
 	}
 
 	vec3 v(0,-1,0);
-	for (int i=0; i<8; i++) {
+	for (int i=0; i<9; i++) {
 		vec3 mie, rayleigh;
-		SingleScattering(pa, v, mie, rayleigh);
+		SingleScattering(pa, -sunDir, v, mie, rayleigh);
 		LPLOG("Single scattering dir (%f, %f, %f)", v.x, v.y, v.z);
 		LPLOG("Mie      (%f, %f, %f)", mie.r, mie.g, mie.b);
 		LPLOG("Rayleigh (%f, %f, %f)", rayleigh.r, rayleigh.g, rayleigh.b);
-		v = glm::rotateX(v, 90.0f/8.0f);
+		v = glm::rotateZ(v, 90.0f/8.0f);
 	}
 }
