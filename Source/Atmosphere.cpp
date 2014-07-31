@@ -23,6 +23,7 @@
 
 #include "Atmosphere.h"
 #include "Debug.h"
+#include "primitives.h"
 
 using glm::vec3;
 using glm::vec2;
@@ -153,6 +154,22 @@ void Atmosphere::SingleScattering(vec3 pa, vec3 l, vec3 v, vec3 &mie, vec3 &rayl
 	rayleigh = totalInscatteringRayleigh;
 }
 
+vec3 Atmosphere::fetchScattered(float h, float cv, float cs) const {
+	float uh = HeightParameterized(h);
+	float uv = ViewAngleParameterized(cv, h);
+	float us = SunAngleParameterization(cs);
+	return fScattering[int(uh*NHEIGHT)][int(uv*NVIEW_ANGLE)][int(us*NSUN_ANGLE)];
+}
+
+vec3 Atmosphere::GatheredLight(vec3 p, vec3 v, vec3 l) const {
+	vec3 gathered;
+	for (float thetaV = 0.0f; thetaV < 2.0f*glm::pi<float>(); thetaV += 2.0f * glm::pi<float>() / INTEGRATION_STEPS) {
+		gathered += fetchScattered(glm::length(p), glm::cos(thetaV), l.y);
+	}
+	gathered *= 4.0f * glm::pi<float>() / INTEGRATION_STEPS;
+	return gathered;
+}
+
 void Atmosphere::PreComputeTransmittance() {
 	const vec3 pb(0,0,0);
 	for (int xi = 0; xi < NTRANS_HOR_RES; xi++) {
@@ -191,8 +208,8 @@ void Atmosphere::PreComputeSingleScattering() {
 }
 
 void Atmosphere::Debug() {
-	this->PreComputeTransmittance();
-	this->PreComputeSingleScattering();
+	this->Init();
+
 	vec3 pa(0,0,0);
 	for (float i=1; i>=0; i -= 0.15f) {
 		vec3 pb(HorizontalDistParameterizedInverse(i), 0, 0);
@@ -217,8 +234,7 @@ void Atmosphere::Debug() {
 	}
 
 GLuint Atmosphere::LoadTexture() {
-	this->PreComputeTransmittance();
-	this->PreComputeSingleScattering();
+	this->Init();
 
 	GLuint textureId;
 	glGenTextures(1, &textureId);
@@ -230,5 +246,15 @@ GLuint Atmosphere::LoadTexture() {
 
 	glTexImage3D(GL_TEXTURE_3D, 0, GL_RGB16F, NHEIGHT, NVIEW_ANGLE, NSUN_ANGLE, 0, GL_RGB, GL_FLOAT, fTransmittance);
 
+	checkError("Atmosphere::LoadTexture", false);
 	return textureId;
+}
+
+void Atmosphere::Init() {
+	LPLOG("");
+	if (fInitialized)
+		return;
+	this->PreComputeTransmittance();
+	this->PreComputeSingleScattering();
+	fInitialized = true;
 }

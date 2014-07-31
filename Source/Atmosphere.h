@@ -30,6 +30,8 @@ public:
 	GLuint LoadTexture();
 
 private:
+	void Init();
+
 	enum { NHEIGHT=32, NVIEW_ANGLE=64, NSUN_ANGLE=32, NTRANS_HOR_RES = 128};
 	glm::vec3 fScattering[NHEIGHT][NVIEW_ANGLE][NSUN_ANGLE];
 	glm::vec3 fTransmittance[NHEIGHT][NTRANS_HOR_RES]; // Precomputed transmittance for RGB
@@ -49,5 +51,7 @@ private:
 	/// @param v The direction into 'pa'
 	void SingleScattering(glm::vec3 pa, glm::vec3 l, glm::vec3 v, glm::vec3 &mie, glm::vec3 &rayleigh) const;
 	glm::vec3 GatheredLight(glm::vec3 p, glm::vec3 v, glm::vec3 l) const;
-	glm::vec3 fetchScattered(float h, float thetaV, float thetaS) const;
+	glm::vec3 fetchScattered(float h, float cv, float cs) const;
+
+	bool fInitialized = false;
 };
