@@ -27,6 +27,9 @@
 #include "../shapes/quad.h"
 #include "../player.h"
 #include "../textures.h"
+#include "../Atmosphere.h"
+
+using namespace Shaders;
 
 /// Using GLSW to define shader
 static const GLchar *vertexShaderSource[] = {

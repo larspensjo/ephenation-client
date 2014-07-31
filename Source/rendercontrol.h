@@ -29,7 +29,6 @@ class DeferredLighting;
 class AddPointLight;
 class AnimationShader;
 class AddPointShadow;
-class SkyBox;
 class AddLocalFog;
 class AddSSAO;
 class MainUserInterface;
@@ -41,6 +40,10 @@ class DistanceBlurring;
 
 namespace Model {
 	class Object;
+}
+
+namespace Shaders {
+	class SkyBox;
 }
 
 namespace View {
@@ -138,7 +141,7 @@ private:
 	std::unique_ptr<AddPointShadow> fAddPointShadow;
 	std::unique_ptr<AddLocalFog> fAddLocalFog;
 	std::unique_ptr<AddSSAO> fAddSSAO;
-	std::unique_ptr<SkyBox> fSkyBox;
+	std::unique_ptr<Shaders::SkyBox> fSkyBox;
 	std::unique_ptr<DownSamplingLuminance> fDownSamplingLuminance;
 	std::unique_ptr<GaussianBlur> fGaussianBlur;
 	std::unique_ptr<ScreenSpaceReflection> fScreenSpaceReflection;

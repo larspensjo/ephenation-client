@@ -150,7 +150,7 @@ void RenderControl::Init(int lightSamplingFactor, bool stereoView) {
 	fAddDynamicShadow->Init();
 	fShader = ChunkShader::Make(); // Singleton
 	fAnimation = AnimationShader::Make(); // Singleton
-	fSkyBox.reset(new SkyBox);
+	fSkyBox.reset(new Shaders::SkyBox);
 	fSkyBox->Init();
 	fDeferredLighting.reset(new DeferredLighting);
 	fDeferredLighting->Init();
