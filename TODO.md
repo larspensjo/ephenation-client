@@ -30,6 +30,7 @@ Graphical effects
 * Move all shaders to the Shaders namespace
 * Use particle effects to draw grass
 * Use atmospheric based realistic lighting
+* Normals on tree billboards should be toward the camera, independent on camera orientation
 
 Sound
 -----
