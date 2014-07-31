@@ -125,13 +125,13 @@ void Atmosphere::SingleScattering(vec3 pa, vec3 l, vec3 v, vec3 &mie, vec3 &rayl
 	// Compute the intersection distance to the point 'pb' where the ray leaves the atmosphere.
 	// See figure 4.
 	float intersectionDistance;
-	glm::vec3 earthCenter(0, -R_Earth, 0); // Height 0 is ground level
+	vec3 earthCenter(0, -R_Earth, 0); // Height 0 is ground level
 	const float atmSquared = (R_Earth+H_Atm) * (R_Earth+H_Atm);
 	bool found = glm::intersectRaySphere(pa, -v, earthCenter, atmSquared, intersectionDistance);
 	if (!found)
 		return;
 	float stepSize = intersectionDistance / INTEGRATION_STEPS;
-	vec3 totalInscatteringMie(0,0,0), totalInscatteringRayleigh(0,0,0), previousInscatteringMie(0,0,0), previousInscatteringRayleigh(0,0,0);
+	vec3 totalInscatteringMie, totalInscatteringRayleigh, previousInscatteringMie, previousInscatteringRayleigh;
 	for (int step=0; step < INTEGRATION_STEPS; ++step) {
 		// 'p' will iterate over the line from 'pa' to 'pb'.
 		const vec3 p = pa - stepSize * (step+0.5f) * v; // Step backwards from pa
@@ -154,12 +154,12 @@ void Atmosphere::SingleScattering(vec3 pa, vec3 l, vec3 v, vec3 &mie, vec3 &rayl
 }
 
 void Atmosphere::PreComputeTransmittance() {
-	const glm::vec3 pb(0,0,0);
+	const vec3 pb(0,0,0);
 	for (int xi = 0; xi < NTRANS_HOR_RES; xi++) {
 		float ux = float(xi) / NTRANS_HOR_RES;
 		for (int hi = 0; hi < NHEIGHT; hi++) {
 			float uh = float(hi) / NHEIGHT;
-			glm::vec3 pa(HorizontalDistParameterizedInverse(ux), HeightParameterizedInverse(uh), 0);
+			vec3 pa(HorizontalDistParameterizedInverse(ux), HeightParameterizedInverse(uh), 0);
 			fTransmittance[hi][xi] = this->Transmittance(pa, pb);
 		}
 	}
@@ -181,7 +181,7 @@ void Atmosphere::PreComputeSingleScattering() {
 				float cosSunAngle = SunAngleParameterizationInverse(uSunAngle);
 				float sinSunAgle = glm::sqrt(1 - cosSunAngle*cosSunAngle);
 				// The sun angle is the angle between the azimuth and the sun
-				glm::vec3 l(sinSunAgle, cosSunAngle, 0); // Pointing toward 'pa'
+				vec3 l(sinSunAgle, cosSunAngle, 0); // Pointing toward 'pa'
 				vec3 mie, rayleigh;
 				SingleScattering(pa, l, v, mie, rayleigh);
 				fScattering[heightIndex][viewAngleIndex][sunAngleIndex] = mie + rayleigh;
