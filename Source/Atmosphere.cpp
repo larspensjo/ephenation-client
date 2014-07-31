@@ -215,4 +215,20 @@ void Atmosphere::Debug() {
 		LPLOG("Rayleigh (%f, %f, %f)", rayleigh.r, rayleigh.g, rayleigh.b);
 		v = glm::rotateZ(v, 90.0f/8.0f);
 	}
+
+GLuint Atmosphere::LoadTexture() {
+	this->PreComputeTransmittance();
+	this->PreComputeSingleScattering();
+
+	GLuint textureId;
+	glGenTextures(1, &textureId);
+	glBindTexture(GL_TEXTURE_3D, textureId);
+	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+	glTexImage3D(GL_TEXTURE_3D, 0, GL_RGB16F, NHEIGHT, NVIEW_ANGLE, NSUN_ANGLE, 0, GL_RGB, GL_FLOAT, fTransmittance);
+
+	return textureId;
 }

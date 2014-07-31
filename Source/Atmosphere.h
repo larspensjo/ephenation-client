@@ -18,6 +18,7 @@
 #pragma once
 
 #include <glm/glm.hpp>
+#include <GL/glew.h>
 
 class Atmosphere
 {
@@ -25,6 +26,8 @@ public:
 	Atmosphere();
 
 	void Debug();
+
+	GLuint LoadTexture();
 
 private:
 	enum { NHEIGHT=32, NVIEW_ANGLE=64, NSUN_ANGLE=32, NTRANS_HOR_RES = 128};
