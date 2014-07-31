@@ -89,6 +89,13 @@ static float SunAngleParameterizationInverse(float us) {
 	return std::tan((2*us - 1.0f + 0.26f) * 0.75f) / std::tan(1.26f * 0.75f);
 }
 
+// Reference system (0,0,0) is the player at sea level
+static float height(vec2 p) {
+	p.y += R_Earth; // Now reference is earth center
+	float dist = glm::length(p);
+	return dist - R_Earth;
+}
+
 static const int INTEGRATION_STEPS = 10;
 
 static const float MieScatterCoefficient = 2.0e-6;
@@ -96,12 +103,12 @@ static const float MieExtinctionCoefficient = MieScatterCoefficient / 0.9f;
 static const vec3 RayleighScatterCoefficient(6.55e-6, 1.73e-5, 2.30e-5);
 
 static float getDensityRayleigh(vec2 p) {
-	float h = glm::length(p);
+	float h = height(p);
 	return std::exp(-h / 8000);
 }
 
 static float getDensityMie(vec2 p) {
-	float h = glm::length(p);
+	float h = height(p);
 	return std::exp(-h / 1200);
 }
 
@@ -164,7 +171,7 @@ vec3 Atmosphere::fetchScattered(float h, float cv, float cs) const {
 vec3 Atmosphere::GatheredLight(vec3 p, vec3 v, vec3 l) const {
 	vec3 gathered;
 	for (float thetaV = 0.0f; thetaV < 2.0f*glm::pi<float>(); thetaV += 2.0f * glm::pi<float>() / INTEGRATION_STEPS) {
-		gathered += fetchScattered(glm::length(p), glm::cos(thetaV), l.y);
+		gathered += fetchScattered(height(vec2(p)), glm::cos(thetaV), l.y);
 	}
 	gathered *= 4.0f * glm::pi<float>() / INTEGRATION_STEPS;
 	return gathered;
@@ -244,8 +251,7 @@ GLuint Atmosphere::LoadTexture() {
 	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-	glTexImage3D(GL_TEXTURE_3D, 0, GL_RGB16F, NHEIGHT, NVIEW_ANGLE, NSUN_ANGLE, 0, GL_RGB, GL_FLOAT, fTransmittance);
-
+	glTexImage3D(GL_TEXTURE_3D, 0, GL_RGB16F, NHEIGHT, NVIEW_ANGLE, NSUN_ANGLE, 0, GL_RGB, GL_FLOAT, 0); // TODO: No data sent yet
 	checkError("Atmosphere::LoadTexture", false);
 	return textureId;
 }
