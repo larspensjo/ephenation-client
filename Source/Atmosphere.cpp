@@ -25,6 +25,7 @@
 #include "Debug.h"
 
 using glm::vec3;
+using glm::vec2;
 
 static const float H_Atm = 80000.0f;
 static const float R_Earth = 6371*1000;
@@ -93,11 +94,13 @@ static const float MieScatterCoefficient = 2.0e-6;
 static const float MieExtinctionCoefficient = MieScatterCoefficient / 0.9f;
 static const vec3 RayleighScatterCoefficient(6.55e-6, 1.73e-5, 2.30e-5);
 
-static float getDensityRayleigh(float h) {
+static float getDensityRayleigh(vec2 p) {
+	float h = glm::length(p);
 	return std::exp(-h / 8000);
 }
 
-static float getDensityMie(float h) {
+static float getDensityMie(vec2 p) {
+	float h = glm::length(p);
 	return std::exp(-h / 1200);
 }
 
@@ -108,8 +111,8 @@ vec3 Atmosphere::Transmittance(vec3 pa, vec3 pb) const {
 	float previousDensityMie = 0.0f, previousDensityReyleigh = 0.0f;
 	for (int step=0; step < INTEGRATION_STEPS; ++step) {
 		vec3 s = pa + step * stepSize * dir;
-		float currentDensityMie = getDensityMie(s.y);
-		float currentDensityRayleigh = getDensityRayleigh(s.y);
+		float currentDensityMie = getDensityMie(vec2(s));
+		float currentDensityRayleigh = getDensityRayleigh(vec2(s));
 		totalDensityMie += (currentDensityMie + previousDensityMie) / 2 * stepSize;
 		totalDensityRayleigh += (currentDensityRayleigh + previousDensityReyleigh) / 2 * stepSize;
 		previousDensityMie = currentDensityMie;
@@ -137,8 +140,8 @@ void Atmosphere::SingleScattering(vec3 pa, vec3 l, vec3 v, vec3 &mie, vec3 &rayl
 		const vec3 pc = p - l * intersectionDistance; // Step backwards from p
 		// TODO: Use precomputed fTransmittance instead
 		transmittance *= Transmittance(p, pc);
-		vec3 currentInscatteringMie = getDensityMie(p.y) * transmittance;
-		vec3 currentInscatteringRayleigh = getDensityRayleigh(p.y) * transmittance;
+		vec3 currentInscatteringMie = getDensityMie(vec2(p)) * transmittance;
+		vec3 currentInscatteringRayleigh = getDensityRayleigh(vec2(p)) * transmittance;
 		totalInscatteringMie += (currentInscatteringMie + previousInscatteringMie)/2.0f * stepSize;
 		totalInscatteringRayleigh += (currentInscatteringRayleigh + previousInscatteringRayleigh)/2.0f * stepSize;
 		previousInscatteringMie = currentInscatteringMie;
