@@ -34,7 +34,7 @@ private:
 
 	enum { NHEIGHT=32, NVIEW_ANGLE=64, NSUN_ANGLE=32, NTRANS_HOR_RES = 128};
 	glm::vec3 fScattering[NHEIGHT][NVIEW_ANGLE][NSUN_ANGLE];
-	glm::vec3 fTransmittance[NHEIGHT][NTRANS_HOR_RES]; // Precomputed transmittance for RGB
+	glm::vec3 fTransmittance[NHEIGHT][NHEIGHT][NTRANS_HOR_RES]; // Precomputed transmittance for RGB
 
 	void PreComputeTransmittance();
 	void PreComputeSingleScattering();

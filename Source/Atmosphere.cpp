@@ -48,9 +48,8 @@ static float HeightParameterizedInverse(float uh) {
 	return uh*uh*H_Atm;
 }
 
-
-static const float maxHorizontalDist = 1000000.0f;
-static const float minHorizontalDist = 100.0f; // Shorter than this has no effect
+static const float maxHorizontalDist = 3e6;
+static const float minHorizontalDist = 10.0f; // Shorter than this has no effect
 static const float coeffHor = glm::log(maxHorizontalDist / minHorizontalDist);
 
 static float HorizontalDistParameterized(float x) {
@@ -113,18 +112,25 @@ static float getDensityMie(vec2 p) {
 }
 
 vec3 Atmosphere::Transmittance(vec3 pa, vec3 pb) const {
-	float stepSize = glm::distance(pa, pb) / INTEGRATION_STEPS;
+	if(height(vec2(pa)) > height(vec2(pb)))
+		std::swap(pa, pb); // We want pa at the place with highest density
+	float totalDistance = glm::distance(pa, pb);
+	float stepSize = totalDistance;
+	if (stepSize > 10)
+		stepSize = 10;
 	vec3 dir = glm::normalize(pb-pa);
 	float totalDensityMie = 0.0f, totalDensityRayleigh = 0.0f;
 	float previousDensityMie = 0.0f, previousDensityReyleigh = 0.0f;
-	for (int step=0; step < INTEGRATION_STEPS; ++step) {
-		vec3 s = pa + step * stepSize * dir;
+	float prevDistance = 0;
+	for (float distance=stepSize; distance < totalDistance; distance *= 1.05f) {
+		vec3 s = pa + distance * dir;
 		float currentDensityMie = getDensityMie(vec2(s));
 		float currentDensityRayleigh = getDensityRayleigh(vec2(s));
-		totalDensityMie += (currentDensityMie + previousDensityMie) / 2 * stepSize;
-		totalDensityRayleigh += (currentDensityRayleigh + previousDensityReyleigh) / 2 * stepSize;
+		totalDensityMie += (currentDensityMie + previousDensityMie) / 2 * (distance-prevDistance);
+		totalDensityRayleigh += (currentDensityRayleigh + previousDensityReyleigh) / 2 * (distance-prevDistance);
 		previousDensityMie = currentDensityMie;
 		previousDensityReyleigh = currentDensityRayleigh;
+		prevDistance = distance;
 	}
 	return glm::exp(-(totalDensityRayleigh * RayleighScatterCoefficient + totalDensityMie * MieExtinctionCoefficient));
 }
@@ -187,13 +193,16 @@ vec3 Atmosphere::GatheredLight(vec3 p, vec3 v, vec3 l) const {
 }
 
 void Atmosphere::PreComputeTransmittance() {
-	const vec3 pb(0,0,0);
-	for (int xi = 0; xi < NTRANS_HOR_RES; xi++) {
-		float ux = float(xi) / NTRANS_HOR_RES;
-		for (int hi = 0; hi < NHEIGHT; hi++) {
-			float uh = float(hi) / NHEIGHT;
-			vec3 pa(HorizontalDistParameterizedInverse(ux), HeightParameterizedInverse(uh), 0);
-			fTransmittance[hi][xi] = this->Transmittance(pa, pb);
+	for (int horIndex = 0; horIndex < NTRANS_HOR_RES; horIndex++) {
+		float uHor = float(horIndex) / NTRANS_HOR_RES;
+		for (int heightIndex1 = 0; heightIndex1 < NHEIGHT; heightIndex1++) {
+			float uh1 = float(heightIndex1) / NHEIGHT;
+			vec3 pa(HorizontalDistParameterizedInverse(uHor), HeightParameterizedInverse(uh1), 0);
+			for (int heightIndex2 = 0; heightIndex2 < NHEIGHT; heightIndex2++) {
+				float uh2 = float(heightIndex2) / NHEIGHT;
+				const vec3 pb(0,HeightParameterizedInverse(uh2),0);
+				fTransmittance[heightIndex1][heightIndex2][horIndex] = this->Transmittance(pb, pa);
+			}
 		}
 	}
 }
