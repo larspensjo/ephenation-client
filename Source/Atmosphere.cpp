@@ -81,7 +81,7 @@ static float ViewAngleParameterizedInverse(float uv, float h) {
 static float SunAngleParameterization(float cs) {
 	// Using radians!
 	float tmp = std::tan(1.26f * 1.1f);
-	return 0.5f * std::atan(std::max(cs, -0.1975f) * tmp) / 1.1f + (1-0.26f);
+	return 0.5f * (std::atan(std::max(cs, -0.1975f) * tmp) / 1.1f + (1-0.26f));
 }
 
 static float SunAngleParameterizationInverse(float us) {
