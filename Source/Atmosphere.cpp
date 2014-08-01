@@ -167,8 +167,14 @@ vec3 Atmosphere::fetchScattered(float h, float cv, float cs) const {
 	float uh = HeightParameterized(h);
 	float uv = ViewAngleParameterized(cv, h);
 	float us = SunAngleParameterization(cs);
+
+	// Round
+	int ih = int(uh*(NHEIGHT-1)+0.5f);
+	int iv = int(uv*(NVIEW_ANGLE-1)+0.5f);
+	int is = int(us*(NSUN_ANGLE-1)+0.5f);
+	assert(ih >= 0 && ih < NHEIGHT && iv >= 0 && iv < NVIEW_ANGLE && is >= 0 && is < NSUN_ANGLE);
 	// TODO: Interpolation could help?
-	return fScattering[int(uh*NHEIGHT)][int(uv*NVIEW_ANGLE)][int(us*NSUN_ANGLE)];
+	return fScattering[ih][iv][is];
 }
 
 vec3 Atmosphere::GatheredLight(vec3 p, vec3 v, vec3 l) const {
