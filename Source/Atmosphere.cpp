@@ -48,7 +48,8 @@ static float HeightParameterizedInverse(float uh) {
 	return uh*uh*H_Atm;
 }
 
-static const float maxHorizontalDist = 3e6;
+// The maximum horizontal vector, inside the atmosphere
+static const float maxHorizontalDist = 2 * glm::sqrt((R_Earth+H_Atm)*(R_Earth+H_Atm) - R_Earth*R_Earth);
 static const float minHorizontalDist = 10.0f; // Shorter than this has no effect
 static const float coeffHor = glm::log(maxHorizontalDist / minHorizontalDist);
 
@@ -207,6 +208,19 @@ void Atmosphere::PreComputeTransmittance() {
 	}
 }
 
+vec3 Atmosphere::FetchTransmittance(float h1, float h2, float dx) const {
+	float uh1 = HeightParameterized(h1);
+	float uh2 = HeightParameterized(h2);
+	float ux = HorizontalDistParameterized(dx);
+
+	// Round
+	int ih1 = int(uh1*(NHEIGHT-1)+0.5f);
+	int ih2 = int(uh2*(NHEIGHT-1)+0.5f);
+	int ix = int(ux*(NTRANS_HOR_RES-1)+0.5f);
+	assert(ih1 >= 0 && ih1 < NHEIGHT && ih2 >= 0 && ih2 < NHEIGHT && ix >= 0 && ix < NTRANS_HOR_RES);
+	return fTransmittance[ih1][ih2][ix];
+}
+
 void Atmosphere::PreComputeSingleScattering() {
 	for (int heightIndex = 0; heightIndex < NHEIGHT; heightIndex++) {
 		float uHeight = float(heightIndex) / NHEIGHT;
@@ -237,9 +251,10 @@ void Atmosphere::Debug() {
 
 	vec3 pa(0,0,0);
 	for (float i=1; i>=0; i -= 0.15f) {
-		vec3 pb(HorizontalDistParameterizedInverse(i), 0, 0);
+		vec3 pb(HorizontalDistParameterizedInverse(i)/2, 0, 0);
 		vec3 transm = Transmittance(pa, pb);
-		LPLOG("Transmittance dist %.0fm: %f, %f, %f", pb.x, transm.r, transm.g, transm.b);
+		vec3 transm2 = FetchTransmittance(height(vec2(pa)), height(vec2(pb)), pb.x - pa.x);
+		LPLOG("Transmittance dist %.0fm: %f, %f, %f (%f %f %f)", pb.x, transm.r, transm.g, transm.b, transm2.r, transm2.g, transm2.b);
 	}
 
 	for (float i=1; i>=0; i -= 0.15f) {

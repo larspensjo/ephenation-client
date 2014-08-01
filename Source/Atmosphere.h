@@ -32,12 +32,14 @@ public:
 private:
 	void Init();
 
-	enum { NHEIGHT=32, NVIEW_ANGLE=64, NSUN_ANGLE=32, NTRANS_HOR_RES = 128};
-	glm::vec3 fScattering[NHEIGHT][NVIEW_ANGLE][NSUN_ANGLE];
+	enum { NHEIGHT=32, NVIEW_ANGLE=64, NSUN_ANGLE=32, NTRANS_HOR_RES = 64};
+	glm::vec3 fScattering[NHEIGHT][NVIEW_ANGLE][NSUN_ANGLE]; // Precomputed scattering
 	glm::vec3 fTransmittance[NHEIGHT][NHEIGHT][NTRANS_HOR_RES]; // Precomputed transmittance for RGB
 
 	void PreComputeTransmittance();
+	glm::vec3 FetchTransmittance(float h1, float h2, float dx) const;
 	void PreComputeSingleScattering();
+	glm::vec3 fetchScattered(float h, float cv, float cs) const;
 
 	/// Compute transmittance
 	/// @param pa Starting point
@@ -51,7 +53,6 @@ private:
 	/// @param v The direction into 'pa'
 	void SingleScattering(glm::vec3 pa, glm::vec3 l, glm::vec3 v, glm::vec3 &mie, glm::vec3 &rayleigh) const;
 	glm::vec3 GatheredLight(glm::vec3 p, glm::vec3 v, glm::vec3 l) const;
-	glm::vec3 fetchScattered(float h, float cv, float cs) const;
 
 	bool fInitialized = false;
 };
