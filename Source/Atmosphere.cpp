@@ -30,8 +30,8 @@ using glm::vec2;
 
 static const float H_Atm = 80000.0f;
 static const float R_Earth = 6371*1000;
-// As taken from http://www.vendian.org/mncharity/dir3/blackbody/UnstableURLs/bbr_color.html at 5800K and converted from SRGB
-static const vec3 sunRGB(1, 0.73694, 0.63461);
+// As taken RGB from http://www.vendian.org/mncharity/dir3/blackbody/UnstableURLs/bbr_color.html at 5800K
+static const vec3 sunRGB(1, 243.0f/255.0f, 234/255.0f);
 // TODO: Sun direction shall not be a constant
 static const vec3 sunDir(-0.577350269f, 0.577350269f, 0.577350269f); // Copied from sundir in common.glsl.
 
@@ -144,6 +144,8 @@ void Atmosphere::SingleScattering(vec3 pa, vec3 l, vec3 v, vec3 &mie, vec3 &rayl
 		// 'p' will iterate over the line from 'pa' to 'pb'.
 		const vec3 p = pa - stepSize * (step+0.5f) * v; // Step backwards from pa
 		vec3 transmittance = Transmittance(pa, p);
+		if (transmittance.r < 0.00001f && transmittance.g < 0.00001f && transmittance.b < 0.00001f)
+			break; // Give it up
 		found = glm::intersectRaySphere(p, -l, earthCenter, atmSquared, intersectionDistance);
 		const vec3 pc = p - l * intersectionDistance; // Step backwards from p
 		// TODO: Use precomputed fTransmittance instead
@@ -165,6 +167,7 @@ vec3 Atmosphere::fetchScattered(float h, float cv, float cs) const {
 	float uh = HeightParameterized(h);
 	float uv = ViewAngleParameterized(cv, h);
 	float us = SunAngleParameterization(cs);
+	// TODO: Interpolation could help?
 	return fScattering[int(uh*NHEIGHT)][int(uv*NVIEW_ANGLE)][int(us*NSUN_ANGLE)];
 }
 
@@ -230,6 +233,12 @@ void Atmosphere::Debug() {
 		LPLOG("Transmittance height %.0fm: %f, %f, %f", pb.y, transm.r, transm.g, transm.b);
 	}
 
+	{
+		vec3 pb(0, HeightParameterizedInverse(1), 0);
+		vec3 transm = Transmittance(pa, pb);
+		LPLOG("Transmittance height %f, upwards: %f, %f, %f", pb.y, transm.r, transm.g, transm.b);
+	}
+
 	vec3 v(0,-1,0);
 	for (int i=0; i<9; i++) {
 		vec3 mie, rayleigh;
@@ -240,6 +249,24 @@ void Atmosphere::Debug() {
 		v = glm::rotateZ(v, 90.0f/8.0f);
 	}
 
+	for (int heightIndex = 0; heightIndex < NHEIGHT; heightIndex += 8) {
+		float uHeight = float(heightIndex) / NHEIGHT;
+		float h = HeightParameterizedInverse(uHeight);
+		LPLOG("Height %f", h);
+		for (int viewAngleIndex = 0; viewAngleIndex < NVIEW_ANGLE; viewAngleIndex += 8) {
+			float uViewAngle = float(viewAngleIndex) / NVIEW_ANGLE;
+			float cosViewAngle = ViewAngleParameterizedInverse(uViewAngle, h);
+			float viewAngle = glm::acos(cosViewAngle);
+			LPLOG("View angle %f", viewAngle/2/glm::pi<float>()*360);
+			for (int sunAngleIndex = 0; sunAngleIndex < NSUN_ANGLE; sunAngleIndex += 4) {
+				float uSunAngle = float(sunAngleIndex) / NSUN_ANGLE;
+				float cosSunAngle = SunAngleParameterizationInverse(uSunAngle);
+				float sunAngle = glm::acos(cosSunAngle);
+				LPLOG("[%d][%d][%d] Sun %f: %f %f %f", heightIndex, viewAngleIndex, sunAngleIndex, sunAngle/2/glm::pi<float>()*360, fScattering[heightIndex][viewAngleIndex][sunAngleIndex].r, fScattering[heightIndex][viewAngleIndex][sunAngleIndex].g, fScattering[heightIndex][viewAngleIndex][sunAngleIndex].b);
+			}
+		}
+	}
+}
 GLuint Atmosphere::LoadTexture() {
 	this->Init();
 
@@ -257,7 +284,6 @@ GLuint Atmosphere::LoadTexture() {
 }
 
 void Atmosphere::Init() {
-	LPLOG("");
 	if (fInitialized)
 		return;
 	this->PreComputeTransmittance();
