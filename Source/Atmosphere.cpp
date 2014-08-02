@@ -229,10 +229,10 @@ vec3 Atmosphere::FetchTransmittance(vec2 pa, vec2 pb) const {
 	if (height(p) < 0)
 		return Transmittance(pa, pb); // The pre computed table isn't good for this
 	auto f = [this](float h, float dist) {
-		if (dist < 1.0f)
+		float ud = HorizontalDistParameterized(dist);
+		if (ud < 0.0f)
 			return vec3(1,1,1);
 		float uh = HeightParameterized(h);
-		float ud = HorizontalDistParameterized(dist);
 		int ih = int(uh*(NHEIGHT-1)+0.5f);
 		int id = int(ud*(NTRANS_HOR_RES-1)+0.5f);
 		assert(ih >= 0 && ih < NHEIGHT && id >= 0 && id < NTRANS_HOR_RES);
