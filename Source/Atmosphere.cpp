@@ -198,27 +198,46 @@ void Atmosphere::PreComputeTransmittance() {
 		float uHor = float(horIndex) / NTRANS_HOR_RES;
 		for (int heightIndex1 = 0; heightIndex1 < NHEIGHT; heightIndex1++) {
 			float uh1 = float(heightIndex1) / NHEIGHT;
-			vec3 pa(0, HeightParameterizedInverse(uh1), 0);
-			for (int heightIndex2 = 0; heightIndex2 < NHEIGHT; heightIndex2++) {
-				float uh2 = float(heightIndex2) / NHEIGHT;
-				const vec3 pb(HorizontalDistParameterizedInverse(uHor),HeightParameterizedInverse(uh2),0);
-				fTransmittance[heightIndex1][heightIndex2][horIndex] = this->Transmittance(pb, pa);
-			}
+			float h1 = HeightParameterizedInverse(uh1);
+			vec3 pa(0, h1, 0);
+			float dist = HorizontalDistParameterizedInverse(uHor);
+			vec3 pb(dist, h1, 0);
+			fTransmittance[heightIndex1][horIndex] = this->Transmittance(pb, pa);
 		}
 	}
 }
 
-vec3 Atmosphere::FetchTransmittance(float y1, float y2, float dx) const {
-	float uh1 = HeightParameterized(y1);
-	float uh2 = HeightParameterized(y2);
-	float ux = HorizontalDistParameterized(dx);
+static vec2 GetNearestPoint(vec2 a, vec2 b, vec2 p) {
+	vec2 a_to_p = p-a;
+	vec2 a_to_b = b-a;
 
-	// Round
-	int ih1 = int(uh1*(NHEIGHT-1)+0.5f);
-	int ih2 = int(uh2*(NHEIGHT-1)+0.5f);
-	int ix = int(ux*(NTRANS_HOR_RES-1)+0.5f);
-	assert(ih1 >= 0 && ih1 < NHEIGHT && ih2 >= 0 && ih2 < NHEIGHT && ix >= 0 && ix < NTRANS_HOR_RES);
-	return fTransmittance[ih1][ih2][ix];
+	float l2 = a_to_b.x*a_to_b.x + a_to_b.y*a_to_b.y;
+	float atp_dot_atb = glm::dot(a_to_p, a_to_b);
+
+	float dist = atp_dot_atb / l2;
+
+	vec2 ret(a.x + a_to_b.x*dist, a.y + a_to_b.y*dist);
+
+	return ret;
+}
+
+vec3 Atmosphere::FetchTransmittance(vec2 pa, vec2 pb) const {
+	vec2 earthCenter(0, -R_Earth); // Height 0 is ground level
+	vec2 p = GetNearestPoint(earthCenter, pa, pb);
+	auto f = [this](float h, float dist) {
+		if (dist < 1.0f)
+			return vec3(1,1,1);
+		float uh = HeightParameterized(h);
+		float ud = HorizontalDistParameterized(dist);
+		int ih = int(uh*(NHEIGHT-1)+0.5f);
+		int id = int(ud*(NTRANS_HOR_RES-1)+0.5f);
+		assert(ih >= 0 && ih < NHEIGHT && id >= 0 && id < NTRANS_HOR_RES);
+		return fTransmittance[ih][id];
+	};
+	float h = height(p);
+	vec3 transm1 = f(h, glm::length(pa - p));
+	vec3 transm2 = f(h, glm::length(pb - p));
+	return transm1 * transm2;
 }
 
 void Atmosphere::PreComputeSingleScattering() {
@@ -253,7 +272,7 @@ void Atmosphere::Debug() {
 	for (float i=1; i>=0; i -= 0.15f) {
 		vec3 pb(HorizontalDistParameterizedInverse(i)/2, 0, 0);
 		vec3 transm = Transmittance(pa, pb);
-		vec3 transm2 = FetchTransmittance(pa.y, pb.y, pb.x - pa.x);
+		vec3 transm2 = FetchTransmittance(vec2(pa), vec2(pb));
 		LPLOG("Transmittance dist %.0fm: %f, %f, %f (%f %f %f)", pb.x, transm.r, transm.g, transm.b, transm2.r, transm2.g, transm2.b);
 	}
 

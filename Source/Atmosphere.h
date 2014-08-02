@@ -32,18 +32,16 @@ public:
 private:
 	void Init();
 
-	enum { NHEIGHT=32, NVIEW_ANGLE=64, NSUN_ANGLE=32, NTRANS_HOR_RES = 64};
+	enum { NHEIGHT=32, NVIEW_ANGLE=64, NSUN_ANGLE=32, NTRANS_HOR_RES = 128};
 	glm::vec3 fScattering[NHEIGHT][NVIEW_ANGLE][NSUN_ANGLE]; // Precomputed scattering
 	/// Precomputed transmittance for RGB
 	/// It will give transmittance between two points pa and pb, where
-	/// pa.x is always 0
-	/// pa.y is the first height index
-	/// pb.y is the second height index (that is, not really height)
-	/// pb.x is the third index
-	glm::vec3 fTransmittance[NHEIGHT][NHEIGHT][NTRANS_HOR_RES];
+	/// pa is at the lowest point and pb is at right angle to the line to pa.
+	/// The second index is the distance from pa to pb.
+	glm::vec3 fTransmittance[NHEIGHT][NTRANS_HOR_RES];
 
 	void PreComputeTransmittance();
-	glm::vec3 FetchTransmittance(float y1, float y2, float dx) const;
+	glm::vec3 FetchTransmittance(glm::vec2 pa, glm::vec2 pb) const;
 	void PreComputeSingleScattering();
 	glm::vec3 fetchScattered(float h, float cv, float cs) const;
 
