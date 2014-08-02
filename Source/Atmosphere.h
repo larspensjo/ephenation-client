@@ -49,7 +49,7 @@ private:
 	/// @param pa Starting point
 	/// @param pb End point
 	/// @return Transmittance for R, G and B
-	glm::vec3 Transmittance(glm::vec3 pa, glm::vec3 pb) const;
+	glm::vec3 Transmittance(glm::vec2 pa, glm::vec2	 pb) const;
 
 	/// Compute the single inscattering
 	/// @param pa The player position

@@ -112,19 +112,20 @@ static float getDensityMie(vec2 p) {
 	return std::exp(-h / 1200);
 }
 
-vec3 Atmosphere::Transmittance(vec3 pa, vec3 pb) const {
-	if(height(vec2(pa)) > height(vec2(pb)))
+vec3 Atmosphere::Transmittance(vec2 pa, vec2 pb) const {
+	float ha = height(pa), hb = height(pb);
+	if (ha > hb)
 		std::swap(pa, pb); // We want pa at the place with highest density
 	float totalDistance = glm::distance(pa, pb);
 	float stepSize = totalDistance;
 	if (stepSize > 10)
 		stepSize = 10;
-	vec3 dir = glm::normalize(pb-pa);
+	vec2 dir = glm::normalize(pb-pa);
 	float totalDensityMie = 0.0f, totalDensityRayleigh = 0.0f;
 	float previousDensityMie = 0.0f, previousDensityReyleigh = 0.0f;
 	float prevDistance = 0;
 	for (float distance=stepSize; distance < totalDistance; distance *= 1.05f) {
-		vec3 s = pa + distance * dir;
+		vec2 s = pa + distance * dir;
 		float currentDensityMie = getDensityMie(vec2(s));
 		float currentDensityRayleigh = getDensityRayleigh(vec2(s));
 		totalDensityMie += (currentDensityMie + previousDensityMie) / 2 * (distance-prevDistance);
@@ -199,15 +200,16 @@ void Atmosphere::PreComputeTransmittance() {
 		for (int heightIndex1 = 0; heightIndex1 < NHEIGHT; heightIndex1++) {
 			float uh1 = float(heightIndex1) / NHEIGHT;
 			float h1 = HeightParameterizedInverse(uh1);
-			vec3 pa(0, h1, 0);
+			vec2 pa(0, h1);
 			float dist = HorizontalDistParameterizedInverse(uHor);
-			vec3 pb(dist, h1, 0);
+			vec2 pb(dist, h1);
 			fTransmittance[heightIndex1][horIndex] = this->Transmittance(pb, pa);
 		}
 	}
 }
 
-static vec2 GetNearestPoint(vec2 a, vec2 b, vec2 p) {
+// Find point on line a to b, which is nearest p.
+static vec2 GetNearestPoint(vec2 p, vec2 a, vec2 b) {
 	vec2 a_to_p = p-a;
 	vec2 a_to_b = b-a;
 
@@ -224,6 +226,8 @@ static vec2 GetNearestPoint(vec2 a, vec2 b, vec2 p) {
 vec3 Atmosphere::FetchTransmittance(vec2 pa, vec2 pb) const {
 	vec2 earthCenter(0, -R_Earth); // Height 0 is ground level
 	vec2 p = GetNearestPoint(earthCenter, pa, pb);
+	if (height(p) < 0)
+		return Transmittance(pa, pb); // The pre computed table isn't good for this
 	auto f = [this](float h, float dist) {
 		if (dist < 1.0f)
 			return vec3(1,1,1);
@@ -237,6 +241,13 @@ vec3 Atmosphere::FetchTransmittance(vec2 pa, vec2 pb) const {
 	float h = height(p);
 	vec3 transm1 = f(h, glm::length(pa - p));
 	vec3 transm2 = f(h, glm::length(pb - p));
+	vec2 PaToP = p - pa;
+	vec2 PbToP = p - pb;
+	vec2 PaToPb = pb - pa;
+	if (glm::dot(PaToP, PaToPb) < 0)
+		transm1 = 1.0f / transm1; // Nearest point is outside of pa
+	if (glm::dot(PbToP, PaToPb) > 0)
+		transm2 = 1.0f / transm2; // Nearest point is outside of pb
 	return transm1 * transm2;
 }
 
@@ -270,22 +281,23 @@ void Atmosphere::Debug() {
 
 	vec3 pa(0,0,0);
 	for (float i=1; i>=0; i -= 0.15f) {
-		vec3 pb(HorizontalDistParameterizedInverse(i)/2, 0, 0);
-		vec3 transm = Transmittance(pa, pb);
+		vec2 pb(HorizontalDistParameterizedInverse(i)/2, 0);
+		vec3 transm = Transmittance(vec2(pa), pb);
 		vec3 transm2 = FetchTransmittance(vec2(pa), vec2(pb));
 		LPLOG("Transmittance dist %.0fm: %f, %f, %f (%f %f %f)", pb.x, transm.r, transm.g, transm.b, transm2.r, transm2.g, transm2.b);
 	}
 
 	for (float i=1; i>=0; i -= 0.15f) {
-		vec3 pb(100000, HeightParameterizedInverse(i), 0);
-		vec3 transm = Transmittance(pa, pb);
+		vec2 pb(100000, HeightParameterizedInverse(i));
+		vec3 transm = Transmittance(vec2(pa), pb);
 		LPLOG("Transmittance height %.0fm: %f, %f, %f", pb.y, transm.r, transm.g, transm.b);
 	}
 
 	{
-		vec3 pb(0, HeightParameterizedInverse(1), 0);
-		vec3 transm = Transmittance(pa, pb);
-		LPLOG("Transmittance height %f, upwards: %f, %f, %f", pb.y, transm.r, transm.g, transm.b);
+		vec2 pb(1, HeightParameterizedInverse(1));
+		vec3 transm = Transmittance(vec2(pa), pb);
+		vec3 transm2 = FetchTransmittance(vec2(pa), vec2(pb));
+		LPLOG("Transmittance height %f, upwards: %f, %f, %f (%f %f %f)", pb.y, transm.r, transm.g, transm.b, transm2.r, transm2.g, transm2.b);
 	}
 
 	vec3 v(0,-1,0);
