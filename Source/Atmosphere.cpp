@@ -198,19 +198,19 @@ void Atmosphere::PreComputeTransmittance() {
 		float uHor = float(horIndex) / NTRANS_HOR_RES;
 		for (int heightIndex1 = 0; heightIndex1 < NHEIGHT; heightIndex1++) {
 			float uh1 = float(heightIndex1) / NHEIGHT;
-			vec3 pa(HorizontalDistParameterizedInverse(uHor), HeightParameterizedInverse(uh1), 0);
+			vec3 pa(0, HeightParameterizedInverse(uh1), 0);
 			for (int heightIndex2 = 0; heightIndex2 < NHEIGHT; heightIndex2++) {
 				float uh2 = float(heightIndex2) / NHEIGHT;
-				const vec3 pb(0,HeightParameterizedInverse(uh2),0);
+				const vec3 pb(HorizontalDistParameterizedInverse(uHor),HeightParameterizedInverse(uh2),0);
 				fTransmittance[heightIndex1][heightIndex2][horIndex] = this->Transmittance(pb, pa);
 			}
 		}
 	}
 }
 
-vec3 Atmosphere::FetchTransmittance(float h1, float h2, float dx) const {
-	float uh1 = HeightParameterized(h1);
-	float uh2 = HeightParameterized(h2);
+vec3 Atmosphere::FetchTransmittance(float y1, float y2, float dx) const {
+	float uh1 = HeightParameterized(y1);
+	float uh2 = HeightParameterized(y2);
 	float ux = HorizontalDistParameterized(dx);
 
 	// Round
@@ -253,7 +253,7 @@ void Atmosphere::Debug() {
 	for (float i=1; i>=0; i -= 0.15f) {
 		vec3 pb(HorizontalDistParameterizedInverse(i)/2, 0, 0);
 		vec3 transm = Transmittance(pa, pb);
-		vec3 transm2 = FetchTransmittance(height(vec2(pa)), height(vec2(pb)), pb.x - pa.x);
+		vec3 transm2 = FetchTransmittance(pa.y, pb.y, pb.x - pa.x);
 		LPLOG("Transmittance dist %.0fm: %f, %f, %f (%f %f %f)", pb.x, transm.r, transm.g, transm.b, transm2.r, transm2.g, transm2.b);
 	}
 
