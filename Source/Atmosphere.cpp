@@ -146,24 +146,29 @@ void Atmosphere::SingleScattering(vec3 pa, vec3 l, vec3 v, vec3 &mie, vec3 &rayl
 	bool found = glm::intersectRaySphere(pa, -v, earthCenter, atmSquared, intersectionDistance);
 	if (!found)
 		return;
-	float stepSize = intersectionDistance / INTEGRATION_STEPS;
 	vec3 totalInscatteringMie, totalInscatteringRayleigh, previousInscatteringMie, previousInscatteringRayleigh;
-	for (int step=0; step < INTEGRATION_STEPS; ++step) {
+	float prevDistance = 0.0f;
+	int iteration = 0;
+	for (float distance = 2000.0f; distance < intersectionDistance; distance *= 1.2f) {
+		iteration++;
 		// 'p' will iterate over the line from 'pa' to 'pb'.
-		const vec3 p = pa - stepSize * (step+0.5f) * v; // Step backwards from pa
-		vec3 transmittance = Transmittance(pa, p);
-		if (transmittance.r < 0.00001f && transmittance.g < 0.00001f && transmittance.b < 0.00001f)
+		const vec3 p = pa - distance * v; // Step backwards from pa
+		vec3 transmittance = FetchTransmittance(vec2(pa), vec2(p));
+		if (transmittance.r < 0.00001f && transmittance.g < 0.00001f && transmittance.b < 0.00001f) {
+			LPLOG("Giving up at %f, iteration %d", distance, iteration);
 			break; // Give it up
-		found = glm::intersectRaySphere(p, -l, earthCenter, atmSquared, intersectionDistance);
-		const vec3 pc = p - l * intersectionDistance; // Step backwards from p
-		// TODO: Use precomputed fTransmittance instead
-		transmittance *= Transmittance(p, pc);
+		}
+		float atmDistance;
+		found = glm::intersectRaySphere(p, -l, earthCenter, atmSquared, atmDistance);
+		const vec3 pc = p - l * atmDistance; // Step backwards from p
+		transmittance *= FetchTransmittance(vec2(p), vec2(pc));
 		vec3 currentInscatteringMie = getDensityMie(vec2(p)) * transmittance;
 		vec3 currentInscatteringRayleigh = getDensityRayleigh(vec2(p)) * transmittance;
-		totalInscatteringMie += (currentInscatteringMie + previousInscatteringMie)/2.0f * stepSize;
-		totalInscatteringRayleigh += (currentInscatteringRayleigh + previousInscatteringRayleigh)/2.0f * stepSize;
+		totalInscatteringMie += (currentInscatteringMie + previousInscatteringMie)/2.0f * (distance-prevDistance);
+		totalInscatteringRayleigh += (currentInscatteringRayleigh + previousInscatteringRayleigh)/2.0f * (distance-prevDistance);
 		previousInscatteringMie = currentInscatteringMie;
 		previousInscatteringRayleigh = currentInscatteringRayleigh;
+		prevDistance = distance;
 	}
 	totalInscatteringMie *= MieScatterCoefficient / (4.0f * glm::pi<float>()) * sunRGB;
 	totalInscatteringRayleigh *= RayleighScatterCoefficient / (4.0f * glm::pi<float>()) * sunRGB;
@@ -187,8 +192,11 @@ vec3 Atmosphere::fetchScattered(float h, float cv, float cs) const {
 
 vec3 Atmosphere::GatheredLight(vec3 p, vec3 v, vec3 l) const {
 	vec3 gathered;
+	float h = height(vec2(p));
+	float cs = l.x;
 	for (float thetaV = 0.0f; thetaV < 2.0f*glm::pi<float>(); thetaV += 2.0f * glm::pi<float>() / INTEGRATION_STEPS) {
-		gathered += fetchScattered(height(vec2(p)), glm::cos(thetaV), l.y);
+		float cv = glm::cos(thetaV);
+		gathered += fetchScattered(h, cv, cs);
 	}
 	gathered *= 4.0f * glm::pi<float>() / INTEGRATION_STEPS;
 	return gathered;
@@ -310,6 +318,7 @@ void Atmosphere::Debug() {
 		v = glm::rotateZ(v, 90.0f/8.0f);
 	}
 
+	LPLOG("Single scattering");
 	for (int heightIndex = 0; heightIndex < NHEIGHT; heightIndex += 8) {
 		float uHeight = float(heightIndex) / NHEIGHT;
 		float h = HeightParameterizedInverse(uHeight);
@@ -323,7 +332,7 @@ void Atmosphere::Debug() {
 				float uSunAngle = float(sunAngleIndex) / NSUN_ANGLE;
 				float cosSunAngle = SunAngleParameterizationInverse(uSunAngle);
 				float sunAngle = glm::acos(cosSunAngle);
-				LPLOG("[%d][%d][%d] Sun %f: %f %f %f", heightIndex, viewAngleIndex, sunAngleIndex, sunAngle/2/glm::pi<float>()*360, fScattering[heightIndex][viewAngleIndex][sunAngleIndex].r, fScattering[heightIndex][viewAngleIndex][sunAngleIndex].g, fScattering[heightIndex][viewAngleIndex][sunAngleIndex].b);
+				LPLOG("[%d][%d][%d] Sun %f: %g %g %g", heightIndex, viewAngleIndex, sunAngleIndex, sunAngle/2/glm::pi<float>()*360, fScattering[heightIndex][viewAngleIndex][sunAngleIndex].r, fScattering[heightIndex][viewAngleIndex][sunAngleIndex].g, fScattering[heightIndex][viewAngleIndex][sunAngleIndex].b);
 			}
 		}
 	}
