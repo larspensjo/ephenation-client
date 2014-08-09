@@ -267,6 +267,8 @@ vec3 Atmosphere::FetchTransmittanceToHorizon(vec2 pa, vec2 v) const {
 
 vec3 Atmosphere::FetchTransmittance(vec2 pa, vec2 pb) const {
 	float ha = height(pa), hb = height(pb);
+	float epsilon = H_Atm/100;
+	assert(ha < H_Atm+epsilon && hb < H_Atm+epsilon); // It is possible to move the point to the atmosphere, but costs effort.
 	if (hb < ha)
 		std::swap(pa, pb); // Now we now 'pa' is below 'pb'
 	// The precomputed table gives the transmittance all the way to the atmosphere, but we need the transmittance
@@ -280,7 +282,7 @@ vec3 Atmosphere::FetchTransmittance(vec2 pa, vec2 pb) const {
 	vec2 pAtm = pa - v*intersectionDistance;
 
 	vec3 transm1 = FetchTransmittanceToHorizon(pa, v);
-	if (glm::length(pb - pAtm) < R_Earth/1000)
+	if (glm::length(pb - pAtm) < epsilon)
 		return transm1; // pb was already near end of atmosphere
 	vec3 transm2 = FetchTransmittanceToHorizon(pb, v);
 	return transm1 / transm2;
