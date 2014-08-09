@@ -30,6 +30,8 @@ using glm::vec2;
 
 static const float H_Atm = 80000.0f;
 static const float R_Earth = 6371*1000;
+const float atmSquared = (R_Earth+H_Atm) * (R_Earth+H_Atm);
+const vec2 earthCenter(0, -R_Earth); // Height 0 is ground level
 // As taken RGB from http://www.vendian.org/mncharity/dir3/blackbody/UnstableURLs/bbr_color.html at 5800K
 static const vec3 sunRGB(1, 243.0f/255.0f, 234/255.0f);
 // TODO: Sun direction shall not be a constant
@@ -142,7 +144,6 @@ void Atmosphere::SingleScattering(vec3 pa, vec3 l, vec3 v, vec3 &mie, vec3 &rayl
 	// See figure 4.
 	float intersectionDistance;
 	vec3 earthCenter(0, -R_Earth, 0); // Height 0 is ground level
-	const float atmSquared = (R_Earth+H_Atm) * (R_Earth+H_Atm);
 	bool found = glm::intersectRaySphere(pa, -v, earthCenter, atmSquared, intersectionDistance);
 	if (!found)
 		return;
@@ -203,15 +204,25 @@ vec3 Atmosphere::GatheredLight(vec3 p, vec3 v, vec3 l) const {
 }
 
 void Atmosphere::PreComputeTransmittance() {
-	for (int horIndex = 0; horIndex < NTRANS_HOR_RES; horIndex++) {
-		float uHor = float(horIndex) / NTRANS_HOR_RES;
+	for (int angleIndex = 0; angleIndex < NVIEW_ANGLE; angleIndex++) {
+		float uv = float(angleIndex) / (NVIEW_ANGLE-1);
 		for (int heightIndex1 = 0; heightIndex1 < NHEIGHT; heightIndex1++) {
-			float uh1 = float(heightIndex1) / NHEIGHT;
+			float uh1 = float(heightIndex1) / (NHEIGHT-1);
 			float h1 = HeightParameterizedInverse(uh1);
 			vec2 pa(0, h1);
-			float dist = HorizontalDistParameterizedInverse(uHor);
-			vec2 pb(dist, h1);
-			fTransmittance[heightIndex1][horIndex] = this->Transmittance(pb, pa);
+			float cosViewAngle = ViewAngleParameterizedInverse(uv, h1);
+			float sinViewAngle = glm::sqrt(1 - cosViewAngle*cosViewAngle);
+			vec2 v(-sinViewAngle, cosViewAngle); // Pointing to 'pa'
+			vec3 transm(1,1,1);
+			if (heightIndex1 < NHEIGHT-1) {
+				// This is the normal case
+				float intersectionDistance;
+				bool intersectionFound = glm::intersectRaySphere(pa, -v, earthCenter, atmSquared, intersectionDistance);
+				assert(intersectionFound);
+				vec2 pb = pa - intersectionDistance * v;
+				transm = this->Transmittance(pb, pa);
+			}
+			fTransmittance[heightIndex1][angleIndex] = transm;
 		}
 	}
 }
@@ -231,32 +242,48 @@ static vec2 GetNearestPoint(vec2 p, vec2 a, vec2 b) {
 	return ret;
 }
 
+// Take point 'pa', outgoing direction 'v' (normalized), and fetch transmittance to the horizon
+vec3 Atmosphere::FetchTransmittanceToHorizon(vec2 pa, vec2 v) const {
+	// Rotate 'pa' and the 'cv' angle, to get the new pa.x = 0.
+	vec2 dir = glm::normalize(pa - earthCenter); // Normalized vector from earth center to pa.
+	float correction = glm::acos(dir.y) * 360 / 2 / glm::pi<float>();
+	vec2 pa2 = glm::rotate(pa-earthCenter, correction) + earthCenter;
+	vec2 v2 = glm::rotate(v, correction);
+	float uv = ViewAngleParameterized(-v2.y, pa2.y);
+	float uh = HeightParameterized(pa2.y);
+	int ih = int(uh*(NHEIGHT-1));
+	int iv = int(uv*(NVIEW_ANGLE-1));
+	assert(ih >= 0 && ih < NHEIGHT && iv >= 0 && iv < NVIEW_ANGLE);
+	if (ih == NHEIGHT-1)
+		ih--;
+	if (iv == NVIEW_ANGLE-1)
+		iv--;
+	float m = uh*(NHEIGHT-1) - ih;
+	vec3 mixedView1 = glm::mix(fTransmittance[ih][iv], fTransmittance[ih+1][iv], m);
+	vec3 mixedView2 = glm::mix(fTransmittance[ih][iv+1], fTransmittance[ih+1][iv+1], m);
+	m = uv*(NVIEW_ANGLE-1) - iv;
+	return glm::mix(mixedView1, mixedView2, m);
+};
+
 vec3 Atmosphere::FetchTransmittance(vec2 pa, vec2 pb) const {
-	vec2 earthCenter(0, -R_Earth); // Height 0 is ground level
-	vec2 p = GetNearestPoint(earthCenter, pa, pb);
-	if (height(p) < 0)
-		return Transmittance(pa, pb); // The pre computed table isn't good for this
-	auto f = [this](float h, float dist) {
-		float ud = HorizontalDistParameterized(dist);
-		if (ud < 0.0f)
-			return vec3(1,1,1);
-		float uh = HeightParameterized(h);
-		int ih = int(uh*(NHEIGHT-1)+0.5f);
-		int id = int(ud*(NTRANS_HOR_RES-1)+0.5f);
-		assert(ih >= 0 && ih < NHEIGHT && id >= 0 && id < NTRANS_HOR_RES);
-		return fTransmittance[ih][id];
-	};
-	float h = height(p);
-	vec3 transm1 = f(h, glm::length(pa - p));
-	vec3 transm2 = f(h, glm::length(pb - p));
-	vec2 PaToP = p - pa;
-	vec2 PbToP = p - pb;
-	vec2 PaToPb = pb - pa;
-	if (glm::dot(PaToP, PaToPb) < 0)
-		transm1 = 1.0f / transm1; // Nearest point is outside of pa
-	if (glm::dot(PbToP, PaToPb) > 0)
-		transm2 = 1.0f / transm2; // Nearest point is outside of pb
-	return transm1 * transm2;
+	float ha = height(pa), hb = height(pb);
+	if (hb < ha)
+		std::swap(pa, pb); // Now we now 'pa' is below 'pb'
+	// The precomputed table gives the transmittance all the way to the atmosphere, but we need the transmittance
+	// only to 'pb'. So we take the whole way transmittance from pa to the atmosphere, and subtract
+	// the transmittance from 'pb' to the atmosphere.
+	// To do this, we need to find the point that intersects the atmosphere.
+	vec2 v = glm::normalize(pa-pb); // Normalized vector pointing from pb to pa.
+	float intersectionDistance;
+	bool intersectionFound = glm::intersectRaySphere(pa, -v, earthCenter, atmSquared, intersectionDistance);
+	assert(intersectionFound);
+	vec2 pAtm = pa - v*intersectionDistance;
+
+	vec3 transm1 = FetchTransmittanceToHorizon(pa, v);
+	if (glm::length(pb - pAtm) < R_Earth/1000)
+		return transm1; // pb was already near end of atmosphere
+	vec3 transm2 = FetchTransmittanceToHorizon(pb, v);
+	return transm1 / transm2;
 }
 
 void Atmosphere::PreComputeSingleScattering() {
@@ -304,6 +331,32 @@ void Atmosphere::Debug() {
 		assert(glm::length(us - us2) < epsilon);
 	}
 
+	vec2 sources[] = {
+		{ 0, 0 },
+		{ 0, 1000 },
+		{ 0, 10000 },
+		{ 1000, 0 },
+		{ 10000, 0 },
+		{ 10000, 10000 },
+		{ 40000, 40000 },
+	};
+	// All destinations in this list shall be at the horizon
+	vec2 destinations[] = {
+		{ 0, H_Atm },
+		{ 225136.6f, 76070.5f }, // Rotated -2 degrees
+		{ -225136.6f, 76070.5f }, // Rotated 2 degrees
+	};
+	// Verify FetchTransmittanceToHorizon()
+	for (auto pb : destinations) {
+		for (auto pa : sources) {
+			vec2 v = glm::normalize(pb-pa);
+			vec3 transm = Transmittance(pa, pb);
+			vec3 transm2 = FetchTransmittanceToHorizon(pa, v);
+			float len = glm::length(transm - transm2);
+			assert(len < 0.02f);
+			// LPLOG("Transmittance from (%.0f %.0f) to (%.0f %.0f): %f, %f, %f (%f %f %f) diff %f", pa.x, pa.y, pb.x, pb.y, transm.r, transm.g, transm.b, transm2.r, transm2.g, transm2.b, len);
+		}
+	}
 	vec3 pa(0,0,0);
 	for (float i=1; i>=0; i -= 0.15f) {
 		vec2 pb(HorizontalDistParameterizedInverse(i)/2, 0);

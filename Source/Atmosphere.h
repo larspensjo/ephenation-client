@@ -35,12 +35,12 @@ private:
 	enum { NHEIGHT=32, NVIEW_ANGLE=64, NSUN_ANGLE=32, NTRANS_HOR_RES = 128};
 	glm::vec3 fScattering[NHEIGHT][NVIEW_ANGLE][NSUN_ANGLE]; // Precomputed scattering
 	/// Precomputed transmittance for RGB
-	/// It will give transmittance between two points pa and pb, where
-	/// pa is at the lowest point and pb is at right angle to the line to pa.
-	/// The second index is the distance from pa to pb.
-	glm::vec3 fTransmittance[NHEIGHT][NTRANS_HOR_RES];
+	/// It will give transmittance for a vector starting at height given by the first index,
+	/// pointing in the direction the second index. The vector reach to the end of atmosphere.
+	glm::vec3 fTransmittance[NHEIGHT][NVIEW_ANGLE];
 
 	void PreComputeTransmittance();
+	glm::vec3 FetchTransmittanceToHorizon(glm::vec2 pa, glm::vec2 v) const;
 	glm::vec3 FetchTransmittance(glm::vec2 pa, glm::vec2 pb) const;
 	void PreComputeSingleScattering();
 	glm::vec3 fetchScattered(float h, float cv, float cs) const;
