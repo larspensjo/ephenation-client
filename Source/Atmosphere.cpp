@@ -67,15 +67,16 @@ static float ViewAngleParameterized(float cv, float h) {
 	if (cv > ch)
 		return 0.5f * std::pow((cv-ch) / (1-ch), 0.2f) + 0.5f;
 	else
-		return 0.5f * std::pow((ch-cv) / (ch+1), 0.2f);
+		return 0.5f - 0.5f * std::pow((ch-cv) / (ch+1), 0.2f);
 }
 
+// Get cosinus of angle between azimuth and viewer
 static float ViewAngleParameterizedInverse(float uv, float h) {
 	float ch = - std::sqrt(h * (2 * R_Earth + h)) / (R_Earth + h); // The Angle between the horizon and zenith for the current height
 	if (uv > 0.5f)
 		return ch + std::pow((uv-0.5f)*2, 5.0f) * (1.0f - ch);
 	else
-		return ch - std::pow(uv*2, 5.0f) * (1.0f + ch);
+		return ch - std::pow(1 - uv*2, 5.0f) * (1.0f + ch);
 }
 
 static float SunAngleParameterization(float cs) {
