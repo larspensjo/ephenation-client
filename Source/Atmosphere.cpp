@@ -359,11 +359,11 @@ void Atmosphere::Debug() {
 			// LPLOG("Transmittance from (%.0f %.0f) to (%.0f %.0f): %f, %f, %f (%f %f %f) diff %f", pa.x, pa.y, pb.x, pb.y, transm.r, transm.g, transm.b, transm2.r, transm2.g, transm2.b, len);
 		}
 	}
-	vec3 pa(0,0,0);
-	for (float i=1; i>=0; i -= 0.15f) {
-		vec2 pb(HorizontalDistParameterizedInverse(i)/2, 0);
-		vec3 transm = Transmittance(vec2(pa), pb);
-		vec3 transm2 = FetchTransmittance(vec2(pa), vec2(pb));
+	vec2 pa(0,0);
+	for (float ux=1; ux>=0; ux -= 0.15f) {
+		vec2 pb(HorizontalDistParameterizedInverse(ux)/2, 0);
+		vec3 transm = Transmittance(pa, pb);
+		vec3 transm2 = FetchTransmittance(pa, pb);
 		LPLOG("Transmittance dist %.0fm: %f, %f, %f (%f %f %f)", pb.x, transm.r, transm.g, transm.b, transm2.r, transm2.g, transm2.b);
 	}
 
@@ -383,8 +383,8 @@ void Atmosphere::Debug() {
 	vec3 v(0,-1,0);
 	for (int i=0; i<9; i++) {
 		vec3 mie, rayleigh;
-		SingleScattering(pa, -sunDir, v, mie, rayleigh);
-		LPLOG("Single scattering dir (%f, %f, %f)", v.x, v.y, v.z);
+		SingleScattering(vec3(pa,0), -sunDir, v, mie, rayleigh);
+		LPLOG("Single scattering theta %f", glm::acos(v.y)/2/glm::pi<float>()*360);
 		LPLOG("Mie      (%f, %f, %f)", mie.r, mie.g, mie.b);
 		LPLOG("Rayleigh (%f, %f, %f)", rayleigh.r, rayleigh.g, rayleigh.b);
 		v = glm::rotateZ(v, 90.0f/8.0f);
