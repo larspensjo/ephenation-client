@@ -79,14 +79,13 @@ static float ViewAngleParameterizedInverse(float uv, float h) {
 }
 
 static float SunAngleParameterization(float cs) {
-	// Using radians!
 	float tmp = std::tan(1.26f * 1.1f);
 	return 0.5f * (std::atan(std::max(cs, -0.1975f) * tmp) / 1.1f + (1-0.26f));
 }
 
 static float SunAngleParameterizationInverse(float us) {
-	// Using radians!
-	return std::tan((2*us - 1.0f + 0.26f) * 0.75f) / std::tan(1.26f * 0.75f);
+	float tmp = std::tan(1.26f * 1.1f);
+	return std::tan((2*us - 1.0f + 0.26f) * 1.1f) / tmp;
 }
 
 // Reference system (0,0,0) is the player at sea level
