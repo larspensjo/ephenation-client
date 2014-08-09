@@ -12,3 +12,13 @@ function ret = SunAngleParameterizationInverse(us)
 	ret = tan((2*us-0.74)*1.1)/tmpsunconstant;
 endfunction
 
+function ret = ViewAngleParameterized(cv, h)
+	R_Earth = 6371*1000;
+	ch = - sqrt(h * (2 * R_Earth + h)) / (R_Earth + h);
+	if (cv > ch)
+		ret = 0.5 * power((cv-ch) / (1-ch), 0.2) + 0.5;
+	else
+		ret = 0.5 - 0.5 * power((ch-cv) / (ch+1), 0.2);
+	endif
+endfunction
+
