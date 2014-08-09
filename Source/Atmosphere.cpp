@@ -287,6 +287,23 @@ void Atmosphere::PreComputeSingleScattering() {
 void Atmosphere::Debug() {
 	this->Init();
 
+	// Verify parameterized functions and their inverse values
+	const float epsilon = 0.00001, delta = 0.1f;
+	for (float uh=0; uh < 1+epsilon; uh += delta) {
+		float h = HeightParameterizedInverse(uh);
+		assert(glm::length(uh - HeightParameterized(h)) < epsilon);
+		for (float uv = 0; uv < 1+epsilon; uv += delta) {
+			float v = ViewAngleParameterizedInverse(uv, h);
+			assert(glm::length(uv - ViewAngleParameterized(v, h)) < epsilon);
+		}
+	}
+
+	for (float us = delta; us < 1+epsilon; us += delta) {
+		float s = SunAngleParameterizationInverse(us);
+		float us2 = SunAngleParameterization(s);
+		assert(glm::length(us - us2) < epsilon);
+	}
+
 	vec3 pa(0,0,0);
 	for (float i=1; i>=0; i -= 0.15f) {
 		vec2 pb(HorizontalDistParameterizedInverse(i)/2, 0);
