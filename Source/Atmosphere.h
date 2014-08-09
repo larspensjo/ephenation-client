@@ -36,7 +36,7 @@ private:
 	glm::vec3 fScattering[NHEIGHT][NVIEW_ANGLE][NSUN_ANGLE]; // Precomputed scattering
 	/// Precomputed transmittance for RGB
 	/// It will give transmittance for a vector starting at height given by the first index,
-	/// pointing in the direction the second index. The vector reach to the end of atmosphere.
+	/// pointing in the outgoing direction given by the second index. The vector reach to the end of atmosphere.
 	glm::vec3 fTransmittance[NHEIGHT][NVIEW_ANGLE];
 
 	void PreComputeTransmittance();

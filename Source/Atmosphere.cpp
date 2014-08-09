@@ -210,17 +210,17 @@ void Atmosphere::PreComputeTransmittance() {
 			float uh1 = float(heightIndex1) / (NHEIGHT-1);
 			float h1 = HeightParameterizedInverse(uh1);
 			vec2 pa(0, h1);
-			float cosViewAngle = ViewAngleParameterizedInverse(uv, h1);
+			float cosViewAngle = ViewAngleParameterizedInverse(uv, h1); // This is the angle between the view and azimuth.
 			float sinViewAngle = glm::sqrt(1 - cosViewAngle*cosViewAngle);
-			vec2 v(-sinViewAngle, cosViewAngle); // Pointing to 'pa'
+			vec2 v(sinViewAngle, -cosViewAngle); // Pointing from 'pa'. Sign of sinViewAngle doesn't really matter as it is symmetrically.
 			vec3 transm(1,1,1);
 			if (heightIndex1 < NHEIGHT-1) {
 				// This is the normal case
 				float intersectionDistance;
-				bool intersectionFound = glm::intersectRaySphere(pa, -v, earthCenter, atmSquared, intersectionDistance);
+				bool intersectionFound = glm::intersectRaySphere(pa, v, earthCenter, atmSquared, intersectionDistance);
 				assert(intersectionFound);
-				vec2 pb = pa - intersectionDistance * v;
-				transm = this->Transmittance(pb, pa);
+				vec2 pb = pa + intersectionDistance * v;
+				transm = this->Transmittance(pa, pb);
 			}
 			fTransmittance[heightIndex1][angleIndex] = transm;
 		}
@@ -246,8 +246,8 @@ static vec2 GetNearestPoint(vec2 p, vec2 a, vec2 b) {
 vec3 Atmosphere::FetchTransmittanceToHorizon(vec2 pa, vec2 v) const {
 	// Rotate 'pa' and the 'cv' angle, to get the new pa.x = 0.
 	vec2 dir = glm::normalize(pa - earthCenter); // Normalized vector from earth center to pa.
-	float correction = glm::acos(dir.y) * 360 / 2 / glm::pi<float>();
-	vec2 pa2 = glm::rotate(pa-earthCenter, correction) + earthCenter;
+	float correction = glm::acos(dir.y) * 360 / 2 / glm::pi<float>(); // Measured in degrees
+	vec2 pa2 = glm::rotate(pa-earthCenter, correction) + earthCenter; // x should be almost 0, and only 'y' is used from now on.
 	vec2 v2 = glm::rotate(v, correction);
 	float uv = ViewAngleParameterized(-v2.y, pa2.y);
 	float uh = HeightParameterized(pa2.y);
@@ -275,11 +275,11 @@ vec3 Atmosphere::FetchTransmittance(vec2 pa, vec2 pb) const {
 	// only to 'pb'. So we take the whole way transmittance from pa to the atmosphere, and subtract
 	// the transmittance from 'pb' to the atmosphere.
 	// To do this, we need to find the point that intersects the atmosphere.
-	vec2 v = glm::normalize(pa-pb); // Normalized vector pointing from pb to pa.
+	vec2 v = glm::normalize(pb-pa); // Normalized vector pointing from pa to pb.
 	float intersectionDistance;
-	bool intersectionFound = glm::intersectRaySphere(pa, -v, earthCenter, atmSquared, intersectionDistance);
+	bool intersectionFound = glm::intersectRaySphere(pa, v, earthCenter, atmSquared, intersectionDistance);
 	assert(intersectionFound);
-	vec2 pAtm = pa - v*intersectionDistance;
+	vec2 pAtm = pa + v*intersectionDistance;
 
 	vec3 transm1 = FetchTransmittanceToHorizon(pa, v);
 	if (glm::length(pb - pAtm) < epsilon)
@@ -290,17 +290,17 @@ vec3 Atmosphere::FetchTransmittance(vec2 pa, vec2 pb) const {
 
 void Atmosphere::PreComputeSingleScattering() {
 	for (int heightIndex = 0; heightIndex < NHEIGHT; heightIndex++) {
-		float uHeight = float(heightIndex) / NHEIGHT;
+		float uHeight = float(heightIndex) / (NHEIGHT-1);
 		float h = HeightParameterizedInverse(uHeight);
 		vec3 pa(0,h,0);
 		for (int viewAngleIndex = 0; viewAngleIndex < NVIEW_ANGLE; viewAngleIndex++) {
-			float uViewAngle = float(viewAngleIndex) / NVIEW_ANGLE;
+			float uViewAngle = float(viewAngleIndex) / (NVIEW_ANGLE-1);
 			float cosViewAngle = ViewAngleParameterizedInverse(uViewAngle, h);
 			float sinViewAngle = glm::sqrt(1 - cosViewAngle*cosViewAngle); // Pythagoras
 			// The view angle is the angle from the azimuth
 			vec3 v(sinViewAngle, cosViewAngle, 0); // Pointing to 'pa'
 			for (int sunAngleIndex = 0; sunAngleIndex < NSUN_ANGLE; sunAngleIndex++) {
-				float uSunAngle = float(sunAngleIndex) / NSUN_ANGLE;
+				float uSunAngle = float(sunAngleIndex) / (NSUN_ANGLE-1);
 				float cosSunAngle = SunAngleParameterizationInverse(uSunAngle);
 				float sinSunAgle = glm::sqrt(1 - cosSunAngle*cosSunAngle);
 				// The sun angle is the angle between the azimuth and the sun
