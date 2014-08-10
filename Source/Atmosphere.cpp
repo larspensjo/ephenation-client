@@ -43,6 +43,7 @@ Atmosphere::Atmosphere()
 }
 
 static float HeightParameterized(float h) {
+	assert(h >= 0);
 	return std::sqrt(h / H_Atm);
 }
 
@@ -246,8 +247,10 @@ static vec2 GetNearestPoint(vec2 p, vec2 a, vec2 b) {
 vec3 Atmosphere::FetchTransmittanceToHorizon(vec2 pa, vec2 v) const {
 	// Rotate 'pa' and the 'cv' angle, to get the new pa.x = 0.
 	vec2 dir = glm::normalize(pa - earthCenter); // Normalized vector from earth center to pa.
-	float correction = glm::acos(dir.y) * 360 / 2 / glm::pi<float>(); // Measured in degrees
+	float correction = glm::acos(dir.y) * 360 / 2 / glm::pi<float>() * glm::sign(dir.x); // Measured in degrees
 	vec2 pa2 = glm::rotate(pa-earthCenter, correction) + earthCenter; // x should be almost 0, and only 'y' is used from now on.
+	if (pa2.y < 0)
+		return vec3(0,0,0);
 	vec2 v2 = glm::rotate(v, correction);
 	float uv = ViewAngleParameterized(-v2.y, pa2.y);
 	float uh = HeightParameterized(pa2.y);
@@ -267,6 +270,8 @@ vec3 Atmosphere::FetchTransmittanceToHorizon(vec2 pa, vec2 v) const {
 
 vec3 Atmosphere::FetchTransmittance(vec2 pa, vec2 pb) const {
 	float ha = height(pa), hb = height(pb);
+	if (ha < 0 || hb < 0)
+		return vec3(0,0,0); // Don't transmit any light below ground level
 	float epsilon = H_Atm/100;
 	assert(ha < H_Atm+epsilon && hb < H_Atm+epsilon); // It is possible to move the point to the atmosphere, but costs effort.
 	if (hb < ha)
