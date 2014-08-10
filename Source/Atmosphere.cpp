@@ -364,20 +364,21 @@ void Atmosphere::Debug() {
 		vec2 pb(HorizontalDistParameterizedInverse(ux)/2, 0);
 		vec3 transm = Transmittance(pa, pb);
 		vec3 transm2 = FetchTransmittance(pa, pb);
-		LPLOG("Transmittance dist %.0fm: %f, %f, %f (%f %f %f)", pb.x, transm.r, transm.g, transm.b, transm2.r, transm2.g, transm2.b);
+		LPLOG("Transmittance dist %.0fm: %.2f, %.2f, %.2f (%.2f %.2f %.2f)", pb.x, transm.r, transm.g, transm.b, transm2.r, transm2.g, transm2.b);
 	}
 
 	for (float i=1; i>=0; i -= 0.15f) {
 		vec2 pb(100000, HeightParameterizedInverse(i));
-		vec3 transm = Transmittance(vec2(pa), pb);
-		LPLOG("Transmittance height %.0fm: %f, %f, %f", pb.y, transm.r, transm.g, transm.b);
+		vec3 transm = Transmittance(pa, pb);
+		vec3 transm2 = FetchTransmittance(pa, pb);
+		LPLOG("Transmittance height %.0fm: %.2f, %.2f, %.2f (%.2f %.2f %.2f)", pb.y, transm.r, transm.g, transm.b, transm2.r, transm2.g, transm2.b);
 	}
 
 	{
 		vec2 pb(1, HeightParameterizedInverse(1));
-		vec3 transm = Transmittance(vec2(pa), pb);
-		vec3 transm2 = FetchTransmittance(vec2(pa), vec2(pb));
-		LPLOG("Transmittance height %f, upwards: %f, %f, %f (%f %f %f)", pb.y, transm.r, transm.g, transm.b, transm2.r, transm2.g, transm2.b);
+		vec3 transm = Transmittance(pa, pb);
+		vec3 transm2 = FetchTransmittance(pa, pb);
+		LPLOG("Transmittance height %.0f, upwards: %.2f, %.2f, %.2f (%.2f %.2f %.2f)", pb.y, transm.r, transm.g, transm.b, transm2.r, transm2.g, transm2.b);
 	}
 
 	vec3 v(0,-1,0);
