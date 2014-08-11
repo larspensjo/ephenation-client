@@ -55,8 +55,8 @@ private:
 	/// @param pa The player position
 	/// @param l Direction from the sun
 	/// @param v The direction into 'pa'
-	void SingleScattering(glm::vec3 pa, glm::vec3 l, glm::vec3 v, glm::vec3 &mie, glm::vec3 &rayleigh) const;
-	glm::vec3 GatheredLight(glm::vec3 p, glm::vec3 v, glm::vec3 l) const;
+	void SingleScattering(glm::vec2 pa, glm::vec2 l, glm::vec2 v, glm::vec3 &mie, glm::vec3 &rayleigh) const;
+	glm::vec3 GatheredLight(glm::vec2 p, glm::vec2 v, glm::vec2 l) const;
 
 	bool fInitialized = false;
 };
