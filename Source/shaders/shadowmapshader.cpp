@@ -15,7 +15,8 @@
 // along with Ephenation.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include <GL/glew.h>
+#include <glbinding/gl/functions33.h>
+#include <glbinding/gl/enum33.h>
 #include <stdio.h>
 
 #include <glm/glm.hpp>
@@ -23,6 +24,8 @@
 #include "shadowmapshader.h"
 #include "../primitives.h"
 #include "../shadowconfig.h"
+
+using namespace gl33;
 
 /// The shadowmap is based on coordinates that are transformed from infinite world to bitmap size.
 /// The transformation equation is a*x/(b*x+1), which is similar to HDR. This gives a value from 0 to 'w' (bitmap size).

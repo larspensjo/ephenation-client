@@ -16,7 +16,6 @@
 //
 
 #include <string>
-#include <GL/glew.h>
 #include <sstream>
 #include <Rocket/Controls.h>
 

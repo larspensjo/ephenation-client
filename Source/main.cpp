@@ -24,12 +24,14 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <thread>
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
 #include <string.h>
-#include <GL/glew.h>
+#include <glbinding/gl/gl33.h>
+// Kludge to prevent glfw from including GL/gl.h
+	#define __gl_h_
+	#define GLFW_NO_GLU
 #include <GL/glfw.h>
 #include <iostream>
 #include <fstream>
@@ -69,43 +71,8 @@
 #include "Debug.h"
 #include "shaders/BarrelDistortion.h"
 
-#ifndef GL_VERSION_3_2
-#define GL_CONTEXT_CORE_PROFILE_BIT       0x00000001
-#define GL_CONTEXT_COMPATIBILITY_PROFILE_BIT 0x00000002
-#define GL_CONTEXT_PROFILE_MASK           0x9126
-#define GL_NUM_EXTENSIONS                 0x821D
-#define GL_CONTEXT_FLAGS                  0x821E
-#define GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT 0x0001
-#endif
-
-#ifndef GL_VERSION_2_0
-#define GL_SHADING_LANGUAGE_VERSION 0x8B8C
-#endif
-
 using namespace std;
-
-#ifdef DEBUG
-static const char* get_profile_name(GLint mask) {
-	if (mask & GL_CONTEXT_COMPATIBILITY_PROFILE_BIT)
-		return "compatibility";
-	if (mask & GL_CONTEXT_CORE_PROFILE_BIT)
-		return "core";
-
-	return "unknown";
-}
-#endif
-
-// Used for NVIDIA
-#define GPU_MEMORY_INFO_DEDICATED_VIDMEM_NVX          0x9047
-#define GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX    0x9048
-#define GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX  0x9049
-#define GPU_MEMORY_INFO_EVICTION_COUNT_NVX            0x904A
-#define GPU_MEMORY_INFO_EVICTED_MEMORY_NVX            0x904B
-
-// Used for ATI
-#define VBO_FREE_MEMORY_ATI                           0x87FB
-#define TEXTURE_FREE_MEMORY_ATI                       0x87FC
-#define RENDERBUFFER_FREE_MEMORY_ATI                  0x87FD
+using namespace gl33;
 
 static void dumpInfo(int major, int minor, int revision) {
 	int glfwMajor=-1, glfwMinor=-1, glfwRev=-1;
@@ -116,114 +83,93 @@ static void dumpInfo(int major, int minor, int revision) {
 	LPLOG ("Version: %s", glGetString (GL_VERSION));
 	LPLOG ("GLSL: %s", glGetString (GL_SHADING_LANGUAGE_VERSION));
 	LPLOG("OpenGL context version parsed by GLFW: %u.%u.%u", major, minor, revision);
-	GLint flags, mask;
 
 	if (major >= 3) {
-		glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
-		if (flags & GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT)
-			LPLOG("OpenGL context flags: forward-compatible");
-		else
-			LPLOG("OpenGL context flags: none");
+		ContextFlagMask flags;
+		glGetIntegerv(GL_CONTEXT_FLAGS, (GLint *)&flags);
+		std::stringstream ss;
+		ss << flags;
+		LPLOG("OpenGL context flags: %s", ss.str().c_str());
 	}
 
 	if (major > 3 || (major == 3 && minor >= 2)) {
-		glGetIntegerv(GL_CONTEXT_PROFILE_MASK, &mask);
-		LPLOG("OpenGL profile mask: 0x%08x (%s)", mask, get_profile_name(mask));
+		ContextProfileMask mask;
+		glGetIntegerv(GL_CONTEXT_PROFILE_MASK, (GLint *)&mask);
+		std::stringstream ss;
+		ss << mask;
+		LPLOG("OpenGL profile mask: (%s)", ss.str().c_str());
 	}
 
 	// This works for NVIDIA
 	GLint par = -1;
-	glGetIntegerv(GPU_MEMORY_INFO_DEDICATED_VIDMEM_NVX, &par);
+	glGetIntegerv(gl::GL_GPU_MEMORY_INFO_DEDICATED_VIDMEM_NVX, &par);
 	if (glGetError() == GL_NO_ERROR)
-		LPLOG("GPU_MEMORY_INFO_DEDICATED_VIDMEM_NVX %d", par);
-	glGetIntegerv(GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX, &par);
+		LPLOG("GL_GPU_MEMORY_INFO_DEDICATED_VIDMEM_NVX %d", par);
+	glGetIntegerv(gl::GL_GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX, &par);
 	if (glGetError() == GL_NO_ERROR)
-		LPLOG("GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX %d", par);
+		LPLOG("GL_GPU_MEMORY_INFO_DEDICATED_VIDMEM_NVX %d", par);
 
 	// This works for ATI
 	GLint parATI[4];
-	glGetIntegerv(VBO_FREE_MEMORY_ATI, parATI);
+	glGetIntegerv(gl::GL_VBO_FREE_MEMORY_ATI, parATI);
 	if (glGetError() == GL_NO_ERROR)
-		LPLOG("VBO_FREE_MEMORY_ATI total %d, largest block %d, total aux %d, largest aux block %d", parATI[0], parATI[1], parATI[2], parATI[3]);
+		LPLOG("GL_VBO_FREE_MEMORY_ATI total %d, largest block %d, total aux %d, largest aux block %d", parATI[0], parATI[1], parATI[2], parATI[3]);
 }
 
 void dumpGraphicsMemoryStats(void) {
 	if (strncmp((const char *)glGetString (GL_RENDERER), "NVS", 3) == 0) {
 		// This works for NVIDIA
 		GLint par = -1;
-		glGetIntegerv(GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX, &par);
+		glGetIntegerv(gl::GL_GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX, &par);
 		if (glGetError() == GL_NO_ERROR)
-			LPLOG("GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX %d", par);
-		glGetIntegerv(GPU_MEMORY_INFO_EVICTION_COUNT_NVX, &par);
+			LPLOG("GL_GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX %d", par);
+		glGetIntegerv(gl::GL_GPU_MEMORY_INFO_EVICTION_COUNT_NVX, &par);
 		if (glGetError() == GL_NO_ERROR)
-			LPLOG("GPU_MEMORY_INFO_EVICTION_COUNT_NVX %d", par);
-		glGetIntegerv(GPU_MEMORY_INFO_EVICTED_MEMORY_NVX, &par);
+			LPLOG("GL_GPU_MEMORY_INFO_EVICTION_COUNT_NVX %d", par);
+		glGetIntegerv(gl::GL_GPU_MEMORY_INFO_EVICTED_MEMORY_NVX, &par);
 		if (glGetError() == GL_NO_ERROR)
-			LPLOG("GPU_MEMORY_INFO_EVICTED_MEMORY_NVX %d", par);
+			LPLOG("GL_GPU_MEMORY_INFO_EVICTED_MEMORY_NVX %d", par);
 	}
 
 	if (strncmp((const char *)glGetString (GL_RENDERER), "AMD", 3) == 0) {
 		GLint parATI[4];
-		glGetIntegerv(VBO_FREE_MEMORY_ATI, parATI);
+		glGetIntegerv(gl::GL_VBO_FREE_MEMORY_ATI, parATI);
 		if (glGetError() == GL_NO_ERROR)
-			LPLOG("VBO_FREE_MEMORY_ATI total %d, largest block %d, total aux %d, largest aux block %d", parATI[0], parATI[1], parATI[2], parATI[3]);
+			LPLOG("GL_VBO_FREE_MEMORY_ATI total %d, largest block %d, total aux %d, largest aux block %d", parATI[0], parATI[1], parATI[2], parATI[3]);
 	}
 }
 
-void APIENTRY DebugFunc(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, GLvoid* userParam) {
+void APIENTRY DebugFunc(GLenum source, GLenum type, unsigned id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam) {
+#pragma GCC diagnostic ignored "-Wswitch"
 	std::string srcName;
 	switch(source) {
-	case GL_DEBUG_SOURCE_API_ARB: srcName = "API"; break;
-	case GL_DEBUG_SOURCE_WINDOW_SYSTEM_ARB: srcName = "Window System"; break;
-	case GL_DEBUG_SOURCE_SHADER_COMPILER_ARB: srcName = "Shader Compiler"; break;
-	case GL_DEBUG_SOURCE_THIRD_PARTY_ARB: srcName = "Third Party"; break;
-	case GL_DEBUG_SOURCE_APPLICATION_ARB: srcName = "Application"; break;
-	case GL_DEBUG_SOURCE_OTHER_ARB: srcName = "Other"; break;
+	case gl::GL_DEBUG_SOURCE_API: srcName = "API"; break;
+	case gl::GL_DEBUG_SOURCE_WINDOW_SYSTEM: srcName = "Window System"; break;
+	case gl::GL_DEBUG_SOURCE_SHADER_COMPILER: srcName = "Shader Compiler"; break;
+	case gl::GL_DEBUG_SOURCE_THIRD_PARTY: srcName = "Third Party"; break;
+	case gl::GL_DEBUG_SOURCE_APPLICATION: srcName = "Application"; break;
+	case gl::GL_DEBUG_SOURCE_OTHER: srcName = "Other"; break;
 	}
 
 	std::string errorType;
 	switch(type) {
-	case GL_DEBUG_TYPE_ERROR_ARB: errorType = "Error"; break;
-	case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR_ARB: errorType = "Deprecated Functionality"; break;
-	case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR_ARB: errorType = "Undefined Behavior"; break;
-	case GL_DEBUG_TYPE_PORTABILITY_ARB: errorType = "Portability"; break;
-	case GL_DEBUG_TYPE_PERFORMANCE_ARB: errorType = "Performance"; break;
-	case GL_DEBUG_TYPE_OTHER_ARB: errorType = "Other"; break;
+	case gl::GL_DEBUG_TYPE_ERROR: errorType = "Error"; break;
+	case gl::GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR: errorType = "Deprecated Functionality"; break;
+	case gl::GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR: errorType = "Undefined Behavior"; break;
+	case gl::GL_DEBUG_TYPE_PORTABILITY: errorType = "Portability"; break;
+	case gl::GL_DEBUG_TYPE_PERFORMANCE: errorType = "Performance"; break;
+	case gl::GL_DEBUG_TYPE_OTHER: errorType = "Other"; break;
 	}
 
 	std::string typeSeverity;
 	switch(severity) {
-	case GL_DEBUG_SEVERITY_HIGH_ARB: typeSeverity = "High"; break;
-	case GL_DEBUG_SEVERITY_MEDIUM_ARB: typeSeverity = "Medium"; break;
-	case GL_DEBUG_SEVERITY_LOW_ARB: typeSeverity = "Low"; break;
+	case gl::GL_DEBUG_SEVERITY_HIGH: typeSeverity = "High"; break;
+	case gl::GL_DEBUG_SEVERITY_MEDIUM: typeSeverity = "Medium"; break;
+	case gl::GL_DEBUG_SEVERITY_LOW: typeSeverity = "Low"; break;
 	}
 
-	if (severity == GL_DEBUG_SEVERITY_HIGH_ARB || !gIgnoreOpenGLErrors)
+	if (severity == gl::GL_DEBUG_SEVERITY_HIGH || !gIgnoreOpenGLErrors)
 		LPLOG("%s from %s,\t%s priority\nMessage: %s", errorType.c_str(), srcName.c_str(), typeSeverity.c_str(), message); // Can't use ErrorDialog() here.
-}
-
-void APIENTRY DebugFuncAMD(GLuint id, GLenum category, GLenum severity, GLsizei length, const GLchar* message, GLvoid* userParam) {
-	std::string typeSeverity;
-	switch(severity) {
-	case GL_DEBUG_SEVERITY_HIGH_ARB: typeSeverity = "High"; break;
-	case GL_DEBUG_SEVERITY_MEDIUM_ARB: typeSeverity = "Medium"; break;
-	case GL_DEBUG_SEVERITY_LOW_ARB: typeSeverity = "Low"; break;
-	}
-
-	std::string typeCategory;
-	switch(category) {
-	case GL_DEBUG_CATEGORY_API_ERROR_AMD: typeCategory = "API"; break;
-	case GL_DEBUG_CATEGORY_WINDOW_SYSTEM_AMD: typeCategory = "Window system"; break;
-	case GL_DEBUG_CATEGORY_DEPRECATION_AMD: typeCategory = "Deprecation"; break;
-	case GL_DEBUG_CATEGORY_UNDEFINED_BEHAVIOR_AMD: typeCategory = "Undefined behaviour"; break;
-	case GL_DEBUG_CATEGORY_PERFORMANCE_AMD: typeCategory = "Performance"; break;
-	case GL_DEBUG_CATEGORY_SHADER_COMPILER_AMD: typeCategory = "Shader compiler"; break;
-	case GL_DEBUG_CATEGORY_APPLICATION_AMD: typeCategory = "Application"; break;
-	case GL_DEBUG_CATEGORY_OTHER_AMD: typeCategory = "Other"; break;
-	}
-
-	if (severity == GL_DEBUG_SEVERITY_HIGH_ARB || !gIgnoreOpenGLErrors)
-		LPLOG("%s,\t%s priority\nMessage: %s", typeCategory.c_str(), typeSeverity.c_str(), message); // Can't use ErrorDialog() here.
 }
 
 // Used for debugging, where it is difficult when there are many threads trigging a break point.
@@ -404,22 +350,13 @@ int main(int argc, char** argv) {
 		ErrorDialog("Failed to open GLFW window");
 	}
 	glfwSetWindowTitle("Ephenation");
+	glbinding::Binding::initialize();
 	checkError("glfwSetWindowTitle");
 	GLFWvidmode desktopMode;
 	glfwGetDesktopMode(&desktopMode);
 	if (gDebugOpenGL)
 		LPLOG("Desktop mode %d blue bits, %d green bits, %d red bits, %dx%d", desktopMode.BlueBits, desktopMode.GreenBits, desktopMode.RedBits, desktopMode.Width, desktopMode.Height);
 	gDesktopAspectRatio = float(desktopMode.Width)/float(desktopMode.Height);
-
-	// Initialize glew
-	GLenum err=glewInit();
-	checkError("glewInit");
-	if(err!=GLEW_OK) {
-		//problem: glewInit failed, something is seriously wrong
-		LPLOG("Fail to init glew: Error: %s", glewGetErrorString(err));
-		checkError("glewInit");
-		return -1;
-	}
 
 	// Only continue, if OpenGL of the expected version is supported.
 	int major, minor, revision;
@@ -433,11 +370,8 @@ int main(int argc, char** argv) {
 		dumpGraphicsMemoryStats();
 		// const GLubyte* sExtensions = glGetString(GL_EXTENSIONS);
 		// LPLOG("GL extensions: %s", sExtensions);
-		glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB);
-		if (glDebugMessageCallbackARB != 0)
-			glDebugMessageCallbackARB(DebugFunc, (void*)15);
-		else if (glDebugMessageCallbackAMD != 0)
-			glDebugMessageCallbackAMD(DebugFuncAMD, (void*)15);
+		glEnable(gl::GL_DEBUG_OUTPUT_SYNCHRONOUS);
+		gl33ext::glDebugMessageCallback(DebugFunc, (void*)15);
 	}
 
 	if (sOculusRiftMode) {

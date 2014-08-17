@@ -15,12 +15,16 @@
 // along with Ephenation.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <glbinding/gl/functions33.h>
+#include <glbinding/gl/enum33.h>
+
 #include "RenderTarget.h"
 #include "primitives.h"
 #include "assert.h"
 #include "Debug.h"
 
 using namespace View;
+using namespace gl33;
 
 GLsizei RenderTarget::fWidth, RenderTarget::fHeight;
 std::vector<GLuint> RenderTarget::fFreeTextures;
@@ -41,11 +45,11 @@ RenderTarget::RenderTarget() {
 	} else {
 		glGenTextures(1, &fRendertarget);
 		glBindTexture(GL_TEXTURE_2D, fRendertarget);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, fWidth, fHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER); // Get a black border when outside
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+		glTexImage2D(GL_TEXTURE_2D, 0, static_cast<int>(GL_RGB), fWidth, fHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, static_cast<int>(GL_LINEAR));
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, static_cast<int>(GL_LINEAR));
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, static_cast<int>(GL_CLAMP_TO_BORDER)); // Get a black border when outside
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, static_cast<int>(GL_CLAMP_TO_BORDER));
 		LPLOG("Allocate new (%d)", fRendertarget);
 	}
 	fNumAllocated++;

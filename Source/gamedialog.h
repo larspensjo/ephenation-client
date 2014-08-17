@@ -19,6 +19,7 @@
 
 #include <memory>
 #include <glm/gtc/quaternion.hpp>
+#include <glbinding/gl/functions33.h>
 
 #include "ui/mainuserinterface.h"
 #include "ui/RocketGui.h"
@@ -129,7 +130,7 @@ private:
 
 	/// For now, the y offset is always 0.
 	void SetViewport(float x, float w, float h) {
-		glViewport(x, 0, w, h);
+		gl33::glViewport(x, 0, w, h);
 		gViewport = glm::vec4(x, 0, w, h);
 	}
 

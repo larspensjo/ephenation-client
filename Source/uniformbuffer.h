@@ -21,9 +21,10 @@
 
 #pragma once
 
-#include <GL/glew.h>
-
+#include <glbinding/gl/types.h>
 #include <glm/glm.hpp>
+
+using gl::GLuint;
 
 /// Manage a uniform buffer
 /// See common.glsl, with the shader definition of the buffer

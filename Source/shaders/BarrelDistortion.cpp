@@ -15,7 +15,8 @@
 // along with Ephenation.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include <GL/glew.h>
+#include <glbinding/gl/functions33.h>
+#include <glbinding/gl/enum33.h>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -23,6 +24,7 @@
 #include "../primitives.h"
 
 using namespace Shaders;
+using namespace gl33;
 
 /// Using GLSW to define shader
 static const GLchar *vertexShaderSource[] = {

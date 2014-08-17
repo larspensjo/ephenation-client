@@ -20,7 +20,12 @@
 #include <string.h>
 #include <string>
 #include <memory>
-#include <GL/glew.h>
+#include <glbinding/gl/functions33.h>
+#include <glbinding/gl/enum33.h>
+#include <glbinding/gl/bitfield33.h>
+// Kludge to prevent glfw from including GL/gl.h
+	#define __gl_h_
+	#define GLFW_NO_GLU
 #include <GL/glfw.h>
 #include <math.h>
 #include <Rocket/Debugger.h>
@@ -76,6 +81,8 @@
 #include "HudTransformation.h"
 
 using namespace Controller;
+using namespace gl33;
+
 using View::SoundControl;
 using View::gSoundControl;
 using View::gMsgWindow;
@@ -1139,7 +1146,7 @@ void gameDialog::postRender(bool hideGUI, int fps) {
 // Catch the window close request by the player.
 static int GLFWCALL CloseWindowCallback(void) {
 	gMode.Set(GameMode::ESC); // This will initiate a proper shutdown
-	return GL_FALSE;          // Prevent the window from closing immediately.
+	return false;          // Prevent the window from closing immediately.
 }
 
 void gameDialog::init(bool useOvr) {

@@ -18,13 +18,14 @@
 #pragma once
 
 #include <memory>
-#include <GL/glew.h>
-
+#include <glbinding/gl/types.h>
 #include <glm/glm.hpp>
 
 class ShadowMapShader;
 class FBOFlat;
 class GaussianBlur;
+
+using gl::GLuint;
 
 namespace View {
 	class AnimationModels;

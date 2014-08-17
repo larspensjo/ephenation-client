@@ -19,6 +19,7 @@
 
 #include <memory>
 #include <glm/glm.hpp>
+#include <glbinding/gl/enum33.h>
 
 #include "animationmodels.h"
 #include "RenderTarget.h"
@@ -182,18 +183,6 @@ private:
 	void drawColoredLights() const;
 	void drawMousePointer();
 	void drawInventory(bool stereoView) const;
-
-	// Define alias for color attachments. Remember to look at
-	// drawClearFBO() if this list is changed.
-	enum ColorAttachment {
-		ColAttachRenderTarget = GL_COLOR_ATTACHMENT0,
-		ColAttachPosition,
-		ColAttachNormals,
-		ColAttachBlend,
-		ColAttachLighting,
-		ColAttachSurfaceProps,
-		ColAttachTempRenderTarget, // Used for temporary targets
-	};
 
 	GLuint fCurrentInputColor = 0;
 

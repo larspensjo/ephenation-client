@@ -18,6 +18,10 @@
 #pragma once
 
 #include <string>
+#include <glbinding/gl/types.h>
+// Kludge to prevent glfw from including GL/gl.h
+	#define __gl_h_
+	#define GLFW_NO_GLU
 #include <GL/glfw.h>
 
 #include "primitives.h"

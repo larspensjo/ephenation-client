@@ -20,6 +20,8 @@
 #include <glm/gtc/noise.hpp>
 #include <glm/gtx/closest_point.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glbinding/gl/functions33.h>
+#include <glbinding/gl/enum33.h>
 
 #include "primitives.h"
 #include "ChunkObject.h"
@@ -36,6 +38,7 @@
 #include "shapes/Tree.h"
 
 using namespace View;
+using namespace gl33;
 
 //
 // All functions in this file must be thread safe. They will be called from more than one thread. The class ChunkObject need not be

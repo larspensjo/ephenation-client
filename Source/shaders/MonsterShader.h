@@ -28,7 +28,11 @@
 #ifndef MONSTERSHADER_H_
 #define MONSTERSHADER_H_
 
+#include <glbinding/gl/types.h>
+
 #include "shader.h"
+
+using gl::GLvoid;
 
 class MonsterShader : ShaderBase {
 public:

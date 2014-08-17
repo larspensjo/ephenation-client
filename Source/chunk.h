@@ -17,13 +17,15 @@
 
 #pragma once
 
-#include <GL/glew.h>
+#include <glbinding/gl/types.h>
 #include <memory>
 
 #include "render.h"
 #include "ChunkBlocks.h"
 #include "ChunkObject.h"
 #include "OpenglBuffer.h"
+
+using gl::GLuint;
 
 #define CHUNK_SIZE 32
 #define WORLD_HEIGHT 8 // World height measured in chunks

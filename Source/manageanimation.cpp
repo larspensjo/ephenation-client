@@ -38,7 +38,8 @@
 #endif
 
 #include <stdio.h>
-#include <GL/glew.h>
+#include <glbinding/gl/functions33.h>
+#include <glbinding/gl/enum33.h>
 #include <map>
 #include <vector>
 #include <math.h>
@@ -55,6 +56,7 @@
 #include "textures.h"
 
 using namespace View;
+using namespace gl33;
 
 // There is a list of bones associated to a mesh.
 struct MeshBone {

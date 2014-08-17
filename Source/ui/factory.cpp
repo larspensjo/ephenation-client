@@ -16,7 +16,6 @@
 //
 
 #include <Rocket/Core.h>
-#include <GL/glew.h> // Used by chunk.h in activator.h
 
 #include "factory.h"
 #include "base.h"

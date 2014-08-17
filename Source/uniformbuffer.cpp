@@ -15,12 +15,17 @@
 // along with Ephenation.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <glbinding/gl/functions33.h>
+#include <glbinding/gl/enum33.h>
+
 #include "uniformbuffer.h"
 #include "Options.h"
 #include "primitives.h"
 #include "render.h"
 #include "player.h"
 #include "Weather.h"
+
+using namespace gl33;
 
 UniformBuffer gUniformBuffer;
 

@@ -15,7 +15,7 @@
 // along with Ephenation.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include <GL/glew.h>
+#include <glbinding/gl/functions33.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -24,6 +24,8 @@
 #include "gaussblur.h"
 #include "../ui/Error.h"
 #include "../shapes/quad.h"
+
+using namespace gl33;
 
 /// Using GLSW to define shader
 static const GLchar *vertexShaderSource[] = {

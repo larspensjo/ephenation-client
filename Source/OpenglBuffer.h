@@ -17,7 +17,12 @@
 
 #pragma once
 
-#include <GL/glew.h>
+#include <glbinding/gl/types.h>
+#include <glbinding/gl/enum33.h>
+using gl::GLenum;
+using gl::GLvoid;
+using gl::GLsizeiptr;
+using gl::GLuint;
 
 /// Interface to an OpenGL buffer
 class OpenglBuffer
@@ -26,18 +31,18 @@ public:
 	~OpenglBuffer();
 
 	/// Bind GL_ARRAY_BUFFER, allocate and load with data (if any)
-	bool BindArray(GLsizeiptr size, const GLvoid *data, GLenum usage = GL_STATIC_DRAW);
+	bool BindArray(GLsizeiptr size, const GLvoid *data, GLenum usage = gl33::GL_STATIC_DRAW);
 
 	/// Bind GL_ELEMENT_ARRAY_BUFFER, allocate and load with data (if any)
-	bool BindElementsArray(GLsizeiptr size, const GLvoid *data, GLenum usage = GL_STATIC_DRAW);
+	bool BindElementsArray(GLsizeiptr size, const GLvoid *data, GLenum usage = gl33::GL_STATIC_DRAW);
 
 	/// Bind GL_ARRAY_BUFFER and load data
-	void ArraySubData(GLintptr offset, GLsizeiptr size, const GLvoid *data);
+	void ArraySubData(gl::GLintptr offset, GLsizeiptr size, const GLvoid *data);
 	int GetSize() const;
 	void Release();
 private:
 	void Init();
 	void Bind(GLenum target);
 	GLuint fBufferId = 0;
-	GLenum fTarget = GL_ARRAY_BUFFER;
+	GLenum fTarget = gl33::GL_ARRAY_BUFFER;
 };

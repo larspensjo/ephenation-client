@@ -13,11 +13,16 @@ http://www.lighthouse3d.com/very-simple-libs
 // VSFL requires TinyXML
 #include <tinyxml.h>
 
+#include <glbinding/gl/functions33.h>
+#include <glbinding/gl/enum33.h>
+
 #include "vsfl.h"
 #include <glm/glm.hpp>
 #include "../shaders/SimpleTextureShader.h"
 #include "../imageloader.h"
 #include "../primitives.h"
+
+using namespace gl33;
 
 SimpleTextureShader *VSFLFont::sShader = 0;
 
@@ -28,7 +33,7 @@ VSFLFont::VSFLFont():
 	mHeight(0),
 	mNumChars(0),
 	mFontTex(0),
-	mPrevDepth(false) {
+	mPrevDepth(GL_FALSE) {
 }
 
 // Clear chars info, and sentences
@@ -111,11 +116,11 @@ VSFLFont::loadFont(const std::string &fontName, bool fixedSize) {
 
 	glGenTextures(1,&mFontTex);
 	glBindTexture(GL_TEXTURE_2D, mFontTex);
-	glTexParameteri(GL_TEXTURE_2D,	GL_TEXTURE_WRAP_S,		GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D,	GL_TEXTURE_WRAP_T,		GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D,	GL_TEXTURE_MAG_FILTER,   GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D,	GL_TEXTURE_MIN_FILTER,   GL_LINEAR);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, image->width, image->height, 0,
+	glTexParameteri(GL_TEXTURE_2D,	GL_TEXTURE_WRAP_S,		static_cast<int>(GL_REPEAT));
+	glTexParameteri(GL_TEXTURE_2D,	GL_TEXTURE_WRAP_T,		static_cast<int>(GL_REPEAT));
+	glTexParameteri(GL_TEXTURE_2D,	GL_TEXTURE_MAG_FILTER,   static_cast<int>(GL_LINEAR));
+	glTexParameteri(GL_TEXTURE_2D,	GL_TEXTURE_MIN_FILTER,   static_cast<int>(GL_LINEAR));
+	glTexImage2D(GL_TEXTURE_2D, 0, static_cast<int>(GL_RGBA), image->width, image->height, 0,
 	             image->fFormat, GL_UNSIGNED_BYTE, image->pixels.get());
 
 	glBindTexture(GL_TEXTURE_2D,0);
@@ -167,14 +172,14 @@ VSFLFont::loadFont(const std::string &fontName, bool fixedSize) {
 void
 VSFLFont::prepareRender() {
 	// get previous depth test setting
-	glGetIntegerv(GL_DEPTH_TEST,&mPrevDepth);
+	glGetIntegerv(GL_DEPTH_TEST, (GLint *)&mPrevDepth);
 	// disable depth testing
 	glDisable(GL_DEPTH_TEST);
 
 	// get previous blend settings
-	glGetIntegerv(GL_BLEND, &mPrevBlend);
-	glGetIntegerv(GL_BLEND_DST, &mPrevBlendDst);
-	glGetIntegerv(GL_BLEND_SRC, &mPrevBlendSrc);
+	glGetIntegerv(GL_BLEND, (GLint *)&mPrevBlend);
+	glGetIntegerv(GL_BLEND_DST, (GLint *)&mPrevBlendDst);
+	glGetIntegerv(GL_BLEND_SRC, (GLint *)&mPrevBlendSrc);
 	// set blend for transparency
 	glEnable(GL_BLEND);
 	glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -183,11 +188,11 @@ VSFLFont::prepareRender() {
 void
 VSFLFont::restoreRender() {
 	// restore previous depth test settings
-	if (mPrevDepth)
+	if (mPrevDepth != GL_FALSE)
 		glEnable(GL_DEPTH_TEST);
 
 	// restore previous blend settings
-	if (!mPrevBlend)
+	if (mPrevBlend != GL_FALSE)
 		glDisable(GL_BLEND);
 
 	glBlendFunc(mPrevBlendSrc, mPrevBlendDst);

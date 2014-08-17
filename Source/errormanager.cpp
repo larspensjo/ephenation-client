@@ -15,25 +15,18 @@
 // along with Ephenation.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-// Used for NVIDIA
-#define GPU_MEMORY_INFO_DEDICATED_VIDMEM_NVX          0x9047
-#define GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX    0x9048
-#define GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX  0x9049
-#define GPU_MEMORY_INFO_EVICTION_COUNT_NVX            0x904A
-#define GPU_MEMORY_INFO_EVICTED_MEMORY_NVX            0x904B
-
-// Used for ATI
-#define VBO_FREE_MEMORY_ATI                           0x87FB
-#define TEXTURE_FREE_MEMORY_ATI                       0x87FC
-#define RENDERBUFFER_FREE_MEMORY_ATI                  0x87FD
-
 #ifdef WIN32
 #include <windows.h>
 #endif
 #include <iostream>
 #include <sstream>
 #include <cstring>
-#include <GL/glew.h>
+#include <glbinding/gl/functions33.h>
+#include <glbinding/gl/enum33.h>
+#include <glbinding/gl/enum33ext.h>
+// Kludge to prevent glfw from including GL/gl.h
+	#define __gl_h_
+	#define GLFW_NO_GLU
 #include <GL/glfw.h>
 
 #include "Debug.h"
@@ -43,6 +36,9 @@
 #include "modes.h"
 
 using namespace View;
+using namespace gl33;
+using namespace gl33ext;
+
 using std::endl;
 
 ErrorManager View::gErrorManager;
@@ -93,18 +89,18 @@ void ErrorManager::SendServerMessage(const std::string &err) const {
 	ss << "OpenGL context version parsed by GLFW: " << major << "." << minor << "." << revision << endl;
 	// This works for NVIDIA
 	GLint par = -1;
-	glGetIntegerv(GPU_MEMORY_INFO_DEDICATED_VIDMEM_NVX, &par);
+	glGetIntegerv(GL_GPU_MEMORY_INFO_DEDICATED_VIDMEM_NVX, &par);
+	if (glGetError() == gl33::GL_NO_ERROR)
+		ss << "GL_GPU_MEMORY_INFO_DEDICATED_VIDMEM_NVX " << par << endl;
+	glGetIntegerv(GL_GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX, &par);
 	if (glGetError() == GL_NO_ERROR)
-		ss << "GPU_MEMORY_INFO_DEDICATED_VIDMEM_NVX " << par << endl;
-	glGetIntegerv(GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX, &par);
-	if (glGetError() == GL_NO_ERROR)
-		ss << "GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX " << par << endl;
+		ss << "GL_GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX " << par << endl;
 
 	// This works for ATI
 	GLint parATI[4];
-	glGetIntegerv(VBO_FREE_MEMORY_ATI, parATI);
+	glGetIntegerv(GL_VBO_FREE_MEMORY_ATI, parATI);
 	if (glGetError() == GL_NO_ERROR)
-		ss << "VBO_FREE_MEMORY_ATI total " << parATI[0] << "largest block " << parATI[1] << "total aux " <<
+		ss << "GL_VBO_FREE_MEMORY_ATI total " << parATI[0] << "largest block " << parATI[1] << "total aux " <<
 			parATI[2] << "largest aux block " << parATI[3] << endl;
 
 	std::string result = ss.str();

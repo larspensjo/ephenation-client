@@ -16,7 +16,8 @@
 //
 
 #include <math.h>
-#include <GL/glew.h>
+#include <glbinding/gl/functions33.h>
+#include <glbinding/gl/enum33.h>
 
 #ifndef M_PI
 #define M_PI		3.14159265358979323846
@@ -26,6 +27,8 @@
 #include "../primitives.h"
 #include "../shaders/StageOneShader.h"
 #include "../ui/Error.h"
+
+using namespace gl33;
 
 Cube gLantern;
 

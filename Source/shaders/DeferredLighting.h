@@ -25,7 +25,11 @@
 // 3. Create a square used for projecting the final result.
 //
 
+#include <glbinding/gl/types.h>
+
 #include "shader.h"
+
+using gl::GLvoid;
 
 class DeferredLighting : public ShaderBase {
 public:

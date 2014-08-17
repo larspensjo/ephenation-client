@@ -14,6 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with Ephenation.  If not, see <http://www.gnu.org/licenses/>.
 //
+#include <glbinding/gl/functions33.h>
+#include <glbinding/gl/enum33.h>
+#include <glbinding/gl/bitfield33.h>
 
 #include "shadowrender.h"
 #include "ui/Error.h"
@@ -32,6 +35,7 @@
 #include "fboflat.h"
 
 using namespace View;
+using namespace gl33;
 
 ShadowRender::ShadowRender(int width, int height) :
 	fMapWidth(width), fMapHeight(height) {
@@ -50,26 +54,26 @@ void ShadowRender::Init() {
 	glGenTextures(1, &fTexture1); gDebugTextures.push_back(DebugTexture(fTexture1, "Shadow render texture 1"));
 	glBindTexture(GL_TEXTURE_2D, fTexture1);
 	// Using a depth of less than 24 bits adds more random shadow flickering.
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, fMapWidth, fMapHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexImage2D(GL_TEXTURE_2D, 0, static_cast<int>(GL_DEPTH_COMPONENT24), fMapWidth, fMapHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, static_cast<int>(GL_LINEAR));
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, static_cast<int>(GL_LINEAR));
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, static_cast<int>(GL_CLAMP_TO_EDGE));
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, static_cast<int>(GL_CLAMP_TO_EDGE));
 	// No comparison function shall be used, or the depth value would be reported as 0 or 1 only. It is probably not
 	// enabled by default anyway.
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, static_cast<int>(GL_NONE));
 
 	glGenTextures(1, &fTexture2);
 	glBindTexture(GL_TEXTURE_2D, fTexture2); gDebugTextures.push_back(DebugTexture(fTexture2, "Shadow render texture 2"));
 	// Using a depth of less than 24 bits adds more random shadow flickering.
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, fMapWidth, fMapHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexImage2D(GL_TEXTURE_2D, 0, static_cast<int>(GL_DEPTH_COMPONENT24), fMapWidth, fMapHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, static_cast<int>(GL_LINEAR));
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, static_cast<int>(GL_LINEAR));
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, static_cast<int>(GL_CLAMP_TO_EDGE));
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, static_cast<int>(GL_CLAMP_TO_EDGE));
 	// No comparison function shall be used, or the depth value would be reported as 0 or 1 only. It is probably not
 	// enabled by default anyway.
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_NONE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, static_cast<int>(GL_NONE));
 	// unbind, bind the default texture (0) instead
 	glBindTexture(GL_TEXTURE_2D, 0);
 

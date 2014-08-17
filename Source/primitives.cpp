@@ -16,10 +16,14 @@
 //
 
 #include <stdio.h>
-#include <GL/glew.h>
-
+#include <glbinding/gl/functions33.h>
+#include <glbinding/gl/enum33.h>
+#include <glbinding/gl/gl33ext.h>
 #include <glm/glm.hpp>
+
 #include "primitives.h"
+
+using namespace gl33;
 
 // Pure debug function to dump all triangles of one block type.
 void DumpTriangles(TriangleSurfacef *t, int num) {
@@ -74,7 +78,7 @@ void checkError(const char *functionName, bool ignore) {
 		case GL_STACK_UNDERFLOW:
 			fprintf (stderr, "GL error GL_STACK_UNDERFLOW detected in %s\n", functionName);
 			break;
-		case GL_TABLE_TOO_LARGE:
+		case gl33ext::GL_TABLE_TOO_LARGE:
 			fprintf (stderr, "GL error GL_TABLE_TOO_LARGE detected in %s\n", functionName);
 			break;
 		default:
@@ -87,7 +91,7 @@ void checkError(const char *functionName, bool ignore) {
 	}
 }
 
-const char *FrameBufferError(unsigned error) {
+const char *FrameBufferError(GLenum error) {
 	switch(error) {
 	case GL_FRAMEBUFFER_COMPLETE: return "GL_FRAMEBUFFER_COMPLETE";
 	case GL_FRAMEBUFFER_UNDEFINED: return "GL_FRAMEBUFFER_UNDEFINED";

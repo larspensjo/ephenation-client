@@ -17,7 +17,8 @@
 
 #include <Rocket/Core.h>
 #include <Rocket/Core/Geometry.h>
-#include <GL/glew.h>
+#include <glbinding/gl/functions33.h>
+#include <glbinding/gl/enum33.h>
 
 #include <glm/gtc/matrix_transform.hpp>
 #include "../primitives.h"
@@ -26,6 +27,8 @@
 #include "RocketRenderInterface.h"
 #include "../Debug.h"
 #include "../HudTransformation.h"
+
+using namespace gl33;
 
 void RocketRenderInterface::Init(bool stereoView, float fieldOfView) {
 	fColorShader = ColorShader::Make();
@@ -180,11 +183,11 @@ bool RocketRenderInterface::GenerateTexture(Rocket::Core::TextureHandle& texture
 	GLuint texture;
 	glGenTextures(1, &texture);
 	glBindTexture(GL_TEXTURE_2D, texture);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, source_dimensions.x, source_dimensions.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, bitmap);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, static_cast<int>(GL_NEAREST));
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, static_cast<int>(GL_NEAREST));
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, static_cast<int>(GL_CLAMP_TO_EDGE));
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, static_cast<int>(GL_CLAMP_TO_EDGE));
+	glTexImage2D(GL_TEXTURE_2D, 0, static_cast<int>(GL_RGBA), source_dimensions.x, source_dimensions.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, bitmap);
 
 	texture_handle = texture;
 	return true;

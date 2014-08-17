@@ -15,7 +15,9 @@
 // along with Ephenation.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include <GL/glew.h>
+#include <glbinding/gl/functions33.h>
+#include <glbinding/gl/enum33.h>
+#include <glbinding/gl/bitfield33.h>
 
 #include "primitives.h"
 #include "billboard.h"
@@ -27,6 +29,8 @@
 #include "shapes/Tree.h"
 #include "render.h"
 #include "shapes/quadstage1.h"
+
+using namespace gl33;
 
 #define ROW(p) (p / fNumPictures)
 #define COL(p) (p % fNumPictures)
@@ -54,11 +58,11 @@ void Billboard::Init(void) {
 	glGenTextures(1, &fAtlasId); gDebugTextures.push_back(DebugTexture(fAtlasId, "Atlas"));
 again:
 	glBindTexture(GL_TEXTURE_2D, fAtlasId);
-	glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, totalWidth, totalWidth, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexImage2D(GL_TEXTURE_2D, 0, static_cast<int>(internalFormat), totalWidth, totalWidth, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, static_cast<int>(static_cast<int>(GL_NEAREST)));
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, static_cast<int>(static_cast<int>(GL_NEAREST)));
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, static_cast<int>(GL_CLAMP_TO_EDGE));
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, static_cast<int>(GL_CLAMP_TO_EDGE));
 
 	// Attach the texture to the FBO.
 	glGenFramebuffers(1, &fboAtlas);
@@ -89,11 +93,11 @@ again:
 
 	glGenTextures(1, &fTempTextureId);
 	glBindTexture(GL_TEXTURE_2D, fTempTextureId); gDebugTextures.push_back(DebugTexture(fTempTextureId, "Billboard"));
-	glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, fPixelWidth, fPixelWidth, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexImage2D(GL_TEXTURE_2D, 0, static_cast<int>(internalFormat), fPixelWidth, fPixelWidth, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, static_cast<int>(GL_NEAREST));
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, static_cast<int>(GL_NEAREST));
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, static_cast<int>(GL_CLAMP_TO_EDGE));
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, static_cast<int>(GL_CLAMP_TO_EDGE));
 
 	// The size of the depth buffer shall match the size of the temporary texture buffer
 	glGenRenderbuffers(1, &fDepthBuffer);

@@ -17,7 +17,9 @@
 
 #pragma once
 
-#include <GL/glew.h>
+#include <glbinding/gl/types.h>
+using gl::GLuint;
+using gl::GLenum;
 
 /// Set up a simple FBO for either one color texture or depth buffer
 ///

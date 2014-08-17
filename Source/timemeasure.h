@@ -19,9 +19,13 @@
 
 #include <map>
 #include <string>
+#include <glbinding/gl/functions33.h>
+#include <glbinding/gl/enum33.h>
 
 // Header file defines gDebugOpenGL that can be used to disable the timers.
 #include "primitives.h"
+
+using gl::GLuint;
 
 /// Measure shader execution time, and provide a report.
 class TimeMeasure {
@@ -35,23 +39,23 @@ public:
 		if (!gDebugOpenGL)
 			return;
 		if (fFirst) {
-			glGenQueries(1, &fQuery);
+			gl33::glGenQueries(1, &fQuery);
 			fFirst = false;
 			fTitles[fQuery] = fTitle;
 			fResults[fQuery] = 0.0;
 		} else {
 			GLuint result;
-			glGetQueryObjectuiv(fQuery, GL_QUERY_RESULT, &result);
+			gl33::glGetQueryObjectuiv(fQuery, gl33::GL_QUERY_RESULT, &result);
 			fResults[fQuery] = result * 0.000001;
 		}
-		glBeginQuery(GL_TIME_ELAPSED, fQuery);
+		gl33::glBeginQuery(gl33::GL_TIME_ELAPSED, fQuery);
 	}
 
 	/// Stop the timer.
 	void Stop(void) {
 		if (!gDebugOpenGL)
 			return;
-		glEndQuery(GL_TIME_ELAPSED);
+		gl33::glEndQuery(gl33::GL_TIME_ELAPSED);
 	}
 
 	/// Make a report of all timers, showing the last result.

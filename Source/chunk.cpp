@@ -15,7 +15,11 @@
 // along with Ephenation.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include <GL/glew.h>
+#include <glbinding/gl/functions33.h>
+#include <glbinding/gl/enum33.h>
+// Kludge to prevent glfw from including GL/gl.h
+	#define __gl_h_
+	#define GLFW_NO_GLU
 #include <GL/glfw.h>
 #include <stdio.h>
 #include <math.h>
@@ -43,6 +47,7 @@
 #define cChecksumTimeout 15.0
 
 using namespace View;
+using namespace gl33;
 
 // Find out if a block at (ox,oy,oz) is in a line of sight of the sky, as given by the direction (dx,dy,dz).
 // The algorithm isn't perfect when near corners of other blocks, but it isn't important.

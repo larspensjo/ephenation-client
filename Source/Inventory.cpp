@@ -18,7 +18,11 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <string.h>
-#include <GL/glew.h>
+#include <glbinding/gl/functions33.h>
+#include <glbinding/gl/enum33.h>
+// Kludge to prevent glfw from including GL/gl.h
+	#define __gl_h_
+	#define GLFW_NO_GLU
 #include <GL/glfw.h>
 #include <string>
 #include <iostream>
@@ -42,6 +46,8 @@
 #include "msgwindow.h"
 
 using namespace std;
+using namespace gl33;
+
 using View::SoundControl;
 
 enum DragAndDropState {

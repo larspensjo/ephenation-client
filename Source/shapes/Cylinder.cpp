@@ -16,7 +16,8 @@
 //
 
 #include <math.h>
-#include <GL/glew.h>
+#include <glbinding/gl/functions33.h>
+#include <glbinding/gl/enum33.h>
 #include <stdio.h>
 
 #ifndef M_PI
@@ -27,6 +28,8 @@
 #include "../primitives.h"
 #include "../shaders/ChunkShader.h"
 #include "../ui/Error.h"
+
+using namespace gl33;
 
 Cylinder::~Cylinder() {
 	if (glDeleteBuffers != 0) {

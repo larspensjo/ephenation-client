@@ -30,9 +30,13 @@
 #include <map>
 #include <vector>
 #include <string>
-#include <GL/glew.h>
-
+#include <glbinding/gl/types.h>
 #include <glm/glm.hpp>
+
+using gl::GLuint;
+using gl::GLint;
+using gl::GLenum;
+using gl::GLboolean;
 
 class SimpleTextureShader;
 
@@ -174,13 +178,13 @@ private:
 	/// Font Texture index
 	GLuint mFontTex;
 	/// Previous DEPTH_TEST settings
-	GLint mPrevDepth;
+	GLboolean mPrevDepth;
 	/// Previous BLEND settings
-	GLint mPrevBlend;
+	GLboolean mPrevBlend;
 	/// Previous BLEND_DST settings
-	GLint mPrevBlendDst;
+	GLenum mPrevBlendDst;
 	/// Previous BLEND_SRC settings
-	GLint mPrevBlendSrc;
+	GLenum mPrevBlendSrc;
 
 	/** Prepare matrices for rendering
 	*/

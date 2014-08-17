@@ -15,11 +15,12 @@
 // along with Ephenation.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include <GL/glew.h>
+#include <glbinding/gl/functions33.h>
+#include <glbinding/gl/enum33.h>
 #include <stdio.h>
-
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+
 #include "primitives.h"
 #include "textures.h"
 #include "BuildingBlocks.h"
@@ -28,6 +29,7 @@
 #include "errormanager.h"
 
 using namespace View;
+using namespace gl33;
 
 // Every coordinate is 3 dimensions and two dimension texture
 struct vertex {

@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Ephenation.  If not, see <http://www.gnu.org/licenses/>.
 //
-#include <GL/glew.h>
+#include <glbinding/gl/functions33.h>
 
 #include "animationmodels.h"
 #include "textures.h"
@@ -22,6 +22,7 @@
 #include "imageloader.h"
 
 using namespace View;
+using namespace gl33;
 
 void AnimationModels::Init() {
 	for (unsigned i=0; i < LAST; i++) {

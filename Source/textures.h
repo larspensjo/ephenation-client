@@ -18,8 +18,10 @@
 #pragma once
 
 #include <memory>
+#include <glbinding/gl/types.h>
 
 using std::shared_ptr;
+using gl::GLuint;
 
 // Use a block type and translate it into texture id.
 extern GLuint BlockTypeTotextureId[];

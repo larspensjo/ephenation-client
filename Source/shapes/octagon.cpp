@@ -17,10 +17,14 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <glbinding/gl/functions33.h>
+#include <glbinding/gl/enum33.h>
 
 #include "../primitives.h"
 #include "octagon.h"
 #include "../ui/Error.h"
+
+using namespace gl33;
 
 Octagon gOctagon;
 

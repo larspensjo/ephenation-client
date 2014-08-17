@@ -15,7 +15,7 @@
 // along with Ephenation.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include <GL/glew.h>
+#include <glbinding/gl/functions33.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -27,6 +27,8 @@
 #include "../uniformbuffer.h"
 #include "../shadowconfig.h"
 #include "../shapes/quad.h"
+
+using namespace gl33;
 
 /// This vertex shader will only draw two triangles, giving a full screen.
 /// The vertex input is 0,0 in one corner and 1,1 in the other.

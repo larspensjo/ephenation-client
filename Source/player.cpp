@@ -17,7 +17,11 @@
 
 #include <iostream>
 
-#include <GL/glew.h>
+#include <glbinding/gl/functions33.h>
+#include <glbinding/gl/enum33.h>
+// Kludge to prevent glfw from including GL/gl.h
+	#define __gl_h_
+	#define GLFW_NO_GLU
 #include <GL/glfw.h>
 
 #include <glm/glm.hpp>
@@ -35,6 +39,7 @@
 #include "Options.h"
 
 using namespace Model;
+using namespace gl33;
 
 Player Model::gPlayer;
 

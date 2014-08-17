@@ -17,9 +17,11 @@
 
 #pragma once
 
-#include <GL/glew.h>
+#include <glbinding/gl/types.h>
 
 #include "../OpenglBuffer.h"
+
+using gl::GLuint;
 
 /// Drawing an octagon from -1 to 1 in x and y.
 class Octagon {

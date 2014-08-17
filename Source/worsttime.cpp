@@ -15,8 +15,6 @@
 // along with Ephenation.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include <GL/glew.h>
-
 #include "worsttime.h"
 
 using std::string;

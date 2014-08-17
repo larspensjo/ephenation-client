@@ -17,6 +17,13 @@
 
 #pragma once
 
+#include <glbinding/gl/types.h>
+using gl::GLuint;
+using gl::GLint;
+using gl::GLsizei;
+using gl::GLchar;
+using gl::GLenum;
+
 /**
  * @class ShaderBase
  * @brief An abstract shader class. Inherit it to create new shader programs.

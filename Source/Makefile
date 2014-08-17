@@ -70,6 +70,7 @@ MY_LIBS   = -lGL\
 	-lX11\
 	-ludev\
 	-lXinerama\
+	-lglbinding\
 	$(PROFILING)
 
 # The pre-processor options used by the cpp (man cpp for more).

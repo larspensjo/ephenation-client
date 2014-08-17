@@ -15,7 +15,8 @@
 // along with Ephenation.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include <GL/glew.h>
+#include <glbinding/gl/functions33.h>
+#include <glbinding/gl/enum33.h>
 #include <string.h>
 #include <stddef.h>
 #include <stdio.h>
@@ -40,6 +41,7 @@
 #define D 8 // How many chunks beside the current chunk to include
 
 using namespace View;
+using namespace gl33;
 
 Map::Map() {
 }

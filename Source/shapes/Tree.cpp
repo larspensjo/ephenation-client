@@ -15,7 +15,8 @@
 // along with Ephenation.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include <GL/glew.h>
+#include <glbinding/gl/functions33.h>
+#include <glbinding/gl/enum33.h>
 #include <stdio.h>
 #include <math.h>
 
@@ -32,6 +33,8 @@
 #include "../shaders/ChunkShader.h"
 #include "../ui/Error.h"
 #include "../Options.h"
+
+using namespace gl33;
 
 using glm::vec4;
 using glm::vec3;

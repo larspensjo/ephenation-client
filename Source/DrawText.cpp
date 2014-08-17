@@ -17,7 +17,8 @@
 
 #include <string>
 #include <stdlib.h>
-#include <GL/glew.h>
+#include <glbinding/gl/functions33.h>
+#include <glbinding/gl/enum33.h>
 
 #include "vsfl/vsfl.h"
 
@@ -27,6 +28,8 @@
 #include "primitives.h"
 #include "shaders/SimpleTextureShader.h"
 #include "Options.h"
+
+using namespace gl33;
 
 // TODO: This class should be merged into the VSFLFont class.
 

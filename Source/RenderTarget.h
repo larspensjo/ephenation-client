@@ -17,8 +17,12 @@
 
 #pragma once
 
-#include <GL/glew.h>
+#include <glbinding/gl/types.h>
 #include <vector>
+
+using gl::GLuint;
+using gl::GLenum;
+using gl::GLsizei;
 
 namespace View {
 

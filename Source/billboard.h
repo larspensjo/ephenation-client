@@ -21,6 +21,8 @@
 
 #include <list>
 #include <vector>
+#include <glbinding/gl/types.h>
+using gl::GLuint;
 
 class StageOneShader;
 

@@ -51,6 +51,7 @@ Refactoring
 * The ui/options.cpp and Options.cpp has redundant use of name for options. That should be centralized at one place.
 * The transformation of a chunk into printable data should be managed by a Streaming class
 * glsw should be moved to a separate github repository, and included as a submodule
+* Remove all "using GLuint" from header files, and instead do "gl::GLuint".
 * Remove glfw 2.7.9 shared library from debian installer, as soon as it is standard in Ubuntu.
 
 Installation

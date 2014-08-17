@@ -17,11 +17,13 @@
 
 #pragma once
 
-#include <GL/glew.h>
+#include <glbinding/gl/types.h>
 #include <Rocket/Core.h>
 
 #include "../shaders/ColorShader.h"
 #include "../shaders/modulatedtextureshader.h"
+
+using gl::GLuint;
 
 class RocketRenderInterface: public Rocket::Core::RenderInterface
 {

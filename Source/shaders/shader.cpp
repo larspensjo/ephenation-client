@@ -20,7 +20,8 @@
 //
 /// @todo dealloate using glDeleteProgram() and glDeleteShader()
 
-#include <GL/glew.h>
+#include <glbinding/gl/functions33.h>
+#include <glbinding/gl/enum33.h>
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -31,6 +32,8 @@
 #include "../Debug.h"
 #include "../assert.h"
 #include "../primitives.h"
+
+using namespace gl33;
 
 void ShaderBase::Initglsw(const char *debug, int vertexShaderLines, const char **vertexShaderSource, int fragmentShaderLines, const char **fragmentShaderSource) {
 	const char *loadedVertexLines[vertexShaderLines+1];
@@ -110,9 +113,9 @@ ShaderBase::ShaderBase() : fProgram(0) {
 }
 
 void ShaderBase::compileAndCheck(GLuint shader) {
-	GLint status;
+	GLboolean status;
 	glCompileShader (shader);
-	glGetShaderiv (shader, GL_COMPILE_STATUS, &status);
+	glGetShaderiv (shader, GL_COMPILE_STATUS, (GLint *)&status);
 	if (status == GL_FALSE) {
 		GLint infoLogLength;
 		GLchar *infoLog;
@@ -132,9 +135,9 @@ GLuint ShaderBase::compileShaderSource(GLenum type, GLsizei count, const GLchar 
 }
 
 void ShaderBase::linkAndCheck(const char *debug, GLuint program) {
-	GLint status;
+	GLboolean status;
 	glLinkProgram (program);
-	glGetProgramiv (program, GL_LINK_STATUS, &status);
+	glGetProgramiv (program, GL_LINK_STATUS, (GLint *)&status);
 	if (status == GL_FALSE) {
 		GLint infoLogLength;
 		GLchar *infoLog;

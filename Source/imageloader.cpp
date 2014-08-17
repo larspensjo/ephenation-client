@@ -22,7 +22,8 @@
 
 #include <fstream>
 #include <stdlib.h>
-#include <GL/glew.h>
+#include <glbinding/gl/functions33.h>
+#include <glbinding/gl/enum33.h>
 #include <math.h>
 
 #include "imageloader.h"
@@ -31,6 +32,7 @@
 #include "Debug.h"
 
 using namespace std;
+using namespace gl33;
 
 Image::Image(unique_ptr<unsigned char[]> ps, int w, int h, GLenum format) : pixels(std::move(ps)), width(w), height(h), fFormat(format) {
 

@@ -17,7 +17,14 @@
 
 #pragma once
 
+#include <glbinding/gl/types.h>
+
 #include "shader.h"
+
+using gl33::GLvoid;
+using gl33::GLint;
+using gl33::GLsizei;
+using gl33::GLenum;
 
 /// A shader program that will draw chunks for picking.
 class ChunkShaderPicking : ShaderBase {

@@ -18,10 +18,13 @@
 #pragma once
 
 #include <glm/glm.hpp>
+#include <glbinding/gl/types.h>
 
 // Shader used for drawing a texture, and not much else.
 
 #include "shader.h"
+
+using gl::GLvoid;
 
 namespace Shaders {
 

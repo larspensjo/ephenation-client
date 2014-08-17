@@ -308,6 +308,8 @@
 				<search_path add="contrib/libovr/include" />
 				<search_path add="contrib" />
 				<search_path add="contrib/libovr/Src" />
+				<search_path add="/usr/local/include/glbinding" />
+				<search_path add="/usr/local/include/glbinding/gl" />
 			</code_completion>
 			<debugger>
 				<remote_debugging target="Debug">

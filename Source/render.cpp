@@ -27,7 +27,11 @@
 #include <stdio.h>
 #include <math.h>
 #include <string.h>
-#include <GL/glew.h>
+#include <glbinding/gl/functions33.h>
+#include <glbinding/gl/enum33.h>
+// Kludge to prevent glfw from including GL/gl.h
+	#define __gl_h_
+	#define GLFW_NO_GLU
 #include <GL/glfw.h>
 #include <set>
 
@@ -59,6 +63,7 @@
 #endif
 
 using namespace View;
+using namespace gl33;
 
 // This is the list of chunks to be used for computing dynamic shadows.
 // A set is used, as there shall not be duplicate entries.

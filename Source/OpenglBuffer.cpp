@@ -15,9 +15,14 @@
 // along with Ephenation.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <glbinding/gl/functions33.h>
+#include <glbinding/gl/enum33.h>
+
 #include "OpenglBuffer.h"
 #include "assert.h"
 #include "primitives.h"
+
+using namespace gl33;
 
 OpenglBuffer::~OpenglBuffer() {
 	this->Release();

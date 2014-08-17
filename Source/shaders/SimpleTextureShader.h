@@ -19,7 +19,13 @@
 
 // Shader used for drawing a texture, and not much else.
 
+#include <glbinding/gl/types.h>
+
 #include "shader.h"
+
+using gl::GLvoid;
+using gl::GLsizei;
+using gl::GLenum;
 
 class SimpleTextureShader : ShaderBase {
 public:

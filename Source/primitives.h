@@ -24,8 +24,11 @@
 #include <vector>
 #include <cstring>
 #include <glm/glm.hpp>
+#include <glbinding/gl/types.h>
 
 #include "assert.h"
+
+using gl::GLenum;
 
 /// Help to encode data into the three RGB bytes.
 /// The data is used in picking mode to identify chunk (relative to the player), coordinates in chunk and the facing direction.
@@ -128,7 +131,7 @@ struct TriangleSurfacef {
 void checkError(const char *functionName, bool ignore = true);
 void dumpGraphicsMemoryStats(void);
 void DumpTriangles(TriangleSurfacef *t, int num);
-const char *FrameBufferError(unsigned error);
+const char *FrameBufferError(GLenum error);
 
 extern glm::mat4 gProjectionMatrix;
 extern glm::mat4 gViewMatrix; /// Store the view matrix

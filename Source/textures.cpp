@@ -14,12 +14,11 @@
 // You should have received a copy of the GNU General Public License
 // along with Ephenation.  If not, see <http://www.gnu.org/licenses/>.
 //
-
-#include <GL/glew.h>
-
 #include <stdlib.h>
-
 #include <glm/glm.hpp>
+#include <glbinding/gl/gl33ext.h>
+#include <glbinding/gl/functions33.h>
+
 #include "textures.h"
 #include "imageloader.h"
 #include "render.h"
@@ -28,6 +27,8 @@
 #include <glm/glm.hpp>
 #include "primitives.h"
 #include "Options.h"
+
+using namespace gl33;
 
 #define NELEM(x) (int)(sizeof x / sizeof x[0])
 
@@ -118,7 +119,7 @@ GLuint loadTexture(shared_ptr<Image> image, unsigned fl = 0) {
 	GLuint textureId;
 	glGenTextures(1, &textureId);
 	glBindTexture(GL_TEXTURE_2D, textureId);
-	GLint internalFormat = GL_RGB;
+	GLenum internalFormat = GL_RGB;
 	GLenum filter = GL_LINEAR, mipmapFilter = GL_LINEAR_MIPMAP_LINEAR;
 	if (fl & TF_NEAREST) {
 		filter = GL_NEAREST;
@@ -133,22 +134,22 @@ GLuint loadTexture(shared_ptr<Image> image, unsigned fl = 0) {
 			internalFormat = GL_RGBA;
 	}
 	if (mipmap)
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, mipmapFilter);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, static_cast<int>(mipmapFilter));
 	else
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, filter);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, filter);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, static_cast<int>(filter));
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, static_cast<int>(filter));
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, static_cast<int>(GL_REPEAT));
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, static_cast<int>(GL_REPEAT));
 	if (mipmap && gOptions.fAnisotropicFiltering) {
-		if (GLEW_EXT_texture_filter_anisotropic) {
+		// if (GLEW_EXT_texture_filter_anisotropic) {
 			static int max = 0;
 			if (max == 0)
-				glGetIntegerv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &max);
+				glGetIntegerv(gl33ext::GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &max);
 			// printf("GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT: %d\n", max);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, max);
-		}
+			glTexParameteri(GL_TEXTURE_2D, gl33ext::GL_TEXTURE_MAX_ANISOTROPY_EXT, max);
+		// }
 	}
-	glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, image->width, image->height, 0, image->fFormat, GL_UNSIGNED_BYTE, image->pixels.get());
+	glTexImage2D(GL_TEXTURE_2D, 0, static_cast<int>(internalFormat), image->width, image->height, 0, image->fFormat, GL_UNSIGNED_BYTE, image->pixels.get());
 	if (fl & TF_MIPMAP2) {
 		for (GLint level = 1; image->width > 1 && image->height > 1; level++) {
 			// The mipmap has to be done in linear space.
@@ -157,7 +158,7 @@ GLuint loadTexture(shared_ptr<Image> image, unsigned fl = 0) {
 			image = image->MipMapNextLevel();
 			if (fl & TF_SRGB)
 				image->MakeNonLinear(); // Make down sampled bitmap of SRGB format again, which is what is transferred to the GPU.
-			glTexImage2D(GL_TEXTURE_2D, level, internalFormat, image->width, image->height, 0, image->fFormat, GL_UNSIGNED_BYTE, image->pixels.get());
+			glTexImage2D(GL_TEXTURE_2D, level, static_cast<int>(internalFormat), image->width, image->height, 0, image->fFormat, GL_UNSIGNED_BYTE, image->pixels.get());
 		}
 
 	} else if (mipmap) {
@@ -257,24 +258,24 @@ void GameTexture::Init(void) {
 	DarkGray = loadTexture(ColorImage(15, 15, 15), TF_NOMIPMAP);
 
 	Sky1Id = loadTexture(loadBMP("textures/sky1.bmp"), TF_NOMIPMAP|TF_SRGB);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, static_cast<int>(GL_CLAMP_TO_EDGE));
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, static_cast<int>(GL_CLAMP_TO_EDGE));
 
 	Sky2Id = loadTexture(loadBMP("textures/sky2.bmp"), TF_NOMIPMAP|TF_SRGB);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, static_cast<int>(GL_CLAMP_TO_EDGE));
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, static_cast<int>(GL_CLAMP_TO_EDGE));
 
 	Sky3Id = loadTexture(loadBMP("textures/sky3.bmp"), TF_NOMIPMAP|TF_SRGB);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, static_cast<int>(GL_CLAMP_TO_EDGE));
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, static_cast<int>(GL_CLAMP_TO_EDGE));
 
 	Sky4Id = loadTexture(loadBMP("textures/sky4.bmp"), TF_NOMIPMAP|TF_SRGB);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, static_cast<int>(GL_CLAMP_TO_EDGE));
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, static_cast<int>(GL_CLAMP_TO_EDGE));
 
 	SkyupId = loadTexture(loadBMP("textures/skyup.bmp"), TF_NOMIPMAP|TF_SRGB);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, static_cast<int>(GL_CLAMP_TO_EDGE));
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, static_cast<int>(GL_CLAMP_TO_EDGE));
 
 	RedScalesId = loadTexture(loadBMP("textures/RedScales.bmp"), TF_SRGB);
 	Morran = loadTexture(loadBMP("textures/morran.bmp"), TF_SRGB);
@@ -284,45 +285,45 @@ void GameTexture::Init(void) {
 	DamageIndication = loadTexture(loadBMP("textures/DamageIndication.bmp"), TF_NOMIPMAP);
 
 	LanternSideId = loadTexture(loadBMP("textures/LanternSide.bmp"), TF_SRGB);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, static_cast<int>(GL_CLAMP_TO_EDGE));
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, static_cast<int>(GL_CLAMP_TO_EDGE));
 
 	InventoryId = loadTexture(loadBMP("textures/Inventory.bmp"), TF_NOMIPMAP);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, static_cast<int>(GL_CLAMP_TO_EDGE));
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, static_cast<int>(GL_CLAMP_TO_EDGE));
 
 	EquipmentId = loadTexture(loadBMP("textures/EquipmentIcons.bmp"), TF_NOMIPMAP);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, static_cast<int>(GL_CLAMP_TO_EDGE));
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, static_cast<int>(GL_CLAMP_TO_EDGE));
 
 	LightBallsHeal = loadTexture(loadBMP("textures/LightBallsHeal.bmp"), TF_NOMIPMAP);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, static_cast<int>(GL_CLAMP_TO_EDGE));
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, static_cast<int>(GL_CLAMP_TO_EDGE));
 
 	RedChunkBorder = loadTexture(loadBMP("textures/RedChunkBorder.bmp"), TF_SRGB);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, static_cast<int>(GL_CLAMP_TO_EDGE));
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, static_cast<int>(GL_CLAMP_TO_EDGE));
 
 	GreenChunkBorder = loadTexture(loadBMP("textures/GreenChunkBorder.bmp"), TF_SRGB);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, static_cast<int>(GL_CLAMP_TO_EDGE));
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, static_cast<int>(GL_CLAMP_TO_EDGE));
 
 	BlueChunkBorder = loadTexture(loadBMP("textures/BlueChunkBorder.bmp"), TF_SRGB);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, static_cast<int>(GL_CLAMP_TO_EDGE));
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, static_cast<int>(GL_CLAMP_TO_EDGE));
 
 	CompassRose = loadTexture(loadBMP("textures/CompassRose.bmp"), TF_NOMIPMAP);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, static_cast<int>(GL_CLAMP_TO_EDGE));
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, static_cast<int>(GL_CLAMP_TO_EDGE));
 	MousePointerId = loadTexture(loadBMP("textures/MousePointer.bmp"), TF_NOMIPMAP);
 
 	WEP2 = loadTexture(loadBMP("textures/WEP2.bmp"), TF_NOMIPMAP);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, static_cast<int>(GL_CLAMP_TO_EDGE));
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, static_cast<int>(GL_CLAMP_TO_EDGE));
 
 	WEP1 = loadTexture(loadBMP("textures/WEP1.bmp"), TF_NOMIPMAP);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, static_cast<int>(GL_CLAMP_TO_EDGE));
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, static_cast<int>(GL_CLAMP_TO_EDGE));
 
 	WEP1Text = loadTexture(loadBMP("textures/WEP1Text.bmp"), TF_NOMIPMAP);
 	WEP2Text = loadTexture(loadBMP("textures/WEP2Text.bmp"), TF_NOMIPMAP);
@@ -330,8 +331,8 @@ void GameTexture::Init(void) {
 	WEP4Text = loadTexture(loadBMP("textures/WEP4Text.bmp"), TF_NOMIPMAP);
 
 	Branch = loadTexture(loadBMP("textures/branch.bmp", true), TF_SRGB|TF_MIPMAP2|TF_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, static_cast<int>(GL_CLAMP_TO_EDGE));
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, static_cast<int>(GL_CLAMP_TO_EDGE));
 
 	// This is just a safety precaution, if there would be an unrecognized block
 	for (int i=0; i<256; i++) {
@@ -343,15 +344,15 @@ void GameTexture::Init(void) {
 // Load bitmaps to be used for the GUI.
 GLuint LoadBitmapForGui(shared_ptr<Image> img) {
 	GLuint ret = loadTexture(img, TF_NOMIPMAP|TF_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, static_cast<int>(GL_CLAMP_TO_EDGE));
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, static_cast<int>(GL_CLAMP_TO_EDGE));
 	return ret;
 }
 
 // Load bitmaps to be used for the GUI.
 GLuint LoadBitmapForModels(shared_ptr<Image> img) {
 	GLuint ret = loadTexture(img, TF_SRGB);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, static_cast<int>(GL_CLAMP_TO_EDGE));
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, static_cast<int>(GL_CLAMP_TO_EDGE));
 	return ret;
 }
