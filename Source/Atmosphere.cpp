@@ -65,6 +65,7 @@ static float HorizontalDistParameterizedInverse(float x) {
 	return minHorizontalDist * glm::exp(coeffHor * x);
 }
 
+// cv 1 is up, -1 is down
 static float ViewAngleParameterized(float cv, float h) {
 	float ch = - std::sqrt(h * (2 * R_Earth + h)) / (R_Earth + h); // The Angle between the horizon and zenith for the current height
 	if (cv > ch)
@@ -74,6 +75,7 @@ static float ViewAngleParameterized(float cv, float h) {
 }
 
 // Get cosinus of angle between azimuth and viewer
+// cv 1 is up, -1 is down
 static float ViewAngleParameterizedInverse(float uv, float h) {
 	float ch = - std::sqrt(h * (2 * R_Earth + h)) / (R_Earth + h); // The Angle between the horizon and zenith for the current height
 	if (uv > 0.5f)
@@ -82,11 +84,13 @@ static float ViewAngleParameterizedInverse(float uv, float h) {
 		return ch - std::pow(1 - uv*2, 5.0f) * (1.0f + ch);
 }
 
+// cs 1 is up, -1 is down
 static float SunAngleParameterization(float cs) {
 	float tmp = std::tan(1.26f * 1.1f);
 	return 0.5f * (std::atan(std::max(cs, -0.1975f) * tmp) / 1.1f + (1-0.26f));
 }
 
+// cs 1 is up, -1 is down
 static float SunAngleParameterizationInverse(float us) {
 	float tmp = std::tan(1.26f * 1.1f);
 	return std::tan((2*us - 1.0f + 0.26f) * 1.1f) / tmp;
@@ -154,14 +158,14 @@ void Atmosphere::SingleScattering(vec2 pa, vec2 l, vec2 v, vec3 &mie, vec3 &rayl
 		iteration++;
 		// 'p' will iterate over the line from 'pa' to 'pb'.
 		const vec2 p = pa - distance * v; // Step backwards from pa
-		vec3 transmittance = FetchTransmittance(vec2(pa), vec2(p));
+		vec3 transmittance = FetchTransmittance(pa, p);
 		const float cutOff = 1e-6;
 		if (transmittance.r < cutOff && transmittance.g < cutOff && transmittance.b < cutOff) {
-			LPLOG("Giving up at %.0f (of %.0f), iteration %d", distance, intersectionDistance, iteration);
+			// LPLOG("Giving up at %.0f (of %.0f), iteration %d", distance, intersectionDistance, iteration);
 			break; // Give it up
 		}
 		float atmDistance;
-		found = glm::intersectRaySphere(p, -l, earthCenter, atmSquared, atmDistance);
+		found = glm::intersectRaySphere(p, -l, earthCenter, atmSquared, atmDistance); assert(found);
 		const vec2 pc = p - l * atmDistance; // Step backwards from p
 		transmittance *= FetchTransmittance(p, pc);
 		vec3 currentInscatteringMie = getDensityMie(p) * transmittance;
@@ -303,13 +307,13 @@ void Atmosphere::PreComputeSingleScattering() {
 			float cosViewAngle = ViewAngleParameterizedInverse(uViewAngle, h);
 			float sinViewAngle = glm::sqrt(1 - cosViewAngle*cosViewAngle); // Pythagoras
 			// The view angle is the angle from the azimuth
-			vec2 v(sinViewAngle, cosViewAngle); // Pointing to 'pa'
+			vec2 v(sinViewAngle, -cosViewAngle); // Pointing towards 'pa'
 			for (int sunAngleIndex = 0; sunAngleIndex < NSUN_ANGLE; sunAngleIndex++) {
 				float uSunAngle = float(sunAngleIndex) / (NSUN_ANGLE-1);
 				float cosSunAngle = SunAngleParameterizationInverse(uSunAngle);
 				float sinSunAgle = glm::sqrt(1 - cosSunAngle*cosSunAngle);
 				// The sun angle is the angle between the azimuth and the sun
-				vec2 l(sinSunAgle, cosSunAngle); // Pointing toward 'pa'
+				vec2 l(sinSunAgle, -cosSunAngle); // Pointing towards 'pa'
 				vec3 mie, rayleigh;
 				SingleScattering(pa, l, v, mie, rayleigh);
 				fScattering[heightIndex][viewAngleIndex][sunAngleIndex] = mie + rayleigh;
@@ -386,11 +390,11 @@ void Atmosphere::Debug() {
 		LPLOG("Transmittance height %.0f, upwards: %.2f, %.2f, %.2f (%.2f %.2f %.2f)", pb.y, transm.r, transm.g, transm.b, transm2.r, transm2.g, transm2.b);
 	}
 
-	vec2 v(0,-1);
+	vec2 v(0,-1); // Pointing towards pa
 	for (int i=0; i<16; i++) {
 		vec3 mie, rayleigh;
-		SingleScattering(pa, vec2(-sunDir), v, mie, rayleigh);
-		LPLOG("Single scattering theta %f", glm::acos(v.y)/2/glm::pi<float>()*360);
+		SingleScattering(vec2(0,0), vec2(-sunDir), v, mie, rayleigh);
+		LPLOG("Single scattering view angle %f", glm::acos(-v.y)/2/glm::pi<float>()*360);
 		LPLOG("Mie      (%f, %f, %f)", mie.r, mie.g, mie.b);
 		LPLOG("Rayleigh (%f, %f, %f)", rayleigh.r, rayleigh.g, rayleigh.b);
 		v = glm::rotate(v, 90.0f/15.0f);
@@ -398,16 +402,16 @@ void Atmosphere::Debug() {
 
 	LPLOG("Single scattering");
 	for (int heightIndex = 0; heightIndex < NHEIGHT; heightIndex += NHEIGHT/4) {
-		float uHeight = float(heightIndex) / NHEIGHT;
+		float uHeight = float(heightIndex) / (NHEIGHT-1);
 		float h = HeightParameterizedInverse(uHeight);
 		LPLOG("Height %f", h);
-		for (int viewAngleIndex = 0; viewAngleIndex < NVIEW_ANGLE; viewAngleIndex += 1) {
-			float uViewAngle = float(viewAngleIndex) / NVIEW_ANGLE;
+		for (int viewAngleIndex = NVIEW_ANGLE-1; viewAngleIndex > 0; viewAngleIndex -= 1) {
+			float uViewAngle = float(viewAngleIndex) / (NVIEW_ANGLE-1);
 			float cosViewAngle = ViewAngleParameterizedInverse(uViewAngle, h);
 			float viewAngle = glm::acos(cosViewAngle);
 			LPLOG("View angle %f", viewAngle/2/glm::pi<float>()*360);
-			for (int sunAngleIndex = 0; sunAngleIndex < NSUN_ANGLE; sunAngleIndex += NSUN_ANGLE/4) {
-				float uSunAngle = float(sunAngleIndex) / NSUN_ANGLE;
+			for (int sunAngleIndex = NSUN_ANGLE-1; sunAngleIndex > 0; sunAngleIndex -= NSUN_ANGLE/4) {
+				float uSunAngle = float(sunAngleIndex) / (NSUN_ANGLE-1);
 				float cosSunAngle = SunAngleParameterizationInverse(uSunAngle);
 				float sunAngle = glm::acos(cosSunAngle);
 				LPLOG("[%d][%d][%d] Sun %f: %g %g %g", heightIndex, viewAngleIndex, sunAngleIndex, sunAngle/2/glm::pi<float>()*360, fScattering[heightIndex][viewAngleIndex][sunAngleIndex].r, fScattering[heightIndex][viewAngleIndex][sunAngleIndex].g, fScattering[heightIndex][viewAngleIndex][sunAngleIndex].b);
@@ -459,6 +463,7 @@ GLuint Atmosphere::LoadTexture() {
 void Atmosphere::Init() {
 	if (fInitialized)
 		return;
+
 	this->PreComputeTransmittance();
 	this->PreComputeSingleScattering();
 	fInitialized = true;

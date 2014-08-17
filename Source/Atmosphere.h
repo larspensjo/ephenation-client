@@ -33,6 +33,11 @@ private:
 	void Init();
 
 	enum { NHEIGHT=32, NVIEW_ANGLE=64, NSUN_ANGLE=32, NTRANS_HOR_RES = 128};
+
+	/// Precomputed scattering for RGB
+	/// The first index is the parameterized height.
+	/// The second index is the parameterized outgoing cosine of the view angle. 1 is upwards, -1 is downwards.
+	/// The third index is the parameterized outgoing cosine of the sun angle. 1 is upwards, -1 is downwards.
 	glm::vec3 fScattering[NHEIGHT][NVIEW_ANGLE][NSUN_ANGLE]; // Precomputed scattering
 	/// Precomputed transmittance for RGB
 	/// It will give transmittance for a vector starting at height given by the first index,
