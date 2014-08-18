@@ -32,7 +32,7 @@ public:
 private:
 	void Init();
 
-	enum { NHEIGHT=32, NVIEW_ANGLE=64, NSUN_ANGLE=32, NTRANS_HOR_RES = 128};
+	enum { NHEIGHT=32, NVIEW_ANGLE=64, NSUN_ANGLE=32 };
 
 	/// Precomputed scattering for RGB
 	/// The first index is the parameterized height.
@@ -48,6 +48,10 @@ private:
 	glm::vec3 FetchTransmittanceToHorizon(glm::vec2 pa, glm::vec2 v) const;
 	glm::vec3 FetchTransmittance(glm::vec2 pa, glm::vec2 pb) const;
 	void PreComputeSingleScattering();
+
+	/// @param h Height from earth, in meters
+	/// @param cv Cosine view angle, 1 is up
+	/// @param cs Cosine sun angle, 1 is up
 	glm::vec3 fetchScattered(float h, float cv, float cs) const;
 
 	/// Compute transmittance
@@ -61,7 +65,11 @@ private:
 	/// @param l Direction from the sun
 	/// @param v The direction into 'pa'
 	void SingleScattering(glm::vec2 pa, glm::vec2 l, glm::vec2 v, glm::vec3 &mie, glm::vec3 &rayleigh) const;
-	glm::vec3 GatheredLight(glm::vec2 p, glm::vec2 v, glm::vec2 l) const;
+
+	/// @param 'h' Height of the point
+	/// @param 'v' incoming light towards 'p'
+	/// @param 'l' Incoming sun direction
+	glm::vec3 GatheredLight(float h, glm::vec2 v, glm::vec2 l) const;
 
 	bool fInitialized = false;
 };
