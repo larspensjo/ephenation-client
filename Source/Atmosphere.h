@@ -67,9 +67,9 @@ private:
 	void SingleScattering(glm::vec2 pa, glm::vec2 l, glm::vec2 v, glm::vec3 &mie, glm::vec3 &rayleigh) const;
 
 	/// @param 'h' Height of the point
-	/// @param 'v' incoming light towards 'p'
+	/// @param 'v' outgoing angle from 'p', relative azimuth
 	/// @param 'l' Incoming sun direction
-	glm::vec3 GatheredLight(float h, glm::vec2 v, glm::vec2 l) const;
+	glm::vec3 GatheredLight(float h, float v, glm::vec2 l) const;
 
 	bool fInitialized = false;
 };
