@@ -28,6 +28,55 @@
 using glm::vec3;
 using glm::vec2;
 
+#if 0
+// This one isn't needed currently.
+static bool ComputeCircleIntersection(vec2 C, vec2 A, vec2 D, float R, float &result) {
+
+	// Now the line equation is x = Dx*t + Ax, y = Dy*t + Ay with 0 <= t <= 1.
+
+	// compute the value t of the closest point to the circle center (Cx, Cy)
+	float t = D.x*(C.x-A.x) + D.y*(C.y-A.y);
+
+	// This is the projection of C on the line from A to B.
+
+	// compute the coordinates of the point E on line and closest to C
+	vec2 E;
+	E.x = t*D.x+A.x;
+	E.y = t*D.y+A.y;
+
+	// compute the euclidean distance from E to C
+	float LEC = glm::distance(E, C);
+	// glm::sqrt( (E.x-C.x)²+(E.y-C.y)² );
+
+	// test if the line intersects the circle
+	if( LEC < R )
+	{
+		// compute distance from t to circle intersection point
+		// dt = sqrt( R² - LEC²)
+		float dt = glm::sqrt(R*R - LEC*LEC);
+
+		// compute first intersection point
+		vec2 F;
+		F.x = (t-dt)*D.x + A.x;
+		F.y = (t-dt)*D.y + A.y;
+
+		// compute second intersection point
+		vec2 G;
+		G.x = (t+dt)*D.x + A.x;
+		G.y = (t+dt)*D.y + A.y;
+
+		return true;
+	}
+
+	// else test if the line is tangent to circle
+	else if( LEC == R )
+		return false; // tangent point to circle is E
+	else
+		return false; // line doesn't touch circle
+}
+
+#endif
+
 static const float H_Atm = 80000.0f;
 static const float R_Earth = 6371*1000;
 const float atmSquared = (R_Earth+H_Atm) * (R_Earth+H_Atm);
@@ -151,10 +200,13 @@ vec3 Atmosphere::Transmittance(vec2 pa, vec2 pb) const {
 void Atmosphere::SingleScattering(vec2 pa, vec2 l, vec2 v, vec3 &mie, vec3 &rayleigh) const {
 	// Compute the intersection distance to the point 'pb' where the ray leaves the atmosphere.
 	// See figure 4.
-	float intersectionDistance;
+	float intersectionDistance = 0;
 	bool found = glm::intersectRaySphere(pa, -v, earthCenter, atmSquared, intersectionDistance);
-	if (!found)
+	if (!found || intersectionDistance < 10) {
+		mie = vec3(0,0,0);
+		rayleigh = vec3(0,0,0);
 		return;
+	}
 	vec3 totalInscatteringMie, totalInscatteringRayleigh, previousInscatteringMie, previousInscatteringRayleigh;
 	float prevDistance = 0.0f;
 	int iteration = 0;
@@ -440,21 +492,24 @@ void Atmosphere::Debug() {
 		LPLOG("Transmittance height %.0f, upwards: %.2f, %.2f, %.2f (%.2f %.2f %.2f)", pb.y, transm.r, transm.g, transm.b, transm2.r, transm2.g, transm2.b);
 	}
 
+	LPLOG("==========================================");
 	vec2 v(0,-1); // Pointing towards pa
+	LPLOG("Single scattering rotating vector, height 0, view angle to azimuth");
 	for (int i=0; i<16; i++) {
+		vec2 v = glm::rotate(vec2(0,-1), 90.0f/15.0f*i);
 		vec3 mie, rayleigh;
 		SingleScattering(vec2(0,0), vec2(-sunDir), v, mie, rayleigh);
 		LPLOG("Single scattering view angle %.1f", glm::acos(-v.y)/2/glm::pi<float>()*360);
 		LPLOG("Mie      (%f, %f, %f)", mie.r, mie.g, mie.b);
 		LPLOG("Rayleigh (%f, %f, %f)", rayleigh.r, rayleigh.g, rayleigh.b);
-		v = glm::rotate(v, 90.0f/15.0f);
 	}
 
-	LPLOG("Single scattering");
+	LPLOG("==========================================");
+	LPLOG("Single scattering, table walk");
 	for (int heightIndex = 0; heightIndex < NHEIGHT; heightIndex += NHEIGHT/4) {
 		float uHeight = float(heightIndex) / (NHEIGHT-1);
 		float h = HeightParameterizedInverse(uHeight);
-		LPLOG("Height %.0f", h);
+		LPLOG("Height %.1f ******", h);
 		for (int viewAngleIndex = NVIEW_ANGLE-1; viewAngleIndex > 0; viewAngleIndex -= 4) {
 			float uViewAngle = float(viewAngleIndex) / (NVIEW_ANGLE-1);
 			float cosViewAngle = ViewAngleParameterizedInverse(uViewAngle, h);
@@ -469,11 +524,12 @@ void Atmosphere::Debug() {
 		}
 	}
 
+	LPLOG("==========================================");
 	LPLOG("Gathering");
 	for (int heightIndex = 0; heightIndex < NHEIGHT; heightIndex += 16) {
 		float uHeight = float(heightIndex) / (NHEIGHT-1);
 		float h = HeightParameterizedInverse(uHeight);
-		LPLOG("Height %.1f", h);
+		LPLOG("Height %.1f ******", h);
 		for (int viewAngleIndex = NVIEW_ANGLE-1; viewAngleIndex > 0; viewAngleIndex -= 4) {
 			float uViewAngle = float(viewAngleIndex) / (NVIEW_ANGLE-1);
 			float cosViewAngle = ViewAngleParameterizedInverse(uViewAngle, h);
@@ -508,6 +564,7 @@ GLuint Atmosphere::LoadTexture() {
 
 	GLuint textureId;
 	glGenTextures(1, &textureId);
+	LPLOG("Loading texture %d", textureId);
 	glBindTexture(GL_TEXTURE_3D, textureId);
 	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -515,6 +572,7 @@ GLuint Atmosphere::LoadTexture() {
 	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
 	glTexImage3D(GL_TEXTURE_3D, 0, GL_RGB16F, NHEIGHT, NVIEW_ANGLE, NSUN_ANGLE, 0, GL_RGB, GL_FLOAT, 0); // TODO: No data sent yet
+	LPLOG("Load texture %d", textureId);
 	checkError("Atmosphere::LoadTexture", false);
 	return textureId;
 }
