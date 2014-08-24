@@ -162,13 +162,11 @@ static const float MieScatterCoefficient = 2.0e-6;
 static const float MieExtinctionCoefficient = MieScatterCoefficient / 0.9f;
 static const vec3 RayleighScatterCoefficient(6.55e-6, 1.73e-5, 2.30e-5);
 
-static float getDensityRayleigh(vec2 p) {
-	float h = height(p);
+static float getDensityRayleigh(float h) {
 	return std::exp(-h / 8000);
 }
 
-static float getDensityMie(vec2 p) {
-	float h = height(p);
+static float getDensityMie(float h) {
 	return std::exp(-h / 1200);
 }
 
@@ -186,8 +184,9 @@ vec3 Atmosphere::Transmittance(vec2 pa, vec2 pb) const {
 	float prevDistance = 0;
 	for (float distance=stepSize; distance < totalDistance; distance *= 1.05f) {
 		vec2 s = pa + distance * dir;
-		float currentDensityMie = getDensityMie(vec2(s));
-		float currentDensityRayleigh = getDensityRayleigh(vec2(s));
+		float h = height(s);
+		float currentDensityMie = getDensityMie(h);
+		float currentDensityRayleigh = getDensityRayleigh(h);
 		totalDensityMie += (currentDensityMie + previousDensityMie) / 2 * (distance-prevDistance);
 		totalDensityRayleigh += (currentDensityRayleigh + previousDensityReyleigh) / 2 * (distance-prevDistance);
 		previousDensityMie = currentDensityMie;
@@ -224,8 +223,9 @@ void Atmosphere::SingleScattering(vec2 pa, vec2 l, vec2 v, vec3 &mie, vec3 &rayl
 		found = glm::intersectRaySphere(p, -l, earthCenter, atmSquared, atmDistance); assert(found);
 		const vec2 pc = p - l * atmDistance; // Step backwards from p
 		transmittance *= FetchTransmittance(p, pc);
-		vec3 currentInscatteringMie = getDensityMie(p) * transmittance;
-		vec3 currentInscatteringRayleigh = getDensityRayleigh(p) * transmittance;
+		float h = height(p);
+		vec3 currentInscatteringMie = getDensityMie(h) * transmittance;
+		vec3 currentInscatteringRayleigh = getDensityRayleigh(h) * transmittance;
 		totalInscatteringMie += (currentInscatteringMie + previousInscatteringMie)/2.0f * (distance-prevDistance);
 		totalInscatteringRayleigh += (currentInscatteringRayleigh + previousInscatteringRayleigh)/2.0f * (distance-prevDistance);
 		previousInscatteringMie = currentInscatteringMie;
@@ -257,9 +257,10 @@ void Atmosphere::MultipleScattering(glm::vec2 pa, glm::vec2 l, glm::vec2 v, glm:
 			// LPLOG("Giving up at %.0f (of %.0f), iteration %d", distance, intersectionDistance, iteration);
 			break; // Give it up
 		}
-		vec3 gathered = GatheredLight(height(p), glm::acos(v.y), l);
-		vec3 currentInscatteringMie = gathered * getDensityMie(p) * transmittance;
-		vec3 currentInscatteringRayleigh = gathered * getDensityRayleigh(p) * transmittance;
+		float h = height(p);
+		vec3 gathered = GatheredLight(h, glm::acos(v.y), l);
+		vec3 currentInscatteringMie = gathered * getDensityMie(h) * transmittance;
+		vec3 currentInscatteringRayleigh = gathered * getDensityRayleigh(h) * transmittance;
 		totalInscatteringMie += (currentInscatteringMie + previousInscatteringMie)/2.0f * (distance-prevDistance);
 		totalInscatteringRayleigh += (currentInscatteringRayleigh + previousInscatteringRayleigh)/2.0f * (distance-prevDistance);
 		previousInscatteringMie = currentInscatteringMie;
