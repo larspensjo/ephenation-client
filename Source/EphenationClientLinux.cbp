@@ -176,6 +176,7 @@
 		<Unit filename="object.h" />
 		<Unit filename="otherplayers.cpp" />
 		<Unit filename="otherplayers.h" />
+		<Unit filename="parameterization.m" />
 		<Unit filename="parse.cpp" />
 		<Unit filename="parse.h" />
 		<Unit filename="player.cpp" />

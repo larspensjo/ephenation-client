@@ -170,21 +170,29 @@ static float getDensityMie(float h) {
 	return std::exp(-h / 1200);
 }
 
+/// The step size used for iterations.
+static float getStepSize(float h) {
+	// Use a step size the increase exponentially by height.
+	const float stepAtm = 4000; // Target step size at end of atmosphere
+	const float stepGround = 100; // Desired step size at ground level
+	const float k = glm::log(stepAtm / stepGround) / H_Atm;
+	return stepGround * glm::exp(k * h);
+}
+
 vec3 Atmosphere::Transmittance(vec2 pa, vec2 pb) const {
 	float ha = height(pa), hb = height(pb);
 	if (ha > hb)
 		std::swap(pa, pb); // We want pa at the place with highest density
 	float totalDistance = glm::distance(pa, pb);
-	float stepSize = totalDistance;
-	if (stepSize > 10)
-		stepSize = 10;
 	vec2 dir = glm::normalize(pb-pa);
 	float totalDensityMie = 0.0f, totalDensityRayleigh = 0.0f;
 	float previousDensityMie = 0.0f, previousDensityReyleigh = 0.0f;
 	float prevDistance = 0;
-	for (float distance=stepSize; distance < totalDistance; distance *= 1.05f) {
+	for (float distance=10; distance < totalDistance; ) {
 		vec2 s = pa + distance * dir;
 		float h = height(s);
+		if (h < 0)
+			return vec3(0,0,0); // Cut-off when below ground
 		float currentDensityMie = getDensityMie(h);
 		float currentDensityRayleigh = getDensityRayleigh(h);
 		totalDensityMie += (currentDensityMie + previousDensityMie) / 2 * (distance-prevDistance);
@@ -192,6 +200,7 @@ vec3 Atmosphere::Transmittance(vec2 pa, vec2 pb) const {
 		previousDensityMie = currentDensityMie;
 		previousDensityReyleigh = currentDensityRayleigh;
 		prevDistance = distance;
+		distance += getStepSize(h);
 	}
 	return glm::exp(-(totalDensityRayleigh * RayleighScatterCoefficient + totalDensityMie * MieExtinctionCoefficient));
 }
@@ -476,14 +485,14 @@ void Atmosphere::Debug() {
 		vec2 pb(HorizontalDistParameterizedInverse(ux)/2, 0);
 		vec3 transm = Transmittance(pa, pb);
 		vec3 transm2 = FetchTransmittance(pa, pb);
-		LPLOG("Transmittance dist %.0fm: %.2f, %.2f, %.2f (%.2f %.2f %.2f)", pb.x, transm.r, transm.g, transm.b, transm2.r, transm2.g, transm2.b);
+		LPLOG("Transmittance dist %.0fm: %.3f, %.3f, %.3f (%.3f %.3f %.3f)", pb.x, transm.r, transm.g, transm.b, transm2.r, transm2.g, transm2.b);
 	}
 
 	for (float i=1; i>=0; i -= 0.15f) {
 		vec2 pb(100000, HeightParameterizedInverse(i));
 		vec3 transm = Transmittance(pa, pb);
 		vec3 transm2 = FetchTransmittance(pa, pb);
-		LPLOG("Transmittance height %.0fm: %.2f, %.2f, %.2f (%.2f %.2f %.2f)", pb.y, transm.r, transm.g, transm.b, transm2.r, transm2.g, transm2.b);
+		LPLOG("Transmittance height %.0fm: %.3f, %.3f, %.3f (%.3f %.3f %.3f)", pb.y, transm.r, transm.g, transm.b, transm2.r, transm2.g, transm2.b);
 	}
 
 	{

@@ -36,3 +36,15 @@ function ret = ViewAngleParameterizedInverse(uv, h)
 	endif
 endfunction
 
+disp "DensityRayleigh(uv,h)"
+function ret = DensityRayleigh(h)
+	ret = exp(-h / 8000);
+endfunction
+
+disp "getStepSize"
+function ret = getStepSize(h)
+	stepAtm = 4000;
+	stepGround = 100;
+	k = log(stepAtm / stepGround) / 80000;
+	ret = stepGround * exp(k * h);
+endfunction
