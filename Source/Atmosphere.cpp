@@ -186,6 +186,40 @@ void Atmosphere::SingleScattering(vec2 pa, vec2 l, vec2 v, vec3 &mie, vec3 &rayl
 	rayleigh = totalInscatteringRayleigh;
 }
 
+void Atmosphere::MultipleScattering(glm::vec2 pa, glm::vec2 l, glm::vec2 v, glm::vec3 &mie, glm::vec3 &rayleigh) const {
+	// Compute the intersection distance to the point 'pb' where the ray leaves the atmosphere.
+	// See figure 4.
+	float intersectionDistance;
+	bool found = glm::intersectRaySphere(pa, -v, earthCenter, atmSquared, intersectionDistance);
+	assert(found);
+	float prevDistance = 0.0f;
+	int iteration = 0;
+	vec3 totalInscatteringMie, totalInscatteringRayleigh, previousInscatteringMie, previousInscatteringRayleigh;
+	for (float distance = 2000.0f; distance < intersectionDistance; distance *= 1.2f) {
+		iteration++;
+		// 'p' will iterate over the line from 'pa' to 'pb'.
+		const vec2 p = pa - distance * v; // Step backwards from pa
+		vec3 transmittance = FetchTransmittance(pa, p);
+		const float cutOff = 1e-6;
+		if (transmittance.r < cutOff && transmittance.g < cutOff && transmittance.b < cutOff) {
+			// LPLOG("Giving up at %.0f (of %.0f), iteration %d", distance, intersectionDistance, iteration);
+			break; // Give it up
+		}
+		vec3 gathered = GatheredLight(height(p), glm::acos(v.y), l);
+		vec3 currentInscatteringMie = gathered * getDensityMie(p) * transmittance;
+		vec3 currentInscatteringRayleigh = gathered * getDensityRayleigh(p) * transmittance;
+		totalInscatteringMie += (currentInscatteringMie + previousInscatteringMie)/2.0f * (distance-prevDistance);
+		totalInscatteringRayleigh += (currentInscatteringRayleigh + previousInscatteringRayleigh)/2.0f * (distance-prevDistance);
+		previousInscatteringMie = currentInscatteringMie;
+		previousInscatteringRayleigh = currentInscatteringRayleigh;
+		prevDistance = distance;
+	}
+	totalInscatteringMie *= MieScatterCoefficient / (4.0f * glm::pi<float>()) * sunRGB;
+	totalInscatteringRayleigh *= RayleighScatterCoefficient / (4.0f * glm::pi<float>()) * sunRGB;
+	mie = totalInscatteringMie;
+	rayleigh = totalInscatteringRayleigh;
+}
+
 vec3 Atmosphere::fetchScattered(float h, float cv, float cs) const {
 	float uh = HeightParameterized(h);
 	float uv = ViewAngleParameterized(cv, h);
@@ -454,6 +488,18 @@ void Atmosphere::Debug() {
 				LPLOG("Sun %.1f: %.3f %.3f %.3f", sunAngle/2/glm::pi<float>()*360, gathered.r, gathered.g, gathered.b);
 			}
 		}
+	}
+
+	LPLOG("==========================================");
+	v = vec2(0,-1); // Pointing towards pa
+	LPLOG("1:st order multiple scattering rotating vector, height 0");
+	for (int i=0; i<16; i++) {
+		vec3 mie, rayleigh;
+		MultipleScattering(vec2(0,0), vec2(-sunDir), v, mie, rayleigh);
+		LPLOG("View angle %.1f", glm::acos(-v.y)/2/glm::pi<float>()*360);
+		LPLOG("Mie      (%f, %f, %f)", mie.r, mie.g, mie.b);
+		LPLOG("Rayleigh (%f, %f, %f)", rayleigh.r, rayleigh.g, rayleigh.b);
+		v = glm::rotate(v, 90.0f/15.0f);
 	}
 }
 

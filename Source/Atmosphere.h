@@ -66,6 +66,12 @@ private:
 	/// @param v The direction into 'pa'
 	void SingleScattering(glm::vec2 pa, glm::vec2 l, glm::vec2 v, glm::vec3 &mie, glm::vec3 &rayleigh) const;
 
+	/// Compute next iteration of multiple inscattering
+	/// @param pa The player position
+	/// @param l Direction from the sun
+	/// @param v The direction into 'pa'
+	void MultipleScattering(glm::vec2 pa, glm::vec2 l, glm::vec2 v, glm::vec3 &mie, glm::vec3 &rayleigh) const;
+
 	/// @param 'h' Height of the point
 	/// @param 'v' outgoing angle from 'p', relative azimuth
 	/// @param 'l' Incoming sun direction
