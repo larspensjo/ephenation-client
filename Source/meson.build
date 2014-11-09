@@ -45,12 +45,14 @@ src = ['animationmodels.cpp', 'assert.cpp', 'billboard.cpp', 'BuildingBlocks.cpp
 	'shaders/gaussblur.cpp', 'shaders/modulatedtextureshader.cpp', 'shaders/MonsterShader.cpp',
 	'shaders/ScreenSpaceReflection.cpp', 'shaders/shader.cpp', 'shaders/shadowmapshader.cpp',
 	'shaders/SimpleTextureShader.cpp', 'shaders/skybox.cpp', 'shaders/StageOneShader.cpp',
+	'shaders/BarrelDistortion.cpp',
 	'shaders/TranspShader.cpp', 'shadowrender.cpp', 'shapes/Cube.cpp', 'shapes/Cylinder.cpp',
 	'shapes/octagon.cpp', 'shapes/quad.cpp', 'shapes/quadstage1.cpp', 'shapes/Tree.cpp',
 	'simplexnoise1234.cpp', 'SoundControl.cpp', 'SuperChunkManager.cpp', 'Teleport.cpp', 'textures.cpp',
 	'timemeasure.cpp', 'TSExec.cpp', 'ui/activator.cpp', 'ui/base.cpp', 'ui/Error.cpp', 'ui/factory.cpp',
 	'ui/login.cpp', 'ui/mainuserinterface.cpp', 'ui/options.cpp', 'ui/RocketGui.cpp',
 	'ui/RocketRenderInterface.cpp', 'ui/RocketSystemInterface.cpp', 'ui/simple.cpp', 'UndoOp.cpp',
-	'uniformbuffer.cpp', 'vsfl/vsfl.cpp', 'worsttime.cpp', 'contrib/glsw.c', 'contrib/bstrlib.c']
+	'uniformbuffer.cpp', 'vsfl/vsfl.cpp', 'worsttime.cpp', 'contrib/glsw.c', 'contrib/bstrlib.c',
+	'OpenglBuffer.cpp', 'RenderTarget.cpp']
 
 executable('ephenation', sources:src, deps : deps, include_dirs : incdirs, objects : libovr)
