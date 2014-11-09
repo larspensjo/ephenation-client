@@ -1,4 +1,4 @@
-// Copyright 2012-2013 The Ephenation Authors
+// Copyright 2012-2014 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -90,8 +90,6 @@ static void AddChunkToShadowList(Chunk *cp) {
 
 int gDrawnQuads;
 int gNumDraw;
-float _angleHor = 0;            //The rotation of the player
-float _angleVert = 0.0;
 
 float maxRenderDistance = 50.0; // Number of blocks visible distance.
 
@@ -527,7 +525,7 @@ void DrawLandscapeForShadows(StageOneShader *shader) {
 
 	// Draw all visible chunks. Chunks that are not loaded will trigger a reload from the server. The top chunks
 	// should be loaded first, as they affect the lighting on the chunks below.
-	for (auto it=sShadowChunks.begin() ; it != sShadowChunks.end(); it++ ) {
+	for (auto it=sShadowChunks.begin(); it != sShadowChunks.end(); it++ ) {
 		Chunk *cp = ChunkFind(&(*it), true);
 
 		if (!cp->IsDirty() && cp->fChunkObject && cp->fChunkObject->Empty()) {

@@ -147,7 +147,7 @@ void ChunkObject::DrawTrees(StageOneShader *shader, glm::vec3 offset, bool forSh
 			break;
 		case BT_Tree1:
 			if (d > limit) {
-				float angle = -_angleHor;
+				float angle = -Model::gPlayer.fAngleHor;
 				Billboard::Predefined picture = Billboard::tree1;
 				if (forShadows) {
 					angle = rotateShadowBillboard;
@@ -165,7 +165,7 @@ void ChunkObject::DrawTrees(StageOneShader *shader, glm::vec3 offset, bool forSh
 			break;
 		case BT_Tree2:
 			if (d > limit) {
-				float angle = -_angleHor;
+				float angle = -Model::gPlayer.fAngleHor;
 				Billboard::Predefined picture = Billboard::tree2;
 				if (forShadows) {
 					angle = rotateShadowBillboard;
@@ -183,7 +183,7 @@ void ChunkObject::DrawTrees(StageOneShader *shader, glm::vec3 offset, bool forSh
 			break;
 		case BT_Tree3:
 			if (d > limit) {
-				float angle = -_angleHor;
+				float angle = -Model::gPlayer.fAngleHor;
 				Billboard::Predefined picture = Billboard::tree3;
 				if (forShadows) {
 					angle = rotateShadowBillboard;
@@ -657,6 +657,8 @@ void ChunkObject::FindTriangles(const Chunk *cp, bool pickingMode, int pdx, int 
 					unsigned int material = 0;
 					if (blxm1 >= BT_EffWatery && blxm1 <= BT_EffRes15)
 						material = blxm1 - BT_EffOffset;
+                    else if (cp->CountNearWalls(x-1, y, z, BT_Stone, 6))
+                        material = BT_EffWatery - BT_EffOffset;
 					tri1.v[0].SetMaterial(material); tri1.v[1].SetMaterial(material); tri1.v[2].SetMaterial(material);
 					tri2.v[0].SetMaterial(material); tri2.v[1].SetMaterial(material); tri2.v[2].SetMaterial(material);
 
@@ -707,6 +709,8 @@ void ChunkObject::FindTriangles(const Chunk *cp, bool pickingMode, int pdx, int 
 					unsigned int material = 0;
 					if (blym1 >= BT_EffWatery && blym1 <= BT_EffRes15)
 						material = blym1 - BT_EffOffset;
+                    else if (cp->CountNearWalls(x, y-1, z, BT_Stone, 6))
+                        material = BT_EffWatery - BT_EffOffset;
 					tri1.v[0].SetMaterial(material); tri1.v[1].SetMaterial(material); tri1.v[2].SetMaterial(material);
 					tri2.v[0].SetMaterial(material); tri2.v[1].SetMaterial(material); tri2.v[2].SetMaterial(material);
 
@@ -757,6 +761,8 @@ void ChunkObject::FindTriangles(const Chunk *cp, bool pickingMode, int pdx, int 
 					unsigned int material = 0;
 					if (blzm1 >= BT_EffWatery && blzm1 <= BT_EffRes15)
 						material = blzm1 - BT_EffOffset;
+                    else if (cp->CountNearWalls(x, y, z-1, BT_Stone, 6))
+                        material = BT_EffWatery - BT_EffOffset;
 					tri1.v[0].SetMaterial(material); tri1.v[1].SetMaterial(material); tri1.v[2].SetMaterial(material);
 					tri2.v[0].SetMaterial(material); tri2.v[1].SetMaterial(material); tri2.v[2].SetMaterial(material);
 
@@ -802,6 +808,8 @@ void ChunkObject::FindTriangles(const Chunk *cp, bool pickingMode, int pdx, int 
 					unsigned int material = 0;
 					if (blxp1 >= BT_EffWatery && blxp1 <= BT_EffRes15)
 						material = blxp1 - BT_EffOffset;
+                    else if (cp->CountNearWalls(x+1, y, z, BT_Stone, 6))
+                        material = BT_EffWatery - BT_EffOffset;
 					tri1.v[0].SetMaterial(material); tri1.v[1].SetMaterial(material); tri1.v[2].SetMaterial(material);
 					tri2.v[0].SetMaterial(material); tri2.v[1].SetMaterial(material); tri2.v[2].SetMaterial(material);
 
@@ -852,6 +860,8 @@ void ChunkObject::FindTriangles(const Chunk *cp, bool pickingMode, int pdx, int 
 					unsigned int material = 0;
 					if (blyp1 >= BT_EffWatery && blyp1 <= BT_EffRes15)
 						material = blyp1 - BT_EffOffset;
+                    else if (cp->CountNearWalls(x, y+1, z, BT_Stone, 6))
+                        material = BT_EffWatery - BT_EffOffset;
 					tri1.v[0].SetMaterial(material); tri1.v[1].SetMaterial(material); tri1.v[2].SetMaterial(material);
 					tri2.v[0].SetMaterial(material); tri2.v[1].SetMaterial(material); tri2.v[2].SetMaterial(material);
 
@@ -907,6 +917,8 @@ void ChunkObject::FindTriangles(const Chunk *cp, bool pickingMode, int pdx, int 
 					unsigned int material = 0;
 					if (blzp1 >= BT_EffWatery && blzp1 <= BT_EffRes15)
 						material = blzp1 - BT_EffOffset;
+                    else if (cp->CountNearWalls(x, y, z+1, BT_Stone, 6))
+                        material = BT_EffWatery - BT_EffOffset;
 					tri1.v[0].SetMaterial(material); tri1.v[1].SetMaterial(material); tri1.v[2].SetMaterial(material);
 					tri2.v[0].SetMaterial(material); tri2.v[1].SetMaterial(material); tri2.v[2].SetMaterial(material);
 

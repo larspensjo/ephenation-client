@@ -1,4 +1,4 @@
-// Copyright 2012 The Ephenation Authors
+// Copyright 2012-2014 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -20,13 +20,13 @@
 #include <vector>
 
 #include "../primitives.h"
+#include "../OpenglBuffer.h"
 
 class StageOneShader;
 
 // Class for creating a cylinder. The result is a list of triangles
 class Cylinder {
 public:
-	Cylinder();
 	~Cylinder();
 	// Create a list of triangles representing a cylinder. The size is a unit size, but transformed using 'transf'.
 	// Argument is number of squares used to make the cylinder
@@ -34,6 +34,6 @@ public:
 	void Draw(StageOneShader *shader) const;
 private:
 	std::vector<TriangleSurfacef> fVisibleTriangles; // One list for each block type
-	GLuint fBufferId;
-	GLuint fVao; // Vertex Attribute Object
+	OpenglBuffer fOpenglBuffer;
+	GLuint fVao = 0;
 };

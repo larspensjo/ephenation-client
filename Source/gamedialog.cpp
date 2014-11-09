@@ -1,4 +1,4 @@
-// Copyright 2012-2013 The Ephenation Authors
+// Copyright 2012-2014 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -27,6 +27,8 @@
 #include <Rocket/Controls/Clipboard.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/quaternion.hpp>
+#include <glm/gtc/quaternion.hpp>
 #include <limits>
 
 #ifndef M_PI
@@ -132,8 +134,10 @@ gameDialog::~gameDialog() {
 // In build mode, find the block at the given screen position. Return the chunk and the
 // data about it to the pointers.
 View::Chunk *gameDialog::FindSelectedSurface(int x, int y, ChunkOffsetCoord *coc, int *surfaceDir) {
-	if (fStereoView)
+	if (fStereoView) {
+		this->SetViewport(0, fScreenWidth/2, fScreenHeight);
 		this->UpdateProjection(ViewType::left);
+	}
 	gChunkShaderPicking.EnableProgram();
 
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f); // Use black sky for picking
@@ -350,16 +354,16 @@ void gameDialog::handleMouseActiveMotion(int x, int y) {
 		int deltax = xStartTurn - x;
 		int deltay = yStartTurn - y;
 		// printf("Turning dx %d dy %d\n", deltax, deltay);
-		_angleHor = angleHorStartTurn + deltax/mouseSens;
-		if (_angleHor > 360.0) _angleHor -= 360.0f;
-		if (_angleHor < 0.0f) _angleHor += 360.0f;
-		_angleVert = angleVertStartTurn + deltay/mouseSens;
-		if (_angleVert > 90.0f) _angleVert = 90.0f;
-		if (_angleVert < -90.0f) _angleVert = -90.0f;
+		fAngleHor = angleHorStartTurn + deltax/mouseSens;
+		if (fAngleHor > 360.0) fAngleHor -= 360.0f;
+		if (fAngleHor < 0.0f) fAngleHor += 360.0f;
+		fAngleVert = angleVertStartTurn + deltay/mouseSens;
+		if (fAngleVert > 90.0f) fAngleVert = 90.0f;
+		if (fAngleVert < -90.0f) fAngleVert = -90.0f;
 		unsigned char b[7];
-		unsigned short angleHorRad = (unsigned short)(_angleHor / 360.0f * 2.0f * M_PI * 100);
-		signed short angleVertRad = (unsigned short)(_angleVert / 360.0f * 2.0f * M_PI * 100);
-		// printf("Dir (%f, %f), (%d, %d)\n", _angleHor, _angleVert, angleHorRad, angleVertRad);
+		unsigned short angleHorRad = (unsigned short)(fAngleHor / 360.0f * 2.0f * M_PI * 100);
+		signed short angleVertRad = (unsigned short)(fAngleVert / 360.0f * 2.0f * M_PI * 100);
+		// printf("Dir (%f, %f), (%d, %d)\n", fAngleHor, fAngleVert, angleHorRad, angleVertRad);
 		b[0] = sizeof b;
 		b[1] = 0;
 		b[2] = CMD_SET_DIR;
@@ -367,8 +371,8 @@ void gameDialog::handleMouseActiveMotion(int x, int y) {
 		EncodeUint16(b+5, angleVertRad);
 		// DumpBytes(b, sizeof b);
 		SendMsg(b, sizeof b);
-		Model::gPlayer.fAngleHor = _angleHor; // Update player data with current looking direction
-		Model::gPlayer.fAngleVert = _angleVert;
+		Model::gPlayer.fAngleHor = fAngleHor; // Update player data with current looking direction
+		Model::gPlayer.fAngleVert = fAngleVert;
 	}
 }
 
@@ -417,8 +421,8 @@ void gameDialog::handleMouse(int button, int action) {
 		if (action == GLFW_PRESS) {
 			xStartTurn = x;
 			yStartTurn = y;
-			angleHorStartTurn = _angleHor;
-			angleVertStartTurn = _angleVert;
+			angleHorStartTurn = fAngleHor;
+			angleVertStartTurn = fAngleVert;
 			sTurning = true;
 		} else {
 			sTurning = false;
@@ -430,13 +434,14 @@ void gameDialog::handleMouse(int button, int action) {
 		if (fStereoView) {
 			// Get the mouse pointer that we draw on the left screen
 			fRenderControl.GetVirtualPointer(&x, &y);
+			this->SetViewport(0, fScreenWidth/2, fScreenHeight);
 			this->UpdateProjection(ViewType::left); // Would get right side otherwise
 		} else {
 			// Get the mouse pointer as reported by the system
 			glfwGetMousePos(&x, &y);
 		}
 		LPLOG("TP Click at %d, %d", x, y);
-		const ChunkCoord *cc = TeleportClick(fHealthBar, _angleHor, fRenderViewAngle, x, y, true, fStereoView);
+		const ChunkCoord *cc = TeleportClick(fHealthBar, fAngleHor, fRenderViewAngle, x, y, true, fStereoView);
 		if (cc != 0) {
 			LPLOG("TP to chunk %d,%d,%d\n", cc->x, cc->y, cc->z);
 			unsigned char b[6];
@@ -918,40 +923,110 @@ static void revive(void) {
 
 glm::mat4 gViewMatrix; // Store the view matrix
 
+double gameDialog::DisplayReprojection(const glm::quat &quatLeft, const glm::quat &quatRight, View::RenderTarget &leftOriginal, View::RenderTarget &rightOriginal) {
+	glm::quat updatedQuat;
+	OculusRift::sfOvr.GetQuat(&updatedQuat.x);
+	glm::quat deltaQuatRight = quatRight * glm::inverse(updatedQuat);
+
+	float deltaYawPixels = glm::yaw(deltaQuatRight) / fRenderViewAngle * gViewport[2];
+	float deltaPitchPixels = glm::pitch(deltaQuatRight) / fRenderViewAngle / fAspectRatio * gViewport[3];
+	this->SetViewport(0, fScreenWidth/2, fScreenHeight);
+	auto correction = fRenderControl.MovePixels(rightOriginal.GetTexture(), -deltaYawPixels, deltaPitchPixels);
+	this->SetViewport(fScreenWidth/2, fScreenWidth/2, fScreenHeight);
+	fRenderControl.drawFullScreenPixmap(correction->GetTexture(), true, false);
+
+	glm::quat deltaQuatLeft = quatLeft * glm::inverse(updatedQuat);
+	deltaYawPixels = glm::yaw(deltaQuatLeft) / fRenderViewAngle * gViewport[2];
+	deltaPitchPixels = glm::pitch(deltaQuatLeft) / fRenderViewAngle / fAspectRatio * gViewport[3];
+	this->SetViewport(0, fScreenWidth/2, fScreenHeight);
+	correction = fRenderControl.MovePixels(leftOriginal.GetTexture(), -deltaYawPixels, deltaPitchPixels);
+	fRenderControl.drawFullScreenPixmap(correction->GetTexture(), true, true);
+
+	glfwSwapBuffers();
+	static double last = 0.0;
+	double now = glfwGetTime();
+	double delta = now - last;
+	last = now;
+	return delta;
+}
+
 void gameDialog::DrawScreen(bool hideGUI) {
 	static double slAverageFps = 0.0;
 	double tm = gCurrentFrameTime;
 	static double prevTime = 0.0;
 	double deltaTime = tm - prevTime;
 	// Use a decay filter on the FPS
-	slAverageFps = 0.97*slAverageFps + 0.03/deltaTime;
 	prevTime = tm;
 
 	this->Update();
 	fRenderControl.drawClear(fUnderWater); // Clear the screen
-	if (!Model::gPlayer.BelowGround())
-		fRenderControl.ComputeShadowMap();
 	glm::mat4 saveView = gViewMatrix;
 	if (fGuiMode == GuiMode::Inventory)
 		hideGUI = true;
-	if (fStereoView) {
-		this->UpdateProjection(Controller::gameDialog::ViewType::left);
-		this->render(hideGUI, int(slAverageFps));
-
-		gViewMatrix = saveView;
-		this->UpdateProjection(Controller::gameDialog::ViewType::right);
-		this->render(hideGUI, int(slAverageFps));
-	} else {
 		if (fGuiMode == GuiMode::Map && !gDebugOpenGL)
 			hideGUI = true;
-		this->UpdateProjection(Controller::gameDialog::ViewType::single);
-		this->render(hideGUI, int(slAverageFps));
+	if (fStereoView) {
+		View::gHudTransformation.Update();
+		static std::unique_ptr<View::RenderTarget> rightOriginal, leftOriginal; // Need to save the old ones
+		static glm::quat quatOld; // And save the angles to go with the old one
+		deltaTime = 0.0; // Instead, use the biggest value from DisplayReprojection
+
+		if (!Model::gPlayer.BelowGround()) {
+			fRenderControl.ComputeShadowMap();
+			if (rightOriginal && leftOriginal)
+				deltaTime = this->DisplayReprojection(quatOld, quatOld, *leftOriginal, *rightOriginal);
+		}
+
+		glm::quat quat;
+		OculusRift::sfOvr.GetQuat(&quat.x);
+
+		this->SetViewport(0, fScreenWidth/2, fScreenHeight);
+		this->UpdateProjection(ViewType::left);
+		leftOriginal = this->render();
+		this->postRender(hideGUI, int(slAverageFps));
+
+		if (rightOriginal) {
+			// Add an extra frame here. The right picture is older than the left
+			double lastDelta = this->DisplayReprojection(quat, quatOld, *leftOriginal, *rightOriginal);
+			quatOld = quat;
+			if (lastDelta > deltaTime)
+				deltaTime = lastDelta;
+		}
+
+		gViewMatrix = saveView;
+		this->SetViewport(fScreenWidth/2, fScreenWidth/2, fScreenHeight);
+		this->UpdateProjection(ViewType::right);
+		rightOriginal = this->render();
+		this->postRender(hideGUI, int(slAverageFps));
+
+		double lastDelta = this->DisplayReprojection(quat, quat, *leftOriginal, *rightOriginal);
+		if (lastDelta > deltaTime)
+			deltaTime = lastDelta;
+	} else {
+		if (!Model::gPlayer.BelowGround())
+			fRenderControl.ComputeShadowMap();
+		this->SetViewport(0, fScreenWidth, fScreenHeight);
+		this->UpdateProjection(ViewType::single);
+		auto rt = this->render();
+		this->postRender(hideGUI, int(slAverageFps));
+		fRenderControl.drawFullScreenPixmap(rt->GetTexture(), false, false);
+		glfwSwapBuffers();
 	}
-	glfwSwapBuffers();
 	gViewMatrix = saveView;
+	slAverageFps = 0.97*slAverageFps + 0.03/deltaTime;
+
+	if (gDebugOpenGL) {
+		checkError("gameDialog::render debug", false);
+		static double prevPrint = 0.0;
+		if (gCurrentFrameTime > prevPrint + 5.0) {
+			WorstTime::Report();
+			TimeMeasure::Report();
+			prevPrint = gCurrentFrameTime;
+		}
+	}
 }
 
-void gameDialog::render(bool hideGUI, int fps) {
+std::unique_ptr<View::RenderTarget> gameDialog::render() {
 	static bool first = true; // Only true first time function is called
 	// Clear list of special effects. It will be added again automatically every frame
 	gShadows.Clear();
@@ -959,9 +1034,21 @@ void gameDialog::render(bool hideGUI, int fps) {
 
 	if (first) {
 		gBillboard.InitializeTextures(fShader);
+		first = false;
 	}
 
-	fRenderControl.Draw(fUnderWater, fSelectedObject, fGuiMode == GuiMode::Map && !gDebugOpenGL, fGuiMode == GuiMode::Inventory, fMapWidth, (hideGUI && fCurrentRocketContextInput == 0) ? 0 : &fMainUserInterface, fStereoView, fRenderViewAngle);
+	return fRenderControl.Draw(fUnderWater, fSelectedObject.get(), fStereoView);
+}
+
+void gameDialog::postRender(bool hideGUI, int fps) {
+	fRenderControl.DrawStationaryEffects(
+		fGuiMode == GuiMode::Map && !gDebugOpenGL,
+		fMapWidth,
+		fStereoView,
+		fGuiMode == GuiMode::Inventory,
+		(hideGUI && fCurrentRocketContextInput == 0) ? 0 : &fMainUserInterface,
+		fRenderViewAngle
+	);
 
 	//=========================================================================
 	// Various effects drawn after the deferred shader
@@ -992,7 +1079,7 @@ void gameDialog::render(bool hideGUI, int fps) {
 		break;
 	}
 
-	Model::gOtherPlayers.RenderPlayerStats(fHealthBar, _angleHor);
+	Model::gOtherPlayers.RenderPlayerStats(fHealthBar, fAngleHor);
 	bool newHealing = false;
 	if (Model::gPlayer.fFlags & UserFlagHealed) {
 		newHealing = true;
@@ -1047,17 +1134,6 @@ void gameDialog::render(bool hideGUI, int fps) {
 
 		gScrollingMessages.Update();
 	}
-
-	if (gDebugOpenGL) {
-		checkError("gameDialog::render debug", false);
-		static double prevPrint = 0.0;
-		if (gCurrentFrameTime > prevPrint + 5.0) {
-			WorstTime::Report();
-			TimeMeasure::Report();
-			prevPrint = gCurrentFrameTime;
-		}
-	}
-	first = false;
 }
 
 // Catch the window close request by the player.
@@ -1067,6 +1143,11 @@ static int GLFWCALL CloseWindowCallback(void) {
 }
 
 void gameDialog::init(bool useOvr) {
+	auto login = [this](float hor, float vert) {
+		Model::gPlayer.fAngleHor = fAngleHor = hor;
+		Model::gPlayer.fAngleVert = fAngleVert = vert;
+	};
+	gLoginEvt.connect(login);
 	fStereoView = useOvr;
 	if (useOvr) {
 		fRenderViewAngle  = OculusRift::sfOvr.GetFieldOfView();
@@ -1283,7 +1364,6 @@ void gameDialog::Update() {
 
 void gameDialog::UpdateProjection(ViewType v) {
 	int width = fScreenWidth;
-	int xOffset = 0;
 	switch (v) {
 	case ViewType::left:
 		{
@@ -1299,28 +1379,26 @@ void gameDialog::UpdateProjection(ViewType v) {
 			float horViewAdjust = OculusRift::sfOvr.GetHorViewAdjustment() * 2.0f; // Multiply with two as there are two units to every meter
 			gViewMatrix = glm::translate(glm::mat4(1), glm::vec3(horViewAdjust, 0.0f, 0.0f)) * gViewMatrix; // Move half distance from center to right eye
 			width /= 2;
-			xOffset = width;
 			break;
 		}
 	case ViewType::single:
 		break;
 	}
-	glViewport(xOffset, 0, width, fScreenHeight);
-	gViewport = glm::vec4((float)xOffset, 0.0f, (float)width, (float)fScreenHeight );
-	float aspectRatio = (float)width / (float)fScreenHeight;
+	fAspectRatio = (float)width / (float)fScreenHeight;
 	// In full screen mode, the window is stretched to match the desktop mode.
 	if (gOptions.fFullScreen) {
-		aspectRatio = gDesktopAspectRatio;
+		fAspectRatio = gDesktopAspectRatio;
 		if (v == ViewType::left || v == ViewType::right)
-			aspectRatio /= 2;
+			fAspectRatio /= 2;
 	}
-	gProjectionMatrix  = glm::perspective(fRenderViewAngle, aspectRatio, 0.01f, maxRenderDistance);  // Create our perspective projection matrix
+	float nearCutoff = 0.01f;
+	gUniformBuffer.SetFrustum(nearCutoff, maxRenderDistance);
+	gProjectionMatrix  = glm::perspective(fRenderViewAngle, fAspectRatio, nearCutoff, maxRenderDistance);  // Create our perspective projection matrix
 	switch(v) {
 	case ViewType::left:
 	case ViewType::right: {
 		float projectionCenterOffset = OculusRift::sfOvr.GetHorProjectionAdjustment();
 		gProjectionMatrix = glm::translate(glm::mat4(1), glm::vec3(projectionCenterOffset, 0, 0)) * gProjectionMatrix;
-		gUniformBuffer.SelectEye(v == ViewType::left);
 		gUniformBuffer.Update(true); // Transfer settings to the graphics card
 		break;
 	}
@@ -1337,8 +1415,6 @@ void gameDialog::UpdateProjection(ViewType v) {
 		Options::sfSave.fWindowWidth = fScreenWidth; // This will override any option dialog changes.
 		Options::sfSave.fWindowHeight = fScreenHeight;
 	}
-	if (fStereoView)
-		View::gHudTransformation.Update();
 }
 
 void gameDialog::SetMessage(const char *str) {
@@ -1347,7 +1423,9 @@ void gameDialog::SetMessage(const char *str) {
 
 void gameDialog::DrawWeapon(void) const {
 	GLuint text = GameTexture::WEP1;
-	switch(Model::gPlayer.fWeaponType) {
+	unsigned weaponType = Model::gPlayer.fWeaponType;
+again: // Ugly way to catch missing weapon definitions
+	switch(weaponType) {
 	case 0:
 		return; // No weapon equipped
 	case 1:
@@ -1358,9 +1436,17 @@ void gameDialog::DrawWeapon(void) const {
 		break;
 	case 3:
 		text = GameTexture::WEP3;
+		if (text == 0) {
+			weaponType = 2;
+			goto again;
+		}
 		break;
 	case 4:
 		text = GameTexture::WEP4;
+		if (text == 0) {
+			weaponType = 3;
+			goto again;
+		}
 		break;
 	}
 	glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(0.536f, -0.85640, 0.0f));
@@ -1505,7 +1591,9 @@ void gameDialog::SaveScreen() {
     // Make the BYTE array, factor of 3 because it's RBG.
     // unsigned char pixels[ 4 * w * h*2];
     std::unique_ptr<unsigned char[]> pixels(new unsigned char[3*w*h]);
-    this->render(true, 0);
+    auto rt = this->render();
+	this->postRender(true, 0);
+	fRenderControl.drawFullScreenPixmap(rt->GetTexture(), fStereoView, true);
 
     glReadPixels(0, 0, w, h, GL_BGR, GL_UNSIGNED_BYTE, pixels.get());
 

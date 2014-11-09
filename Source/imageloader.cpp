@@ -149,7 +149,10 @@ shared_ptr<Image> loadBMP(const char* filename, bool booleanAlpha) {
 	for(int y = 0; y < height; y++) {
 		for(int x = 0; x < width; x++) {
 			for(int c = 0; c < colorDepth; c++) {
-				pixels2[colorDepth * (width * y + x) + c] =
+				int swap = c;
+				if (headerSize == 56)
+					swap = colorDepth - c - 1; // Seems to be this way for this type of header
+				pixels2[colorDepth * (width * y + x) + swap] =
 				    pixels[bytesPerRow * y + colorDepth * x + c];
 			}
 			if (booleanAlpha && colorDepth == 4) {

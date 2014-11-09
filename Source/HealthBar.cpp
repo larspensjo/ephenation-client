@@ -1,4 +1,4 @@
-// Copyright 2012-2013 The Ephenation Authors
+// Copyright 2012-2014 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -28,16 +28,10 @@
 
 using namespace View;
 
-HealthBar::HealthBar() : fShader(0), fBufferId(0), fVao(0) {
-}
-
 HealthBar::~HealthBar() {
 	// Shouldn't happen as this is a singleton.
-	if (fBufferId != 0)
-		glDeleteBuffers(1, &fBufferId);
 	if (fVao != 0)
 		glDeleteVertexArrays(1, &fVao);
-	fBufferId = 0;
 	fVao = 0;
 }
 
@@ -70,21 +64,13 @@ void HealthBar::Init(void) {
 	glGenVertexArrays(1, &fVao);
 	glBindVertexArray(fVao);
 	glEnableVertexAttribArray(fShader->VERTEX_INDEX);
-	glGenBuffers(1, &fBufferId);
-	glBindBuffer(GL_ARRAY_BUFFER, fBufferId);
-	glBufferData(GL_ARRAY_BUFFER, sizeof vertexData, vertexData, GL_STATIC_DRAW);
-	vertex *p = 0;
-	glVertexAttribPointer(fShader->VERTEX_INDEX, 3, GL_FLOAT, GL_FALSE, sizeof (vertex), &p->v);
-	// check data size in VBO is same as input array, if not return 0 and delete VBO
-	int bufferSize = 0;
-	glGetBufferParameteriv(GL_ARRAY_BUFFER, GL_BUFFER_SIZE, &bufferSize);
-	glBindVertexArray(0);
-	if ((unsigned)bufferSize != sizeof vertexData) {
-		glDeleteBuffers(1, &fBufferId);
+	if (!fOpenglBuffer.BindArray(sizeof vertexData, vertexData)) {
 		auto &ss = View::gErrorManager.GetStream(false, false);
 		ss << "[BuildingBlocks::Init] Data size is mismatch with input array";
 	}
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	vertex *p = 0;
+	glVertexAttribPointer(fShader->VERTEX_INDEX, 3, GL_FLOAT, GL_FALSE, sizeof (vertex), &p->v);
+	glBindVertexArray(0);
 }
 
 void HealthBar::DrawHealth(const glm::mat4 &projection, const glm::mat4 &model, float hp, float dmg, bool fillEnd) const {

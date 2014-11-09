@@ -1,4 +1,4 @@
-// Copyright 2012-2013 The Ephenation Authors
+// Copyright 2012-2014 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -67,6 +67,7 @@
 #include "errormanager.h"
 #include "OculusRift.h"
 #include "Debug.h"
+#include "shaders/BarrelDistortion.h"
 
 #ifndef GL_VERSION_3_2
 #define GL_CONTEXT_CORE_PROFILE_BIT       0x00000001
@@ -235,6 +236,7 @@ static int sTestUser = 0;
 static int sHideGUI = 0;
 static int sOculusRiftMode = 0;
 static int sCalibrateFlag = 0;
+static int sWindowedMode = 0; // Override settings
 
 const char *sGameDataDirArg = "gamedata";
 static struct option long_options[] = {
@@ -248,6 +250,7 @@ static struct option long_options[] = {
 	{"ovr",         no_argument, &sOculusRiftMode, 1},
 	{sGameDataDirArg,		required_argument, NULL, 0},
 	{ "calibrate",	no_argument, &sCalibrateFlag, 1},
+	{ "windowed",	no_argument, &sWindowedMode, 1},
 	{0, 0, 0, 0}
 };
 
@@ -352,6 +355,8 @@ int main(int argc, char** argv) {
 	gOptions.Init(optionsFilename); // This one should come early, as it is used to initialize things.
 
 	bool fullScreen = gOptions.fFullScreen;
+	if (sWindowedMode)
+		fullScreen = false;
 	int windowWidth = gOptions.fWindowWidth;
 	int windowHeight = gOptions.fWindowHeight;
 
@@ -361,10 +366,9 @@ int main(int argc, char** argv) {
 		if (gDebugOpenGL)
 			LPLOG("main: Oculus Rift mode");
 		Controller::OculusRift::sfOvr.Create();
-		fullScreen = true;
+		fullScreen = !sWindowedMode; // Unless forcing windowed mode, default is going into full screen regardless of settings
 		windowHeight = Controller::OculusRift::sfOvr.GetVerResolution();
 		windowWidth = Controller::OculusRift::sfOvr.GetHorResolution();
-		gUniformBuffer.SetOVRConstants(Controller::OculusRift::sfOvr.GetDistortionConstants(), Controller::OculusRift::sfOvr.GetLensSeparationDistance());
 	}
 
 	// If there was a saved position, use it for initialization.
@@ -434,6 +438,13 @@ int main(int argc, char** argv) {
 			glDebugMessageCallbackARB(DebugFunc, (void*)15);
 		else if (glDebugMessageCallbackAMD != 0)
 			glDebugMessageCallbackAMD(DebugFuncAMD, (void*)15);
+	}
+
+	if (sOculusRiftMode) {
+		auto shader = Shaders::BarrelDistortion::Make();
+		shader->EnableProgram();
+		shader->SetOVRConstants(Controller::OculusRift::sfOvr.GetDistortionConstants(), Controller::OculusRift::sfOvr.GetLensSeparationDistance());
+		shader->DisableProgram();
 	}
 
 	glfwSwapInterval(gOptions.fVSYNC); // 0 means do not wait for VSYNC, which would delay the FPS sometimes.

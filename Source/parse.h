@@ -1,4 +1,4 @@
-// Copyright 2012-2013 The Ephenation Authors
+// Copyright 2012-2014 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -38,6 +38,11 @@ extern Simple::Signal<void (float dmg)> gPlayerHitByMonsterEvt;
 /// Event generated when there is a text message from the server
 /// @param msg The string with the message
 extern Simple::Signal<void (const char *msg)> gServerMessageEvt;
+
+/// Event generated when player is logged in
+/// @param hor The horisontal looking direction
+/// @param vert The vertical looking direction
+extern Simple::Signal<void (float hor, float vert)> gLoginEvt;
 
 /**
  * @brief Parse a message from the server

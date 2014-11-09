@@ -1,4 +1,4 @@
-// Copyright 2012-2014 The Ephenation Authors
+// Copyright 2014 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -15,19 +15,17 @@
 // along with Ephenation.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-#pragma once
+#include <glm/gtc/noise.hpp>
 
-//
-// Implement Screen Space Abient Occlusion to compute lighting effects.
-//
+#include "Weather.h"
+#include "primitives.h"
 
-#include "shader.h"
+using namespace Model;
 
-class AddSSAO : public ShaderBase {
-public:
-	void Init(void);
+float Weather::GetRain() const {
+	glm::vec2 seed(0.0f, float(gCurrentFrameTime/3.0));
+	// Very simple model for now.
+	return glm::simplex(seed);
+}
 
-	void Draw();
-private:
-	virtual void GetLocations(void);
-};
+Weather Weather::sgWeather;

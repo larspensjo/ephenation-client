@@ -1,4 +1,4 @@
-// Copyright 2012-2013 The Ephenation Authors
+// Copyright 2012-2014 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -25,17 +25,12 @@
 #include "textures.h"
 #include "primitives.h"
 #include "errormanager.h"
-
-DrawTexture::DrawTexture() : fShader(0), fBufferId(0), fVao(0) {
-}
+#include "shaders/BarrelDistortion.h"
 
 DrawTexture::~DrawTexture() {
 	// Shouldn't happen as this is a singleton.
-	if (fBufferId != 0)
-		glDeleteBuffers(1, &fBufferId);
 	if (fVao != 0)
 		glDeleteVertexArrays(1, &fVao);
-	fBufferId = 0;
 	fVao = 0;
 }
 
@@ -69,22 +64,14 @@ void DrawTexture::Init(void) {
 	glGenVertexArrays(1, &fVao);
 	glBindVertexArray(fVao);
 	fShader->EnableVertexAttribArray();
-	glGenBuffers(1, &fBufferId);
-	glBindBuffer(GL_ARRAY_BUFFER, fBufferId);
-	glBufferData(GL_ARRAY_BUFFER, sizeof vertexData, vertexData, GL_STATIC_DRAW);
-	vertex *p = 0;
-	fShader->VertexAttribPointer(GL_FLOAT, 2, sizeof (vertex), &p->v);
-	fShader->TextureAttribPointer(GL_FLOAT, sizeof (vertex), &p->t);
-	// check data size in VBO is same as input array, if not return 0 and delete VBO
-	int bufferSize = 0;
-	glGetBufferParameteriv(GL_ARRAY_BUFFER, GL_BUFFER_SIZE, &bufferSize);
-	glBindVertexArray(0);
-	if ((unsigned)bufferSize != sizeof vertexData) {
-		glDeleteBuffers(1, &fBufferId);
+	if (!fOpenglBuffer.BindArray(sizeof vertexData, vertexData)) {
 		auto &ss = View::gErrorManager.GetStream(false, false);
 		ss << "[BuildingBlocks::Init] Data size is mismatch with input array";
 	}
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	vertex *p = 0;
+	fShader->VertexAttribPointer(GL_FLOAT, 2, sizeof (vertex), &p->v);
+	fShader->TextureAttribPointer(GL_FLOAT, sizeof (vertex), &p->t);
+	glBindVertexArray(0);
 }
 
 void DrawTexture::Draw(const glm::mat4 &projection, const glm::mat4 &model, float alpha) const {
@@ -101,7 +88,7 @@ void DrawTexture::Draw(const glm::mat4 &projection, const glm::mat4 &model, floa
 	glBindVertexArray(0);
 }
 
-void DrawTexture::DrawScreen(bool compensateDistortion) const {
+void DrawTexture::DrawScreen() const {
 	glBindVertexArray(fVao);
 	fShader->EnableProgram();
 	fShader->Projection(glm::mat4(1));
@@ -109,14 +96,25 @@ void DrawTexture::DrawScreen(bool compensateDistortion) const {
 	glm::mat4 transl = glm::translate(glm::mat4(1), glm::vec3(-1, -1, 0));
 	fShader->ModelView(transl * scale);
 	fShader->ForceTransparent(1.0f);
-	if (compensateDistortion)
-		fShader->SetCompensateDistortion(true);
 
 	this->DrawBasic();
 
-	if (compensateDistortion)
-		fShader->SetCompensateDistortion(false); // Immediately reset
 	fShader->DisableProgram();
+	glBindVertexArray(0);
+}
+
+void DrawTexture::DrawBarrelDistortion(bool leftEye) const {
+	glBindVertexArray(fVao);
+	auto shader = Shaders::BarrelDistortion::Make();
+	shader->EnableProgram();
+	shader->ConfigureEye(leftEye);
+	glm::mat4 scale = glm::scale(glm::mat4(1), glm::vec3(2,2,1));
+	glm::mat4 transl = glm::translate(glm::mat4(1), glm::vec3(-1, -1, 0));
+	shader->ModelView(transl * scale);
+
+	this->DrawBasic();
+
+	shader->DisableProgram();
 	glBindVertexArray(0);
 }
 

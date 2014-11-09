@@ -21,6 +21,7 @@
 #include <glm/glm.hpp>
 
 #include "animationmodels.h"
+#include "RenderTarget.h"
 
 class ChunkShader;
 class AddDynamicShadow;
@@ -44,6 +45,7 @@ namespace Model {
 
 namespace View {
 	class ShadowRender;
+	class RenderTarget;
 
 /// @brief This is the top level View of the Model/View/Controller
 ///
@@ -69,12 +71,18 @@ public:
 	/// Do the actual drawing
 	/// @param underWater True if underwater effects shall be applied
 	/// @param selectedObject This object shall be visibly marked
+	/// @param stereoView True when using OVR
+	/// @return The texture target of the drawing
+	std::unique_ptr<RenderTarget> Draw(bool underWater, const Model::Object *selectedObject, bool stereoView);
+
+	/// Add constant things, like UI, maps and other overlays.
+	/// It is things that stays at the same position in the screen. Use the currently bound FBO and render targets.
+	/// @param current Use this as the current render target
 	/// @param showMap True if a map shall be shown
 	/// @param mapWidth Pixels in width used when drawing a map
 	/// @param ui Pointer to the user interface
-	/// @param stereoView True when using OVR
-    /// @param renderViewAngle The view angle to use
-	void Draw(bool underWater, std::shared_ptr<const Model::Object> selectedObject, bool showMap, bool showInvent, int mapWidth, MainUserInterface *ui, bool stereoView, float renderViewAngle);
+	/// @param renderViewAngle The view angle to use
+	void DrawStationaryEffects(bool showMap, int mapWidth, bool stereoView, bool showInvent, MainUserInterface *ui, float renderViewAngle);
 
 	/// Update the camera position.
 	/// Check if camera position is inside a wall.
@@ -100,12 +108,23 @@ public:
 	/// Get the pointer screen coordinate (if there is one)
 	void GetVirtualPointer(int *x, int *y) const  { *x = fPointerX+0.5f; *y = fPointerY+0.5f; }
 
+	/// Move a picture a number of pixels.
+	/// @param source The input texture
+	/// @param x,y The number of pixels
+	/// @return A new texture, also set as default target for next operation.
+	std::unique_ptr<RenderTarget> MovePixels(GLuint source, float x, float y);
+
+	/// Copy the final texture to the screen
+	/// @param id The texture id to draw
+	/// @param stereoView True if drawing stereoscopic view requiring barrel distortion
+	/// @param leftEye Used when drawing stereo view
+	void drawFullScreenPixmap(GLuint id, bool stereoView, bool leftEye) const;
+
 private:
 
 	GLuint fboName;
 	GLuint fDepthBuffer; // Render target buffers
 	GLuint fPositionTexture, fNormalsTexture, fBlendTexture, fLightsTexture;
-	GLuint fRendertarget1 = 0, fRendertarget2 = 0;
 	GLuint fSurfaceProperties = 0;
 	GLsizei fWidth, fHeight;
 
@@ -142,7 +161,7 @@ private:
 
 	void ComputeAverageLighting(bool underWater);
 
-	void drawClearFBO(void); // Initialize all images in the FBO
+	void drawClearFBO(RenderTarget *r); // Initialize all images in the FBO
 	void drawOpaqueLandscape(bool stereoView);
 	void drawDynamicShadows(void);
 	void drawDeferredLighting(bool underWater, float whitepoint);
@@ -162,19 +181,28 @@ private:
 	void drawDistanceBlurring(void);
 	void drawColoredLights() const;
 	void drawMousePointer();
-	void drawFullScreenPixmap(GLuint id, bool stereoView) const;
 	void drawInventory(bool stereoView) const;
 
 	// Define alias for color attachments. Remember to look at
 	// drawClearFBO() if this list is changed.
 	enum ColorAttachment {
-		ColAttachRenderTarget1 = GL_COLOR_ATTACHMENT0,
-		ColAttachPosition, ColAttachNormals, ColAttachBlend, ColAttachLighting, ColAttachRenderTarget2, ColAttachSurfaceProps
+		ColAttachRenderTarget = GL_COLOR_ATTACHMENT0,
+		ColAttachPosition,
+		ColAttachNormals,
+		ColAttachBlend,
+		ColAttachLighting,
+		ColAttachSurfaceProps,
+		ColAttachTempRenderTarget, // Used for temporary targets
 	};
 
 	GLuint fCurrentInputColor = 0;
-	ColorAttachment fCurrentColorAttachment = ColAttachRenderTarget1;
-	void ToggleRenderTarget(); // Toggle between the two render targets
+
+	// Toggle between the two render targets and setup the previous
+	// render target as fCurrentInputColor.
+	void ToggleRenderTarget(std::unique_ptr<RenderTarget> &current, std::unique_ptr<RenderTarget> &previous);
+
+	/// Setup a single rendertarget for the FBO.
+	void SetSingleTarget(const RenderTarget &target);
 };
 
 }

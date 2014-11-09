@@ -47,10 +47,13 @@ float linearToSRGB(float linear) {
 	else return 1.055 * pow(linear, 1/2.4) - 0.055;
 }
 
-vec2 seed;
-vec2 rand(vec2 a, vec2 b) {
-	seed = fract(a*10.23 + b*123.1232+screen*3.123 + seed*82.12354); // A value from 0 to 1
-	return seed;
+// Is pixel at 'screenPos' near the distance 'z' and point in general the same direction?
+bool near(float z, vec3 normal, vec2 screenPos) {
+	float sampleDist = texture(posTex, screenPos).z;
+	if (sampleDist < z-0.5 || sampleDist > z+0.5)
+		return false;
+	vec3 sampleNormal = texture(normalTex, screenPos).xyz;
+	return dot(sampleNormal, normal) > 0.0;
 }
 
 void main(void)
@@ -61,6 +64,8 @@ void main(void)
 	vec4 blend = texture(blendTex, screen);
 	worldPos = texture(posTex, screen);
 	float ambient = normal.a; // The ambient light is in the alpha channel.
+	// Add a little ambient lighting if cloudy weather (more scattered light).
+	ambient += (1.0-UBOBelowGround) * (UBORaining) * 3.0;
 	vec4 hdr = diffuse/(1-diffuse);
 	// Temporary helper data
 	vec3 cameraToWorld = UBOCamera.xyz-worldPos.xyz;
@@ -70,7 +75,32 @@ void main(void)
 	vec3 eyeDir = normalize(cameraToWorld);
 	vec3 vHalfVector = normalize(sundir.xyz+eyeDir);
 	float inSun = worldPos.a; // Is greater than 0 if this position is reached by the sun
-	float fact = texture(lightTex, screen).r + (ambient+UBOambientLight)*0.03;
+	float fact = texture(lightTex, screen).r;
+	if (UBOPerformance > 3) {
+		float n = 1.0;
+		float ndx, ndy;
+		ndx = 1.5/float(UBOWindowWidth); // 1.5 pixels
+		ndy = 1.5/float(UBOWindowHeight);
+		if (near(worldPos.z, normal.xyz, screen+vec2(ndx, ndy))) {
+			fact += texture(lightTex, screen+vec2(ndx, ndy)).r;
+			n++;
+		}
+		if (near(worldPos.z, normal.xyz, screen+vec2(-ndx, ndy))) {
+			fact += texture(lightTex, screen+vec2(-ndx, ndy)).r;
+			n++;
+		}
+		if (near(worldPos.z, normal.xyz, screen+vec2(ndx, -ndy))) {
+			fact += texture(lightTex, screen+vec2(ndx, -ndy)).r;
+			n++;
+		}
+		if (near(worldPos.z, normal.xyz, screen+vec2(-ndx, -ndy))) {
+			fact += texture(lightTex, screen+vec2(-ndx, -ndy)).r;
+			n++;
+		}
+		fact = fact / n;
+	}
+	fact += (ambient+UBOambientLight)*0.03;
+
 	if (UBODynamicshadows == 0) fact += inSun;         // Add pre computed light instead of using shadow map
 	if (skyPixel) { fact = 0.8; }
 	vec3 step1 = fact*hdr.xyz; // + inSun*pow(max(dot(normal.xyz,vHalfVector),0.0), 100) * 0.1; // TODO: Specular glare isn't correct

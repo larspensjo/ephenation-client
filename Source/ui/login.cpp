@@ -57,10 +57,14 @@ void LoginDialog::UpdateInput(Rocket::Core::Element *e) {
 		// There are some empty special 'p' tags, to be filled
 		if (name == "client.availableversion") {
 			std::stringstream ss;
-			if (gClientAvailMajor != CLIENT_MAJOR_VERSION || gClientAvailMinor != CLIENT_MINOR_VERSION)
+			if (gClientAvailMajor > CLIENT_MAJOR_VERSION || (gClientAvailMajor == CLIENT_MAJOR_VERSION && gClientAvailMinor > CLIENT_MINOR_VERSION))
 				ss << "<p style=\"color:red;\">New client version available: " << gClientAvailMajor << "." << gClientAvailMinor << "</p>";
+			else if (gClientAvailMajor < CLIENT_MAJOR_VERSION || (gClientAvailMajor == CLIENT_MAJOR_VERSION && gClientAvailMinor < CLIENT_MINOR_VERSION))
+				ss << "<p style=\"color:red;\">Running beta version: " << CLIENT_MAJOR_VERSION << "." << CLIENT_MINOR_VERSION << "b</p>";
 			else
-				ss << "Client version: " << gClientAvailMajor << "." << gClientAvailMinor;
+				ss << "Client version: " << CLIENT_MAJOR_VERSION << "." << CLIENT_MINOR_VERSION;
+			if (Options::sfSave.fLicenseKey == "")
+				ss << "<br />Get free license key from www.ephenation.net";
 			if (gParseMessageAtLogin != "")
 				ss << "<br /><p style=\"color:red;\">" << gParseMessageAtLogin << "</p>";
 			e->SetInnerRML(ss.str().c_str());

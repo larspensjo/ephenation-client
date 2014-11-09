@@ -1,4 +1,4 @@
-// Copyright 2012-2013 The Ephenation Authors
+// Copyright 2012-2014 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -38,8 +38,8 @@ public:
 
 	void Init();
 
-	/// Render the shadow map, givne the specified world volume (specified in blocks).
-	/// Blocks horisontal from -width/2 to +width/2 will be included, and -height/2 to +height/2.
+	/// Render the shadow map, given the specified world volume (specified in blocks).
+	/// Blocks horizontal from -width/2 to +width/2 will be included, and -height/2 to +height/2.
 	void Render(int width, int height, const AnimationModels *animationModels, GaussianBlur *blurShader);
 
 	/// Bind the shadowmap texture to the currently active texture unit.
@@ -49,7 +49,7 @@ public:
 
 private:
 	void Blur(GaussianBlur *blurShader);     /// Blur the depth buffer
-	GLuint fTexture1, fTexture2; // Texture id used for depth buffer
+	GLuint fTexture1=0, fTexture2=0; // Texture id used for depth buffer
 	int fMapWidth, fMapHeight; // Size of the shadow map
 	std::unique_ptr<ShadowMapShader> fShader;
 	std::unique_ptr<FBOFlat> fbo1, fbo2;

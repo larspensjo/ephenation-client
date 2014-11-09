@@ -1,4 +1,4 @@
-// Copyright 2012-2014 The Ephenation Authors
+// Copyright 2014 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -17,17 +17,14 @@
 
 #pragma once
 
-//
-// Implement Screen Space Abient Occlusion to compute lighting effects.
-//
+namespace Model {
 
-#include "shader.h"
-
-class AddSSAO : public ShaderBase {
+class Weather
+{
 public:
-	void Init(void);
-
-	void Draw();
+	float GetRain() const;
+	static Weather sgWeather;
 private:
-	virtual void GetLocations(void);
 };
+
+}

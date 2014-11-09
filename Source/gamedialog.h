@@ -18,18 +18,21 @@
 #pragma once
 
 #include <memory>
+#include <glm/gtc/quaternion.hpp>
 
 #include "ui/mainuserinterface.h"
 #include "ui/RocketGui.h"
 #include "rendercontrol.h"
 #include "chunk.h"
 #include "UndoOp.h"
+#include "RenderTarget.h"
 
 namespace View {
 	class Chunk;
 	class RenderControl;
 	class HealthBar;
     class BuildingBlocks;
+	class RenderTarget;
 }
 
 namespace Model {
@@ -64,9 +67,23 @@ public:
 	/// Called every frame
 	/// @param hideGUI Hide all GUI, for use when taking pictures, etc.
 	void DrawScreen(bool hideGUI);
+
+	/// Display a stereo view, using reprojection to correct for delay
+	/// @param quatLeft The yaw, pitch and roll angle used to create the original left picture
+	/// @param quatRight The yaw, pitch and roll angle used to create the original right picture
+	/// @param rightOriginal The texture for the right eye, not corrected
+	/// @param leftOriginal The texture for the left ete, not corrected
+    /// @return The delta time since last display
+	double DisplayReprojection(const glm::quat &quatLeft, const glm::quat &quatRight, View::RenderTarget &leftOriginal, View::RenderTarget &rightOriginal);
+
 	/// Render many things.
 	/// @todo Nothing should be rendered from here, it should all go into the View of the MVC.
-	void render(bool hideGUI, int fps);
+	/// @return The resulting render target
+	std::unique_ptr<View::RenderTarget> render();
+
+	/// Apply post render effects
+	/// @param source The render target to add the effects to
+	void postRender(bool hideGUI, int fps);
 	void init(bool useOvr);
 	~gameDialog();
 	void handleMouse(int button, int action);
@@ -110,12 +127,21 @@ private:
 	enum class ViewType { left, right, single };
 	void UpdateProjection(ViewType v);
 
+	/// For now, the y offset is always 0.
+	void SetViewport(float x, float w, float h) {
+		glViewport(x, 0, w, h);
+		gViewport = glm::vec4(x, 0, w, h);
+	}
+
 	Effect fCurrentEffect;
 	bool fMovingFwd;
 	bool fMovingBwd;
 	bool fMovingLeft;
 	bool fMovingRight;
 	bool fUsingTorch;
+
+	float fAngleHor = 0.0f;            //The rotation of the player
+	float fAngleVert = 0.0f;
 	Calibration fCalibrationMode = Calibration::None;
 	float fCalibrationFactor = 1.0f;
 	void UpdateCalibrationConstant(bool increase);
@@ -159,6 +185,7 @@ private:
 	int fMapWidth;
 	float fDefaultRenderViewAngle = 60.0f;
 	float fRenderViewAngle = fDefaultRenderViewAngle;
+	float fAspectRatio = 1.0f;
 
 	/// Draw the player weapon
 	/// @todo Should go int the View of the MVC.

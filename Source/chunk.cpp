@@ -80,9 +80,6 @@ bool Chunk::InSunLight(int ox, int oy, int oz) const {
 	return LineToSky(this, ox, oy, oz, -0.577350269f, -0.577350269f, 0.577350269f);
 }
 
-// Find out if a surface is in the direction sky, from a limited number of directions. Return
-// a value from 0 to 1. The given coordinate may be just outside the chunk!
-// A value of 1.0 means full view of sky in all directions.
 float Chunk::ComputeAmbientLight(int ox, int oy, int oz) const {
 	// The direction pointing to the sun is not included.
 	float sky =
@@ -101,11 +98,59 @@ float Chunk::ComputeAmbientLight(int ox, int oy, int oz) const {
 		    LineToSky(this, ox, oy, oz, -0.577350269f, -0.577350269, 0.577350269);
 		num += 4.0f;
 	}
-	glm::vec3 block(ox, oy, oz);
 	float sum = sky * 1.0f / num;
 	if (sum > 1.0f)
 		sum = 1.0f;
 	return sum;
+}
+
+// Look for a specific block type in a given direction.
+// Transparent blocks are ignored.
+static bool RayTraceBlocks(const Chunk *cp, int ox, int oy, int oz, float dx, float dy, float dz, unsigned char type) {
+	float fx = float(ox), fy = float(oy), fz = float(oz);
+
+	ChunkCoord cc = cp->cc;
+	const Chunk *currentChunk = cp;
+	for (int i=0; i<20; i++) {
+		if (fx<0) { fx += CHUNK_SIZE; cc.x--; currentChunk = ChunkFind(&cc, false); }
+		if (fy<0) { fy += CHUNK_SIZE; cc.y--; currentChunk = ChunkFind(&cc, false); }
+		if (fz<0) { fz += CHUNK_SIZE; cc.z--; currentChunk = ChunkFind(&cc, false); }
+		if (fx>=CHUNK_SIZE) { fx -= CHUNK_SIZE; cc.x++; currentChunk = ChunkFind(&cc, false); }
+		if (fy>=CHUNK_SIZE) { fy -= CHUNK_SIZE; cc.y++; currentChunk = ChunkFind(&cc, false); }
+		if (fz>=CHUNK_SIZE) { fz -= CHUNK_SIZE; cc.z++; currentChunk = ChunkFind(&cc, false); }
+
+		// If the distance to the next chunk above is big enough, ignore shadows from it.
+		if (cc.z > cp->cc.z + 2)
+			return true; // Reached the sky!
+		if (currentChunk == 0)
+			return true; // We don't know, so assume there is sky. TODO: Not clever enough.
+		int x = int(floorf(fx)), y = int(floorf(fy)), z = int(floorf(fz));
+		auto bl = currentChunk->GetBlock(x, y, z);
+		fx += dx; fy += dy; fz += dz;
+		if (bl == type)
+			return true;
+		if (!Model::ChunkBlocks::blockIsSemiTransp(bl))
+			return false;
+	}
+	// Don't look any further, give it up
+	return false;
+}
+
+bool Chunk::CountNearWalls(int ox, int oy, int oz, int type, int threshold) const {
+    if (gOptions.fPerformance <= 2) // See drawScreenSpaceReflection() in rendercontrol, which will not draw reflections
+        return false;
+	// The direction pointing to the sun is not included.
+	int num =
+		RayTraceBlocks(this, ox, oy, oz, 0.0f, 0.0f, 1.0f, BT_Stone) +
+		RayTraceBlocks(this, ox, oy, oz, 0.707106781f, 0.0f, 0.707106781f, BT_Stone) +
+		RayTraceBlocks(this, ox, oy, oz, 0.0f, 0.707106781f, 0.707106781f, BT_Stone) +
+		RayTraceBlocks(this, ox, oy, oz, -0.707106781f, 0.0f, 0.707106781f, BT_Stone) +
+		RayTraceBlocks(this, ox, oy, oz, 0.0f, -0.707106781f, 0.707106781f, BT_Stone) +
+		RayTraceBlocks(this, ox, oy, oz, 0.577350269f, -0.577350269, 0.577350269, BT_Stone) +
+		RayTraceBlocks(this, ox, oy, oz, -0.577350269f, 0.577350269, 0.577350269, BT_Stone) +
+		RayTraceBlocks(this, ox, oy, oz, 0.577350269f, 0.577350269, 0.577350269, BT_Stone) +
+		RayTraceBlocks(this, ox, oy, oz, -0.577350269f, -0.577350269, 0.577350269, BT_Stone);
+	return num >= threshold;
 }
 
 void Chunk::UpdateGraphics(void) {
@@ -325,11 +370,8 @@ void Chunk::ReleaseOpenGLBuffers(void) {
 	if (!this->fBuffersDefined)
 		return;
 	glDeleteVertexArrays(256, fVao); // A buffer with value 0 is ignored.
-	// glDeleteBuffers(256, fBufferId); // Seems to be a bug in AMD. Deleting a buffer 0 will destroy the glBindBufferBase binding
 	for (int blockType = 0; blockType < 256; blockType++) {
-		if (fBufferId[blockType] != 0)
-			glDeleteBuffers(1, &fBufferId[blockType]);
-		fBufferId[blockType] = 0;
+		fOpenglBuffers[blockType].Release();
 		fVao[blockType] = 0;
 	}
 	this->fBuffersDefined = false;
@@ -349,18 +391,11 @@ void Chunk::PrepareOpenGL(StageOneShader *shader, ChunkShaderPicking *pickShader
 			continue; // No blocks of this type to draw.
 		glGenVertexArrays(1, &fVao[blockType]);
 		glBindVertexArray(fVao[blockType]);
-		glGenBuffers(1, &fBufferId[blockType]);
-		glBindBuffer(GL_ARRAY_BUFFER, fBufferId[blockType]);
-		glBufferData(GL_ARRAY_BUFFER, triSize * sizeof(VertexDataf), &fChunkObject->fVisibleTriangles[blockType][0], GL_STATIC_DRAW);
 		// Can't release vertex buffer, as it may be reused after a call to chunk::ReleaseOpenGLBuffers().
 		// check that data size in VBO is the same as the input array, if not return 0 and delete VBO
-		int bufferSize = 0;
-		glGetBufferParameteriv(GL_ARRAY_BUFFER, GL_BUFFER_SIZE, &bufferSize);
-		if ((unsigned)bufferSize != triSize * sizeof(VertexDataf)) {
+		if (!fOpenglBuffers[blockType].BindArray(triSize * sizeof(VertexDataf), &fChunkObject->fVisibleTriangles[blockType][0])) {
 			checkError("Chunk::PrepareOpenGL data size mismatch");
-			glDeleteBuffers(1, &fBufferId[blockType]);
-			fBufferId[blockType] = 0;
-			ErrorDialog("Chunk::PrepareOpenGL: Data size %d is mismatch with input array %d\n", bufferSize, triSize * sizeof(VertexDataf));
+			ErrorDialog("Chunk::PrepareOpenGL: Data size %d is mismatch with input array %d\n", fOpenglBuffers[blockType].GetSize(), triSize * sizeof(VertexDataf));
 		}
 
 		switch(dlType) {
@@ -390,7 +425,6 @@ Chunk::Chunk() {
 	fScheduledForComputation = false;
 	fScheduledForLoading = false;
 	for (int i=0; i<256; i++) {
-		fBufferId[i] = 0;
 		fVao[i] = 0;
 	}
 }

@@ -1,4 +1,4 @@
-// Copyright 2012-2013 The Ephenation Authors
+// Copyright 2012-2014 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -64,6 +64,7 @@ public:
 	void GetChunkCoord(ChunkCoord*) const;
 	glm::vec3 GetOffsetToChunk(void) const; /// This gives the head of the player
 	bool InFight(void) const;
+	// TODO: Should not be part of the Model
 	void Draw(AnimationShader *animShader, StageOneShader *staticShader, bool torch, const View::AnimationModels *animationModels); /// Draw self
 
 	Player() {

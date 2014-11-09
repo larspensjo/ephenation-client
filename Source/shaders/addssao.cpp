@@ -1,4 +1,4 @@
-// Copyright 2012-2013 The Ephenation Authors
+// Copyright 2012-2014 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -37,9 +37,6 @@ static const GLchar *fragmentShaderSource[] = {
 	"addssao.Fragment",
 };
 
-AddSSAO::AddSSAO() {
-}
-
 void AddSSAO::Init(void) {
 	const GLsizei vertexShaderLines = sizeof(vertexShaderSource) / sizeof(GLchar*);
 	const GLsizei fragmentShaderLines = sizeof(fragmentShaderSource) / sizeof(GLchar*);
@@ -48,9 +45,8 @@ void AddSSAO::Init(void) {
 }
 
 void AddSSAO::GetLocations(void) {
-	// The followig uniforms only need to be initialized once
-	glUniform1i(this->GetUniformLocation("normalTex"), 2);
-	glUniform1i(this->GetUniformLocation("posTex"), 1);
+	// The following uniforms only need to be initialized once
+	glUniform1i(this->GetUniformLocation("depthTex"), 0);
 
 	checkError("AddSSAO::GetLocations");
 }

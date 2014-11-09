@@ -1,4 +1,4 @@
-// Copyright 2012-2013 The Ephenation Authors
+// Copyright 2012-2014 The Ephenation Authors
 //
 // This file is part of Ephenation.
 //
@@ -17,6 +17,8 @@
 
 #pragma once
 
+#include "OpenglBuffer.h"
+
 class SimpleTextureShader;
 class DrawFont;
 
@@ -31,14 +33,14 @@ public:
 	int CurrentBlockType(void) const;
 private:
 	void Init(int numToDisplay);
-	BuildingBlocks(); 			// This is a singleton class, a private constructor will force it.
 	static BuildingBlocks fgSingleton; // This is the pointer to the singleton.
 
-	int fNumToDisplay; 			// Number of building blocks to display
-	SimpleTextureShader *fShader;
-	GLuint fBufferId, fVao;
-	GLuint fSelectedBlockText;	// Current sentence to use to display the description of the selected block
-	int fCurrentSelection;
+	int fNumToDisplay = 0; 			// Number of building blocks to display
+	SimpleTextureShader *fShader = 0;
+	OpenglBuffer fOpenglBuffer;
+	GLuint fVao = 0;
+	GLuint fSelectedBlockText = 0;	// Current sentence to use to display the description of the selected block
+	int fCurrentSelection = 0;
 };
 
 }
