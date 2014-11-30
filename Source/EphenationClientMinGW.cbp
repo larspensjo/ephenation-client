@@ -232,6 +232,9 @@
 		<Unit filename="shaders/ColorShader.h" />
 		<Unit filename="shaders/DeferredLighting.cpp" />
 		<Unit filename="shaders/DeferredLighting.h" />
+		<Unit filename="shaders/DistanceBlurring.cpp" />
+		<Unit filename="shaders/DistanceBlurring.glsl" />
+		<Unit filename="shaders/DistanceBlurring.h" />
 		<Unit filename="shaders/MonsterShader.cpp" />
 		<Unit filename="shaders/MonsterShader.h" />
 		<Unit filename="shaders/ScreenSpaceReflection.cpp" />
